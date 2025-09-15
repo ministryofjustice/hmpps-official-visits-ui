@@ -1,0 +1,54 @@
+import session, { MemoryStore, Store } from 'express-session'
+import { RedisStore } from 'connect-redis'
+import express, { Router } from 'express'
+import { randomUUID } from 'crypto'
+import { createRedisClient } from '../data/redisClient'
+import config from '../config'
+import logger from '../../logger'
+
+export default function setUpWebSession(): Router {
+  let store: Store
+  if (config.redis.enabled) {
+    const client = createRedisClient()
+    client.connect().catch((err: Error) => logger.error(`Error connecting to Redis`, err))
+    store = new RedisStore({ client })
+  } else {
+    store = new MemoryStore()
+  }
+
+  const router = express.Router()
+  router.use(
+    session({
+      store,
+      name: 'hmpps-template-typescript.session',
+      cookie: { secure: config.https, sameSite: 'lax', maxAge: config.session.expiryMinutes * 60 * 1000 },
+      secret: config.session.secret,
+      resave: false, // redis implements touch so shouldn't need this
+      saveUninitialized: false,
+      rolling: true,
+    }),
+  )
+
+  // Update a value in the session so that redis resets the session TTL.
+  // Only changes every minute so that it's not updated with every request.
+  // This also has the effect of sending the set-cookie header to the browser
+  // which keeps the session alive there, although this is also taken care of
+  // by using rolling: true in the configuration above.
+  router.use((req, res, next) => {
+    req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
+    next()
+  })
+
+  router.use((req, res, next) => {
+    const headerName = 'X-Request-Id'
+    const oldValue = req.get(headerName)
+    const id = oldValue === undefined ? randomUUID() : oldValue
+
+    res.set(headerName, id)
+    req.id = id
+
+    next()
+  })
+
+  return router
+}
