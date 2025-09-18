@@ -1,9 +1,8 @@
 generic-service:
   nameOverride: hmpps-official-visits-ui
-  productId: 'DPS131' # productId for the product that this belongs too, i.e. DPS001, see README.md for details
-
-  # the IRSA service account name for accessing AWS resources
-  # serviceAccountName: "hmpps-official-visits-ui"
+  productId: "DPS131"
+  # The IRSA service account name for accessing AWS resources
+  serviceAccountName: "hmpps-official-visits-ui"
 
   replicaCount: 4
 
@@ -46,7 +45,7 @@ generic-service:
       CLIENT_CREDS_CLIENT_SECRET: 'CLIENT_CREDS_CLIENT_SECRET'
     hmpps-official-visits-ui-auth-code:
       AUTH_CODE_CLIENT_ID: 'AUTH_CODE_CLIENT_ID'
-      AUTH_CODE_CLIENT_SECRET: 'AUTH_CODE_CLIENT_SECRET'    
+      AUTH_CODE_CLIENT_SECRET: 'AUTH_CODE_CLIENT_SECRET'
     hmpps-official-visits-ui-session-secret:
       SESSION_SECRET: 'SESSION_SECRET'
     hmpps-official-visits-ui-elasticache-redis:
