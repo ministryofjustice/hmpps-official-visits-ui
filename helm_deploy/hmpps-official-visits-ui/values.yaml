@@ -2,7 +2,7 @@ generic-service:
   nameOverride: hmpps-official-visits-ui
   productId: "DPS131"
   # The IRSA service account name for accessing AWS resources
-  serviceAccountName: "hmpps-official-visits-ui"
+  serviceAccountName: "hmpps-official-visits"
 
   replicaCount: 4
 
