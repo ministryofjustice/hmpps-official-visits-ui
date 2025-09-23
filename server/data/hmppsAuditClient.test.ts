@@ -90,7 +90,7 @@ describe('hmppsAuditClient', () => {
         )
       }
 
-      expect(trySendMessage()).resolves.not.toThrow()
+      await expect(trySendMessage()).resolves.not.toThrow()
       expect(sqsMock.calls().length).toEqual(1)
     })
 
@@ -105,7 +105,7 @@ describe('hmppsAuditClient', () => {
         })
       }
 
-      expect(trySendMessage()).rejects.toThrow('Error sending sqs message')
+      await expect(trySendMessage()).rejects.toThrow('Error sending sqs message')
       expect(sqsMock.calls().length).toEqual(1)
     })
   })
