@@ -11,7 +11,6 @@ This is the user interface service for booking and managing official visits in D
 
 Our security policy is located [here](https://github.com/ministryofjustice/hmpps-official-visits-ui/security/policy).
 
-
 ## Building the service
 
 There are several ways to start the service. The most common is to run the UI and a REDIS container locally, but
@@ -22,21 +21,21 @@ npm install
 npm run build
 ```
 
-## Setting up a local .env file (to provide essential dependencies)
+## Setting up a local .env file (to provide essential configuration values)
 
 Create a file `.env` in the root of your project clone. This file is in .gitignore, so should never be committed.
 It should have the following contents, but see your team for the actual values they are set to.
 
 ```bash
-AUTH_CODE_CLIENT_ID=auth code client ID
-AUTH_CODE_CLIENT_SECRET=auth code client secret
-CLIENT_CREDS_CLIENT_ID=client ID
-CLIENT_CREDS_CLIENT_SECRET=client secret
-HMPPS_AUTH_URL=https://url-to-hmpps-auth
+AUTH_CODE_CLIENT_ID=<ask>
+AUTH_CODE_CLIENT_SECRET=<ask>
+CLIENT_CREDS_CLIENT_ID=<ask>
+CLIENT_CREDS_CLIENT_SECRET=<ask>
+HMPPS_AUTH_URL=<ask>
 ```
-For the full content of the .env file please see the developers on the team.
+For the full content of the .env file please request from the developers on the team.
 
-## Run the unit tests
+## Running the unit tests
 
 ```bash
 npm run test
@@ -64,30 +63,29 @@ Pull and start a REDIS docker container.
 docker-compose pull && docker-compose up - d
 ```
 
+Start the server in dev mode
 ```bash
 npm run start:dev
 ```
-This will start the service in development mode (detecting changes and restarting as necessary), and will
-be accessible on http://localhost:3000
+This will start the service in dev mode (detecting changes and restarting as necessary) accessible at http://localhost:3000
 
 ### Logging in
 
-Once the application is running you should then be able to login with any user account that exist in the DEV environment,
-which has the appropriate role for the service.
+Once the application is running you should then be able to log in with any user account with the appropriate role in
+the development environment.
 
 ### Run linter
 
 * `npm run lint` runs `eslint`.
 * `npm run typecheck` runs the TypeScript compiler `tsc`.
 
-
 ### Running integration tests
 
-Integration tests (using Cypress) can be run against the UI, but need an extra dependency to mock out any
-API calls that will be made during the tests. This is done with Wiremock, running locally in a container.
+Integration tests (using Cypress) can be run against the UI and need an extra dependency to mock out any
+API calls that will be made during the tests. This is done with Wiremock running locally in a container.
 
 There is a 3-step process:
-* Run wiremock
+* Run wiremock container
 * Run the service in integration test mode
 * Run the Cypress test tool
 
