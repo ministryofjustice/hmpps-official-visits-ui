@@ -118,6 +118,7 @@ dist
 
 .idea
 .vscode
+*.iml
 dist/
 test_results/
 integration_tests/videos/

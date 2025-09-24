@@ -1,6 +1,7 @@
 import type { Express } from 'express'
 import request from 'supertest'
 import { appWithAllRoutes } from './routes/testutils/appSetup'
+import logger from '../logger'
 
 let app: Express
 
@@ -14,6 +15,9 @@ afterEach(() => {
 
 describe('GET 404', () => {
   it('should render content with stack in dev mode', () => {
+    // Suppress the expected error output
+    logger.error = jest.fn()
+
     return request(app)
       .get('/unknown')
       .expect(404)
@@ -25,6 +29,9 @@ describe('GET 404', () => {
   })
 
   it('should render content without stack in production mode', () => {
+    // Suppress the expected error output
+    logger.error = jest.fn()
+
     return request(appWithAllRoutes({ production: true }))
       .get('/unknown')
       .expect(404)
