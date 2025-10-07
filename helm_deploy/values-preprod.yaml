@@ -11,6 +11,9 @@ generic-service:
     INGRESS_URL: "https://official-visits-ui-preprod.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api-preprod.prison.service.justice.gov.uk"
+    COMPONENT_API_URL: "https://frontend-components-preprod.hmpps.service.justice.gov.uk"
+    DPS_HOME_PAGE_URL: "https://digital-preprod.prison.service.justice.gov.uk"
+    PRISONER_PROFILE_URL: "https://prisoner-preprod.digital.prison.service.justice.gov.uk"
     EXAMPLE_API_URL: 'https://template-kotlin-preprod.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: PRE-PRODUCTION
     AUDIT_ENABLED: "false"

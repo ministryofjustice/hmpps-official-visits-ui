@@ -1,4 +1,4 @@
-const childProcess = require('node:child_process')
+const { spawn } = require('node:child_process')
 const path = require('node:path')
 
 const { glob } = require('glob')
@@ -40,6 +40,14 @@ const buildConfig = {
         from: path.join(cwd, 'server/views/**/*'),
         to: path.join(cwd, 'dist/server/views'),
       },
+      {
+        from: path.join(cwd, 'server/routes/journeys/**/*'),
+        to: path.join(cwd, 'dist/server/routes/journeys'),
+      },
+      {
+        from: path.join(cwd, 'server/routes/**/*'),
+        to: path.join(cwd, 'dist/server/routes'),
+      },
     ],
   },
 
@@ -71,37 +79,33 @@ const main = () => {
     })
   }
 
-  /** @type {string | null} */
-  let serverEnv = null
-  if (args.includes('--dev-server')) serverEnv = '.env'
-  if (args.includes('--dev-test-server')) serverEnv = 'feature.env'
-
-  if (serverEnv) {
-    /** @type {childProcess.ChildProcess | null} */
+  if (args.includes('--dev-server')) {
     let serverProcess = null
-    chokidar.watch(['dist']).on(
-      'all',
-      debounce(() => {
-        if (serverProcess) serverProcess.kill()
-        process.stderr.write('Restarting server...\n')
-        serverProcess = childProcess.spawn('node', [`--env-file=${serverEnv}`, 'dist/server.js'], { stdio: 'inherit' })
-      }),
-    )
+    chokidar.watch(['dist'], { ignored: ['**/*.cy.ts'] }).on('all', () => {
+      if (serverProcess) serverProcess.kill()
+      serverProcess = spawn('node', ['--env-file=.env', 'dist/server.js'], { stdio: 'inherit' })
+    })
+  }
+
+  if (args.includes('--dev-test-server')) {
+    let serverProcess = null
+    chokidar.watch(['dist'], { ignored: ['**/*.cy.ts'] }).on('all', () => {
+      if (serverProcess) serverProcess.kill()
+      serverProcess = spawn('node', ['--env-file=feature.env', 'dist/server.js'], { stdio: 'inherit' })
+    })
   }
 
   if (args.includes('--watch')) {
     process.stderr.write('\u{1b}[1m\u{1F52D} Watching for changes...\u{1b}[0m\n')
     // Assets
-    chokidar.watch(['assets/.'], chokidarOptions).on(
-      'all',
-      debounce(() => buildAssets(buildConfig).catch(e => process.stderr.write(`${e}\n`))),
-    )
+    chokidar
+      .watch(['assets/**/*'], chokidarOptions)
+      .on('all', () => buildAssets(buildConfig).catch(e => process.stderr.write(`${e}\n`)))
 
     // App
-    chokidar.watch(['server/.'], { ...chokidarOptions, ignored: filePath => filePath.endsWith('.test.ts') }).on(
-      'all',
-      debounce(() => buildApp(buildConfig).catch(e => process.stderr.write(`${e}\n`))),
-    )
+    chokidar
+      .watch(['server/**/*'], { ...chokidarOptions, ignored: ['**/*.test.ts', '**/*.cy.ts'] })
+      .on('all', () => buildApp(buildConfig).catch(e => process.stderr.write(`${e}\n`)))
   }
 }
 

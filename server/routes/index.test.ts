@@ -31,7 +31,7 @@ describe('GET /', () => {
       .expect('Content-Type', /html/)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('This site is under construction...')
+        expect(res.text).toContain('Manage Official Visits')
         expect(auditService.logPageView).toHaveBeenCalledWith(Page.EXAMPLE_PAGE, {
           who: user.username,
           correlationId: expect.any(String),

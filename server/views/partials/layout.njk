@@ -1,16 +1,51 @@
 {% extends "govuk/template.njk" %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% block head %}
   <link href="{{ '/assets/css/index.css' | assetMap }}" rel="stylesheet"/>
+
+  {% for js in feComponents.jsIncludes %}
+    <script src="{{ js }}" nonce="{{ cspNonce }}"></script>
+  {% endfor %}
+
+  {% for css in feComponents.cssIncludes %}
+    <link href="{{ css }}" nonce="{{ cspNonce }}" rel="stylesheet" />
+  {% endfor %}
 {% endblock %}
 
 {% block pageTitle %}{{pageTitle | default(applicationName)}}{% endblock %}
 
 {% block header %}
-  {% include "./header.njk" %}
+  {{ feComponents.header | safe }}
 {% endblock %}
 
+{% block beforeContent %}
+  {% if backUrl %}
+    {{ govukBackLink({
+      text: "Back",
+      href: backUrl
+    }) }}
+  {% endif %}
+  {% if showBreadcrumbs and breadcrumbs and (not backUrl) %}
+    <div class="ov-breadcrumbs govuk-!-display-none-print">
+      <div class="ov-breadcrumbs__breadcrumbs">
+        {{ govukBreadcrumbs({
+          items: breadcrumbs.items
+        }) }}
+      </div>
+    </div>
+  {% endif %}
+
+  {% block pageHeader %}{% endblock %}
+{% endblock %}
+
+
 {% block bodyStart %}
+{% endblock %}
+
+{% block footer %}
+  {{ feComponents.footer | safe }}
 {% endblock %}
 
 {% block bodyEnd %}

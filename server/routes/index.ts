@@ -1,16 +1,16 @@
-import { Router } from 'express'
+import { type RequestHandler, Router } from 'express'
 
+import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
-import { Page } from '../services/auditService'
+import { HomePageController } from './controller'
 
-export default function routes({ auditService }: Services): Router {
+export default function routes(services: Services): Router {
   const router = Router()
 
-  router.get('/', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
+  const controller = new HomePageController()
+  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
 
-    return res.render('pages/index')
-  })
+  get('/', controller.GET)
 
   return router
 }
