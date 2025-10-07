@@ -2,15 +2,15 @@ import { type RequestHandler, Router } from 'express'
 
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
-import { HomePageController } from './controller'
+import { HomePageController } from './home/homeController'
 
-export default function routes(services: Services): Router {
+export default function routes(_services: Services): Router {
   const router = Router()
 
-  const controller = new HomePageController()
+  const homeController = new HomePageController()
   const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
 
-  get('/', controller.GET)
+  get('/', homeController.GET)
 
   return router
 }

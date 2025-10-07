@@ -1,4 +1,4 @@
-import { AgentConfig, ApiConfig } from '@ministryofjustice/hmpps-rest-client'
+import { AgentConfig } from '@ministryofjustice/hmpps-rest-client'
 
 const production = process.env.NODE_ENV === 'production'
 

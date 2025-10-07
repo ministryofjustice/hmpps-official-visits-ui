@@ -14,6 +14,7 @@ export default {
         jsonBody: { status: httpStatus === 200 ? 'UP' : 'DOWN' },
       },
     }),
+
   stubExampleTime: (httpStatus = 200): SuperAgentRequest =>
     stubFor({
       request: {

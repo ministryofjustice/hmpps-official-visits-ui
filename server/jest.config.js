@@ -13,7 +13,7 @@ module.exports = {
     'server/@types',
     '.*jest.config.js',
     'server/app.ts',
-    'server/index.ts',
+    'server/homePage.ts',
     '.*.cy.ts',
   ],
   testMatch: ['<rootDir>/(server|job)/**/?(*.)(test).{ts,js,jsx,mjs}'],

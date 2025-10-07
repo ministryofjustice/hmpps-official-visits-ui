@@ -9,21 +9,6 @@ const buildApp = require('./app.config')
 const cwd = process.cwd()
 
 /**
- * Simple debounce helper
- * @param {Function} fn - The function to debounce
- * @param {number} delay - The delay in ms
- * @returns {Function}
- */
-function debounce(fn, delay = 200) {
-  /** @type {number} */
-  let timeout
-  return (...args) => {
-    clearTimeout(timeout)
-    timeout = setTimeout(() => fn(...args), delay)
-  }
-}
-
-/**
  * Configuration for build steps
  * @type {BuildConfig}
  */
