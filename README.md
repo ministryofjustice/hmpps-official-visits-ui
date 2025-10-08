@@ -24,15 +24,8 @@ npm run build
 ## Setting up a local .env file (to provide essential configuration values)
 
 Create a file `.env` in the root of your project clone. This file is in .gitignore, so should never be committed.
-It should have the following contents, but see your team for the actual values they are set to.
-
-```bash
-AUTH_CODE_CLIENT_ID=<ask>
-AUTH_CODE_CLIENT_SECRET=<ask>
-CLIENT_CREDS_CLIENT_ID=<ask>
-CLIENT_CREDS_CLIENT_SECRET=<ask>
-HMPPS_AUTH_URL=<ask>
-```
+Copy `.env.example` -> `.env`
+Environment variables set in here will be available when running `start:dev`
 For the full content of the .env file please request from the developers on the team.
 
 ## Running the unit tests
@@ -63,7 +56,7 @@ Pull and start a REDIS docker container.
 docker-compose pull && docker-compose up - d
 ```
 
-Start the server in dev mode
+Start the server in dev mode (this will load your .env file values)
 ```bash
 npm run start:dev
 ```

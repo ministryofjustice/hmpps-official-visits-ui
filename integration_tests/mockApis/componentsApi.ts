@@ -2,11 +2,11 @@ import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 
 export default {
-  stubComponentsFail: (httpStatus = 500): SuperAgentRequest =>
+  stubComponentsFail: (httpStatus: number = 500): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
-        url: '/components/components?component=header&component=footer',
+        urlPattern: '/components/components\\?component=header&component=footer',
       },
       response: {
         status: httpStatus,
@@ -14,11 +14,11 @@ export default {
       },
     }),
 
-  stubComponents: (httpStatus = 200): SuperAgentRequest =>
+  stubComponents: (httpStatus: number = 200): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
-        url: '/components/components?component=header&component=footer',
+        urlPattern: '/components/components\\?component=header&component=footer',
       },
       response: {
         status: httpStatus,
@@ -41,10 +41,7 @@ export default {
             },
             services: [
               {
-                id: 'allocate-key-workers',
-              },
-              {
-                id: 'allocate-personal-officers',
+                id: 'official-visits',
               },
             ],
           },

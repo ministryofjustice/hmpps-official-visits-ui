@@ -10,6 +10,9 @@ import AuditService from '../../services/auditService'
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import setUpWebSession from '../../middleware/setUpWebSession'
 import { Breadcrumbs } from '../../middleware/breadcrumbs'
+import OfficialVisitsService from '../../services/officialVisitsService'
+import PrisonerService from '../../services/prisonerService'
+import LocationsService from '../../services/locationsService'
 
 jest.mock('../../services/auditService')
 
@@ -59,6 +62,9 @@ export function appWithAllRoutes({
   production = false,
   services = {
     auditService: new AuditService(null) as jest.Mocked<AuditService>,
+    locationsService: new LocationsService(null) as jest.Mocked<LocationsService>,
+    prisonerService: new PrisonerService(null) as jest.Mocked<PrisonerService>,
+    officialVisitsService: new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>,
   },
   userSupplier = () => user,
 }: {
