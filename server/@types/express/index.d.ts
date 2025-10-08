@@ -27,6 +27,7 @@ export declare global {
       user: HmppsUser
       formResponses?: { [key: string]: string }
       breadcrumbs: Breadcrumbs
+      digitalPrisonServicesUrl?: string
       buildNumber?: string
       applicationName?: string
       environmentName?: string

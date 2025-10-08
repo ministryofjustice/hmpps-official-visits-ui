@@ -14,6 +14,14 @@ export default function nunjucksSetup(app: express.Express): void {
   app.locals.applicationName = 'Manage Official Visits'
   app.locals.environmentName = config.environmentName
   app.locals.environmentNameColour = config.environmentName === 'PRE-PRODUCTION' ? 'govuk-tag--green' : ''
+  app.locals.digitalPrisonServicesUrl = config.serviceUrls.digitalPrison
+  app.locals.prisonerProfileUrl = config.serviceUrls.prisonerProfile
+
+  app.use((_req, res, next) => {
+    res.locals.digitalPrisonServicesUrl = config.serviceUrls.digitalPrison
+    return next()
+  })
+
   let assetManifest: Record<string, string> = {}
 
   try {

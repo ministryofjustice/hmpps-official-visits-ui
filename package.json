@@ -18,6 +18,7 @@
     "test": "jest",
     "test:ci": "jest --runInBand",
     "security_audit": "npx audit-ci --config audit-ci.json",
+    "better-audit": "better-npm-audit audit",
     "int-test": "cypress run --config video=false",
     "int-test-ui": "cypress open --e2e --browser chrome",
     "clean": "rm -rf dist test_results",
@@ -56,7 +57,8 @@
     "passport": "^0.7.0",
     "passport-oauth2": "^1.8.0",
     "redis": "^5.8.2",
-    "superagent": "^10.2.3"
+    "superagent": "^10.2.3",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@jgoz/esbuild-plugin-typecheck": "^4.0.3",
@@ -79,10 +81,13 @@
     "@types/supertest": "^6.0.3",
     "audit-ci": "^7.1.0",
     "aws-sdk-client-mock": "^4.1.0",
+    "better-npm-audit": "^3.11.0",
     "chokidar": "^4.0.3",
     "concurrently": "^9.2.1",
     "cypress": "^15.1.0",
+    "cypress-axe": "^1.7.0",
     "cypress-multi-reporters": "^2.0.5",
+    "dotenv": "^17.2.2",
     "esbuild": "^0.25.9",
     "esbuild-plugin-clean": "^1.0.1",
     "esbuild-plugin-copy": "^2.1.1",
