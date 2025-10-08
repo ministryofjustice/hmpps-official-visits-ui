@@ -34,6 +34,7 @@
     "@aws-sdk/client-sqs": "^3.883.0",
     "@ministryofjustice/frontend": "^5.1.5",
     "@ministryofjustice/hmpps-auth-clients": "^0.0.3",
+    "@ministryofjustice/hmpps-connect-dps-components": "^3.0.0",
     "@ministryofjustice/hmpps-monitoring": "^0.0.1",
     "@ministryofjustice/hmpps-rest-client": "^0.0.3",
     "applicationinsights": "^2.9.8",

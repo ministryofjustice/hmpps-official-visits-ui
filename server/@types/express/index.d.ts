@@ -1,4 +1,5 @@
 import { HmppsUser } from '../../interfaces/hmppsUser'
+import { Breadcrumbs } from '../../middleware/breadcrumbs'
 
 export declare module 'express-session' {
   // Declare that the session will potentially contain these additional fields
@@ -24,6 +25,26 @@ export declare global {
 
     interface Locals {
       user: HmppsUser
+      formResponses?: { [key: string]: string }
+      breadcrumbs: Breadcrumbs
+      buildNumber?: string
+      applicationName?: string
+      environmentName?: string
+      feComponents?: {
+        sharedData?: {
+          activeCaseLoad: CaseLoad
+          caseLoads: CaseLoad[]
+          services: {
+            id: string
+            heading: string
+            description: string
+            href: string
+            navEnabled: boolean
+          }[]
+        }
+      }
+      historyBackUrl?: string
+      history?: string[]
     }
   }
 }

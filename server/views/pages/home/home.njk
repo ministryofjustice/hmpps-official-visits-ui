@@ -1,0 +1,59 @@
+{% extends "../../partials/layout.njk" %}
+
+{% set pageTitle = "Official Visits" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Official Visits</h1>
+
+  <div class="homepage-content-container">
+    <div class="homepage-content">
+      <div class="govuk-width-container">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+
+            <div class="card-group govuk-grid-row">
+
+              <div class="govuk-grid-column-one-third card-group__item">
+                <div class="card card--clickable">
+                  <h2 class="govuk-heading-m card__heading">
+                    <a class="govuk-link govuk-link--no-visited-state card__link" href="#">Book an official visit</a>
+                  </h2>
+                  <p class="govuk-body card__description">Book an official visit for a prisoner. You can arrange for an in-person or video visit with any approved contacts.</p>
+                </div>
+              </div>
+
+              <div class="govuk-grid-column-one-third card-group__item">
+                <div class="card card--clickable">
+                  <h2 class="govuk-heading-m card__heading">
+                    <a class="govuk-link govuk-link--no-visited-state card__link" href="#">View available slots for official visits</a>
+                  </h2>
+                  <p class="govuk-body card__description">View slot availability for official visits. This also shows the capacity and current free slots available for bookings.</p>
+                </div>
+              </div>
+
+              <div class="govuk-grid-column-one-third card-group__item">
+                <div class="card card--clickable">
+                  <h2 class="govuk-heading-m card__heading">
+                    <a class="govuk-link govuk-link--no-visited-state card__link" href="#">View or cancel existing official visits</a>
+                  </h2>
+                  <p class="govuk-body card__description">You can view, and cancel, existing official visits by date, prisoner or location.</p>
+                </div>
+              </div>
+
+              <div class="govuk-grid-column-one-third card-group__item">
+                <div class="card card--clickable">
+                  <h2 class="govuk-heading-m card__heading">
+                    <a class="govuk-link govuk-link--no-visited-state card__link" href="#">Administer days, slots and locations for official visits</a>
+                  </h2>
+                  <p class="govuk-body card__description">You can view, create and amend the time slots and locations where official visits can take place in the prison.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

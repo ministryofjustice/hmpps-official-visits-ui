@@ -11,7 +11,7 @@ export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
 
   app.locals.asset_path = '/assets/'
-  app.locals.applicationName = 'HMPPS Official Visits Ui'
+  app.locals.applicationName = 'Manage Official Visits'
   app.locals.environmentName = config.environmentName
   app.locals.environmentNameColour = config.environmentName === 'PRE-PRODUCTION' ? 'govuk-tag--green' : ''
   let assetManifest: Record<string, string> = {}
@@ -29,7 +29,10 @@ export default function nunjucksSetup(app: express.Express): void {
     [
       path.join(__dirname, '../../server/views'),
       'node_modules/govuk-frontend/dist/',
+      'node_modules/govuk-frontend/dist/components/',
       'node_modules/@ministryofjustice/frontend/',
+      'node_modules/@ministryofjustice/frontend/moj/components/',
+      'node_modules/@ministryofjustice/hmpps-connect-dps-components/dist/assets/',
     ],
     {
       autoescape: true,

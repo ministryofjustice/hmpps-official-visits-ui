@@ -9,6 +9,7 @@ import type { Services } from '../../services'
 import AuditService from '../../services/auditService'
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import setUpWebSession from '../../middleware/setUpWebSession'
+import { Breadcrumbs } from '../../middleware/breadcrumbs'
 
 jest.mock('../../services/auditService')
 
@@ -37,6 +38,7 @@ function appSetup(services: Services, production: boolean, userSupplier: () => H
     req.flash = flashProvider
     res.locals = {
       user: { ...req.user } as HmppsUser,
+      breadcrumbs: new Breadcrumbs(res),
     }
     next()
   })

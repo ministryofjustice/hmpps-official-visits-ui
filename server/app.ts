@@ -2,11 +2,12 @@ import express from 'express'
 
 import createError from 'http-errors'
 
+import { getFrontendComponents } from '@ministryofjustice/hmpps-connect-dps-components'
+
 import nunjucksSetup from './utils/nunjucksSetup'
 import errorHandler from './errorHandler'
 import { appInsightsMiddleware } from './utils/azureAppInsights'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
-
 import setUpAuthentication from './middleware/setUpAuthentication'
 import setUpCsrf from './middleware/setUpCsrf'
 import setUpCurrentUser from './middleware/setUpCurrentUser'
@@ -15,6 +16,9 @@ import setUpStaticResources from './middleware/setUpStaticResources'
 import setUpWebRequestParsing from './middleware/setupRequestParsing'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
 import setUpWebSession from './middleware/setUpWebSession'
+import breadcrumbs from './middleware/breadcrumbs'
+
+import config from './config'
 
 import routes from './routes'
 import type { Services } from './services'
@@ -38,6 +42,17 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
 
+  app.get(
+    /(.*)/,
+    getFrontendComponents({
+      requestOptions: { includeSharedData: true },
+      componentApiConfig: config.apis.componentApi,
+      authenticationClient: services.hmppsAuthClient,
+      dpsUrl: config.serviceUrls.digitalPrison,
+    }),
+  )
+
+  app.use(breadcrumbs())
   app.use(routes(services))
 
   app.use((req, res, next) => next(createError(404, 'Not found')))
