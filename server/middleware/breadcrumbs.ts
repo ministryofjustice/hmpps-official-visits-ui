@@ -12,7 +12,7 @@ export class Breadcrumbs {
         href: res.locals.digitalPrisonServicesUrl,
       },
       {
-        text: 'Key workers',
+        text: 'Official visits',
         href: '/',
       },
     ]
