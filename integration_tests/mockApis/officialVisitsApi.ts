@@ -2,7 +2,7 @@ import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 
 export default {
-  stubOfficialVisitsApiPing: (httpStatus = 200): SuperAgentRequest =>
+  stubOfficialVisitsApiPing: (httpStatus: number = 200): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',

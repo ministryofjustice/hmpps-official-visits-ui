@@ -12,7 +12,9 @@ generic-service:
     COMPONENT_API_URL: "https://frontend-component.hmpps.service.justice.gov.uk"
     DPS_HOME_PAGE_URL: "https://digital.prison.service.justice.gov.uk"
     PRISONER_PROFILE_URL: "https://prisoner.digital.prison.service.justice.gov.uk"
-    EXAMPLE_API_URL: 'https://template-kotlin.hmpps.service.justice.gov.uk'
+    LOCATIONS_INSIDE_PRISON_API_URL: 'https://locations-inside-prison-api.hmpps.service.justice.gov.uk'
+    PRISONER_SEARCH_API_URL: 'https://prisoner-search.prison.service.justice.gov.uk'
+    OFFICIAL_VISITS_API_URL: 'https://official-visits-api.hmpps.service.justice.gov.uk'
     AUDIT_ENABLED: "false"
 
 generic-prometheus-alerts:
