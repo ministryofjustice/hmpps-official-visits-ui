@@ -2,7 +2,7 @@ import { type RequestHandler, Router } from 'express'
 
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import type { Services } from '../services'
-import { HomePageController } from './home/homeController'
+import { HomePageController } from './journeys/home/homeController'
 
 export default function routes(_services: Services): Router {
   const router = Router()
