@@ -1,8 +1,9 @@
 export type PrisonerSearchJourney = {
-  firstName: string
-  lastName: string
-  dateOfBirth: string
-  prison: string
-  prisonerNumber: string
+  firstName?: string
+  lastName?: string
+  dateOfBirth?: string
+  prisonCode?: string
+  prisonName?: string
+  prisonerNumber?: string
   pncNumber?: string
 }

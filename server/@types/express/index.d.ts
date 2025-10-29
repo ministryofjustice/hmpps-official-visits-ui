@@ -8,7 +8,7 @@ export interface JourneyData extends Journey {
 }
 
 export interface Journey {
-  officialVisitJourney?: OfficialVisitJourney
+  officialVisit?: OfficialVisitJourney
   prisonerSearch?: PrisonerSearchJourney
 }
 
