@@ -1,0 +1,88 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+
+{% set pageTitle = "Search for a prisoner results" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <h1 class="govuk-heading-l">{{ pageTitle }} <span class="govuk-visually-hidden">(Page {{ results.number + 1 }} of {{ results.totalPages }})</span></h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full-from-desktop">
+      {% if results.content.length %}
+        {% set resultString = 'result' if results.totalElements === 1 else 'results' %}
+        <p class="govuk-body">
+          Showing {{ results.totalElements }} {{ resultString }}{{ (" (page " + (results.number + 1) + " of " + results.totalPages + ")") if results.totalPages > 1 }}.
+          <a href="search" class="govuk-link govuk-!-font-size-19">Search again</a>
+        </p>
+
+        {% set rows = [] %}
+        {% for result in results.content %}
+          {% set bookLinkHtml %}
+            <a href="../../booking/create/{{ result.prisonerNumber }}/video-link-booking" class="govuk-link govuk-link--no-visited-state">Book video link<span class="govuk-visually-hidden"> for {{ result.name }}, prison number {{ result.prisonerNumber }}</span></a>
+          {% endset %}
+
+          {% set rows = (rows.push([
+            { text: (result.firstName + " " + result.lastName) | convertToTitleCase },
+            { text: result.prisonerNumber },
+            { text: result.dateOfBirth | formatDate },
+            { text: result.prisonName },
+            { text: result.pncNumber or '--' },
+            { html: bookLinkHtml if result.prisonId in enabledPrisons | map('code') else '<span class="govuk-visually-hidden">Prison not enabled for book a video link</span>' }
+          ]), rows) %}
+        {% endfor %}
+
+        {{ govukTable({
+          head: [
+            { text: "Name" },
+            { text: "Prison number" },
+            { text: "Date of birth" },
+            { text: "Prison name" },
+            { text: "PNC" },
+            { html: "Action" }
+          ],
+          rows: rows
+        }) }}
+      {% else %}
+        <p class="govuk-body">
+          There are no results for this search criteria.
+          <a href="search" class="govuk-link govuk-!-font-size-19">Search again</a>
+        </p>
+      {% endif %}
+
+      {% if results.totalPages > 1 %}
+        {% set paginationItems = [] %}
+        {% for i in range(0, results.totalPages) %}
+          {% if i === 0 or i === (results.totalPages - 1) or (i >= results.number - 1 and i <= results.number + 1) %}
+            {% set paginationItems = (paginationItems.push(
+              {
+                number: i + 1,
+                href: "?page=" + i,
+                current: (i === results.number)
+              }
+            ), paginationItems) %}
+            {% elif i === 1 or i === results.totalPages - 2 %}
+            {% set paginationItems = (paginationItems.push({ ellipsis: true }), paginationItems) %}
+          {% endif %}
+        {% endfor %}
+
+        {{ govukPagination({
+          previous: {
+            href: "?page=" + (results.number - 1)
+          } if not results.first,
+          next: {
+            href: "?page=" + (results.number + 1)
+          } if not results.last,
+          items: paginationItems
+        }) }}
+      {% endif %}
+
+      <a href="prisoner-not-listed" class="govuk-link govuk-!-font-size-19">The prisoner is not listed</a>
+    </div>
+  </div>
+{% endblock %}

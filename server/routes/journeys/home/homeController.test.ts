@@ -1,6 +1,6 @@
 import type { Express } from 'express'
 import request from 'supertest'
-import { appWithAllRoutes, user } from '../testutils/appSetup'
+import { appWithAllRoutes, user } from '../../testutils/appSetup'
 
 let app: Express
 

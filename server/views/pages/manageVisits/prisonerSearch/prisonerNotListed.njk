@@ -1,0 +1,25 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageTitle = "No prisoners match the criteria" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        Please try to search using different criteria.
+      </p>
+
+      <div class="govuk-button-group">
+        <a href='search' class='govuk-link govuk-link--no-visited-state'>Search again</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

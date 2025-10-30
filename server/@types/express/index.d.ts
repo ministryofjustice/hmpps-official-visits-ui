@@ -1,11 +1,37 @@
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import { Breadcrumbs } from '../../middleware/breadcrumbs'
+import { OfficialVisitJourney } from '../../routes/journeys/manageVisits/visit/journey'
+import { PrisonerSearchJourney } from '../../routes/journeys/manageVisits/prisonerSearch/journey'
+
+export interface JourneyData extends Journey {
+  instanceUnixEpoch: number
+}
+
+export interface Journey {
+  officialVisit?: OfficialVisitJourney
+  prisonerSearch?: PrisonerSearchJourney
+}
 
 export declare module 'express-session' {
   // Declare that the session will potentially contain these additional fields
   interface SessionData {
     returnTo: string
     nowInMinutes: number
+    journey: Journey
+    journeyData: Record<string, JourneyData>
+  }
+}
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    rawBody: object
+    routeContext?: { mode?: string; type?: string }
+  }
+
+  interface Response {
+    addSuccessMessage?(heading: string, message?: string): void
+    addValidationError?(message: string, field?: string): void
+    validationFailed?(message?: string, field?: string): void
   }
 }
 
