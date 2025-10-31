@@ -1,7 +1,7 @@
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import { Breadcrumbs } from '../../middleware/breadcrumbs'
-import { OfficialVisitJourney } from '../../routes/journeys/manageVisits/visit/journey'
-import { PrisonerSearchJourney } from '../../routes/journeys/manageVisits/prisonerSearch/journey'
+import { OfficialVisitJourney } from '../../routes/journeys/manage/visit/journey'
+import { PrisonerSearchJourney } from '../../routes/journeys/manage/prisoner-search/journey'
 
 export interface JourneyData extends Journey {
   instanceUnixEpoch: number

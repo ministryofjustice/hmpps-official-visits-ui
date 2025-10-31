@@ -1,0 +1,58 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/formatCvpLink.njk" import formatCvpLink %}
+
+{% set mode = session.req.routeContext.mode %}
+{% set pageTitle = "The visit has been booked" if mode == 'create' else 'The visit has been updated' %}
+{% set hideBackLink = true %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({ titleText: pageTitle, classes: 'govuk-!-margin-bottom-6' }) }}
+
+      <h2 class='govuk-heading-m'>Visit details</h2>
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: {
+              text: "Name"
+            },
+            value: {
+              text: ((prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase) + ' (' + prisoner.prisonerNumber + ')'
+            }
+          },
+          {
+            key: {
+              text: "Prison"
+            },
+            value: {
+              text: prison.name
+            }
+          },
+          {
+            key: {
+              text: "Date"
+            },
+            value: {
+              text: visit.visitDate | formatDate
+            }
+          }
+        ],
+        attributes: { 'data-qa': 'confirmation-details' }
+      }) }}
+
+      <div class="govuk-button-group">
+        {% if mode == 'create' %}
+          {{ govukButton({ text: "Exit to main menu", href: '/' }) }}
+        {% else %}
+          {{ govukButton({ text: "Return to view visit", href: '/view/' + visit.officialVisitId }) }}
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

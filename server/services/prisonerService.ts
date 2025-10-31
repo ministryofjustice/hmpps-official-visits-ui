@@ -1,7 +1,7 @@
 import PrisonerSearchApiClient from '../data/prisonerSearchApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { PagePrisoner, Prisoner, PaginationRequest, AttributeSearchRequest } from '../@types/prisonerSearchApi/types'
-import { PrisonerSearchJourney } from '../routes/journeys/manageVisits/prisonerSearch/journey'
+import { PrisonerSearchJourney } from '../routes/journeys/manage/prisoner-search/journey'
 import logger from '../../logger'
 
 const GHOST_PRISON = 'ZZGHI'

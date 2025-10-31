@@ -17,9 +17,8 @@ import setUpWebRequestParsing from './middleware/setupRequestParsing'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
 import setUpWebSession from './middleware/setUpWebSession'
 import breadcrumbs from './middleware/breadcrumbs'
-
+import setUpFlash from './middleware/setUpFlash'
 import config from './config'
-
 import routes from './routes'
 import type { Services } from './services'
 
@@ -40,6 +39,7 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpAuthentication())
   app.use(authorisationMiddleware(['ROLE_PRISON']))
   app.use(setUpCsrf())
+  app.use(setUpFlash())
   app.use(setUpCurrentUser())
 
   app.get(

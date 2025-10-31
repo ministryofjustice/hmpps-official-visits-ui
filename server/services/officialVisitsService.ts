@@ -1,7 +1,7 @@
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { OfficialVisit } from '../@types/officialVisitsApi/types'
-import { OfficialVisitJourney } from '../routes/journeys/manageVisits/visit/journey'
+import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
 
 export default class OfficialVisitsService {
