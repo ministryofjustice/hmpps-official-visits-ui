@@ -15,6 +15,9 @@ import PrisonerService from '../../services/prisonerService'
 import LocationsService from '../../services/locationsService'
 
 jest.mock('../../services/auditService')
+jest.mock('../../services/prisonerService')
+jest.mock('../../services/locationsService')
+jest.mock('../../services/officialVisitsService')
 
 export const user: HmppsUser = {
   name: 'FIRST LAST',
