@@ -43,6 +43,6 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
       isCancelled: visit.statusCode === 'CANCELLED',
      */
 
-    return res.render('pages/visits/viewVisit', { visit })
+    return res.render('pages/view/visitList', { visit })
   }
 }

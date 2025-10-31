@@ -56,7 +56,7 @@ export default class PrisonerSearchHandler implements PageHandler {
   public GET = async (req: Request, res: Response) => {
     const { user } = res.locals
     const prisons = await this.prisonerService.getAllPrisons(user)
-    res.render('pages/manageVisits/prisonerSearch/prisonerSearch', { prisons })
+    res.render('pages/manage/prisoner-search/prisonerSearch', { prisons })
   }
 
   public POST = async (req: Request, res: Response) => {

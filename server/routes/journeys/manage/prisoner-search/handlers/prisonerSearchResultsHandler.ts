@@ -15,6 +15,6 @@ export default class PrisonerSearchResultsHandler implements PageHandler {
     const { prisonerSearch } = req.session.journey
     const results = await this.prisonerService.searchPrisonersByCriteria(prisonerSearch, { page, size: 10 }, user)
 
-    res.render('pages/manageVisits/prisonerSearch/prisonerSearchResults', { results })
+    res.render('pages/manage/prisoner-search/searchResults', { results })
   }
 }

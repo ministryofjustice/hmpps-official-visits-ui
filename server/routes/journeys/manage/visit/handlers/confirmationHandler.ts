@@ -20,6 +20,6 @@ export default class ConfirmationHandler implements PageHandler {
     const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerNumber, user)
     req.session.journey.officialVisit = null
 
-    res.render('pages/manageVisits/confirmation', { visit, prisoner })
+    res.render('pages/manage/confirmVisit', { visit, prisoner })
   }
 }

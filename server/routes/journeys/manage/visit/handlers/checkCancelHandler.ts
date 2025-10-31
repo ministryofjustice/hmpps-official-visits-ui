@@ -19,6 +19,6 @@ export default class CheckCancelHandler implements PageHandler {
     const visit = await this.officialVisitsService.getOfficialVisitById(officialVisitId, user)
     const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerNumber, user)
 
-    res.render('pages/manageVisits/checkCancelVisit', { visit, prisoner })
+    res.render('pages/manage/checkCancelVisit', { visit, prisoner })
   }
 }

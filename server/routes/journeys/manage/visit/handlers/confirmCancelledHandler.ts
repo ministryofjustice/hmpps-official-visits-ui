@@ -20,6 +20,6 @@ export default class ConfirmCancelledHandler implements PageHandler {
     const visit = await this.officialVisitsService.getOfficialVisitById(officialVisitId, user)
     req.session.journey.officialVisit = null
 
-    res.render('pages/manageVisits/confirmation', { visit })
+    res.render('pages/manage/confirmCancel', { visit })
   }
 }

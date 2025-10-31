@@ -1,9 +1,12 @@
 /* eslint-disable no-param-reassign */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import path from 'path'
 import nunjucks from 'nunjucks'
 import express from 'express'
 import fs from 'fs'
-import { initialiseName } from './utils'
+import { flatten, groupBy, map } from 'lodash'
+import { convertToTitleCase, dateAtTime, formatDate, initialiseName, parseDate } from './utils'
+import { FieldValidationError } from '../middleware/setUpFlash'
 import config from '../config'
 import logger from '../../logger'
 
@@ -47,5 +50,15 @@ export default function nunjucksSetup(app: express.Express): void {
   )
 
   njkEnv.addFilter('initialiseName', initialiseName)
+  njkEnv.addFilter('convertToTitleCase', convertToTitleCase)
+  njkEnv.addFilter('map', map)
+  njkEnv.addFilter('flatten', flatten)
+  njkEnv.addFilter('groupBy', groupBy)
   njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)
+  njkEnv.addFilter('find', (l: any[], iteratee: string, eq: unknown) => l.find(o => o[iteratee] === eq))
+  njkEnv.addFilter('filter', (l: any[], iteratee: string, eq: unknown) => l.filter(o => o[iteratee] === eq))
+  njkEnv.addFilter('findError', (v: FieldValidationError[], i: string) => v?.find(e => e.fieldId === i))
+  njkEnv.addFilter('parseDate', parseDate)
+  njkEnv.addFilter('formatDate', formatDate)
+  njkEnv.addFilter('dateAtTime', dateAtTime)
 }

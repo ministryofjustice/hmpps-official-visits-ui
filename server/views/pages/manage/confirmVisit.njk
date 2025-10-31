@@ -49,7 +49,7 @@
         {% if mode == 'create' %}
           {{ govukButton({ text: "Exit to main menu", href: '/' }) }}
         {% else %}
-          {{ govukButton({ text: "Return to view visit", href: '/view/official-visit/' + visit.officialVisitId }) }}
+          {{ govukButton({ text: "Return to view visit", href: '/view/' + visit.officialVisitId }) }}
         {% endif %}
       </div>
 

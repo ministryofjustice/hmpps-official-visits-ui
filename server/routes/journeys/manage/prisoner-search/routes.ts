@@ -5,7 +5,6 @@ import logPageViewMiddleware from '../../../../middleware/logPageViewMiddleware'
 import validationMiddleware from '../../../../middleware/validationMiddleware'
 import PrisonerSearchHandler from './handlers/prisonerSearchHandler'
 import PrisonerSearchResultsHandler from './handlers/prisonerSearchResultsHandler'
-import PrisonerNotListedHandler from './handlers/prisonerNotListedHandler'
 
 export default function Routes({ auditService, prisonerService }: Services): Router {
   const router = Router({ mergeParams: true })
@@ -26,7 +25,6 @@ export default function Routes({ auditService, prisonerService }: Services): Rou
   })
 
   route('/results', new PrisonerSearchResultsHandler(prisonerService))
-  route('/prisoner-not-listed', new PrisonerNotListedHandler())
 
   return router
 }

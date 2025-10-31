@@ -15,7 +15,7 @@ export default class CheckYourAnswersHandler implements PageHandler {
   public GET = async (req: Request, res: Response) => {
     const { officialVisit } = req.session.journey
     const { prisoner } = officialVisit
-    return res.render('pages/manageVisits/checkYourAnswers', { officialVisit, prisoner })
+    return res.render('pages/manage/checkYourAnswers', { officialVisit, prisoner })
   }
 
   public POST = async (req: Request, res: Response) => {
