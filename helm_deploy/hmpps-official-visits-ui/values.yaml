@@ -57,6 +57,8 @@ generic-service:
     # IRSA configuration in your namespace will also be required, and then uncomment serviceAccountName above.
     # sqs-hmpps-audit-secret:
     #   AUDIT_SQS_QUEUE_URL: 'sqs_queue_url'
+    maintenance:
+      MAINTENANCE_MODE: "maintenance_mode"
 
   allowlist:
     groups:
