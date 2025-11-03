@@ -9,12 +9,16 @@ import type { Services } from '../../services'
 import AuditService from '../../services/auditService'
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import setUpWebSession from '../../middleware/setUpWebSession'
+import setUpFlash from '../../middleware/setUpFlash'
 import { Breadcrumbs } from '../../middleware/breadcrumbs'
 import OfficialVisitsService from '../../services/officialVisitsService'
 import PrisonerService from '../../services/prisonerService'
 import LocationsService from '../../services/locationsService'
 
 jest.mock('../../services/auditService')
+jest.mock('../../services/prisonerService')
+jest.mock('../../services/locationsService')
+jest.mock('../../services/officialVisitsService')
 
 export const user: HmppsUser = {
   name: 'FIRST LAST',
@@ -34,7 +38,6 @@ function appSetup(services: Services, production: boolean, userSupplier: () => H
 
   app.set('view engine', 'njk')
 
-  nunjucksSetup(app)
   app.use(setUpWebSession())
   app.use((req, res, next) => {
     req.user = userSupplier() as Express.User
@@ -49,6 +52,8 @@ function appSetup(services: Services, production: boolean, userSupplier: () => H
     req.id = randomUUID()
     next()
   })
+  app.use(setUpFlash())
+  nunjucksSetup(app)
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
   app.use(routes(services))
