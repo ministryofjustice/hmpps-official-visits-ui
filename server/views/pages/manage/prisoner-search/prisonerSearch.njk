@@ -1,140 +1,47 @@
 {% extends "partials/layout.njk" %}
 
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
-{% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/details/macro.njk" import govukDetails %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "partials/progress-tracker.njk" import progressTracker %}
 
-{% set pageTitle = "Search for a prisoner" %}
+{% set pageTitle = "Who is the official visit for?" %}
 
 {% block content %}
-  <div class="govuk-grid-row">
+
+  <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
+      {# Who is attending, visitors, time and place, review, booking complete #}
+      {{ progressTracker(false, false, false, false, false) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Schedule an official visit</span>
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
     </div>
   </div>
 
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
-      <form method='POST' data-module="form-spinner" data-loading-text="Searching prisoners">
+      <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
 
         {{ govukInput({
-          id: "firstName",
-          name: "firstName",
-          label: { text: "First name" },
+          id: "searchTerm",
+          name: "searchTerm",
+          label: { text: "Search by prisoner name, number, PNC or CRO" },
           classes: 'govuk-!-width-one-third',
-          value: formResponses.firstName or session.journey.prisonerSearch.firstName
-        }) }}
-
-        {{ govukInput({
-          id: "lastName",
-          name: "lastName",
-          errorMessage: validationErrors | findError('lastName'),
-          label: { text: "Last name" },
-          classes: 'govuk-!-width-one-third',
-          value: formResponses.lastName or session.journey.prisonerSearch.lastName
-        }) }}
-
-        {{ govukDateInput({
-          id: "dateOfBirth",
-          fieldset: {
-            legend: {
-              text: "Date of birth (optional)"
-            }
-          },
-          hint: {
-            text: "For example, 31 3 1980"
-          },
-          errorMessage: validationErrors | findError('dateOfBirth'),
-          items: [
-            {
-              id: "dateOfBirth-day",
-              name: "dateOfBirth[day]",
-              label: "Day",
-              classes: "govuk-input--width-2" + (" govuk-input--error" if validationErrors | findError('dateOfBirth')),
-              value: formResponses.dateOfBirth['day'] or session.journey.prisonerSearch.dateOfBirth | formatDate('dd')
-            },
-            {
-              id: "dateOfBirth-month",
-              name: "dateOfBirth[month]",
-              label: "Month",
-              classes: "govuk-input--width-2" + (" govuk-input--error" if validationErrors | findError('dateOfBirth')),
-              value: formResponses.dateOfBirth['month'] or session.journey.prisonerSearch.dateOfBirth | formatDate('MM')
-            },
-            {
-              id: "dateOfBirth-year",
-              name: "dateOfBirth[year]",
-              label: "Year",
-              classes: "govuk-input--width-4" + (" govuk-input--error" if validationErrors | findError('dateOfBirth')),
-              value: formResponses.dateOfBirth['year'] or session.journey.prisonerSearch.dateOfBirth | formatDate('yyyy')
-            }
-          ]
-        }) }}
-
-        {% set items = [{ text: "Select prison", value: "" }] %}
-        {% for prison in prisons %}
-          {% set items = (items.push({
-            value: prison.code,
-            text: prison.name,
-            selected: formResponses.prison == prison.code or session.journey.prisonerSearch.prison == prison.code
-          }), items) %}
-        {% endfor %}
-        {{ govukSelect({
-          id: "prison",
-          name: "prison",
-          label: {
-            text: "Prison (optional)"
-          },
-          items: items
-        }) }}
-
-        {% set otherSearchDetails %}
-          <p class="govuk-hint">Your search must include either a name, prison number or PNC number</p>
-
-          {{ govukInput({
-            id: "prisonerNumber",
-            name: "prisonerNumber",
-            hint: {
-              text: "Enter in the format 'A1234AA'"
-            },
-            label: {
-              text: "Prison number"
-            },
-            classes: 'govuk-!-width-one-third',
-            errorMessage: validationErrors | findError('prisonerNumber'),
-            value: formResponses.prisonerNumber or session.journey.prisonerSearch.prisonerNumber
-          }) }}
-
-          {{ govukInput({
-            id: "pncNumber",
-            name: "pncNumber",
-            hint: {
-              text: "Enter in the format '01/123456A'"
-            },
-            label: {
-              text: "PNC number"
-            },
-            classes: 'govuk-!-width-one-third',
-            errorMessage: validationErrors | findError('pncNumber'),
-            value: formResponses.pncNumber or session.journey.prisonerSearch.pncNumber
-          }) }}
-        {% endset %}
-
-        {{ govukDetails({
-          summaryText: "Search using prison number or PNC number",
-          html: otherSearchDetails,
-          open: formResponses.prisonerNumber or session.journey.prisonerSearch.prisonerNumber or formResponses.pncNumber or session.journey.prisonerSearch.pncNumber
+          autocomplete: "off",
+          value: formResponses.searchTerm or searchTerm
         }) }}
 
         {{ govukButton({
-          html: "Search<span class='govuk-visually-hidden'> and display the results below</span>",
+          html: "Search",
           preventDoubleClick: true,
-          isStartButton: true,
           type: "submit"
         }) }}
+
       </form>
     </div>
   </div>

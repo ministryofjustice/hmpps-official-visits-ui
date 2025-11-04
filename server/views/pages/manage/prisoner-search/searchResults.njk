@@ -2,13 +2,23 @@
 
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "partials/progress-tracker.njk" import progressTracker %}
 
-{% set pageTitle = "Search for a prisoner results" %}
+{% set pageTitle = "Search results" %}
 
 {% block content %}
-  <div class="govuk-grid-row">
+
+  <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-l">{{ pageTitle }} <span class="govuk-visually-hidden">(Page {{ results.number + 1 }} of {{ results.totalPages }})</span></h1>
+      {# Who is attending, visitors, time and place, review, booking complete#}
+      {{ progressTracker(true, false, false, false, false) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Schedule an official visit</span>
+      <h1 class="govuk-heading-l">{{ pageTitle }}  <span class="govuk-visually-hidden">(Page {{ results.number + 1 }} of {{ results.totalPages }})</span></h1>
     </div>
   </div>
 
@@ -23,17 +33,18 @@
 
         {% set rows = [] %}
         {% for result in results.content %}
-          {% set bookLinkHtml %}
-            <a href="../../booking/create/{{ result.prisonerNumber }}/video-link-booking" class="govuk-link govuk-link--no-visited-state">Book video link<span class="govuk-visually-hidden"> for {{ result.name }}, prison number {{ result.prisonerNumber }}</span></a>
+          {% set actionHtml %}
+            <a href="/create/{{ result.prisonerNumber }}" class="govuk-link govuk-link--no-visited-state">Select</a>
           {% endset %}
 
           {% set rows = (rows.push([
             { text: (result.firstName + " " + result.lastName) | convertToTitleCase },
             { text: result.prisonerNumber },
             { text: result.dateOfBirth | formatDate },
-            { text: result.prisonName },
+            { text: result.cellLocation },
             { text: result.pncNumber or '--' },
-            { html: bookLinkHtml if result.prisonId in enabledPrisons | map('code') else '<span class="govuk-visually-hidden">Prison not enabled for book a video link</span>' }
+            { text: result.croNumber or '--' },
+            { html: actionHtml }
           ]), rows) %}
         {% endfor %}
 
@@ -42,8 +53,9 @@
             { text: "Name" },
             { text: "Prison number" },
             { text: "Date of birth" },
-            { text: "Prison name" },
+            { text: "Cell Location" },
             { text: "PNC" },
+            { text: "CRO" },
             { html: "Action" }
           ],
           rows: rows

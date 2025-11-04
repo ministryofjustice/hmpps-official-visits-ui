@@ -32,4 +32,20 @@ export default class PrisonerSearchApiClient extends RestClient {
       asSystem(user.username),
     )
   }
+
+  async searchInCaseload(
+    searchTerm: string,
+    prisonId: string,
+    user: HmppsUser,
+    pagination?: PaginationRequest,
+  ): Promise<PagePrisoner> {
+    const paginationParameters = pagination ?? { page: 0, size: config.apis.prisonerSearchApi.pageSize || 10 }
+    return this.get(
+      {
+        path: `/prison/${prisonId}/prisoners`,
+        query: { term: searchTerm, ...paginationParameters },
+      },
+      asSystem(user.username),
+    )
+  }
 }
