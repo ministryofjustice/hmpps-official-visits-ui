@@ -2,7 +2,6 @@ import PrisonerSearchApiClient from '../data/prisonerSearchApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { PagePrisoner, Prisoner, PaginationRequest, AttributeSearchRequest } from '../@types/prisonerSearchApi/types'
 import { PrisonerSearchJourney } from '../routes/journeys/manage/prisoner-search/journey'
-import logger from '../../logger'
 
 const GHOST_PRISON = 'ZZGHI'
 
@@ -10,7 +9,6 @@ export default class PrisonerService {
   constructor(private readonly prisonerSearchApiClient: PrisonerSearchApiClient) {}
 
   public async getPrisonerByPrisonerNumber(prisonerNumber: string, user: HmppsUser): Promise<Prisoner> {
-    logger.info(`Just using vars ${prisonerNumber} ${JSON.stringify(user)}`)
     return this.prisonerSearchApiClient.getPrisonerByPrisonerNumber(prisonerNumber, user)
   }
 
@@ -20,7 +18,6 @@ export default class PrisonerService {
     user: HmppsUser,
     pagination?: PaginationRequest,
   ): Promise<PagePrisoner> {
-    logger.info(`Search by search term [${searchTerm}] in prison ${prisonId}`)
     return this.prisonerSearchApiClient.searchInCaseload(searchTerm, prisonId, user, pagination)
   }
 

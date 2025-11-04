@@ -16,13 +16,10 @@ export default function CreateRoutes({ auditService, prisonerService, officialVi
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
-  route(`${basePath}/official-visit/time-slot`, new TimeSlotHandler(officialVisitsService, prisonerService))
-  route(
-    `${basePath}/official-visit/confirmation/:officialVisitId`,
-    new ConfirmationHandler(officialVisitsService, prisonerService),
-  )
+  // First step in the visit journey
+  route(`${basePath}/time-slot`, new TimeSlotHandler(officialVisitsService, prisonerService))
 
-  // Some routes require the journey session data to exist
+  // Subsequent steps require the official visit journey session data to exist
   router.use((req, res, next) => {
     if (!req.session.journey.officialVisit) {
       return res.redirect('/')
@@ -30,11 +27,9 @@ export default function CreateRoutes({ auditService, prisonerService, officialVi
     return next()
   })
 
-  // These are the steps in the journey to create an official visit
-  route(
-    `${basePath}/official-visit/check-your-answers`,
-    new CheckYourAnswersHandler(officialVisitsService, prisonerService),
-  )
+  // These are the subsequent steps in the journey to create an official visit
+  route(`${basePath}/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService, prisonerService))
+  route(`${basePath}/confirmation/:officialVisitId`, new ConfirmationHandler(officialVisitsService, prisonerService))
 
   return router
 }

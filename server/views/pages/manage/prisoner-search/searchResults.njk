@@ -10,8 +10,8 @@
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
-      {# Who is attending, visitors, time and place, review, booking complete#}
-      {{ progressTracker(true, false, false, false, false) }}
+      {# Who is attending, time and place, visitors, review, booking complete #}
+      {{ progressTracker(false, false, false, false, false) }}
     </div>
   </div>
 
@@ -34,7 +34,7 @@
         {% set rows = [] %}
         {% for result in results.content %}
           {% set actionHtml %}
-            <a href="/create/{{ result.prisonerNumber }}" class="govuk-link govuk-link--no-visited-state">Select</a>
+            <a href="/manage/create/{{ result.prisonerNumber }}/time-slot" class="govuk-link govuk-link--no-visited-state">Select</a>
           {% endset %}
 
           {% set rows = (rows.push([
@@ -53,7 +53,7 @@
             { text: "Name" },
             { text: "Prison number" },
             { text: "Date of birth" },
-            { text: "Cell Location" },
+            { text: "Cell location" },
             { text: "PNC" },
             { text: "CRO" },
             { html: "Action" }
