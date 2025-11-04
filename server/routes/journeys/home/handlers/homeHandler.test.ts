@@ -1,7 +1,9 @@
 import type { Express } from 'express'
 import request from 'supertest'
+import cheerio from 'cheerio'
 import { appWithAllRoutes, user } from '../../../testutils/appSetup'
 import AuditService, { Page } from '../../../../services/auditService'
+import config from '../../../../config'
 
 jest.mock('../../../../services/auditService')
 
@@ -14,6 +16,7 @@ beforeEach(() => {
     services: { auditService },
     userSupplier: () => user,
   })
+  config.maintenanceMode = false
 })
 
 afterEach(() => {
@@ -40,6 +43,19 @@ describe('GET /home', () => {
           who: user.username,
           correlationId: expect.any(String),
         })
+      })
+  })
+
+  it('user should see a scheduled maintenance screen', () => {
+    config.maintenanceMode = true
+    return request(app)
+      .get('/')
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        const $ = cheerio.load(res.text)
+        const heading = $('h1').text().trim()
+
+        expect(heading).toContain('Sorry, scheduled maintenance affects this service')
       })
   })
 })
