@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import PrisonerService from '../../../../../services/prisonerService'
+import config from '../../../../../config'
 
 export default class PrisonerSearchResultsHandler implements PageHandler {
   public PAGE_NAME = Page.PRISONER_SEARCH_RESULTS_PAGE
@@ -10,10 +11,14 @@ export default class PrisonerSearchResultsHandler implements PageHandler {
 
   public GET = async (req: Request, res: Response) => {
     const { user } = res.locals
+    const { activeCaseLoad } = res.locals.feComponents.sharedData
     const page = Number(req.query.page as unknown) || 0
+    const { searchTerm } = req.session.journey.prisonerSearch
 
-    const { prisonerSearch } = req.session.journey
-    const results = await this.prisonerService.searchPrisonersByCriteria(prisonerSearch, { page, size: 10 }, user)
+    const results = await this.prisonerService.searchInCaseload(searchTerm, activeCaseLoad.caseLoadId, user, {
+      page,
+      size: config.apis.prisonerSearchApi.pageSize,
+    })
 
     res.render('pages/manage/prisoner-search/searchResults', { results })
   }

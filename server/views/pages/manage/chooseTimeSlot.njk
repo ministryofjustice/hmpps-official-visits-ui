@@ -1,12 +1,30 @@
 {% extends "partials/layout.njk" %}
 
-{% set pageTitle = "Pick an available visit slot" %}
+{% from "partials/progress-tracker.njk" import progressTracker %}
+
 {% set hideBackLink = true %}
+{% set pageTitle = "When is the visit?" %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      Page awaiting build
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      {# Who is attending, visitors, time and place, review, booking complete#}
+      {{ progressTracker(true, false, false, false, false) }}
     </div>
   </div>
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Schedule an official visit</span>
+      <h1 class="govuk-heading-l">{{ pageTitle }}</span></h1>
+    </div>
+  </div>
+
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+     Page awaiting design
+    </div>
+  </div>
+
 {% endblock %}

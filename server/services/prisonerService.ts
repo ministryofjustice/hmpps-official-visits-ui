@@ -2,26 +2,26 @@ import PrisonerSearchApiClient from '../data/prisonerSearchApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { PagePrisoner, Prisoner, PaginationRequest, AttributeSearchRequest } from '../@types/prisonerSearchApi/types'
 import { PrisonerSearchJourney } from '../routes/journeys/manage/prisoner-search/journey'
-import logger from '../../logger'
 
 const GHOST_PRISON = 'ZZGHI'
 
 export default class PrisonerService {
   constructor(private readonly prisonerSearchApiClient: PrisonerSearchApiClient) {}
 
-  public async getAllPrisons(user: HmppsUser): Promise<{ prisonCode: string; prisonDescription: string }[]> {
-    // TODO: Implement this via prison API client with correct response type populated
-    logger.info(`Just using vars ${JSON.stringify(user)}`)
-    return [{ prisonCode: 'MDI', prisonDescription: 'Moorland (HMP)' }]
-  }
-
-  // TODO: Add tests for this
   public async getPrisonerByPrisonerNumber(prisonerNumber: string, user: HmppsUser): Promise<Prisoner> {
-    logger.info(`Just using vars ${prisonerNumber} ${JSON.stringify(user)}`)
     return this.prisonerSearchApiClient.getPrisonerByPrisonerNumber(prisonerNumber, user)
   }
 
-  // TODO: Add tests for this
+  public async searchInCaseload(
+    searchTerm: string,
+    prisonId: string,
+    user: HmppsUser,
+    pagination?: PaginationRequest,
+  ): Promise<PagePrisoner> {
+    return this.prisonerSearchApiClient.searchInCaseload(searchTerm, prisonId, user, pagination)
+  }
+
+  // Not used - but leave in as we may enable a specific field-based search later
   public searchPrisonersByCriteria(
     criteria: PrisonerSearchJourney,
     pagination: PaginationRequest,

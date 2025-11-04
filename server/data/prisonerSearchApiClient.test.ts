@@ -39,4 +39,22 @@ describe('PrisonerSearchApiClient', () => {
       expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('search in caseload', () => {
+    it('should search for prisoners in caseload and return a paginated list', async () => {
+      const searchTerm = 'aaa'
+      const expected = { data: 'data' }
+      const prisonId = 'MDI'
+
+      nock(config.apis.prisonerSearchApi.url)
+        .get(`/prison/${prisonId}/prisoners?term=aaa&page=0&size=${config.apis.prisonerSearchApi.pageSize}`)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, expected)
+
+      const response = await prisonerSearchApiClient.searchInCaseload(searchTerm, prisonId, user)
+
+      expect(response).toEqual(expected)
+      expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
+    })
+  })
 })
