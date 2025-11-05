@@ -1,0 +1,20 @@
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+
+{% if successMessage | length %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ mojAlert({
+        variant: "success",
+        role: "alert",
+        title: successMessage.heading,
+        showTitleAsHeading: true,
+        dismissible: false,
+        text: successMessage.message,
+        classes: 'govuk-!-margin-bottom-0',
+        attributes: {
+          'aria-live': 'polite'
+        }
+      }) }}
+    </div>
+  </div>
+{% endif %}

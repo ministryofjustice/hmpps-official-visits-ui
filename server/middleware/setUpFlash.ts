@@ -9,8 +9,14 @@ export type FieldValidationError = {
 export default function setUpFlash(): Router {
   const router = express.Router()
 
+  /**
+   * This route adds functions onto the Request object to record validation errors encountered on POST requests.
+   * These are recorded into flash as a list of validationErrors which the next GET request reads from flash.
+   */
+
   router.use((req, res, next) => {
     const validationErrors: FieldValidationError[] = []
+
     res.addValidationError = (message: string, field?: string): void => {
       validationErrors.push({ fieldId: field, href: `#${field || ''}`, text: message })
     }
@@ -19,7 +25,6 @@ export default function setUpFlash(): Router {
       if (message) {
         res.addValidationError(message, field)
       }
-
       req.flash('validationErrors', JSON.stringify(validationErrors))
       req.flash('formResponses', JSON.stringify(req.rawBody))
       res.redirect(req.get('Referrer') || '/')
@@ -32,11 +37,17 @@ export default function setUpFlash(): Router {
     next()
   })
 
+  /**
+   * For GET requests only, this route reads any values store in flash, which could be validation errors,
+   * form responses or success banner messages, and makes them available as res.locals values. As soon
+   * as flash messages are read, they are automatically removed - so only available once.
+   */
+
   router.use((req, res, next) => {
     if (req.method === 'GET') {
-      const successMessageFlash = req.flash('successMessage') ? req.flash('successMessage')[0] : undefined
-      const validationErrorsFlash = req.flash('validationErrors') ? req.flash('validationErrors')[0] : undefined
-      const formResponsesFlash = req.flash('formResponses') ? req.flash('formResponses')[0] : undefined
+      const successMessageFlash = req.flash('successMessage')[0]
+      const validationErrorsFlash = req.flash('validationErrors')[0]
+      const formResponsesFlash = req.flash('formResponses')[0]
 
       res.locals.successMessage = successMessageFlash ? JSON.parse(successMessageFlash) : null
       res.locals.validationErrors = validationErrorsFlash ? JSON.parse(validationErrorsFlash) : null

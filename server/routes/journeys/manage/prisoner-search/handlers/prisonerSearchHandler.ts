@@ -6,7 +6,6 @@ import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import PrisonerService from '../../../../../services/prisonerService'
 
-// TODO: Replace with zod schema for valid entries in the search term
 class Body {
   @Expose()
   @MinLength(2, { message: 'Enter at least $constraint1 characters to search for matching names' })
@@ -22,17 +21,14 @@ export default class PrisonerSearchHandler implements PageHandler {
 
   public GET = async (req: Request, res: Response) => {
     const { searchTerm } = req.session.journey.prisonerSearch || { searchTerm: '' }
-
     res.render('pages/manage/prisoner-search/prisonerSearch', { searchTerm, showBreadcrumbs: true })
   }
 
   public POST = async (req: Request, res: Response) => {
     const { body } = req
-
     req.session.journey.prisonerSearch = {
       searchTerm: body.searchTerm,
     }
-
     res.redirect('results')
   }
 }
