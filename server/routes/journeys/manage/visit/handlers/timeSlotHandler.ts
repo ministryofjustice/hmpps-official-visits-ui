@@ -46,6 +46,6 @@ export default class TimeSlotHandler implements PageHandler {
     logger.info(`Session journey prisonerSearch : ${JSON.stringify(req.session.journey.prisonerSearch, null, 2)}`)
     logger.info(`Session journey officialVisit : ${JSON.stringify(req.session.journey.officialVisit, null, 2)}`)
 
-    res.render('pages/manage/chooseTimeSlot', { prisoner })
+    res.render('pages/manage/chooseTimeSlot', { prisoner, showBreadcrumbs: true })
   }
 }

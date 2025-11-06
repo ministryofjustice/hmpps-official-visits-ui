@@ -31,6 +31,9 @@ export default function setUpWebSecurity(): Router {
           ...(config.production ? {} : { upgradeInsecureRequests: null }),
         },
       },
+      // This is a key bit for validation - without this line the validation middleware has
+      // no Referrer header to redirect to on failures
+      referrerPolicy: { policy: 'same-origin' },
       crossOriginEmbedderPolicy: true,
     }),
   )

@@ -20,6 +20,6 @@ export default class PrisonerSearchResultsHandler implements PageHandler {
       size: config.apis.prisonerSearchApi.pageSize,
     })
 
-    res.render('pages/manage/prisoner-search/searchResults', { results })
+    res.render('pages/manage/prisoner-search/searchResults', { results, showBreadcrumbs: true })
   }
 }

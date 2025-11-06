@@ -33,6 +33,7 @@
           label: { text: "Search by prisoner name, number, PNC or CRO" },
           classes: 'govuk-!-width-one-third',
           autocomplete: "off",
+          errorMessage: validationErrors | findError('searchTerm'),
           value: formResponses.searchTerm or searchTerm
         }) }}
 
