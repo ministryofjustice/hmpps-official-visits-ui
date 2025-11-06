@@ -3,10 +3,10 @@ import { parseISO } from 'date-fns'
 import type { Services } from '../../../../services'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import logPageViewMiddleware from '../../../../middleware/logPageViewMiddleware'
-import validationMiddleware from '../../../../middleware/validationMiddleware'
 import TimeSlotHandler from './handlers/timeSlotHandler'
 import CheckYourAnswersHandler from './handlers/checkYourAnswersHandler'
 import ConfirmationHandler from './handlers/confirmationHandler'
+import { validate } from '../../../../middleware/validationMiddleware'
 
 export default function AmendRoutes({ auditService, prisonerService, officialVisitsService }: Services): Router {
   const router = Router({ mergeParams: true })
@@ -14,7 +14,7 @@ export default function AmendRoutes({ auditService, prisonerService, officialVis
   const route = (path: string | string[], handler: PageHandler) =>
     router.get(path, logPageViewMiddleware(auditService, handler), handler.GET) &&
     handler.POST &&
-    router.post(path, validationMiddleware(handler.BODY), handler.POST)
+    router.post(path, validate(handler.SCHEMA), handler.POST)
 
   route('/official-visit/confirmation', new ConfirmationHandler(officialVisitsService, prisonerService))
 

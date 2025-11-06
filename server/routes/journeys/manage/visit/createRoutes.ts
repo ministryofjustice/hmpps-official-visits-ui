@@ -2,10 +2,10 @@ import { Router } from 'express'
 import type { Services } from '../../../../services'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import logPageViewMiddleware from '../../../../middleware/logPageViewMiddleware'
-import validationMiddleware from '../../../../middleware/validationMiddleware'
 import CheckYourAnswersHandler from './handlers/checkYourAnswersHandler'
 import ConfirmationHandler from './handlers/confirmationHandler'
 import TimeSlotHandler from './handlers/timeSlotHandler'
+import { validate } from '../../../../middleware/validationMiddleware'
 
 export default function CreateRoutes({ auditService, prisonerService, officialVisitsService }: Services): Router {
   const basePath = '/:prisonerNumber'
@@ -14,7 +14,7 @@ export default function CreateRoutes({ auditService, prisonerService, officialVi
   const route = (path: string | string[], handler: PageHandler) =>
     router.get(path, logPageViewMiddleware(auditService, handler), handler.GET) &&
     handler.POST &&
-    router.post(path, validationMiddleware(handler.BODY), handler.POST)
+    router.post(path, validate(handler.SCHEMA), handler.POST)
 
   // First step in the visit journey
   route(`${basePath}/time-slot`, new TimeSlotHandler(officialVisitsService, prisonerService))

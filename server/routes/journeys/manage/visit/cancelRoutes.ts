@@ -3,9 +3,9 @@ import { parseISO } from 'date-fns'
 import type { Services } from '../../../../services'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import logPageViewMiddleware from '../../../../middleware/logPageViewMiddleware'
-import validationMiddleware from '../../../../middleware/validationMiddleware'
 import CheckCancelHandler from './handlers/checkCancelHandler'
 import ConfirmCancelledHandler from './handlers/confirmCancelledHandler'
+import { validate } from '../../../../middleware/validationMiddleware'
 
 export default function CancelRoutes({ auditService, prisonerService, officialVisitsService }: Services): Router {
   const router = Router({ mergeParams: true })
@@ -13,7 +13,7 @@ export default function CancelRoutes({ auditService, prisonerService, officialVi
   const route = (path: string | string[], handler: PageHandler) =>
     router.get(path, logPageViewMiddleware(auditService, handler), handler.GET) &&
     handler.POST &&
-    router.post(path, validationMiddleware(handler.BODY), handler.POST)
+    router.post(path, validate(handler.SCHEMA), handler.POST)
 
   route('/confirmation', new ConfirmCancelledHandler(officialVisitsService, prisonerService))
 

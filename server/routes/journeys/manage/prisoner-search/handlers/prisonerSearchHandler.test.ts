@@ -63,30 +63,14 @@ describe('Prisoner search handler', () => {
       return request(app)
         .post(`/prisoner-search/${journeyId()}/search`)
         .send({ searchTerm: '' })
-        .expect(() =>
-          expectErrorMessages([
-            {
-              fieldId: 'searchTerm',
-              href: '#searchTerm',
-              text: 'Enter at least 2 characters to search for matching names',
-            },
-          ]),
-        )
+        .expect(() => expectErrorMessages({ searchTerm: ['Enter at least 2 characters to search for matching names'] }))
     })
 
     it('should error on search terms of less than 2 characters', () => {
       return request(app)
         .post(`/prisoner-search/${journeyId()}/search`)
         .send({ searchTerm: 'j' })
-        .expect(() =>
-          expectErrorMessages([
-            {
-              fieldId: 'searchTerm',
-              href: '#searchTerm',
-              text: 'Enter at least 2 characters to search for matching names',
-            },
-          ]),
-        )
+        .expect(() => expectErrorMessages({ searchTerm: ['Enter at least 2 characters to search for matching names'] }))
     })
 
     it('should accept a 2 letter search term criteria', () => {

@@ -1,10 +1,10 @@
 import { Router } from 'express'
 import type { Services } from '../../../services'
 import { PageHandler } from '../../interfaces/pageHandler'
-import validationMiddleware from '../../../middleware/validationMiddleware'
 import ViewOfficialVisitListHandler from './handlers/viewOfficialVisitListHandler'
 import ViewOfficialVisitHandler from './handlers/viewOfficialVisitHandler'
 import logPageViewMiddleware from '../../../middleware/logPageViewMiddleware'
+import { validate } from '../../../middleware/validationMiddleware'
 
 export default function Index({ auditService, prisonerService, officialVisitsService }: Services): Router {
   const router = Router({ mergeParams: true })
@@ -12,7 +12,7 @@ export default function Index({ auditService, prisonerService, officialVisitsSer
   const route = (path: string | string[], handler: PageHandler) =>
     router.get(path, logPageViewMiddleware(auditService, handler), handler.GET) &&
     handler.POST &&
-    router.post(path, validationMiddleware(handler.BODY), handler.POST)
+    router.post(path, validate(handler.SCHEMA), handler.POST)
 
   route('/list', new ViewOfficialVisitListHandler(officialVisitsService, prisonerService))
   route('/:officialVisitId', new ViewOfficialVisitHandler(officialVisitsService, prisonerService))

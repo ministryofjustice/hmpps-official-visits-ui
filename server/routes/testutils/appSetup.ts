@@ -9,12 +9,12 @@ import type { Services } from '../../services'
 import AuditService from '../../services/auditService'
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import setUpWebSession from '../../middleware/setUpWebSession'
-import setUpFlash from '../../middleware/setUpFlash'
 import { Breadcrumbs } from '../../middleware/breadcrumbs'
 import OfficialVisitsService from '../../services/officialVisitsService'
 import PrisonerService from '../../services/prisonerService'
 import LocationsService from '../../services/locationsService'
 import { testUtilRoutes } from './testUtilRoute'
+import setUpFlash from '../../middleware/setUpFlash'
 
 jest.mock('../../services/auditService')
 jest.mock('../../services/prisonerService')
@@ -68,9 +68,9 @@ function appSetup(
   })
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
-  app.use(setUpFlash())
   nunjucksSetup(app)
   middlewares.forEach(mw => app.use(mw))
+  app.use(setUpFlash())
   app.use(routes(services))
   app.use(testUtilRoutes())
   app.use((req, res, next) => next(new NotFound()))

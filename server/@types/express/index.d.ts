@@ -30,8 +30,6 @@ declare module 'express-serve-static-core' {
 
   interface Response {
     addSuccessMessage?(heading: string, message?: string): void
-    addValidationError?(message: string, field?: string): void
-    validationFailed?(message?: string, field?: string): void
   }
 }
 
