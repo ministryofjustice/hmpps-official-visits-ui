@@ -1,10 +1,36 @@
-import { plainToInstance } from 'class-transformer'
-import { validate, ValidationError } from 'class-validator'
-import { RequestHandler } from 'express'
+import { RequestHandler, Request, Response } from 'express'
+import z from 'zod'
+import { $ZodSuperRefineIssue } from 'zod/v4/core'
 
-interface Error {
-  field: string
-  message: string
+export type SchemaFactory = (request: Request, res: Response) => Promise<z.ZodTypeAny>
+
+export const createSchema = <T = object>(shape: T) => zodAlwaysRefine(zObjectStrict(shape))
+
+const zObjectStrict = <T = object>(shape: T) => z.object({ _csrf: z.string().optional(), ...shape }).strict()
+
+/*
+ * Ensure that all parts of the schema get tried and can fail before exiting schema checks - this ensures we don't have to
+ * have complicated schemas if we want to both ensure the order of fields and have all the schema validation run
+ * more info regarding this issue and workaround on: https://github.com/colinhacks/zod/issues/479#issuecomment-2067278879
+ */
+const zodAlwaysRefine = <T extends z.ZodTypeAny>(zodType: T) =>
+  z.any().transform((val, ctx) => {
+    const res = zodType.safeParse(val)
+    if (!res.success) res.error.issues.forEach(issue => ctx.addIssue(issue as $ZodSuperRefineIssue))
+    return res.data || val
+  }) as unknown as T
+
+const normaliseNewLines = (body: Record<string, unknown>) => {
+  return Object.fromEntries(
+    Object.entries(body).map(([k, v]) => [k, typeof v === 'string' ? v.replace(/\r\n/g, '\n') : v]),
+  )
+}
+
+const pathArrayToString = (previous: string | number | symbol, next: string | number | symbol): string => {
+  if (!previous) {
+    return next.toString()
+  }
+  return `${String(previous)}[${next.toString()}]`
 }
 
 /**
@@ -18,7 +44,7 @@ interface Error {
  * @param type The class of the object to construct and validate against
  */
 
-export default function validationMiddleware(type: new () => object): RequestHandler {
+export default function validationMiddleware(schema: z.ZodTypeAny | SchemaFactory): RequestHandler {
   // Recursively iterate into an object and trim any strings inside
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const deepTrim = (object: any): object => {
@@ -39,55 +65,19 @@ export default function validationMiddleware(type: new () => object): RequestHan
     req.rawBody = req.body
     req.body = deepTrim(req.body)
 
-    if (!type) {
+    if (!schema) {
       return next()
     }
 
-    // Build an object which is used by validators to check things against
-    const requestObject = plainToInstance(type, {
-      ...req.body,
-      ...req.params,
-      ...req.routeContext,
-      journey: {
-        ...req.session.journey,
-        ...req.session.journeyData?.[req.params.journeyId],
-      },
-    })
-
-    const errors: ValidationError[] = await validate(requestObject, {
-      stopAtFirstError: true,
-      forbidUnknownValues: false,
-    })
-
-    if (errors.length === 0) {
-      req.body = requestObject
+    const resolvedSchema = typeof schema === 'function' ? await schema(req, res) : schema
+    const result = await resolvedSchema.safeParseAsync(normaliseNewLines(req.body))
+    if (result.success) {
+      req.body = result.data
       return next()
     }
 
-    const buildError = (
-      error: ValidationError,
-      constraints: {
-        [type: string]: string
-      },
-      parent?: string,
-    ): Error => ({
-      field: `${parent ? `${parent}-` : ''}${error.property}`,
-      message: Object.values(constraints)[0],
-    })
-
-    const flattenErrors = (errorList: ValidationError[], parent?: string): Error[] => {
-      // Flat pack a list of errors with child errors into a 1-dimensional list of errors.
-      return errorList.flatMap(error => {
-        const property = `${parent ? `${parent}-` : ''}${error.property}`
-
-        return error.children.length > 0
-          ? flattenErrors(error.children, property)
-          : [buildError(error, error.constraints, parent)]
-      })
-    }
-
-    flattenErrors(errors).forEach(e => {
-      res.addValidationError(e.message, e.field)
+    result.error.issues.forEach(key => {
+      res.addValidationError(key.message, key.path.reduce(pathArrayToString) as string)
     })
 
     return res.validationFailed()
