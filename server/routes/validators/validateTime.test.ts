@@ -1,4 +1,4 @@
-import { parseHour } from './validateTime'
+import { parseHour, parseMinute } from './validateTime'
 
 describe('parseHour', () => {
   it.each([
@@ -19,6 +19,28 @@ describe('parseHour', () => {
     ['-1', 2],
   ])('"%s" should not parse', (input, errorCount) => {
     const actual = parseHour(input)
+    expect(actual.success).toBeFalsy()
+    expect(actual.error.issues).toHaveLength(errorCount)
+  })
+})
+
+describe('parseMinute', () => {
+  it.each([
+    ['0', '00'],
+    ['00', '00'],
+    ['59', '59'],
+  ])('"%s" should return "%s"', (input, expected) => {
+    expect(parseMinute(input)).toEqual({ data: expected, success: true })
+  })
+
+  it.each([
+    ['', 1],
+    [' ', 1],
+    ['a', 2],
+    ['60', 1],
+    ['-1', 2],
+  ])('"%s" should not parse', (input, errorCount) => {
+    const actual = parseMinute(input)
     expect(actual.success).toBeFalsy()
     expect(actual.error.issues).toHaveLength(errorCount)
   })
