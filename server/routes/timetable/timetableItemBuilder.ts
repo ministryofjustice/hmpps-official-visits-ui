@@ -1,4 +1,3 @@
-import { format, parseISO } from 'date-fns'
 import { AvailableTimeSlots } from '../../@types/officialVisitsApi/types'
 // need to get type
 import { prisonerTimePretty } from '../../utils/utils'

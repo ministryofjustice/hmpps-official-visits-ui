@@ -28,6 +28,8 @@ export default class OfficialVisitsService {
   }
 
   public async getAvailableTimeSlots(username: string, prisonId: string, date: string): Promise<AvailableTimeSlots[]> {
+    logger.info(`Just using vars ${JSON.stringify(username)}, ${JSON.stringify(prisonId)}, ${JSON.stringify(date)}`)
+
     const availableTimeSlots: AvailableTimeSlots[] = [
       {
         dayCode: 'One',
