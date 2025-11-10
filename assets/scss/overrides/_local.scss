@@ -20,3 +20,36 @@
   border: 1px solid govuk-colour('dark-grey');
   box-shadow: 0 5px govuk-colour('mid-grey');
 }
+
+.bapv-timetable-dates {
+  display: flex;
+  justify-content: space-between;
+  max-width: 600px;
+  margin-top: govuk-spacing(4);
+}
+
+.bapv-timetable-dates__date {
+  flex-basis: 10%;
+  padding: govuk-spacing(2);
+  text-align: center;
+
+  & span {
+    display: block;
+    padding-bottom: govuk-spacing(2);
+    @include govuk-font($size: 19);
+  }
+
+  & a {
+    @include govuk-font($size: 24);
+  }
+
+  & a:hover {
+    text-decoration: none;
+  }
+}
+
+.bapv-timetable-dates__date--selected {
+  background-color: govuk-colour("blue");
+  color: govuk-colour("white");
+  @include govuk-font($size: 24, $weight: "bold");
+}

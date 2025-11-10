@@ -1,0 +1,28 @@
+{% macro timetableRowBuilder(timetableRows, timetableItem, rowNumber) %}
+  {% set timetableRows = (timetableRows.push([
+    {
+      text: timetableItem.dayCode,
+      attributes: { "data-test" : "schedule-time-" + rowNumber }
+    },
+    {
+      text: timetableItem.startTime,
+      attributes: { "data-test" : "schedule-type-" + rowNumber }
+    },
+    {
+      text: timetableItem.endTime,
+      attributes: { "data-test" : "schedule-capacity-" + rowNumber }
+    },
+    {
+      text: timetableItem.dpsLocationId,
+      attributes: { "data-test" : "schedule-attendees-" + rowNumber }
+    },
+    {
+      text: timetableItem.maxAdults,
+      attributes: { "data-test" : "schedule-frequency-" + rowNumber }
+    },
+    {
+      text: timetableItem.maxGroups,
+      attributes: { "data-test" : "schedule-end-date-" + rowNumber }
+    }
+  ]), timetableRows) %}
+{% endmacro %}

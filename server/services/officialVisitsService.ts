@@ -1,6 +1,6 @@
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { OfficialVisit } from '../@types/officialVisitsApi/types'
+import { OfficialVisit, AvailableTimeSlots } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
 
@@ -25,5 +25,19 @@ export default class OfficialVisitsService {
   public async amendVisit(visit: OfficialVisitJourney, user: HmppsUser) {
     logger.info(`Just using vars ${JSON.stringify(visit)}, ${JSON.stringify(user)}`)
     // TODO: Map the journey to a VisitAmendRequest, call the service amend, and return the amended visit
+  }
+
+  public async getAvailableTimeSlots(username: string, prisonId: string, date: string): Promise<AvailableTimeSlots[]> {
+    const availableTimeSlots: AvailableTimeSlots[] = [
+      {
+        dayCode: 'One',
+        startTime: '11:30',
+        endTime: '12:30',
+        dpsLocationId: 'DPS',
+        maxAdults: '2',
+        maxGroups: '1',
+      },
+    ]
+    return availableTimeSlots
   }
 }

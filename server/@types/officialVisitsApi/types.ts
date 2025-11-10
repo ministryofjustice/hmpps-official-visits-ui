@@ -17,3 +17,12 @@ export type OfficialVisit = {
   staffNotes: string
   prisonerNotes: string
 }
+
+export type AvailableTimeSlots = {
+  dayCode: string
+  startTime: string
+  endTime: string
+  dpsLocationId: string
+  maxAdults: string
+  maxGroups: string
+}
