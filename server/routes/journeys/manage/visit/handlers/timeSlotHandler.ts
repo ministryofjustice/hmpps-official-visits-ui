@@ -3,7 +3,6 @@ import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import logger from '../../../../../../logger'
 
 export default class TimeSlotHandler implements PageHandler {
   public PAGE_NAME = Page.CHOOSE_TIME_SLOT_PAGE
