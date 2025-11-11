@@ -39,7 +39,7 @@ describe('Prisoner search handler', () => {
   describe('GET', () => {
     it('should render the correct view page', () => {
       return request(app)
-        .get(`/prisoner-search/${journeyId()}/search`)
+        .get(`/manage/create/${journeyId()}/search`)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
@@ -61,7 +61,7 @@ describe('Prisoner search handler', () => {
 
     it('should error on an empty search term form', () => {
       return request(app)
-        .post(`/prisoner-search/${journeyId()}/search`)
+        .post(`/manage/create/${journeyId()}/search`)
         .send({ searchTerm: '' })
         .expect(() =>
           expectErrorMessages([
@@ -76,7 +76,7 @@ describe('Prisoner search handler', () => {
 
     it('should error on search terms of less than 2 characters', () => {
       return request(app)
-        .post(`/prisoner-search/${journeyId()}/search`)
+        .post(`/manage/create/${journeyId()}/search`)
         .send({ searchTerm: 'j' })
         .expect(() =>
           expectErrorMessages([
@@ -91,7 +91,7 @@ describe('Prisoner search handler', () => {
 
     it('should accept a 2 letter search term criteria', () => {
       return request(app)
-        .post(`/prisoner-search/${journeyId()}/search`)
+        .post(`/manage/create/${journeyId()}/search`)
         .send({ searchTerm: 'jo' })
         .expect(302)
         .expect('location', 'results')
@@ -100,7 +100,7 @@ describe('Prisoner search handler', () => {
 
     it('should accept prisoner number as the search criteria', () => {
       return request(app)
-        .post(`/prisoner-search/${journeyId()}/search`)
+        .post(`/manage/create/${journeyId()}/search`)
         .send({ searchTerm: 'A1111AA' })
         .expect(302)
         .expect('location', 'results')
@@ -109,7 +109,7 @@ describe('Prisoner search handler', () => {
 
     it('should accept PNC number the search criteria', () => {
       return request(app)
-        .post(`/prisoner-search/${journeyId()}/search`)
+        .post(`/manage/create/${journeyId()}/search`)
         .send({ searchTerm: '99/0909009' })
         .expect(302)
         .expect('location', 'results')
@@ -118,12 +118,12 @@ describe('Prisoner search handler', () => {
 
     it('should hold the posted fields in session', () => {
       return request(app)
-        .post(`/prisoner-search/${journeyId()}/search`)
+        .post(`/manage/create/${journeyId()}/search`)
         .send(validForm)
         .expect(302)
         .expect('location', 'results')
         .then(() =>
-          expectJourneySession(app, 'prisonerSearch', {
+          expectJourneySession(app, 'officialVisit', {
             searchTerm: 'Bob',
           }),
         )

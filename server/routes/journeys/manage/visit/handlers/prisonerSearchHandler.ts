@@ -12,13 +12,17 @@ export default class PrisonerSearchHandler implements PageHandler {
   constructor(private readonly prisonerService: PrisonerService) {}
 
   public GET = async (req: Request, res: Response) => {
-    const { searchTerm } = req.session.journey.prisonerSearch || { searchTerm: '' }
-    res.render('pages/manage/prisoner-search/prisonerSearch', { searchTerm, showBreadcrumbs: true })
+    req.session.journey.officialVisit ??= { searchTerm: '' }
+
+    res.render('pages/manage/prisonerSearch', {
+      searchTerm: req.session.journey.officialVisit.searchTerm,
+      showBreadcrumbs: true,
+    })
   }
 
   public POST = async (req: Request, res: Response) => {
     const { body } = req
-    req.session.journey.prisonerSearch = {
+    req.session.journey.officialVisit = {
       searchTerm: body.searchTerm,
     }
     res.redirect('results')
