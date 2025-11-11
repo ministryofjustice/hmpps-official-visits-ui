@@ -1,0 +1,88 @@
+{% extends "partials/layout.njk" %}
+{% from "partials/timetable.njk" import timetableRowBuilder %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "partials/progress-tracker.njk" import progressTracker %}
+
+{% set pageTitle = "Available timeslots" %}
+
+
+
+
+{% block content %}
+<div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      {# Who is attending, time and place, visitors, review, booking complete #}
+      {{ progressTracker(false, false, false, false, false) }}
+    </div>
+  </div>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+      <nav aria-labelledby="selected-date">
+        <h2 class="govuk-heading-m" id="selected-date">{{ selectedDate | formatDate('EEEE d MMMM yyyy') }}</h2>
+
+        <ul class="govuk-list bapv-timetable-dates govuk-!-margin-bottom-1">
+          {% for day in weekOfDates %}
+            {% set selected = day == selectedDate %}
+            <li class="bapv-timetable-dates__date{{ ' bapv-timetable-dates__date--selected' if selected }}">
+              <span>{{ day | formatDate('E') }}</span>
+                {% if not selected %}<a class="govuk-link--no-visited-state" href="/timeslots?date={{ day | formatDate('yyyy-MM-dd') }}">{% endif %}
+                  {{ day | formatDate('d') }}<span class="govuk-visually-hidden"> {{ day | formatDate('MMMM yyyy') }}</span>
+                {% if not selected %}</a>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+        <ul class="govuk-list bapv-timetable-dates">
+          <li class="moj-pagination__item  moj-pagination__item--prev">
+            <a class="moj-pagination__link" href="/timeslots?date={{ previousWeek | formatDate('yyyy-MM-dd') }}" data-test="previous-week">Previous week</a>
+          </li>
+          <li class="moj-pagination__item  moj-pagination__item--next">
+            <a class="moj-pagination__link" href="/timeslots?date={{ nextWeek | formatDate('yyyy-MM-dd') }}" data-test="next-week">Next week</a>
+          </li>
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if timetableItems | length %}
+
+        {% set timetableRows = [] %}
+        {% for timetableItem in timetableItems %}
+          {{ timetableRowBuilder(timetableRows, timetableItem, loop.index)}}
+        {% endfor %}
+        {{ govukTable({
+          classes: 'bapv-table-no-bottom-border',
+          head: [
+            {
+              text: "Day Code"
+            },
+            {
+              text: "Slot"
+            },
+            {
+              text: "DPS Location Id"
+            },
+            {
+              text: "Max Adults"
+            },
+            {
+              text: "Max Groups"
+            }
+          ],
+          rows: timetableRows
+        }) }}
+
+        {% else %}
+          <p data-test="empty-schedule">No Available slots on this day for Official visits.</p>
+      {% endif %}
+    </div>
+  </div>
+
+
+{% endblock %}

@@ -1,4 +1,17 @@
-import { format, isValid, parse, parseISO, set, startOfToday } from 'date-fns'
+import {
+  format,
+  isValid,
+  parse,
+  parseISO,
+  set,
+  startOfToday,
+  previousMonday,
+  isMonday,
+  addWeeks,
+  subWeeks,
+  addDays,
+  isBefore,
+} from 'date-fns'
 import { enGB } from 'date-fns/locale'
 
 const properCase = (word: string): string =>
@@ -85,4 +98,41 @@ export const toDuration = (minutes: number): string => {
     [h ? `${h} hour${h > 1 ? 's' : ''}` : '', m ? `${m} minute${m > 1 ? 's' : ''}` : ''].filter(Boolean).join(' ') ||
     '0 minutes'
   )
+}
+export const getParsedDateFromQueryString = (dateFromQueryString: string, defaultDate = new Date()): string => {
+  const parsedDate =
+    new Date(dateFromQueryString).toString() === 'Invalid Date'
+      ? defaultDate
+      : ensureNotBeforeToday(dateFromQueryString)
+
+  return format(parsedDate, 'yyyy-MM-dd')
+}
+
+export const getWeekOfDatesStartingMonday = (
+  date: string,
+): { weekOfDates: string[]; previousWeek: string; nextWeek: string } => {
+  const startingDate = new Date(date)
+  if (startingDate.toString() === 'Invalid Date') return { weekOfDates: [], previousWeek: '', nextWeek: '' }
+
+  const dateFormat = 'yyyy-MM-dd'
+  const weekStartDate = isMonday(startingDate) ? startingDate : previousMonday(startingDate)
+
+  const weekOfDates = new Array(7).fill('').map((_day, index) => {
+    return format(addDays(weekStartDate, index), dateFormat)
+  })
+
+  const previousWeek = format(subWeeks(weekStartDate, 1), dateFormat)
+  const nextWeek = format(addWeeks(weekStartDate, 1), dateFormat)
+
+  return { weekOfDates, previousWeek, nextWeek }
+}
+
+export const prisonerTimePretty = (dateToFormat: string): string => {
+  return dateToFormat ? format(parseISO(dateToFormat), 'h:mmaaa').replace(':00', '') : null
+}
+
+export const ensureNotBeforeToday = (dateToFormat: string): Date => {
+  const selectedDate = parseISO(dateToFormat)
+  const now = new Date()
+  return isBefore(selectedDate, now) ? now : new Date(dateToFormat)
 }
