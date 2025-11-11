@@ -1,7 +1,6 @@
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import { Breadcrumbs } from '../../middleware/breadcrumbs'
 import { OfficialVisitJourney } from '../../routes/journeys/manage/visit/journey'
-import { PrisonerSearchJourney } from '../../routes/journeys/manage/prisoner-search/journey'
 
 export interface JourneyData extends Journey {
   instanceUnixEpoch: number
@@ -9,7 +8,6 @@ export interface JourneyData extends Journey {
 
 export interface Journey {
   officialVisit?: OfficialVisitJourney
-  prisonerSearch?: PrisonerSearchJourney
 }
 
 export declare module 'express-session' {
