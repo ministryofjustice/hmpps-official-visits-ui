@@ -15,4 +15,9 @@ export default class ReviewPrisonerHandler implements PageHandler {
       showBreadcrumbs: true,
     })
   }
+
+  public POST = async (_req: Request, res: Response) => {
+    // No data to save from this page as attendees cannot be added yet and removing the sole prisoner exits the journey
+    return res.redirect(`type`)
+  }
 }
