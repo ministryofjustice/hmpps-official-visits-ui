@@ -34,7 +34,7 @@
         {% set rows = [] %}
         {% for result in results.content %}
           {% set actionHtml %}
-            <a href="/manage/create/{{ result.prisonerNumber }}/time-slot" class="govuk-link govuk-link--no-visited-state">Select</a>
+            <a href="prisoner-select?prisonerNumber={{ result.prisonerNumber }}&page={{results.number}}" class="govuk-link govuk-link--no-visited-state">Select</a>
           {% endset %}
 
           {% set rows = (rows.push([

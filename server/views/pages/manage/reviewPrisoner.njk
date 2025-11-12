@@ -1,0 +1,69 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "partials/progress-tracker.njk" import progressTracker %}
+
+{% set pageTitle = "Review Prisoner" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      {# Who is attending, time and place, visitors, review, booking complete #}
+      {{ progressTracker(false, false, false, false, false) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Schedule an official visit</span>
+      <h1 class="govuk-heading-l">{{ pageTitle }} attending the official visit</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full-from-desktop">
+      {% set rows = [] %}
+      {% for prisoner in attendees %}
+
+        {% set rows = (rows.push([
+          { text: (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase },
+          { text: prisoner.prisonerNumber },
+          { text: prisoner.dateOfBirth | formatDate },
+          { text: prisoner.cellLocation },
+          { text: prisoner.pncNumber or '-' },
+          { text: '-' },
+          { html: '<a href="/" class="govuk-link govuk-link--no-visited-state">Remove</a>' }
+        ]), rows) %}
+      {% endfor %}
+
+      {{ govukTable({
+        head: [
+          { text: "Name" },
+          { text: "Prison number" },
+          { text: "Date of birth" },
+          { text: "Cell location" },
+          { text: "PNC" },
+          { text: "Header" },
+          { html: "Action" }
+        ],
+        rows: rows
+      }) }}
+
+      <form method='POST'>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+                text: "Confirm",
+                preventDoubleClick: true
+            }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="search">Cancel and return to start</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -1,7 +1,7 @@
 import PrisonerSearchApiClient from '../data/prisonerSearchApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { PagePrisoner, Prisoner, PaginationRequest, AttributeSearchRequest } from '../@types/prisonerSearchApi/types'
-import { PrisonerSearchJourney } from '../routes/journeys/manage/prisoner-search/journey'
+import { JourneyPrisoner } from '../routes/journeys/manage/visit/journey'
 
 const GHOST_PRISON = 'ZZGHI'
 
@@ -23,7 +23,7 @@ export default class PrisonerService {
 
   // Not used - but leave in as we may enable a specific field-based search later
   public searchPrisonersByCriteria(
-    criteria: PrisonerSearchJourney,
+    criteria: JourneyPrisoner,
     pagination: PaginationRequest,
     user: HmppsUser,
   ): Promise<PagePrisoner> {

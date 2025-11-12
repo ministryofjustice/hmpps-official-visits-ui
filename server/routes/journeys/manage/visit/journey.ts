@@ -1,4 +1,6 @@
 export type OfficialVisitJourney = {
+  searchTerm?: string
+  searchPage?: string
   officialVisitId?: number
   prisonCode?: string
   prisonName?: string
@@ -47,4 +49,7 @@ export type JourneyPrisoner = {
   lastName?: string
   dateOfBirth?: string
   cellLocation?: string
+  pncNumber?: string
+  croNumber?: string
+  prisonCode?: string
 }
