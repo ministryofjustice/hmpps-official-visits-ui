@@ -15,22 +15,26 @@ export default class CheckYourAnswersHandler implements PageHandler {
   public GET = async (req: Request, res: Response) => {
     const { officialVisit } = req.session.journey
     const { prisoner } = officialVisit
+    req.session.journey.reachedCheckAnswers = true
     return res.render('pages/manage/checkYourAnswers', { officialVisit, prisoner })
   }
 
   public POST = async (req: Request, res: Response) => {
-    const { user } = res.locals
-    const { mode } = req.routeContext
+    // Temporary bypass of API createVisit call to demonstrate journey flow
+    return res.redirect(`confirmation/1`)
 
-    if (mode === 'create') {
-      const id = await this.officialVisitsService.createVisit(req.session.journey.officialVisit, user)
-      return res.redirect(`confirmation/${id}`)
-    }
+    // const { user } = res.locals
+    // const { mode } = req.routeContext
 
-    if (mode === 'amend') {
-      await this.officialVisitsService.amendVisit(req.session.journey.officialVisit, user)
-    }
+    // if (mode === 'create') {
+    //   const id = await this.officialVisitsService.createVisit(req.session.journey.officialVisit, user)
+    //   return res.redirect(`confirmation/${id}`)
+    // }
 
-    return res.redirect(`confirmation`)
+    // if (mode === 'amend') {
+    //   await this.officialVisitsService.amendVisit(req.session.journey.officialVisit, user)
+    // }
+
+    // return res.redirect(`confirmation`)
   }
 }

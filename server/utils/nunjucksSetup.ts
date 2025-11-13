@@ -62,4 +62,7 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('parseDate', parseDate)
   njkEnv.addFilter('formatDate', formatDate)
   njkEnv.addFilter('dateAtTime', dateAtTime)
+  njkEnv.addFilter('selected', (items: any[], selected: string) =>
+    items.map(o => ({ ...o, checked: o.value === selected })),
+  )
 }

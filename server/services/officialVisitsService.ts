@@ -1,8 +1,10 @@
+import { Response } from 'express'
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { OfficialVisit, AvailableTimeSlots } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
+import { components } from '../@types/officialVisitsApi'
 
 export default class OfficialVisitsService {
   constructor(private readonly officialVisitsApiClient: OfficialVisitsApiClient) {}
@@ -41,5 +43,9 @@ export default class OfficialVisitsService {
       },
     ]
     return availableTimeSlots
+  }
+
+  public async getReferenceData(res: Response, code: components['schemas']['ReferenceDataGroup']) {
+    return this.officialVisitsApiClient.getReferenceData(code, res.locals.user)
   }
 }

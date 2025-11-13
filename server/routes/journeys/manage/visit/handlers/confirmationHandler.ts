@@ -16,10 +16,11 @@ export default class ConfirmationHandler implements PageHandler {
     const officialVisitId = Number(req.params.officialVisitId)
     const { user } = res.locals
 
-    const visit = await this.officialVisitsService.getOfficialVisitById(officialVisitId, user)
-    const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerNumber, user)
+    req.session.journey.journeyCompleted = true
     req.session.journey.officialVisit = null
 
+    const visit = await this.officialVisitsService.getOfficialVisitById(officialVisitId, user)
+    const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerNumber, user)
     res.render('pages/manage/confirmVisit', { visit, prisoner })
   }
 }

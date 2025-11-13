@@ -3,19 +3,19 @@ import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 
-export default class TimeSlotHandler implements PageHandler {
-  public PAGE_NAME = Page.CHOOSE_TIME_SLOT_PAGE
+export default class ReviewScheduledEventsHandler implements PageHandler {
+  public PAGE_NAME = Page.REVIEW_SCHEDULED_EVENTS_PAGE
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   public GET = async (req: Request, res: Response) => {
-    res.render('pages/manage/chooseTimeSlot', {
-      backUrl: `visit-type`,
+    res.render('pages/manage/reviewScheduledEvents', {
+      backUrl: `time-slot`,
       prisoner: req.session.journey.officialVisit.prisoner,
     })
   }
 
-  public POST = async (req: Request, res: Response) => {
-    return res.redirect(`review-scheduled-events`)
+  public POST = async (_req: Request, res: Response) => {
+    return res.redirect(`select-official-visitors`)
   }
 }

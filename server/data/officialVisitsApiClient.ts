@@ -4,6 +4,7 @@ import config from '../config'
 import logger from '../../logger'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { OfficialVisit } from '../@types/officialVisitsApi/types'
+import { components } from '../@types/officialVisitsApi'
 
 export default class OfficialVisitsApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -13,5 +14,12 @@ export default class OfficialVisitsApiClient extends RestClient {
   // Not a real endpoint at present - none exist - just for test support
   getOfficialVisitById(officialVisitId: number, user: HmppsUser): Promise<OfficialVisit> {
     return this.get<OfficialVisit>({ path: `/official-visits/${officialVisitId}` }, asSystem(user.username))
+  }
+
+  getReferenceData(code: components['schemas']['ReferenceDataGroup'], user: HmppsUser) {
+    return this.get<components['schemas']['ReferenceDataItem'][]>(
+      { path: `/reference-data/group/${code}` },
+      asSystem(user.username),
+    )
   }
 }

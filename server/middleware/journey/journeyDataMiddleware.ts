@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import { Journey } from '../@types/express'
+import { Journey } from '../../@types/express'
 
 const MAX_CONCURRENT_JOURNEYS = 20
 
@@ -12,6 +12,38 @@ export default function journeyDataMiddleware(journeyName: keyof Journey): Reque
 
     req.session.journey ??= {}
     req.session.journeyData ??= {}
+
+    Object.defineProperty(req.session.journey, 'reachedCheckAnswers', {
+      get() {
+        const { journeyId } = req.params
+        return req.session.journeyData[journeyId]?.reachedCheckAnswers
+      },
+      set(value) {
+        const { journeyId } = req.params
+
+        if (!req.session.journeyData[journeyId]) {
+          return
+        }
+
+        req.session.journeyData[journeyId].reachedCheckAnswers = value
+      },
+    })
+
+    Object.defineProperty(req.session.journey, 'journeyCompleted', {
+      get() {
+        const { journeyId } = req.params
+        return req.session.journeyData[journeyId]?.journeyCompleted
+      },
+      set(value) {
+        const { journeyId } = req.params
+
+        if (!req.session.journeyData[journeyId]) {
+          return
+        }
+
+        req.session.journeyData[journeyId].journeyCompleted = value
+      },
+    })
 
     Object.defineProperty(req.session.journey, journeyName, {
       get() {
