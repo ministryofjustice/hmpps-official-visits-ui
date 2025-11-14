@@ -202,7 +202,7 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/available-slots/prison/{prisonCode}': {
+  '/available-slots/{prisonCode}': {
     parameters: {
       query?: never
       header?: never
@@ -210,7 +210,7 @@ export interface paths {
       cookie?: never
     }
     /**
-     * Endpoint to return the available slots for official visits for a prison - TRIAL ONLY.
+     * Endpoint to return the available slots for official visits for a prison for a given date range.
      * @description
      *
      *     Requires one of the following roles:
@@ -843,26 +843,26 @@ export interface components {
       messagesReturnedCount: number
       messages: components['schemas']['DlqMessage'][]
     }
-    AvailableSlotEntity: {
+    AvailableSlot: {
       /** Format: int64 */
-      prisonVisitSlotId: number
+      visitSlotId: number
       /** Format: int64 */
-      prisonTimeSlotId: number
+      timeSlotId: number
       prisonCode: string
-      /** Format: int32 */
-      displaySequence: number
       dayCode: string
       dayDescription: string
+      /** Format: date */
+      visitDate: string
       startTime: string
       endTime: string
       /** Format: uuid */
       dpsLocationId: string
       /** Format: int32 */
-      maxAdults: number
+      availableVideoSessions: number
       /** Format: int32 */
-      maxGroups: number
+      availableAdults: number
       /** Format: int32 */
-      maxVideoSessions: number
+      availableGroups: number
     }
   }
   responses: never
@@ -1198,7 +1198,14 @@ export interface operations {
   }
   getAvailableSlotsForPrison: {
     parameters: {
-      query?: never
+      query: {
+        /** @description The from date in ISO format (YYYY-MM-DD). */
+        fromDate: string
+        /** @description The to date in ISO format (YYYY-MM-DD). */
+        toDate: string
+        /** @description Boolean flag. A value of 'true' will only return video reservable slots. */
+        videoOnly?: boolean
+      }
       header?: never
       path: {
         /**
@@ -1217,7 +1224,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['AvailableSlotEntity'][]
+          'application/json': components['schemas']['AvailableSlot'][]
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */

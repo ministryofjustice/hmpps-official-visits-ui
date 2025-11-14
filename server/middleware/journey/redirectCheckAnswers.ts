@@ -48,7 +48,7 @@ export default function redirectCheckAnswersMiddleware(excludePaths: RegExp[] = 
       const originalUrl = req.originalUrl?.split('?')[0]
 
       if (referer?.endsWith(originalUrl)) {
-        return resRedirect(param1 as number, param2 as string)
+        return resRedirect.call(res, status || 302, url)
       }
 
       const errors = req.flash(FLASH_KEY__VALIDATION_ERRORS)

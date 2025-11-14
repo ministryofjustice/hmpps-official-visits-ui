@@ -1,17 +1,18 @@
 {% extends "partials/layout.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 
-{% set pageTitle = "What type of official visit" %}
+{% set pageTitle = "Will visitors bring equipment?" %}
 
 {% block content %}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       {# Who is attending, time and place, visitors, review, booking complete #}
-      {{ progressTracker(true, false, false, false, false) }}
+      {{ progressTracker(true, true, false, false, false) }}
     </div>
   </div>
 
@@ -26,18 +27,37 @@
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
-        {{ govukRadios({
-          idPrefix: "visitType",
-          name: "visitType",
+        {% set contactItems = [] %}
+        {% for contact in contacts %}
+          {% set contactItems = (contactItems.push(
+            {
+              value: contact.id,
+              text: contact.firstName + " " + contact.lastName,
+              checked: contact.equipment,
+              conditional: {
+                html: govukCharacterCount({
+                    maxlength: 400,
+                    rows: 5,
+                    id: "note-" + contact.id,
+                    name: "note-" + contact.id,
+                    value: contact.equipmentNotes,
+                    errorMessage: validationErrors | findError("note-" + contact.id)
+                  })
+              }
+            }
+          ), contactItems) %}
+        {% endfor %}
+
+        {{ govukCheckboxes({
+          name: "equipment",
           fieldset: {
             legend: {
-              text: "What type of visit?",
+              text: "Will visitors bring equipment?",
               isPageHeading: true,
               classes: "govuk-fieldset__legend--l"
             }
           },
-          items: items | selected(visitTypeCode),
-          errorMessage: validationErrors | findError('visitType')
+          items: contactItems
         }) }}
 
         <div class="govuk-button-group">

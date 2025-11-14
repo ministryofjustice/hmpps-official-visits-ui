@@ -1,3 +1,6 @@
+import { components } from '../../../../@types/officialVisitsApi'
+import { ContactPlaceholder, RestrictionPlaceholder } from '../../../../data/officialVisitsApiClient'
+
 export type OfficialVisitJourney = {
   searchTerm?: string
   searchPage?: string
@@ -18,21 +21,20 @@ export type OfficialVisitJourney = {
   prisoner?: JourneyPrisoner
   staffNotes?: string
   prisonerNotes?: string
-  visitors?: JourneyVisitor[]
+  // Split social and official up to relfect the two different pages
+  officialVisitors?: JourneyVisitor[]
+  socialVisitors?: JourneyVisitor[]
+  availableSlots?: components['schemas']['AvailableSlot'][]
+  selectedTimeSlot?: components['schemas']['AvailableSlot']
 }
 
-export type JourneyVisitor = {
-  officialVisitorId?: number
-  contactId?: number
-  prisonerContactId?: number
-  visitorTypeCode?: string
-  visitorTypeDescription?: string
-  relationshipTypeCode?: string
-  relationshipTypeDescription?: string
-  firstName?: string
-  lastName?: string
-  dateOfBirth?: Date
-  equipment?: JourneyEquipment[]
+export type JourneyVisitor = ContactPlaceholder & {
+  equipment?: boolean // Figma designs point at plaintext notes for now - this is subject to change
+  equipmentNotes?: string
+  assistedVisit?: boolean // undefined means the data has not been specified yet
+  assistanceNotes?: string
+  leadVisitor?: boolean
+  notes?: string
 }
 
 export type JourneyEquipment = {
@@ -52,4 +54,6 @@ export type JourneyPrisoner = {
   pncNumber?: string
   croNumber?: string
   prisonCode?: string
+  restrictions?: RestrictionPlaceholder[]
+  contacts?: ContactPlaceholder[]
 }

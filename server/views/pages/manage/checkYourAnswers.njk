@@ -10,7 +10,7 @@
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       {# Who is attending, time and place, visitors, review, booking complete #}
-      {{ progressTracker(false, false, false, false, false) }}
+      {{ progressTracker(true, true, true, false, false) }}
     </div>
   </div>
 
@@ -20,6 +20,8 @@
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
     </div>
   </div>
+
+  <pre id="json">{{raw}}</pre>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-from-desktop">

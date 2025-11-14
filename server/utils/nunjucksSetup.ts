@@ -65,4 +65,5 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('selected', (items: any[], selected: string) =>
     items.map(o => ({ ...o, checked: o.value === selected })),
   )
+  njkEnv.addFilter('includes', (items: any[], selected: string) => items.includes(selected))
 }

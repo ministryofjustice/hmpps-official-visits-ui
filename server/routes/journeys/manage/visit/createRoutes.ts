@@ -13,6 +13,8 @@ import VisitTypeHandler from './handlers/visitTypeHandler'
 import ReviewScheduledEventsHandler from './handlers/reviewScheduledEventsHandler'
 import SelectOfficialVisitorsHandler from './handlers/selectOfficialVisitorsHandler'
 import SelectSocialVisitorsHandler from './handlers/selectSocialVisitorsHandler'
+import AssistanceRequiredHandler from './handlers/assistanceRequiredHandler'
+import EquipmentHandler from './handlers/equipmentHandler'
 
 export default function CreateRoutes({ auditService, prisonerService, officialVisitsService }: Services): Router {
   const router = Router({ mergeParams: true })
@@ -42,6 +44,8 @@ export default function CreateRoutes({ auditService, prisonerService, officialVi
   route(`/review-scheduled-events`, new ReviewScheduledEventsHandler(officialVisitsService))
   route(`/select-official-visitors`, new SelectOfficialVisitorsHandler(officialVisitsService))
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService))
+  route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
+  route('/equipment', new EquipmentHandler(officialVisitsService))
   route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService, prisonerService))
 
   return router

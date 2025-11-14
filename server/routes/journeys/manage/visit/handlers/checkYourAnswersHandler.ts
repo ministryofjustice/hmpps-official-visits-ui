@@ -16,25 +16,56 @@ export default class CheckYourAnswersHandler implements PageHandler {
     const { officialVisit } = req.session.journey
     const { prisoner } = officialVisit
     req.session.journey.reachedCheckAnswers = true
-    return res.render('pages/manage/checkYourAnswers', { officialVisit, prisoner })
+    return res.render('pages/manage/checkYourAnswers', {
+      raw: JSON.stringify(officialVisit, null, 2),
+      officialVisit,
+      prisoner,
+    })
   }
 
   public POST = async (req: Request, res: Response) => {
-    // Temporary bypass of API createVisit call to demonstrate journey flow
-    return res.redirect(`confirmation/1`)
+    const { user } = res.locals
+    const { mode } = req.routeContext
 
-    // const { user } = res.locals
-    // const { mode } = req.routeContext
+    const visit = req.session.journey.officialVisit
+    const timeSlot = visit.selectedTimeSlot
 
-    // if (mode === 'create') {
-    //   const id = await this.officialVisitsService.createVisit(req.session.journey.officialVisit, user)
-    //   return res.redirect(`confirmation/${id}`)
-    // }
+    if (mode === 'create') {
+      const id = await this.officialVisitsService.createVisit(
+        {
+          prisonVisitSlotId: timeSlot.visitSlotId,
+          prisonCode: visit.prisonCode,
+          prisonerNumber: visit.prisoner.prisonerNumber,
+          visitDate: timeSlot.visitDate,
+          startTime: timeSlot.startTime,
+          endTime: timeSlot.endTime,
+          dpsLocationId: timeSlot.dpsLocationId,
+          visitTypeCode: visit.visitTypeCode,
+          privateNotes: '<TODO>',
+          publicNotes: '<TODO>',
+          officialVisitors: [...visit.officialVisitors, ...visit.socialVisitors].map(o => ({
+            visitorTypeCode: o.visitorTypeCode,
+            contactTypeCode: o.visitorTypeCode,
+            contactId: o.id,
+            prisonerContactId: Number(visit.prisoner.prisonerNumber), // Not sure what this actually is - API expects a number but prisonerNumber is a string
+            firstName: o.firstName,
+            lastName: o.lastName,
+            dateOfBirth: o.dateOfBirth,
+            relationshipTypeCode: o.relationshipTypeCode,
+            relationshipTypeDescription: o.relationshipTypeDescription,
+            address: o.address,
+            visitorNotes: o.assistanceNotes,
+          })),
+        },
+        user,
+      )
+      return res.redirect(`confirmation/${id}`)
+    }
 
-    // if (mode === 'amend') {
-    //   await this.officialVisitsService.amendVisit(req.session.journey.officialVisit, user)
-    // }
+    if (mode === 'amend') {
+      await this.officialVisitsService.amendVisit(req.session.journey.officialVisit, user)
+    }
 
-    // return res.redirect(`confirmation`)
+    return res.redirect(`confirmation`)
   }
 }
