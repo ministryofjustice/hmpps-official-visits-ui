@@ -1,32 +1,44 @@
 {% extends "partials/layout.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
 
-{% set pageTitle = "Check your Answers" %}
+{% set pageTitle = "What type of official visit" %}
 
 {% block content %}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       {# Who is attending, time and place, visitors, review, booking complete #}
-      {{ progressTracker(true, true, true, false, false) }}
+      {{ progressTracker(true, false, false, false, false) }}
     </div>
   </div>
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Schedule an official visit</span>
-      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
     </div>
   </div>
-
-  <pre id="json">{{raw}}</pre>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-from-desktop">
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+
+        {{ govukRadios({
+          idPrefix: "visitType",
+          name: "visitType",
+          fieldset: {
+            legend: {
+              text: "What type of visit?",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l"
+            }
+          },
+          items: items | selected(visitTypeCode),
+          errorMessage: validationErrors | findError('visitType')
+        }) }}
 
         <div class="govuk-button-group">
           {{ govukButton({

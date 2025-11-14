@@ -3,10 +3,10 @@ import type { Services } from '../../../../services'
 import createRoutes from './createRoutes'
 import amendRoutes from './amendRoutes'
 import cancelRoutes from './cancelRoutes'
-import insertJourneyIdentifier from '../../../../middleware/insertJourneyIdentifier'
-import journeyDataMiddleware from '../../../../middleware/journeyDataMiddleware'
+import insertJourneyIdentifier from '../../../../middleware/journey/insertJourneyIdentifier'
+import journeyDataMiddleware from '../../../../middleware/journey/journeyDataMiddleware'
 import initialiseJourney from './middleware/initialiseJourney'
-import insertJourneyModeContext from '../../../../middleware/insertJourneyModeContext'
+import insertJourneyModeContext from '../../../../middleware/journey/insertJourneyModeContext'
 
 export default function Index(services: Services): Router {
   const router = Router({ mergeParams: true })

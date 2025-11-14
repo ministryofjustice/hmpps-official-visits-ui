@@ -1,8 +1,10 @@
+import { Response } from 'express'
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { OfficialVisit, AvailableTimeSlots } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
+import { components } from '../@types/officialVisitsApi'
 
 export default class OfficialVisitsService {
   constructor(private readonly officialVisitsApiClient: OfficialVisitsApiClient) {}
@@ -17,9 +19,11 @@ export default class OfficialVisitsService {
     return true
   }
 
-  public async createVisit(visit: OfficialVisitJourney, user: HmppsUser) {
+  public async createVisit(visit: components['schemas']['CreateOfficialVisitRequest'], user: HmppsUser) {
     logger.info(`Just using vars ${JSON.stringify(visit)}, ${JSON.stringify(user)}`)
-    // TODO: Map the journey to a VisitCreateRequest, call service create, and return a visit
+    // TODO: Bypass create code while for demo
+    return '1'
+    // return await this.officialVisitsApiClient.createOfficialVisit(visit, user)
   }
 
   public async amendVisit(visit: OfficialVisitJourney, user: HmppsUser) {
@@ -41,5 +45,25 @@ export default class OfficialVisitsService {
       },
     ]
     return availableTimeSlots
+  }
+
+  public async getReferenceData(res: Response, code: components['schemas']['ReferenceDataGroup']) {
+    return this.officialVisitsApiClient.getReferenceData(code, res.locals.user)
+  }
+
+  public async getActiveRestrictions(res: Response, prisonId: string, prisonerNumber: string) {
+    return this.officialVisitsApiClient.getActiveRestrictions(prisonId, prisonerNumber, res.locals.user)
+  }
+
+  public async getOfficialContacts(res: Response, prisonId: string, prisonerNumber: string) {
+    return this.officialVisitsApiClient.getContacts(prisonId, prisonerNumber, res.locals.user)
+  }
+
+  public async getAvailableSlots(res: Response, prisonId: string, startDate: string, endDate: string) {
+    return this.officialVisitsApiClient.getAvailableTimeSlots(prisonId, startDate, endDate, res.locals.user)
+  }
+
+  public async getSchedule(res: Response, prisonId: string, date: string) {
+    return this.officialVisitsApiClient.getSchedule(prisonId, date, res.locals.user)
   }
 }

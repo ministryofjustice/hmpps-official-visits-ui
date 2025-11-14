@@ -3,7 +3,7 @@
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "partials/formatCvpLink.njk" import formatCvpLink %}
+{# {% from "partials/formatCvpLink.njk" import formatCvpLink %} #}
 
 {% set mode = session.req.routeContext.mode %}
 {% set pageTitle = "The visit has been booked" if mode == 'create' else 'The visit has been updated' %}

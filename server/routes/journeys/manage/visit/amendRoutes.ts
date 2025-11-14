@@ -29,7 +29,7 @@ export default function AmendRoutes({ auditService, prisonerService, officialVis
   })
 
   // TODO: Fill in the routes for amending an official visit
-  route('/official-visit/choose-time-slot', new TimeSlotHandler(officialVisitsService, prisonerService))
+  route('/official-visit/choose-time-slot', new TimeSlotHandler(officialVisitsService))
   route('/official-visit/check-your-answers', new CheckYourAnswersHandler(officialVisitsService, prisonerService))
 
   return router

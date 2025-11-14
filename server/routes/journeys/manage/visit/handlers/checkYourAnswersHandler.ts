@@ -15,15 +15,50 @@ export default class CheckYourAnswersHandler implements PageHandler {
   public GET = async (req: Request, res: Response) => {
     const { officialVisit } = req.session.journey
     const { prisoner } = officialVisit
-    return res.render('pages/manage/checkYourAnswers', { officialVisit, prisoner })
+    req.session.journey.reachedCheckAnswers = true
+    return res.render('pages/manage/checkYourAnswers', {
+      raw: JSON.stringify(officialVisit, null, 2),
+      officialVisit,
+      prisoner,
+    })
   }
 
   public POST = async (req: Request, res: Response) => {
     const { user } = res.locals
     const { mode } = req.routeContext
 
+    const visit = req.session.journey.officialVisit
+    const timeSlot = visit.selectedTimeSlot
+
     if (mode === 'create') {
-      const id = await this.officialVisitsService.createVisit(req.session.journey.officialVisit, user)
+      const id = await this.officialVisitsService.createVisit(
+        {
+          prisonVisitSlotId: timeSlot.visitSlotId,
+          prisonCode: visit.prisonCode,
+          prisonerNumber: visit.prisoner.prisonerNumber,
+          visitDate: timeSlot.visitDate,
+          startTime: timeSlot.startTime,
+          endTime: timeSlot.endTime,
+          dpsLocationId: timeSlot.dpsLocationId,
+          visitTypeCode: visit.visitTypeCode,
+          privateNotes: '<TODO>',
+          publicNotes: '<TODO>',
+          officialVisitors: [...visit.officialVisitors, ...visit.socialVisitors].map(o => ({
+            visitorTypeCode: o.visitorTypeCode,
+            contactTypeCode: o.visitorTypeCode,
+            contactId: o.id,
+            prisonerContactId: Number(visit.prisoner.prisonerNumber), // Not sure what this actually is - API expects a number but prisonerNumber is a string
+            firstName: o.firstName,
+            lastName: o.lastName,
+            dateOfBirth: o.dateOfBirth,
+            relationshipTypeCode: o.relationshipTypeCode,
+            relationshipTypeDescription: o.relationshipTypeDescription,
+            address: o.address,
+            visitorNotes: o.assistanceNotes,
+          })),
+        },
+        user,
+      )
       return res.redirect(`confirmation/${id}`)
     }
 

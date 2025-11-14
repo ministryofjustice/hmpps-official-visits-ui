@@ -38,6 +38,6 @@ export default class PrisonerSelectHandler implements PageHandler {
 
     logger.info(`Session journey officialVisit : ${JSON.stringify(req.session.journey.officialVisit, null, 2)}`)
 
-    res.redirect('review-prisoner')
+    res.redirect('visit-type')
   }
 }
