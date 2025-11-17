@@ -8,6 +8,8 @@ export interface JourneyData extends Journey {
 
 export interface Journey {
   officialVisit?: OfficialVisitJourney
+  journeyCompleted?: boolean
+  reachedCheckAnswers?: boolean
 }
 
 export declare module 'express-session' {

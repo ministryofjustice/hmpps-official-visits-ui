@@ -6,5 +6,7 @@ export function expectErrorMessages(errorMessages: FieldValidationError[]) {
 }
 
 export function expectNoErrorMessages() {
-  expect(flashProvider).not.toHaveBeenCalled()
+  // Redirect check answers middleware checks flash contents only
+  expect(flashProvider).toHaveBeenCalledTimes(1)
+  expect(flashProvider).toHaveBeenNthCalledWith(1, 'validationErrors')
 }

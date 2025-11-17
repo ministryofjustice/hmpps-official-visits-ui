@@ -5,11 +5,15 @@ import manageVisits from './journeys/manage/visit'
 import viewVisits from './journeys/view'
 import timeslots from './timetable'
 import config from '../config'
+import preventNavigationToExpiredJourneys from '../middleware/journey/preventNavigationToExpiredJourneys'
+import redirectCheckAnswersMiddleware from '../middleware/journey/redirectCheckAnswers'
 
 export default function routes(_services: Services): Router {
   const router = Router()
   router.use((req, res, next) => (config.maintenanceMode ? res.render('pages/maintenanceMode') : next()))
   router.use('/', home(_services))
+  router.use(preventNavigationToExpiredJourneys([/confirmation(\/[0-9a-zA-Z-]+)$/]))
+  router.use(redirectCheckAnswersMiddleware([/check-your-answers$/]))
   router.use('/timeslots', timeslots(_services))
   router.use('/manage', manageVisits(_services))
   router.use('/view', viewVisits(_services))

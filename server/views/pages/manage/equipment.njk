@@ -1,0 +1,73 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+
+{% set pageTitle = "Will visitors bring equipment?" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      {# Who is attending, time and place, visitors, review, booking complete #}
+      {{ progressTracker(true, true, false, false, false) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Schedule an official visit</span>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full-from-desktop">
+      <form method='POST'>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+
+        {% set contactItems = [] %}
+        {% for contact in contacts %}
+          {% set contactItems = (contactItems.push(
+            {
+              value: contact.id,
+              text: contact.firstName + " " + contact.lastName,
+              checked: contact.equipment,
+              conditional: {
+                html: govukCharacterCount({
+                    maxlength: 400,
+                    rows: 5,
+                    id: "note-" + contact.id,
+                    name: "note-" + contact.id,
+                    value: contact.equipmentNotes,
+                    errorMessage: validationErrors | findError("note-" + contact.id)
+                  })
+              }
+            }
+          ), contactItems) %}
+        {% endfor %}
+
+        {{ govukCheckboxes({
+          name: "equipment",
+          fieldset: {
+            legend: {
+              text: "Will visitors bring equipment?",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l"
+            }
+          },
+          items: contactItems
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+                text: "Confirm",
+                preventDoubleClick: true
+            }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

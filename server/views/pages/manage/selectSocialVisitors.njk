@@ -2,17 +2,17 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 
-{% set pageTitle = "When is the visit?" %}
+{% set pageTitle = "Select social vistors" %}
 
 {% block content %}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       {# Who is attending, time and place, visitors, review, booking complete #}
-      {{ progressTracker(true, false, false, false, false) }}
+      {{ progressTracker(true, true, false, false, false) }}
     </div>
   </div>
 
@@ -28,48 +28,42 @@
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
-        Day picker <br />
-
-      {% set rows = [] %}
-        {% for event in schedule %}
+        {% set rows = [] %}
+        {% for contact in contacts %}
           {% set rows = (rows.push([
-            { text: (event.startTime + ' to ' + event.endTime)  },
-            { text: event.eventName },
-            { text: event.typeDescription },
-            { text: event.locationDescription }
+            { html: govukCheckboxes({
+              name: "selected[" + contact.id + "]",
+              classes: "govuk-checkboxes--small",
+              items: [
+                {
+                  value: contact.id,
+                  text: "Add",
+                  checked: selectedContacts | includes(contact.id)
+                }
+              ]
+            }) },
+            { text: (contact.firstName + " " + contact.lastName) | convertToTitleCase },
+            { text: contact.dateOfBirth | formatDate },
+            { text: contact.relationshipTypeDescription or '-' },
+            { text: 'TODO' },
+            { text: 'TODO' }
           ]), rows) %}
         {% endfor %}
 
         {{ govukTable({
-          caption: "Schedule",
+          caption: "Approved social contacts",
           captionClasses: "govuk-table__caption--m",
           firstCellIsHeader: true,
           head: [
-            {text: "Time"},
-            {text: "Event name"},
-            {text: "Type"},
-            {text: "Location"}
+            {text: "Add"},
+            {text: "Name"},
+            {text: "Date of birth"},
+            {text: "Relationship"},
+            {text: "Address"},
+            {text: "Active restrictions"}
           ],
           rows: rows
         }) }}
-
-        {% set items = [] %}
-        {% for slot in slots %}
-          {% set items = (items.push(
-            {
-              value: slot.visitSlotId + '-' + slot.timeSlotId,
-              html: '<b>' + slot.startTime + ' - ' + slot.endTime +'</b><br />' + 'Description Text?',
-              checked: selectedTimeSlot == (slot.visitSlotId + '-' + slot.timeSlotId)
-            }
-          ), items) %}
-        {% endfor %}
-
-        {{ govukRadios({
-          idPrefix: "timeSlot",
-          name: "timeSlot",
-          items: items,
-          errorMessage: validationErrors | findError('visitType')
-        })}}
 
         <div class="govuk-button-group">
           {{ govukButton({
