@@ -1,8 +1,8 @@
 {% extends "partials/layout.njk" %}
 
-{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "partials/continueCancel.njk" import continueCancel %}
 
 {% set pageTitle = "What type of official visit?" %}
 
@@ -35,13 +35,7 @@
           errorMessage: validationErrors | findError('visitType')
         }) }}
 
-        <div class="govuk-button-group">
-          {{ govukButton({
-                text: "Confirm",
-                preventDoubleClick: true
-            }) }}
-          <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel and return to homepage</a>
-        </div>
+        {{ continueCancel({}) }}
       </form>
     </div>
   </div>

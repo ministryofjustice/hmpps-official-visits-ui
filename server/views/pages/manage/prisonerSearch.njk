@@ -1,8 +1,8 @@
 {% extends "partials/layout.njk" %}
 
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "partials/continueCancel.njk" import continueCancel %}
 
 {% set pageTitle = "Who is the official visit for?" %}
 
@@ -40,16 +40,9 @@
           value: formResponses.searchTerm or searchTerm
         }) }}
 
-        <div class="govuk-button-group">
-          {{ govukButton({
-              html: "Search",
-              preventDoubleClick: true,
-              type: "submit"
-          }) }}
-
-          <a href="/" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">Cancel and return to homepage</a>
-        </div>
-
+        {{ continueCancel({
+          continueText: "Search"
+        }) }}
       </form>
     </div>
   </div>
