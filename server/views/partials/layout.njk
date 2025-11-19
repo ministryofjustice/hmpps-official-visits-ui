@@ -15,7 +15,7 @@
   {% endfor %}
 {% endblock %}
 
-{% block pageTitle %}{{pageTitle | default(applicationName)}}{% endblock %}
+{% block pageTitle %}{{[pageTitle, "Official visits", "DPS"] | select() | join(" - ")}}{% endblock %}
 
 {% block header %}
   {{ feComponents.header | safe }}

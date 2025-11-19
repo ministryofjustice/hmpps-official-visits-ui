@@ -3,7 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { OfficialVisit } from '../@types/officialVisitsApi/types'
+import { OfficialVisit, RefDataItem } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
 
 export type RestrictionPlaceholder = {
@@ -59,10 +59,7 @@ export default class OfficialVisitsApiClient extends RestClient {
   }
 
   getReferenceData(code: components['schemas']['ReferenceDataGroup'], user: HmppsUser) {
-    return this.get<components['schemas']['ReferenceDataItem'][]>(
-      { path: `/reference-data/group/${code}` },
-      asSystem(user.username),
-    )
+    return this.get<RefDataItem[]>({ path: `/reference-data/group/${code}` }, asSystem(user.username))
   }
 
   getSchedule(_prisonId: string, _date: string, _user: HmppsUser): Promise<ScheduleItemPlaceholder[]> {

@@ -1,10 +1,10 @@
 {% extends "partials/layout.njk" %}
 
-{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "partials/continueCancel.njk" import continueCancel %}
 
-{% set pageTitle = "What type of official visit" %}
+{% set pageTitle = "What type of official visit?" %}
 
 {% block content %}
 
@@ -15,14 +15,9 @@
     </div>
   </div>
 
-  <div class="govuk-grid-row govuk-body">
-    <div class="govuk-grid-column-three-quarters">
-      <span class="govuk-hint">Schedule an official visit</span>
-    </div>
-  </div>
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-from-desktop">
+      <span class="govuk-hint">Schedule an official visit</span>
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
@@ -31,22 +26,16 @@
           name: "visitType",
           fieldset: {
             legend: {
-              text: "What type of visit?",
+              text: pageTitle,
               isPageHeading: true,
               classes: "govuk-fieldset__legend--l"
             }
           },
-          items: items | selected(visitTypeCode),
+          items: items | selected(visitType),
           errorMessage: validationErrors | findError('visitType')
         }) }}
 
-        <div class="govuk-button-group">
-          {{ govukButton({
-                text: "Confirm",
-                preventDoubleClick: true
-            }) }}
-          <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel</a>
-        </div>
+        {{ continueCancel({}) }}
       </form>
     </div>
   </div>
