@@ -21,9 +21,10 @@ export default class PrisonerSearchResultsHandler implements PageHandler {
     })
 
     res.render('pages/manage/searchResults', {
+      backUrl: 'search',
       backTo: encodeURIComponent(`results?page=${page}`),
       results,
-      showBreadcrumbs: true,
+      showBreadcrumbs: false,
     })
   }
 }
