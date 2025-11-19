@@ -14,6 +14,7 @@ import {
 } from 'date-fns'
 import { enGB } from 'date-fns/locale'
 import { components } from '../@types/officialVisitsApi'
+import { PrisonerDetails } from '../routes/journeys/manage/visit/journey'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -136,6 +137,16 @@ export const ensureNotBeforeToday = (dateToFormat: string): Date => {
   const selectedDate = parseISO(dateToFormat)
   const now = new Date()
   return isBefore(selectedDate, now) ? now : new Date(dateToFormat)
+}
+
+export const capitaliseName = (name?: string) => {
+  return isBlank(name) ? '' : name!.toLowerCase().replace(/\b[a-z]/g, letter => letter.toUpperCase())
+}
+
+export const formatNameLastNameFirst = (val: { lastName: string; firstName: string } | PrisonerDetails): string => {
+  let name = `${val.lastName}, `
+  name += val.firstName
+  return capitaliseName(name)
 }
 
 export const refDataRadiosMapper = (referenceData: components['schemas']['ReferenceDataItem']) => {

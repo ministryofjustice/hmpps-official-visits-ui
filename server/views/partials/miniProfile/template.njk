@@ -1,12 +1,11 @@
 <div class="mini-profile govuk-!-margin-top-7" data-qa="mini-profile">
-    {% set formattedName =  prisonerDetails | formatNameLastNameFirst(excludeMiddleNames = true) %}
+    {% set formattedName =  prisonerDetails | formatNameLastNameFirst %}
+   {% set imageUrl =  '/prisoner-image/{{ prisonerDetails.prisonerNumber}}' %}
     <div class="mini-profile-inner">
         <div class="mini-profile-left">
-          {% if isGranted(CorePersonRecordPermission.read_photo, prisonerPermissions) %}
-            <img class="mini-profile-person-img" src="/prisoner-image/{{ prisonerDetails.prisonerNumber}}" alt="Image of {{ formattedName }}" loading="lazy" data-qa="mini-profile-person-img">
-          {% else %}
-            <img class="mini-profile-person-img" src="/assets/images/prisoner-profile-image.png" alt="Image of {{ formattedName }} is not available" loading="lazy" data-qa="mini-profile-person-img-unavailable">
-          {% endif %}
+
+            <img class="mini-profile-person-img" src="{{ imageUrl or '/assets/images/prisoner-profile-image.png'}}" alt="Image of {{ formattedName }}" loading="lazy" data-qa="mini-profile-person-img">
+
         </div>
         <div class="mini-profile-right">
             <ul class="mini-profile-info">
