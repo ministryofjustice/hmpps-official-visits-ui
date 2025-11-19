@@ -1,0 +1,35 @@
+<div class="mini-profile govuk-!-margin-top-7" data-qa="mini-profile">
+    {% set formattedName =  prisonerDetails | formatNameLastNameFirst(excludeMiddleNames = true) %}
+    <div class="mini-profile-inner">
+        <div class="mini-profile-left">
+          {% if isGranted(CorePersonRecordPermission.read_photo, prisonerPermissions) %}
+            <img class="mini-profile-person-img" src="/prisoner-image/{{ prisonerDetails.prisonerNumber}}" alt="Image of {{ formattedName }}" loading="lazy" data-qa="mini-profile-person-img">
+          {% else %}
+            <img class="mini-profile-person-img" src="/assets/images/prisoner-profile-image.png" alt="Image of {{ formattedName }} is not available" loading="lazy" data-qa="mini-profile-person-img-unavailable">
+          {% endif %}
+        </div>
+        <div class="mini-profile-right">
+            <ul class="mini-profile-info">
+                <li>
+                    <p class="govuk-heading-s govuk-!-margin-bottom-1">
+                        <a id="mini-profile-link" class="govuk-link--no-visited-state" href="{{ DPS_HOME_PAGE_URL }}/prisoner/{{ prisonerDetails.prisonerNumber }}" target="_blank" data-qa="mini-profile-person-profile-link">{{ formattedName }}</a>
+                    </p>
+                    <span class="govuk-body" data-qa="mini-profile-prisoner-number">{{ prisonerDetails.prisonerNumber }}</span>
+                </li>
+                <li>
+                     <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Date of birth</span>
+                     <span class="govuk-body" data-qa="mini-profile-dob">{{ prisonerDetails.dateOfBirth | formatDate }}</span>
+                </li>
+                <li>
+                    <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Establishment</span>
+                    <span class="govuk-body" data-qa="mini-profile-prison-name">{{ prisonerDetails.prisonName }}</span>
+                </li>
+                <li>
+                    <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Cell number</span>
+                    <span class="govuk-body" data-qa="mini-profile-cell-location">{{ prisonerDetails.cellLocation }}</span>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</div>

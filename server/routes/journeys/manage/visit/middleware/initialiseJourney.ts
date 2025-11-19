@@ -1,6 +1,8 @@
 import { RequestHandler } from 'express'
 import { parse } from 'date-fns'
 import { Services } from '../../../../../services'
+import { Prisoner } from '../../../../../@types/prisonerSearchApi/types'
+import { PrisonerDetails } from '../journey'
 
 /**
  * This middleware will populate the official visit journey data for the requested officialVisitId
@@ -52,7 +54,24 @@ export default ({ officialVisitsService, prisonerService }: Services): RequestHa
       staffNotes: visit.staffNotes,
       prisonerNotes: visit.prisonerNotes,
     }
-
+    res.locals.prisonerDetails = toPrisonerDetails(prisoner)
     return next()
+  }
+  function toPrisonerDetails(prisoner: Prisoner): PrisonerDetails {
+    const hasPrimaryAddress = !!(
+      prisoner.addresses &&
+      prisoner.addresses.length > 0 &&
+      prisoner.addresses.find(address => address.primaryAddress)
+    )
+
+    return {
+      prisonerNumber: prisoner.prisonerNumber,
+      lastName: prisoner.lastName,
+      firstName: prisoner.firstName,
+      dateOfBirth: prisoner.dateOfBirth,
+      prisonName: prisoner.prisonName,
+      cellLocation: prisoner.cellLocation,
+      hasPrimaryAddress,
+    }
   }
 }

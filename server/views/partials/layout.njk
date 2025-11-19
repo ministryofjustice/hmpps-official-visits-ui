@@ -37,6 +37,9 @@
         }) }}
       </div>
     </div>
+      {% if prisonerDetails %}
+        {{ miniProfile(prisonerDetails, prisonerPermissions) }}
+      {% endif %}
   {% endif %}
 
   {% block pageHeader %}{% endblock %}
