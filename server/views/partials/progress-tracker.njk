@@ -1,14 +1,14 @@
 {% from "moj/components/progress-bar/macro.njk" import mojProgressBar %}
 
-{% macro progressTracker(prisonerFlag, timeAndPlaceFlag, visitorFlag, reviewFlag, completeFlag) %}
+{% macro progressTracker(attendingFlag, timeAndPlaceFlag, visitorFlag, reviewFlag, completeFlag) %}
 
   {{ mojProgressBar({
     items: [
-      { id: 1, label: { text: 'Who is attending' }, complete: prisonerFlag },
-      { id: 2, label: { text: 'Time and place' }, complete: timeAndPlaceFlag },
-      { id: 3, label: { text: 'Visitors' }, complete: visitorFlag },
-      { id: 4, label: { text: 'Review visit' }, complete: reviewFlag },
-      { id: 5, label: { text: 'Booking complete' }, complete: completeFlag }
+      { id: 1, label: { text: 'Who is attending' }, complete: attendingFlag },
+      { id: 2, label: { text: 'Visit time and place' }, complete: timeAndPlaceFlag },
+      { id: 3, label: { text: 'Visit type and visitors' }, complete: visitorFlag },
+      { id: 4, label: { text: 'Review' }, complete: reviewFlag },
+      { id: 5, label: { text: 'Confirm' }, complete: completeFlag }
     ]
   }) }}
 

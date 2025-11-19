@@ -1,8 +1,8 @@
 {% extends "partials/layout.njk" %}
 
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "partials/continueCancel.njk" import continueCancel %}
 
 {% set pageTitle = "Who is the official visit for?" %}
 
@@ -10,7 +10,7 @@
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
-      {# Who is attending, time and place, visitors, review, booking complete #}
+      {# Who is attending, time and place, visitors, review, confirm #}
       {{ progressTracker(false, false, false, false, false) }}
     </div>
   </div>
@@ -30,19 +30,19 @@
         {{ govukInput({
           id: "searchTerm",
           name: "searchTerm",
-          label: { text: "Search by prisoner name, number, PNC or CRO" },
+          label: {
+            text: "Search by prisoner name or prisoner ID",
+            classes: "govuk-!-font-weight-bold"
+          },
           classes: 'govuk-!-width-one-third',
           autocomplete: "off",
           errorMessage: validationErrors | findError('searchTerm'),
           value: formResponses.searchTerm or searchTerm
         }) }}
 
-        {{ govukButton({
-          html: "Search",
-          preventDoubleClick: true,
-          type: "submit"
+        {{ continueCancel({
+          continueText: "Search"
         }) }}
-
       </form>
     </div>
   </div>

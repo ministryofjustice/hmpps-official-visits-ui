@@ -34,11 +34,21 @@
         {% set rows = [] %}
         {% for result in results.content %}
           {% set actionHtml %}
-            <a href="prisoner-select?prisonerNumber={{ result.prisonerNumber }}&page={{results.number}}" class="govuk-link govuk-link--no-visited-state">Select</a>
+            <a href="prisoner-select?prisonerNumber={{ result.prisonerNumber }}&page={{results.number}}" class="govuk-link govuk-link--no-visited-state">Select this prisoner</a>
+          {% endset %}
+
+          {% set profileHtml %}
+            <a id="search-results-profile-link"
+               class="govuk-link--no-visited-state"
+               href="{{ prisonerProfileUrl }}/prisoner/{{ result.prisonerNumber }}"
+               target="_blank"
+               data-qa="search-results-profile-link">
+              {{ (result.lastName + ", " + result.firstName) | convertToTitleCase }}
+            </a>
           {% endset %}
 
           {% set rows = (rows.push([
-            { text: (result.firstName + " " + result.lastName) | convertToTitleCase },
+            { html: profileHtml },
             { text: result.prisonerNumber },
             { text: result.dateOfBirth | formatDate },
             { text: result.cellLocation },

@@ -25,7 +25,7 @@ describe('OfficialVisitsService', () => {
       prisonerNumber: 'A1111AA',
       visitStatusCode: 'SCH',
       visitStatusDescription: 'Scheduled',
-      visitTypeCode: 'VIDEO',
+      visitType: 'VIDEO',
       visitTypeDescription: 'Video visit',
       visitDate: '2025-12-10',
       startTime: '10:15',

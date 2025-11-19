@@ -34,7 +34,7 @@ export default ({ officialVisitsService, prisonerService }: Services): RequestHa
       prisonName: visit.prisonName,
       visitStatusCode: visit.visitStatusCode,
       visitStatusDescription: visit.visitStatusDescription,
-      visitTypeCode: visit.visitTypeCode,
+      visitType: visit.visitType,
       visitTypeDescription: visit.visitTypeDescription,
       visitDate: parseDateToISOString(visit.visitDate),
       startTime: parseTimeToISOString(visit.startTime),

@@ -9,7 +9,7 @@ export type OfficialVisitJourney = {
   prisonName?: string
   visitStatusCode?: string
   visitStatusDescription?: string
-  visitTypeCode?: string
+  visitType?: string
   visitTypeDescription?: string
   visitDate?: string
   startTime?: string
