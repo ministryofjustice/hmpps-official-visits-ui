@@ -32,6 +32,7 @@ context('Healthcheck', () => {
       cy.task('stubLocationsInPrisonApiPing')
       cy.task('stubPrisonerSearchApiPing')
       cy.task('stubOfficialVisitsApiPing')
+      cy.task('stubPrisonApiPing')
     })
 
     it('Reports correctly when token verification down', () => {

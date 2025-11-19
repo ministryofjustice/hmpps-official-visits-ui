@@ -2,11 +2,11 @@ import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 
 export default {
-  stubPrisonerSearchApiPing: (httpStatus: number = 200): SuperAgentRequest =>
+  stubPrisonApiPing: (httpStatus: number = 200): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: '/prisoner-api/health/ping',
+        urlPattern: '/prison-api/health/ping',
       },
       response: {
         status: httpStatus,
