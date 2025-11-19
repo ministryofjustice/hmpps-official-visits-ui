@@ -66,4 +66,5 @@ export default function nunjucksSetup(app: express.Express): void {
     items.map(o => ({ ...o, checked: o.value === selected })),
   )
   njkEnv.addFilter('includes', (items: any[], selected: string) => items.includes(selected))
+  njkEnv.addFilter('possessiveComma', (name: string) => (name.endsWith('s') ? `${name}’` : `${name}’s`))
 }

@@ -16,7 +16,7 @@
     @include govuk-font($size: 19);
   }
 
-  & a {
+  & .day {
     @include govuk-font($size: 24);
   }
 

@@ -1,0 +1,121 @@
+{% extends "partials/layout.njk" %}
+
+{% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "partials/continueCancel.njk" import continueCancel %}
+
+{% set pageTitle = "Select date and time of official visit" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      {# Who is attending, time and place, visitors, review, booking complete #}
+      {{ progressTracker(true, false, false, false, false) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Schedule an official visit</span>
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full-from-desktop">
+      <form method='POST'>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+
+        <nav aria-labelledby="selected-date">
+          <h2 class="govuk-heading-m" id="selected-date">{{ selectedDate | formatDate('EEEE d MMMM yyyy') }}</h2>
+
+          <ul class="govuk-list bapv-timetable-dates govuk-!-margin-bottom-1">
+            {% for day in weekOfDates %}
+              {% set selected = day.date == selectedDate %}
+              <li class="bapv-timetable-dates__date{{ ' bapv-timetable-dates__date--selected' if selected }}">
+                <span>{{ day.date | formatDate('E') }}</span>
+                {% if not selected and day.isInFuture %}
+                  <a class="govuk-link--no-visited-state" href="?date={{ day.date | formatDate('yyyy-MM-dd') }}">
+                  {% endif %}
+                  <span class="day" id="day-{{ loop.index }}">{{ day.date | formatDate('d') }}</span>
+                  <span class="govuk-visually-hidden">
+                    {{ day.date | formatDate('MMMM yyyy') }}
+                  </span>
+                  {% if not selected and day.isInFuture %}
+                  </a>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+          <ul class="govuk-list bapv-timetable-dates">
+
+            <li class="moj-pagination__item  moj-pagination__item--prev">
+              {% if (weekOfDates | first).isInFuture and (weekOfDates | first).date != today %}
+                <a class="moj-pagination__link" href="?date={{ previousWeek | formatDate('yyyy-MM-dd') }}">Previous week</a>
+              {% endif %}
+            </li>
+            <li class="moj-pagination__item  moj-pagination__item--next">
+              <a class="moj-pagination__link" href="?date={{ nextWeek | formatDate('yyyy-MM-dd') }}">Next week</a>
+            </li>
+          </ul>
+        </nav>
+
+        {% if schedule | length %}
+          {% set rows = [] %}
+          {% for event in schedule %}
+            {% set rows = (rows.push([
+              {
+                text: (event.startTime + ' to ' + event.endTime)
+              }, {
+                text: event.eventName
+              }, {
+                text: event.typeDescription
+              }, {
+                text: event.locationDescription
+              }
+            ]), rows) %}
+          {% endfor %}
+          <div class="govuk-inset-text">
+            {{ govukTable({
+            caption: (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase | possessiveComma + " schedule",
+            captionClasses: "govuk-table__caption--m",
+            head: [
+              {text: "Time"},
+              {text: "Event name"},
+              {text: "Type"},
+              {text: "Location"}
+            ],
+            rows: rows
+          }) }}
+
+            {% set items = [] %}
+            {% for slot in slots %}
+              {% set items = (items.push(
+              {
+                value: slot.visitSlotId + '-' + slot.timeSlotId,
+                html: '<b>' + slot.startTime + ' - ' + slot.endTime +'</b><br />' + 'Description Text?',
+                checked: selectedTimeSlot == (slot.visitSlotId + '-' + slot.timeSlotId)
+              }
+            ), items) %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if items | length %}
+          {{ govukRadios({
+            idPrefix: "timeSlot",
+            name: "timeSlot",
+            items: items,
+            errorMessage: validationErrors | findError('timeSlot')
+          })}}
+        {% else %}
+          <p> No visit sessions on this day.</p>
+        {% endif %}
+
+        {{ continueCancel({})}}
+      </form>
+    </div>
+  </div>
+{% endblock %}
