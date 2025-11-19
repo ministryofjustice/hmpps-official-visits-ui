@@ -56,14 +56,5 @@ export type JourneyPrisoner = {
   prisonCode?: string
   restrictions?: RestrictionPlaceholder[]
   contacts?: ContactPlaceholder[]
-}
-
-export interface PrisonerDetails {
-  prisonerNumber: string
-  lastName: string
-  firstName: string
-  dateOfBirth: string
-  prisonName?: string | undefined
-  cellLocation?: string | undefined
-  hasPrimaryAddress: boolean
+  prisonName?: string
 }
