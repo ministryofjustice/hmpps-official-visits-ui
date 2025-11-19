@@ -7,6 +7,7 @@ import componentsApi from './integration_tests/mockApis/componentsApi'
 import locationsInPrisonApi from './integration_tests/mockApis/locationsInPrisonApi'
 import prisonerSearchApi from './integration_tests/mockApis/prisonerSearchApi'
 import officialVisitsApi from './integration_tests/mockApis/officialVisitsApi'
+import prisonApi from './integration_tests/mockApis/prisonApi'
 
 export default defineConfig({
   chromeWebSecurity: false,
@@ -28,6 +29,7 @@ export default defineConfig({
         ...locationsInPrisonApi,
         ...prisonerSearchApi,
         ...officialVisitsApi,
+        ...prisonApi,
       })
     },
     baseUrl: 'http://localhost:3007',
