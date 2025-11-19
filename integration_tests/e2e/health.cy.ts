@@ -42,6 +42,7 @@ context('Healthcheck', () => {
         expect(response.body.components.locationsInsidePrisonApi.status).to.equal('UP')
         expect(response.body.components.prisonerSearchApi.status).to.equal('UP')
         expect(response.body.components.officialVisitsApi.status).to.equal('UP')
+        expect(response.body.components.prisonApi.status).to.equal('UP')
         expect(response.body.components.tokenVerification.status).to.equal('DOWN')
         expect(response.body.components.tokenVerification.details).to.contain({ status: 500, attempts: 3 })
       })
