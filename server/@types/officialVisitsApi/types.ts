@@ -1,3 +1,5 @@
+import { components } from '.'
+
 // For testing API client only
 export type OfficialVisit = {
   officialVisitId: number
@@ -6,7 +8,7 @@ export type OfficialVisit = {
   prisonerNumber: string
   visitStatusCode: string
   visitStatusDescription: string
-  visitTypeCode: string
+  visitType: string
   visitTypeDescription: string
   visitDate: string
   startTime: string
@@ -26,3 +28,5 @@ export type AvailableTimeSlots = {
   maxAdults: string
   maxGroups: string
 }
+
+export type RefDataItem = Partial<components['schemas']['ReferenceDataItem']>

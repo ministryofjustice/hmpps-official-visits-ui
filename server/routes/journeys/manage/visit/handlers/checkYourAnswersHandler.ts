@@ -40,7 +40,7 @@ export default class CheckYourAnswersHandler implements PageHandler {
           startTime: timeSlot.startTime,
           endTime: timeSlot.endTime,
           dpsLocationId: timeSlot.dpsLocationId,
-          visitTypeCode: visit.visitTypeCode,
+          visitTypeCode: visit.visitType,
           privateNotes: '<TODO>',
           publicNotes: '<TODO>',
           officialVisitors: [...visit.officialVisitors, ...visit.socialVisitors].map(o => ({

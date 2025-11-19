@@ -1,6 +1,18 @@
 import { RequestHandler, Request, Response } from 'express'
-import z from 'zod'
+import z, { RefinementCtx } from 'zod'
 import { $ZodSuperRefineIssue } from 'zod/v4/core'
+import { RefDataItem } from '../@types/officialVisitsApi/types'
+
+export const fromRefData = (refData: RefDataItem[], errorMessage: string) => {
+  return (val: string, ctx: RefinementCtx) => {
+    const item = refData.find(o => o.code === val)
+    if (!item) {
+      ctx.addIssue({ code: 'custom', message: errorMessage })
+      return z.NEVER
+    }
+    return item.code
+  }
+}
 
 export type SchemaFactory = (request: Request, res: Response) => Promise<z.ZodTypeAny>
 
