@@ -15,8 +15,9 @@ export default class PrisonerSearchHandler implements PageHandler {
     req.session.journey.officialVisit ??= { searchTerm: '' }
 
     res.render('pages/manage/prisonerSearch', {
+      backUrl: '/',
       searchTerm: req.session.journey.officialVisit.searchTerm,
-      showBreadcrumbs: true,
+      showBreadcrumbs: false,
     })
   }
 

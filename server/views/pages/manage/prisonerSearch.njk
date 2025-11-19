@@ -10,7 +10,7 @@
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
-      {# Who is attending, time and place, visitors, review, booking complete #}
+      {# Who is attending, time and place, visitors, review, confirm #}
       {{ progressTracker(false, false, false, false, false) }}
     </div>
   </div>
@@ -30,18 +30,25 @@
         {{ govukInput({
           id: "searchTerm",
           name: "searchTerm",
-          label: { text: "Search by prisoner name, number, PNC or CRO" },
+          label: {
+            text: "Search by prisoner name or prisoner ID",
+            classes: "govuk-!-font-weight-bold"
+          },
           classes: 'govuk-!-width-one-third',
           autocomplete: "off",
           errorMessage: validationErrors | findError('searchTerm'),
           value: formResponses.searchTerm or searchTerm
         }) }}
 
-        {{ govukButton({
-          html: "Search",
-          preventDoubleClick: true,
-          type: "submit"
-        }) }}
+        <div class="govuk-button-group">
+          {{ govukButton({
+              html: "Search",
+              preventDoubleClick: true,
+              type: "submit"
+          }) }}
+
+          <a href="/" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">Cancel and return to homepage</a>
+        </div>
 
       </form>
     </div>
