@@ -30,3 +30,4 @@ export type AvailableTimeSlots = {
 }
 
 export type RefDataItem = Partial<components['schemas']['ReferenceDataItem']>
+export type TimeSlot = components['schemas']['AvailableSlot']

@@ -111,16 +111,18 @@ export const getParsedDateFromQueryString = (dateFromQueryString: string, defaul
 
 export const getWeekOfDatesStartingMonday = (
   date: string,
-): { weekOfDates: string[]; previousWeek: string; nextWeek: string } => {
+): { weekOfDates: { date: string; isInFuture: boolean }[]; previousWeek: string; nextWeek: string } => {
   const startingDate = new Date(date)
   if (startingDate.toString() === 'Invalid Date') return { weekOfDates: [], previousWeek: '', nextWeek: '' }
 
   const dateFormat = 'yyyy-MM-dd'
   const weekStartDate = isMonday(startingDate) ? startingDate : previousMonday(startingDate)
+  const yesterday = new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString().substring(0, 10)
 
   const weekOfDates = new Array(7).fill('').map((_day, index) => {
-    return format(addDays(weekStartDate, index), dateFormat)
-  })
+    const dayDate = format(addDays(weekStartDate, index), dateFormat)
+    return { date: dayDate, isInFuture: isBefore(yesterday, dayDate) }
+  }, {})
 
   const previousWeek = format(subWeeks(weekStartDate, 1), dateFormat)
   const nextWeek = format(addWeeks(weekStartDate, 1), dateFormat)
