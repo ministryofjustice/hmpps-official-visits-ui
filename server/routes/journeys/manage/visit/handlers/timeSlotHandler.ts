@@ -17,11 +17,12 @@ export default class TimeSlotHandler implements PageHandler {
     const selectedDate = getParsedDateFromQueryString(date.toString(), new Date())
     const { weekOfDates, previousWeek, nextWeek } = getWeekOfDatesStartingMonday(selectedDate)
 
-    const timeSlots = await this.officialVisitsService.getAvailableSlots(res, 'MDI', selectedDate, selectedDate)
     const { officialVisit } = req.session.journey
+    const { prisonCode } = officialVisit.prisoner
+    const timeSlots = await this.officialVisitsService.getAvailableSlots(res, prisonCode, selectedDate, selectedDate)
     officialVisit.availableSlots = timeSlots
 
-    const schedule = await this.officialVisitsService.getSchedule(res, 'MDI', selectedDate)
+    const schedule = await this.officialVisitsService.getSchedule(res, prisonCode, selectedDate)
 
     res.render('pages/manage/timeSlot', {
       today: new Date().toISOString().substring(0, 10),
