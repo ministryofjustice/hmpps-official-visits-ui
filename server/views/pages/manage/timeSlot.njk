@@ -95,7 +95,7 @@
               {% set items = (items.push(
               {
                 value: slot.visitSlotId + '-' + slot.timeSlotId,
-                html: '<b>' + slot.startTime + ' - ' + slot.endTime +'</b><br />' + 'Description Text?',
+                html: '<b>' + slot.startTime + ' - ' + slot.endTime +'</b><br />' + (slot.description  or 'API description'),
                 checked: selectedTimeSlot == (slot.visitSlotId + '-' + slot.timeSlotId)
               }
             ), items) %}
