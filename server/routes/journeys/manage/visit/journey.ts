@@ -1,5 +1,6 @@
 import { components } from '../../../../@types/officialVisitsApi'
-import { ContactPlaceholder, RestrictionPlaceholder } from '../../../../data/officialVisitsApiClient'
+import { RestrictionPlaceholder } from '../../../../data/officialVisitsApiClient'
+import { ApprovedContact } from '../../../../@types/officialVisitsApi/types'
 
 export type OfficialVisitJourney = {
   searchTerm?: string
@@ -21,27 +22,22 @@ export type OfficialVisitJourney = {
   prisoner?: JourneyPrisoner
   staffNotes?: string
   prisonerNotes?: string
-  // Split social and official up to relfect the two different pages
   officialVisitors?: JourneyVisitor[]
   socialVisitors?: JourneyVisitor[]
   availableSlots?: components['schemas']['AvailableSlot'][]
   selectedTimeSlot?: components['schemas']['AvailableSlot']
 }
-
-export type JourneyVisitor = ContactPlaceholder & {
-  equipment?: boolean // Figma designs point at plaintext notes for now - this is subject to change
+/*
+ Define the additional data over and above the ApprovedContact structure for each visitor.
+ The same type is used for official and social visitors.
+ They can be differentiated through the relationshipTypeCode 'O' or 'S' in ApprovedContact.
+ */
+export type JourneyVisitor = ApprovedContact & {
+  equipment?: boolean
   equipmentNotes?: string
-  assistedVisit?: boolean // undefined means the data has not been specified yet
+  assistedVisit?: boolean
   assistanceNotes?: string
   leadVisitor?: boolean
-  notes?: string
-}
-
-export type JourneyEquipment = {
-  visitorEquipmentId?: number
-  equipmentTypeCode?: string
-  equipmentTypeDescription?: string
-  model?: string
   notes?: string
 }
 
@@ -55,5 +51,4 @@ export type JourneyPrisoner = {
   croNumber?: string
   prisonCode?: string
   restrictions?: RestrictionPlaceholder[]
-  contacts?: ContactPlaceholder[]
 }

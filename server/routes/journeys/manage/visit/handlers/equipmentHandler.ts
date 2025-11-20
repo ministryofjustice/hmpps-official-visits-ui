@@ -37,9 +37,9 @@ export default class EquipmentHandler implements PageHandler {
     }
 
     contacts.forEach(contact => {
-      const formKey = `note-${contact.id}`
+      const formKey = `note-${contact.prisonerContactId}`
       // eslint-disable-next-line no-param-reassign
-      contact.equipment = !!req.body.equipment?.find((o: string) => Number(o) === contact.id)
+      contact.equipment = !!req.body.equipment?.find((o: string) => Number(o) === contact.prisonerContactId)
       // eslint-disable-next-line no-param-reassign
       contact.equipmentNotes = contact.equipment ? req.body[formKey] : ''
     })

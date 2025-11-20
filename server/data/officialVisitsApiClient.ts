@@ -3,7 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { OfficialVisit, RefDataItem } from '../@types/officialVisitsApi/types'
+import { ApprovedContact, OfficialVisit, RefDataItem } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
 
 export type RestrictionPlaceholder = {
@@ -13,20 +13,6 @@ export type RestrictionPlaceholder = {
   comments: string
   startDate: string
   endDate?: string
-}
-
-/** This can be re-used for both official contact and social contact */
-export type ContactPlaceholder = {
-  id: number
-  firstName: string
-  lastName: string
-  dateOfBirth: string // Use dateOfBirth from the API and then map to Over 18 in the official contact view
-  relationshipTypeCode: string
-  relationshipTypeDescription: string
-  address: string // probably a combination of street, area, city, county, postcode fields
-  visitorTypeCode: 'SOCIAL' | 'OFFICIAL'
-  visitorTypeDescription: 'Social' | 'Official'
-  restrictions?: RestrictionPlaceholder[] // Could also map these client side
 }
 
 export type ScheduleItemPlaceholder = {
@@ -46,7 +32,7 @@ export default class OfficialVisitsApiClient extends RestClient {
     super('Official Visits API Client', config.apis.officialVisitsApi, logger, authenticationClient)
   }
 
-  createOfficialVisit(request: components['schemas']['CreateOfficialVisitRequest'], user: HmppsUser) {
+  async createOfficialVisit(request: components['schemas']['CreateOfficialVisitRequest'], user: HmppsUser) {
     return this.post<components['schemas']['CreateOfficialVisitResponse']>(
       { path: `/official-visit`, data: request },
       asSystem(user.username),
@@ -54,15 +40,15 @@ export default class OfficialVisitsApiClient extends RestClient {
   }
 
   // Not a real endpoint at present - none exist - just for test support
-  getOfficialVisitById(officialVisitId: number, user: HmppsUser): Promise<OfficialVisit> {
+  async getOfficialVisitById(officialVisitId: number, user: HmppsUser): Promise<OfficialVisit> {
     return this.get<OfficialVisit>({ path: `/official-visits/${officialVisitId}` }, asSystem(user.username))
   }
 
-  getReferenceData(code: components['schemas']['ReferenceDataGroup'], user: HmppsUser) {
+  async getReferenceData(code: components['schemas']['ReferenceDataGroup'], user: HmppsUser) {
     return this.get<RefDataItem[]>({ path: `/reference-data/group/${code}` }, asSystem(user.username))
   }
 
-  getSchedule(_prisonId: string, _date: string, _user: HmppsUser): Promise<ScheduleItemPlaceholder[]> {
+  async getSchedule(_prisonId: string, _date: string, _user: HmppsUser): Promise<ScheduleItemPlaceholder[]> {
     return Promise.resolve([
       {
         id: 1,
@@ -88,7 +74,7 @@ export default class OfficialVisitsApiClient extends RestClient {
     // return this.get<ScheduleItemPlaceholder[]>({ path: `/schedule/${prisonId}?date=${date}` }, asSystem(user.username))
   }
 
-  getAvailableTimeSlots(
+  async getAvailableTimeSlots(
     prisonId: string,
     startDate: string,
     endDate: string,
@@ -100,7 +86,7 @@ export default class OfficialVisitsApiClient extends RestClient {
     )
   }
 
-  getActiveRestrictions(
+  async getActiveRestrictions(
     _prisonId: string,
     _prisonerNumber: string,
     _user: HmppsUser,
@@ -125,53 +111,29 @@ export default class OfficialVisitsApiClient extends RestClient {
     // return this.get<RestrictionPlaceholder[]>({ path: `/prison/${prisonId}/prisoner/${prisonerNumber}/restrictions` }, asSystem(user.username))
   }
 
-  getContacts(_prisonId: string, _prisonerNumber: string, _user: HmppsUser): Promise<ContactPlaceholder[]> {
-    return Promise.resolve([
+  async getApprovedOfficialContacts(
+    _prisonId: string,
+    prisonerNumber: string,
+    user: HmppsUser,
+  ): Promise<ApprovedContact[]> {
+    return this.get<ApprovedContact[]>(
       {
-        id: 1,
-        visitorTypeCode: 'OFFICIAL',
-        visitorTypeDescription: 'Official',
-        firstName: 'Sarah',
-        lastName: 'Philips',
-        dateOfBirth: '1980-01-01',
-        relationshipTypeDescription: 'Family lawyer',
-        relationshipTypeCode: 'FLAWYER',
-        address: '123 Highbury Hill, London, N5 1AT',
+        path: `/prisoner/${prisonerNumber}/approved-relationships?relationshipType=O`,
       },
+      asSystem(user.username),
+    )
+  }
+
+  async getApprovedSocialContacts(
+    _prisonId: string,
+    prisonerNumber: string,
+    user: HmppsUser,
+  ): Promise<ApprovedContact[]> {
+    return this.get<ApprovedContact[]>(
       {
-        id: 2,
-        visitorTypeCode: 'OFFICIAL',
-        visitorTypeDescription: 'Official',
-        firstName: 'Michael',
-        lastName: 'Phillips',
-        dateOfBirth: '1980-01-01',
-        relationshipTypeCode: 'SOL',
-        relationshipTypeDescription: 'Solicitor',
-        address: '123 Highbury Hill, London, N5 1AT',
+        path: `/prisoner/${prisonerNumber}/approved-relationships?relationshipType=S`,
       },
-      {
-        id: 3,
-        visitorTypeCode: 'SOCIAL',
-        visitorTypeDescription: 'Social',
-        firstName: 'Tim',
-        lastName: 'Wright',
-        dateOfBirth: '1970-01-01',
-        relationshipTypeCode: 'BRO',
-        relationshipTypeDescription: 'Brother',
-        address: '123 Highbury Hill, London, N5 1AT',
-      },
-      {
-        id: 4,
-        visitorTypeCode: 'SOCIAL',
-        visitorTypeDescription: 'Social',
-        firstName: 'Wendy',
-        lastName: 'Zayna',
-        dateOfBirth: '1984-12-22',
-        relationshipTypeCode: 'FRI',
-        relationshipTypeDescription: 'Friend',
-        address: '84 Street, Sheffield, S1 4DD',
-      },
-    ])
-    // return this.get<RestrictionPlaceholder[]>({ path: `/prison/{prisonerNumber}/contact-relationships` }, asSystem(user.username))
+      asSystem(user.username),
+    )
   }
 }

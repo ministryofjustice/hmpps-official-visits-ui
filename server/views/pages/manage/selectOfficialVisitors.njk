@@ -23,6 +23,12 @@
     </div>
   </div>
 
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">{{ (prisoner.lastName + ", " + prisoner.firstName) | convertToTitleCase }} active restrictions here</span>
+    </div>
+  </div>
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-from-desktop">
       <form method='POST'>
@@ -32,21 +38,21 @@
         {% for contact in contacts %}
           {% set rows = (rows.push([
             { html: govukCheckboxes({
-              name: "selected[" + contact.id + "]",
+              name: "selected",
               classes: "govuk-checkboxes--small",
               items: [
                 {
-                  value: contact.id,
+                  value: contact.prisonerContactId,
                   text: "Add",
-                  checked: selectedContacts | includes(contact.id)
+                  checked: selectedContacts | includes(contact.prisonerContactId)
                 }
               ]
             }) },
             { text: (contact.firstName + " " + contact.lastName) | convertToTitleCase },
             { text: contact.dateOfBirth | formatDate },
-            { text: contact.relationshipTypeDescription or '-' },
-            { text: 'TODO' },
-            { text: 'TODO' }
+            { text: contact.relationshipToPrisonerDescription or '-' },
+            { text: 'approval to visit is ' + contact.isApprovedVisitor },
+            { text: 'currentTerm is ' + contact.currentTerm }
           ]), rows) %}
         {% endfor %}
 

@@ -12,10 +12,10 @@ export interface paths {
       cookie?: never
     }
     get?: never
-    /** @description
-     *
-     *     Requires one of the following roles:
-     *     * OFFICIAL_VISITS_ADMIN */
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
     put: operations['retryDlq']
     post?: never
     delete?: never
@@ -48,10 +48,10 @@ export interface paths {
       cookie?: never
     }
     get?: never
-    /** @description
-     *
-     *     Requires one of the following roles:
-     *     * OFFICIAL_VISITS_ADMIN */
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
     put: operations['purgeQueue']
     post?: never
     delete?: never
@@ -71,9 +71,7 @@ export interface paths {
     put?: never
     /**
      * Endpoint to support the creation of official visits.
-     * @description
-     *
-     *     Requires one of the following roles:
+     * @description Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
      *     * ROLE_OFFICIAL_VISITS__RW
      */
@@ -141,9 +139,7 @@ export interface paths {
     }
     /**
      * Endpoint to return the official visits booked for a prison - TRIAL ONLY
-     * @description
-     *
-     *     Requires one of the following roles:
+     * @description Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
      *     * ROLE_OFFICIAL_VISITS__R
      *     * ROLE_OFFICIAL_VISITS__RW
@@ -166,9 +162,7 @@ export interface paths {
     }
     /**
      * Endpoint to return reference data for a provided group key, sorted by display sequence and description
-     * @description
-     *
-     *     Requires one of the following roles:
+     * @description Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
      *     * ROLE_OFFICIAL_VISITS__R
      *     * ROLE_OFFICIAL_VISITS__RW
@@ -189,11 +183,34 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /** @description
-     *
-     *     Requires one of the following roles:
-     *     * OFFICIAL_VISITS_ADMIN */
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
     get: operations['getDlqMessages']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/prisoner/{prisonerNumber}/approved-relationships': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get the approved contacts for a prisoner for official or social visits
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS__RW
+     */
+    get: operations['getApprovedContacts']
     put?: never
     post?: never
     delete?: never
@@ -211,9 +228,7 @@ export interface paths {
     }
     /**
      * Endpoint to return the available slots for official visits for a prison for a given date range.
-     * @description
-     *
-     *     Requires one of the following roles:
+     * @description Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
      *     * ROLE_OFFICIAL_VISITS__R
      *     * ROLE_OFFICIAL_VISITS__RW
@@ -228,7 +243,9 @@ export interface paths {
     trace?: never
   }
 }
+
 export type webhooks = Record<string, never>
+
 export interface components {
   schemas: {
     RetryDlqResult: {
@@ -843,25 +860,168 @@ export interface components {
       messagesReturnedCount: number
       messages: components['schemas']['DlqMessage'][]
     }
+    ApprovedContact: {
+      /**
+       * Format: int64
+       * @description The prisoner contact number
+       * @example 1
+       */
+      prisonerContactId: number
+      /**
+       * Format: int64
+       * @description The unique identifier for the prisoner contact
+       * @example 1
+       */
+      contactId: number
+      /** @description Prisoner number (NOMS ID) */
+      prisonerNumber: string
+      /** @description The last name of the contact */
+      lastName: string
+      /** @description The first name of the contact */
+      firstName: string
+      /** @description Coded value indicating either a social or official contact */
+      relationshipTypeCode: string
+      /** @description Relationship type Description */
+      relationshipTypeDescription: string
+      /** @description The relationship to the prisoner. A code from SOCIAL_RELATIONSHIP or OFFICIAL_RELATIONSHIP reference data groups depending on the relationship type. */
+      relationshipToPrisonerCode: string
+      /** @description Relationship type Description */
+      relationshipToPrisonerDescription: string
+      /** @description Indicates whether the contact is an approved visitor */
+      isApprovedVisitor: boolean
+      /** @description Is this contact the prisoner's next of kin? */
+      isNextOfKin: boolean
+      /** @description Is this contact the prisoner's emergency contact? */
+      isEmergencyContact: boolean
+      /** @description Is this prisoner's contact relationship active? */
+      isRelationshipActive: boolean
+      /** @description Is this relationship active for the current booking? */
+      currentTerm: boolean
+      /** @description Whether the contact is a staff member */
+      isStaff: boolean
+      /** @description Restriction Summary */
+      restrictionSummary: components['schemas']['RestrictionsSummary']
+      /** @description The title code for the contact */
+      titleCode?: string
+      /** @description The description of the title code, if present */
+      titleDescription?: string
+      /** @description The middle names of the contact, if any */
+      middleNames?: string
+      /**
+       * Format: date
+       * @description The date of birth of the contact
+       */
+      dateOfBirth?: string
+      /**
+       * Format: date
+       * @description The date the contact deceased, if known
+       */
+      deceasedDate?: string
+      /** @description Flat number in the address, if any */
+      flat?: string
+      /** @description Property name or number */
+      property?: string
+      /** @description Street Name */
+      street?: string
+      /** @description Area or locality, if any */
+      area?: string
+      /** @description City code */
+      cityCode?: string
+      /** @description The description of city code */
+      cityDescription?: string
+      /** @description Country code */
+      countyCode?: string
+      /** @description The description of county code */
+      countyDescription?: string
+      /** @description Postal code */
+      postcode?: string
+      /** @description Country Code */
+      countryCode?: string
+      /** @description Flag to indicate whether this address indicates no fixed address */
+      countryDescription?: string
+      /** @description Flag to indicate whether this address indicates no fixed address */
+      noFixedAddress?: boolean
+      /** @description If true this address should be considered as the primary residential address */
+      primaryAddress?: boolean
+      /** @description If true this address should be considered for sending mail to */
+      mailAddress?: boolean
+      /** @description Type of the latest phone number */
+      phoneType?: string
+      /** @description Description of the type of the latest phone number */
+      phoneTypeDescription?: string
+      /** @description The latest phone number, if there are any */
+      phoneNumber?: string
+      /** @description The extension number of the latest phone number */
+      extNumber?: string
+    }
+    RestrictionTypeDetails: {
+      restrictionType: string
+      restrictionTypeDescription: string
+    }
+    RestrictionsSummary: {
+      active: components['schemas']['RestrictionTypeDetails'][]
+      /** Format: int32 */
+      totalActive: number
+      /** Format: int32 */
+      totalExpired: number
+    }
     AvailableSlot: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @description The prison visit slot identifier for the official visit slot
+       * @example 1
+       */
       visitSlotId: number
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @description The prison time slot identifier for the official visit slot
+       * @example 1
+       */
       timeSlotId: number
+      /**
+       * @description The prison code where the visit takes place
+       * @example PVI
+       */
       prisonCode: string
+      /**
+       * @description The 3-letter day of the week code where this slot falls in this prison.
+       * @example TUE
+       */
       dayCode: string
+      /**
+       * @description The day of the week code where this slot falls in this prison.
+       * @example Tuesday
+       */
       dayDescription: string
-      /** Format: date */
+      /**
+       * Format: date
+       * @description The date for the official visit slot
+       */
       visitDate: string
+      /** @description The start time for the official visit slot */
       startTime: string
+      /** @description The end time for the official visit slot */
       endTime: string
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description The DPS location where the official visit takes place for the slot
+       * @example aaaa-bbbb-xxxxxxxx-yyyyyyyy
+       */
       dpsLocationId: string
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @description The available video sessions for official visit slot
+       */
       availableVideoSessions: number
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @description The available adults for official visit slot
+       */
       availableAdults: number
-      /** Format: int32 */
+      /**
+       * Format: int32
+       * @description The available groups for official visit slot
+       */
       availableGroups: number
     }
   }
@@ -871,7 +1031,9 @@ export interface components {
   headers: never
   pathItems: never
 }
+
 export type $defs = Record<string, never>
+
 export interface operations {
   retryDlq: {
     parameters: {
@@ -1192,6 +1354,58 @@ export interface operations {
         }
         content: {
           '*/*': components['schemas']['GetDlqResult']
+        }
+      }
+    }
+  }
+  getApprovedContacts: {
+    parameters: {
+      query?: {
+        /** @description The relationship type should be S for social or O for official */
+        relationshipType?: string
+      }
+      header?: never
+      path: {
+        prisonerNumber: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description List of approved contacts of the prisoner */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ApprovedContact'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description The prisoner was not found. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }
