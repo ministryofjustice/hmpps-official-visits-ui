@@ -108,6 +108,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('OFFICIAL_VISITS_API_TIMEOUT_RESPONSE', 10000))),
     },
+    prisonApi: {
+      url: get('PRISON_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('PRISON_API_TIMEOUT_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000))),
+    },
   },
   serviceUrls: {
     digitalPrison: get('DPS_HOME_PAGE_URL', 'http://localhost:3001', requiredInProduction),
