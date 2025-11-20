@@ -60,10 +60,12 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('filter', (l: any[], iteratee: string, eq: unknown) => l.filter(o => o[iteratee] === eq))
   njkEnv.addFilter('findError', (v: FieldValidationError[], i: string) => v?.find(e => e.fieldId === i))
   njkEnv.addFilter('parseDate', parseDate)
+  njkEnv.addGlobal('DPS_HOME_PAGE_URL', config.serviceUrls.digitalPrison)
   njkEnv.addFilter('formatDate', formatDate)
   njkEnv.addFilter('dateAtTime', dateAtTime)
   njkEnv.addFilter('selected', (items: any[], selected: string) =>
     items.map(o => ({ ...o, checked: o.value === selected })),
   )
   njkEnv.addFilter('includes', (items: any[], selected: string) => items.includes(selected))
+  njkEnv.addFilter('possessiveComma', (name: string) => (name.endsWith('s') ? `${name}’` : `${name}’s`))
 }

@@ -201,7 +201,15 @@ describe('getParsedDateFromQueryString', () => {
 
 describe('getWeekOfDatesStartingMonday', () => {
   const weekOfDates = {
-    weekOfDates: ['2022-12-26', '2022-12-27', '2022-12-28', '2022-12-29', '2022-12-30', '2022-12-31', '2023-01-01'],
+    weekOfDates: [
+      { date: '2022-12-26', isInFuture: false },
+      { date: '2022-12-27', isInFuture: false },
+      { date: '2022-12-28', isInFuture: false },
+      { date: '2022-12-29', isInFuture: false },
+      { date: '2022-12-30', isInFuture: false },
+      { date: '2022-12-31', isInFuture: false },
+      { date: '2023-01-01', isInFuture: false },
+    ],
     previousWeek: '2022-12-19',
     nextWeek: '2023-01-02',
   }

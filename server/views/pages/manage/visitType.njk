@@ -1,4 +1,6 @@
 {% extends "partials/layout.njk" %}
+{% from "partials/miniProfile/macro.njk" import miniProfile %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
@@ -12,6 +14,7 @@
     <div class="govuk-grid-column-three-quarters">
       {# Who is attending, time and place, visitors, review, booking complete #}
       {{ progressTracker(true, false, false, false, false) }}
+      {{ miniProfile(prisoner) }}
     </div>
   </div>
 

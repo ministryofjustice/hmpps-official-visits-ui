@@ -2,46 +2,46 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import { getParsedDateFromQueryString, getWeekOfDatesStartingMonday } from '../../../../../utils/utils'
+import { schema } from './timeSlotSchema'
 
 export default class TimeSlotHandler implements PageHandler {
   public PAGE_NAME = Page.CHOOSE_TIME_SLOT_PAGE
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
+  BODY = schema
+
   public GET = async (req: Request, res: Response) => {
-    const dayCode = (req.query['dayCode'] as string) || 'MON'
-    const timeSlots = await this.officialVisitsService.getAvailableSlots(
-      res,
-      'MDI',
-      new Date().toISOString().substring(0, 10),
-      new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString().substring(0, 10),
-    )
-    req.session.journey.officialVisit.availableSlots = timeSlots
+    const { date = '' } = req.query
+    const selectedDate = getParsedDateFromQueryString(date.toString(), new Date())
+    const { weekOfDates, previousWeek, nextWeek } = getWeekOfDatesStartingMonday(selectedDate)
 
-    const schedule = await this.officialVisitsService.getSchedule(res, 'MDI', new Date().toISOString().substring(0, 10))
+    const { officialVisit } = req.session.journey
+    const { prisonCode } = officialVisit.prisoner
+    const timeSlots = await this.officialVisitsService.getAvailableSlots(res, prisonCode, selectedDate, selectedDate)
+    officialVisit.availableSlots = timeSlots
 
-    res.render('pages/manage/chooseTimeSlot', {
+    const schedule = await this.officialVisitsService.getSchedule(res, prisonCode, selectedDate)
+
+    res.render('pages/manage/timeSlot', {
+      today: new Date().toISOString().substring(0, 10),
+      selectedDate,
+      weekOfDates,
+      previousWeek,
+      nextWeek,
       schedule,
-      slots: timeSlots.filter(o => o.dayCode === dayCode),
+      slots: timeSlots.filter(o => o.visitDate === selectedDate),
       selectedTimeSlot:
         res.locals.formResponses?.['timeSlot'] ||
-        `${req.session.journey.officialVisit?.selectedTimeSlot?.visitSlotId}-${req.session.journey.officialVisit?.selectedTimeSlot?.timeSlotId}`,
+        `${officialVisit?.selectedTimeSlot?.visitSlotId}-${officialVisit?.selectedTimeSlot?.timeSlotId}`,
       backUrl: `visit-type`,
       prisoner: req.session.journey.officialVisit.prisoner,
     })
   }
 
   public POST = async (req: Request, res: Response) => {
-    const [visitSlotId, timeSlotId] = req.body.timeSlot.split('-')
-    const foundSlot = req.session.journey.officialVisit.availableSlots.find(
-      o => o.timeSlotId === Number(timeSlotId) && o.visitSlotId === Number(visitSlotId),
-    )
-
-    // Should only fail if user is manually POSTing - UI should always have this data
-    if (foundSlot) {
-      req.session.journey.officialVisit.selectedTimeSlot = foundSlot
-    }
-
+    req.session.journey.officialVisit.selectedTimeSlot = req.body
     return res.redirect(`select-official-visitors`)
   }
 }

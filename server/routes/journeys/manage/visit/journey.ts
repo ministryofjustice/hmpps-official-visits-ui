@@ -51,4 +51,5 @@ export type JourneyPrisoner = {
   croNumber?: string
   prisonCode?: string
   restrictions?: RestrictionPlaceholder[]
+  prisonName?: string
 }

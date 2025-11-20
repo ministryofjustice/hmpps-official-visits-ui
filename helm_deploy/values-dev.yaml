@@ -17,6 +17,7 @@ generic-service:
     LOCATIONS_INSIDE_PRISON_API_URL: 'https://locations-inside-prison-api-dev.hmpps.service.justice.gov.uk'
     PRISONER_SEARCH_API_URL: 'https://prisoner-search-dev.prison.service.justice.gov.uk'
     OFFICIAL_VISITS_API_URL: 'https://official-visits-api-dev.hmpps.service.justice.gov.uk'
+    PRISON_API_URL: 'https://prison-api-dev.prison.service.justice.gov.uk'
     ENVIRONMENT_NAME: DEV
     AUDIT_ENABLED: "false"
 

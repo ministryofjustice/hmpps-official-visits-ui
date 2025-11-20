@@ -15,3 +15,9 @@ export default function expectJourneySession(app: Express, journeyName: string, 
     .get(`/journeySession/${journeyName}`)
     .expect(res => expect((res.text && JSON.parse(res.text)) || null).toEqual(expectedJourney))
 }
+
+export async function getJourneySession(app: Express, journeyName: string) {
+  return request(app)
+    .get(`/journeySession/${journeyName}`)
+    .then(res => res.text && JSON.parse(res.text))
+}

@@ -33,6 +33,7 @@ export default class PrisonerSelectHandler implements PageHandler {
         pncNumber: prisoner.pncNumber,
         croNumber: prisoner.croNumber,
         prisonCode: prisoner.prisonId,
+        prisonName: prisoner.prisonName,
       },
     }
 
