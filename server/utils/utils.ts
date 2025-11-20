@@ -138,10 +138,6 @@ export const ensureNotBeforeToday = (dateToFormat: string): Date => {
   return isBefore(selectedDate, now) ? now : new Date(dateToFormat)
 }
 
-export const capitaliseName = (name?: string) => {
-  return isBlank(name) ? '' : name!.toLowerCase().replace(/\b[a-z]/g, letter => letter.toUpperCase())
-}
-
 export const refDataRadiosMapper = (referenceData: components['schemas']['ReferenceDataItem']) => {
   return {
     value: referenceData.code,

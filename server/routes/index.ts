@@ -5,7 +5,6 @@ import manageVisits from './journeys/manage/visit'
 import viewVisits from './journeys/view'
 import timeslots from './timetable'
 import config from '../config'
-import asyncMiddleware from '../middleware/asyncMiddleware'
 import preventNavigationToExpiredJourneys from '../middleware/journey/preventNavigationToExpiredJourneys'
 import redirectCheckAnswersMiddleware from '../middleware/journey/redirectCheckAnswers'
 import PrisonerImageRoutes from './prisonerImage/prisonerImageRoutes'
@@ -19,10 +18,7 @@ export default function routes(_services: Services): Router {
   router.use('/timeslots', timeslots(_services))
   router.use('/manage', manageVisits(_services))
   router.use('/view', viewVisits(_services))
-  router.get(
-    '/prisoner-image/:prisonerNumber',
-    asyncMiddleware(new PrisonerImageRoutes(_services.prisonerImageService).GET),
-  )
+  router.get('/prisoner-image/:prisonerNumber', new PrisonerImageRoutes(_services.prisonerImageService).GET)
 
   return router
 }

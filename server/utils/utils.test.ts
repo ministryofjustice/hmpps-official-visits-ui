@@ -12,7 +12,6 @@ import {
   toDuration,
   getParsedDateFromQueryString,
   getWeekOfDatesStartingMonday,
-  capitaliseName,
 } from './utils'
 
 describe('convert to title case', () => {
@@ -225,21 +224,5 @@ describe('getWeekOfDatesStartingMonday', () => {
       previousWeek: '',
       nextWeek: '',
     })
-  })
-})
-describe('convert to title case', () => {
-  it.each([
-    [null, undefined, ''],
-    ['empty string', '', ''],
-    ['Lower case', 'robert', 'Robert'],
-    ['Upper case', 'ROBERT', 'Robert'],
-    ['Mixed case', 'RoBErT', 'Robert'],
-    ['Multiple words', 'RobeRT SMiTH', 'Robert Smith'],
-    ['Leading spaces', '  RobeRT', '  Robert'],
-    ['Trailing spaces', 'RobeRT  ', 'Robert  '],
-    ['Hyphenated', 'Robert-John SmiTH-jONes-WILSON', 'Robert-John Smith-Jones-Wilson'],
-    ['Otherwise punctuated', "billy-bob o'reilly jr.", "Billy-Bob O'Reilly Jr."],
-  ])('%s capitaliseName(%s, %s)', (_, a, expected) => {
-    expect(capitaliseName(a)).toEqual(expected)
   })
 })
