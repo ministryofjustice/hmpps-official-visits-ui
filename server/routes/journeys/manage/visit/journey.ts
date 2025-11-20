@@ -56,4 +56,5 @@ export type JourneyPrisoner = {
   prisonCode?: string
   restrictions?: RestrictionPlaceholder[]
   contacts?: ContactPlaceholder[]
+  prisonName?: string
 }

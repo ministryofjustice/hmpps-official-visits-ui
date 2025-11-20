@@ -7,6 +7,7 @@ import timeslots from './timetable'
 import config from '../config'
 import preventNavigationToExpiredJourneys from '../middleware/journey/preventNavigationToExpiredJourneys'
 import redirectCheckAnswersMiddleware from '../middleware/journey/redirectCheckAnswers'
+import PrisonerImageRoutes from './prisonerImage/prisonerImageRoutes'
 
 export default function routes(_services: Services): Router {
   const router = Router()
@@ -17,6 +18,7 @@ export default function routes(_services: Services): Router {
   router.use('/timeslots', timeslots(_services))
   router.use('/manage', manageVisits(_services))
   router.use('/view', viewVisits(_services))
+  router.get('/prisoner-image/:prisonerNumber', new PrisonerImageRoutes(_services.prisonerImageService).GET)
 
   return router
 }
