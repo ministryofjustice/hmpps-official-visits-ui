@@ -34,3 +34,11 @@ export type RefDataItem = Partial<components['schemas']['ReferenceDataItem']>
 export type ApprovedContact = components['schemas']['ApprovedContact']
 
 export type TimeSlot = components['schemas']['AvailableSlot']
+
+export type Contact = {
+  contactId: number
+  assistanceNotes?: string
+  assistedVisit?: boolean
+  equipment?: boolean
+  equipmentNotes?: string
+}
