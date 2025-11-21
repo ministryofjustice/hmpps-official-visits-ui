@@ -37,9 +37,9 @@ export default class AssistanceRequiredHandler implements PageHandler {
     }
 
     contacts.forEach(contact => {
-      const formKey = `note-${contact.id}`
+      const formKey = `note-${contact.prisonerContactId}`
       // eslint-disable-next-line no-param-reassign
-      contact.assistedVisit = !!req.body.assistanceRequired.find((o: string) => Number(o) === contact.id)
+      contact.assistedVisit = !!req.body.assistanceRequired.find((o: string) => Number(o) === contact.prisonerContactId)
       // eslint-disable-next-line no-param-reassign
       contact.assistanceNotes = contact.assistedVisit ? req.body[formKey] : ''
     })

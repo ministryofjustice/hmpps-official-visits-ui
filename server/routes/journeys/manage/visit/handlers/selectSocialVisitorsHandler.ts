@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { isArray } from 'lodash'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
@@ -10,20 +11,28 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   public GET = async (req: Request, res: Response) => {
+    // TODO: Assume caseload access checks are done in middleware
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
-    const restrictions = await this.officialVisitsService.getActiveRestrictions(res, prisonCode, prisonerNumber)
-    // Could just use the previously cached data from the official contacts page
-    // But might be wise to refresh in case the user comes back to this page later or adds a new contact and refreshes the page
-    const contacts = await this.officialVisitsService.getOfficialContacts(res, prisonCode, prisonerNumber)
+
+    // Get the prisoner restrictions and a list of approved, official contacts
+    const [restrictions, approvedSocialContacts] = await Promise.all([
+      this.officialVisitsService.getActiveRestrictions(res, prisonCode, prisonerNumber),
+      this.officialVisitsService.getApprovedSocialContacts(prisonCode, prisonerNumber, res.locals.user),
+    ])
+
+    // Record the approved social contacts who are already selected for this visit in session data
     const selectedContacts =
-      res.locals.formResponses?.selected || req.session.journey.officialVisit.socialVisitors?.map(v => v.id) || []
+      res.locals.formResponses?.selected ||
+      req.session.journey.officialVisit.socialVisitors?.map(v => v.prisonerContactId) ||
+      []
 
+    // Record the prisoner restrictions in the session journey
     req.session.journey.officialVisit.prisoner.restrictions = restrictions
-    req.session.journey.officialVisit.prisoner.contacts = contacts
 
+    // Show the list and prefill the checkboxes for the selected social visitors
     res.render('pages/manage/selectSocialVisitors', {
       restrictions,
-      contacts: contacts.filter(o => o.visitorTypeCode === 'SOCIAL'),
+      contacts: approvedSocialContacts,
       selectedContacts,
       backUrl: `select-official-visitors`,
       prisoner: req.session.journey.officialVisit.prisoner,
@@ -31,15 +40,25 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
   }
 
   public POST = async (req: Request, res: Response) => {
-    // Validation - do we ensure all ids are found? Do we fetch a fresh list on POST?
-    req.session.journey.officialVisit.socialVisitors = (req.body.selected || []).map((o: number) => {
-      const contact = req.session.journey.officialVisit.prisoner.contacts.find(c => c.id === Number(o))
-      return {
-        ...contact,
-        // assistedVisit: false,
-        // leadVisitor: false,
-        // notes: '',
-      } as JourneyVisitor
+    // Use the prison and prisoner details from the session
+    const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
+    const selected = isArray(req.body.selected) ? req.body.selected : [req.body.selected].filter(o => o !== null)
+
+    // Get the approved social visitors
+    const allApprovedSocialContacts = await this.officialVisitsService.getApprovedSocialContacts(
+      prisonCode,
+      prisonerNumber,
+      res.locals.user,
+    )
+
+    // TODO: Validation middleware should allow an empty list for selected social contacts - 0 or more is OK
+
+    // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Validation here.
+
+    // Update the session with the selected approved social visitors
+    req.session.journey.officialVisit.socialVisitors = (selected || []).map((o: number) => {
+      const contact = allApprovedSocialContacts.find(c => c.prisonerContactId === Number(o))
+      return { ...contact, leadVisitor: false } as JourneyVisitor
     })
     return res.redirect(`assistance-required`)
   }

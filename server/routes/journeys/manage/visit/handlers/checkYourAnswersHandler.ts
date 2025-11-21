@@ -31,6 +31,9 @@ export default class CheckYourAnswersHandler implements PageHandler {
     const timeSlot = visit.selectedTimeSlot
 
     if (mode === 'create') {
+      // I see this happening by passing the journey session into a method in the
+      // officialVisitsService, and have it translate the session data into the
+      // createVisitRequest type required by the API.
       const id = await this.officialVisitsService.createVisit(
         {
           prisonVisitSlotId: timeSlot.visitSlotId,
@@ -44,16 +47,18 @@ export default class CheckYourAnswersHandler implements PageHandler {
           privateNotes: '<TODO>',
           publicNotes: '<TODO>',
           officialVisitors: [...visit.officialVisitors, ...visit.socialVisitors].map(o => ({
-            visitorTypeCode: o.visitorTypeCode,
-            contactTypeCode: o.visitorTypeCode,
-            contactId: o.id,
-            prisonerContactId: Number(visit.prisoner.prisonerNumber), // Not sure what this actually is - API expects a number but prisonerNumber is a string
+            visitorTypeCode: 'CONTACT',
+            contactTypeCode: o.relationshipTypeCode,
+            contactId: o.contactId,
+            prisonerContactId: o.prisonerContactId,
             firstName: o.firstName,
             lastName: o.lastName,
-            dateOfBirth: o.dateOfBirth,
+            leadVisitor: o.leadVisitor,
+            assistVisit: o.assistedVisit,
+            emailAddress: 'TODO',
+            phoneNumber: 'TODO',
             relationshipTypeCode: o.relationshipTypeCode,
             relationshipTypeDescription: o.relationshipTypeDescription,
-            address: o.address,
             visitorNotes: o.assistanceNotes,
           })),
         },
@@ -63,6 +68,7 @@ export default class CheckYourAnswersHandler implements PageHandler {
     }
 
     if (mode === 'amend') {
+      // Similar to above here - pass the session info and have it produce the required request type
       await this.officialVisitsService.amendVisit(req.session.journey.officialVisit, user)
     }
 
