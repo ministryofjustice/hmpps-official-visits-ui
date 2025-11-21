@@ -8,6 +8,7 @@ import { flatten, groupBy, map } from 'lodash'
 import {
   convertToTitleCase,
   dateAtTime,
+  formatAddressLines,
   formatDate,
   formatOverEighteen,
   initialiseName,
@@ -74,6 +75,9 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addGlobal('DPS_HOME_PAGE_URL', config.serviceUrls.digitalPrison)
   njkEnv.addFilter('formatDate', formatDate)
   njkEnv.addFilter('formatOverEighteen', formatOverEighteen)
+  njkEnv.addFilter('formatAddressLines', ({ flat, property, street, area, postcode, noFixedAddress }) =>
+    formatAddressLines(flat, property, street, area, postcode, noFixedAddress),
+  )
   njkEnv.addFilter('dateAtTime', dateAtTime)
   njkEnv.addFilter('restrictionTagColour', restrictionTagColour)
   njkEnv.addFilter('selected', (items: any[], selected: string) =>

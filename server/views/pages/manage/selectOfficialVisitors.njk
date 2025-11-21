@@ -28,6 +28,7 @@
     <div class="govuk-grid-column-three-quarters">
       {% set rows = [] %}
       {% for pr in prisoner.restrictions %}
+
         {% set restrictionTagHtml %}
             {{ govukTag({ text: pr.typeDescription, classes: 'wide-tag ' + pr.typeCode | restrictionTagColour }) }}{{ ' (expired)' if (pr.endDate | isDateAndInThePast) }}
         {% endset %}
@@ -72,7 +73,7 @@
         {% for contact in contacts %}
 
           {% set addressHtml %}
-            formatted address
+            <span>{{ contact | formatAddressLines | escape | nl2br | safe }}</span>
           {% endset %}
 
           {% set restrictionsHtml %}

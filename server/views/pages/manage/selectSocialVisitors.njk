@@ -75,7 +75,7 @@
         {% for contact in contacts %}
 
           {% set addressHtml %}
-            formatted address
+            <span>{{ contact | formatAddressLines | escape | nl2br | safe }}</span>
           {% endset %}
 
           {% set restrictionsHtml %}

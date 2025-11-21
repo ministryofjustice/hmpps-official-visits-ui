@@ -184,3 +184,16 @@ export const timeStringTo12HourPretty = (time: string) => {
 
   return `${twelveHours}:${minutes}${amPm}`
 }
+
+export const formatAddressLines = (
+  flat: string,
+  property: string,
+  street: string,
+  area: string,
+  postcode: string,
+  noFixedAddress: boolean,
+) => {
+  if (noFixedAddress) return 'No fixed address'
+  const addressArray = [flat, property, street, area, postcode].filter(s => s)
+  return addressArray.length ? addressArray.join('\n') : null
+}

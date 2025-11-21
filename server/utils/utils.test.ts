@@ -15,6 +15,7 @@ import {
   getWeekOfDatesStartingMonday,
   timeStringTo12HourPretty,
   isDateAndInThePast,
+  formatAddressLines,
 } from './utils'
 
 describe('convert to title case', () => {
@@ -276,4 +277,26 @@ describe('formatOverEighteen', () => {
   ])('formats %s as %s', (input, expected) => {
     expect(formatOverEighteen(input)).toBe(expected)
   })
+})
+
+describe('formatAddressLines', () => {
+  it.each([
+    [
+      'Flat1',
+      'Spring House',
+      'Main Road',
+      'Harling',
+      'HD3 3GF',
+      false,
+      'Flat1\nSpring House\nMain Road\nHarling\nHD3 3GF',
+    ],
+    [null, '34', 'Main Road', null, 'HD3 3GF', false, '34\nMain Road\nHD3 3GF'],
+    [null, null, null, null, 'GH2 1DD', false, 'GH2 1DD'],
+    [null, null, null, null, null, true, 'No fixed address'],
+  ])(
+    'formats address lines for %s %s %s %s %s %s -> %s',
+    (flat, property, street, area, postcode, noFixedAddress: boolean, expected) => {
+      expect(formatAddressLines(flat, property, street, area, postcode, noFixedAddress)).toBe(expected)
+    },
+  )
 })
