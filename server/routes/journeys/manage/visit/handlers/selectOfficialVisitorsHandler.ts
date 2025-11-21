@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import { isArray } from 'lodash'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
@@ -14,7 +13,11 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
 
-    // Get the prisoner restrictions and a list of approved, official contacts
+    // TODO: Get the contact restrictions
+    // TODO: Get the relationship restrictions
+    // TODO: Do we need to get the prisoner restrictions here? They should be added to the prisoner session object when selected.
+
+    // Get the prisoner's list of approved, official contacts
     const [restrictions, approvedOfficialContacts] = await Promise.all([
       this.officialVisitsService.getActiveRestrictions(res, prisonCode, prisonerNumber),
       this.officialVisitsService.getApprovedOfficialContacts(prisonCode, prisonerNumber, res.locals.user),
@@ -27,9 +30,8 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       []
 
     // Record the prisoner restrictions into the session journey
+    // TODO: Should be done earlier in the journey, when we select a prisoner, not here
     req.session.journey.officialVisit.prisoner.restrictions = restrictions
-
-    // TODO: Show the prisoner's restrictions in the view in a table above the contacts list
 
     // Show the list and prefill the selected checkboxes for official visitors
     res.render('pages/manage/selectOfficialVisitors', {
@@ -44,7 +46,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
   public POST = async (req: Request, res: Response) => {
     // Use the prison and prisoner details from the session
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
-    const selected = isArray(req.body.selected) ? req.body.selected : [req.body.selected].filter(o => o !== null)
+    const selected = Array.isArray(req.body.selected) ? req.body.selected : [req.body.selected].filter(o => o !== null)
 
     // Get the approved official visitors
     const allApprovedOfficialContacts = await this.officialVisitsService.getApprovedOfficialContacts(
@@ -53,11 +55,8 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       res.locals.user,
     )
 
-    // TODO: Validation middleware should detect an empty list for selected official contacts - at least 1 must be selected
-
+    // TODO: Validation middleware should detect an empty list for selected official contacts - at least 1 must be selecteds
     // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Validation here.
-
-    // TODO: How to prompt for the lead visitor? Needs an extra input or flag?
 
     // Update the session journey with selected approved official contacts
     req.session.journey.officialVisit.officialVisitors = (selected || []).map((o: number) => {

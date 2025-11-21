@@ -1,4 +1,5 @@
 import {
+  differenceInYears,
   format,
   isValid,
   parse,
@@ -53,6 +54,15 @@ export const formatDate = (date: string | Date, fmt = 'd MMMM yyyy') => {
   return format(richDate, fmt)
 }
 
+// Returns "Over 18" if the supplied date of birth would make the holder over 18 today, or "Under 18" if not.
+export const formatOverEighteen = (date: string | Date) => {
+  if (!date) return undefined
+  const richDate = typeof date === 'string' ? parseISO(date) : date
+  if (!isValid(richDate)) return undefined
+  const yearsDiff = differenceInYears(new Date(), richDate)
+  return yearsDiff >= 18 ? 'Over 18' : 'Under 18'
+}
+
 export const parseDatePickerDate = (datePickerDate: string): Date => {
   if (!datePickerDate) return null
 
@@ -100,6 +110,15 @@ export const toDuration = (minutes: number): string => {
     '0 minutes'
   )
 }
+
+export const isDateAndInThePast = (date?: string): boolean => {
+  if (date) {
+    const expirationDate = new Date(date)
+    return expirationDate.getTime() < new Date().getTime()
+  }
+  return false
+}
+
 export const getParsedDateFromQueryString = (dateFromQueryString: string, defaultDate = new Date()): string => {
   const parsedDate =
     new Date(dateFromQueryString).toString() === 'Invalid Date'

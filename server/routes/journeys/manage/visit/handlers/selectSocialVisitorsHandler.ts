@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import { isArray } from 'lodash'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
@@ -14,7 +13,11 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     // TODO: Assume caseload access checks are done in middleware
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
 
-    // Get the prisoner restrictions and a list of approved, official contacts
+    // TODO: Get the contact restrictions
+    // TODO: Get the relationship restrictions
+    // TODO: Do we need to get the prisoner restrictions here? They should be added to the prisoner session object when selected.
+
+    // Get the prisoner's list of approved, social contacts
     const [restrictions, approvedSocialContacts] = await Promise.all([
       this.officialVisitsService.getActiveRestrictions(res, prisonCode, prisonerNumber),
       this.officialVisitsService.getApprovedSocialContacts(prisonCode, prisonerNumber, res.locals.user),
@@ -27,6 +30,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
       []
 
     // Record the prisoner restrictions in the session journey
+    // TODO: Should be done earlier in the journey when we select a prisoner, not here
     req.session.journey.officialVisit.prisoner.restrictions = restrictions
 
     // Show the list and prefill the checkboxes for the selected social visitors
@@ -42,7 +46,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
   public POST = async (req: Request, res: Response) => {
     // Use the prison and prisoner details from the session
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
-    const selected = isArray(req.body.selected) ? req.body.selected : [req.body.selected].filter(o => o !== null)
+    const selected = Array.isArray(req.body.selected) ? req.body.selected : [req.body.selected].filter(o => o !== null)
 
     // Get the approved social visitors
     const allApprovedSocialContacts = await this.officialVisitsService.getApprovedSocialContacts(
@@ -60,6 +64,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
       const contact = allApprovedSocialContacts.find(c => c.prisonerContactId === Number(o))
       return { ...contact, leadVisitor: false } as JourneyVisitor
     })
+
     return res.redirect(`assistance-required`)
   }
 }
