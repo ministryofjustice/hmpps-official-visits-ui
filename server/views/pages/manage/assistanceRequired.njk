@@ -30,8 +30,8 @@
         {% for contact in contacts %}
           {% set contactItems = (contactItems.push(
             {
-              name: "assistanceRequired[" + loop.index + "][id]",
-              id: "assistanceRequired[" + loop.index + "][id]",
+              name: "assistanceRequired[" + loop.index0 + "][id]",
+              id: "assistanceRequired[" + loop.index0 + "][id]",
               value: contact.contactId,
               text: contact.firstName + " " + contact.lastName,
               checked: contact.assistedVisit,
@@ -39,8 +39,8 @@
                 html: govukCharacterCount({
                     maxlength: 400,
                     rows: 5,
-                    id: "assistanceRequired[" + loop.index + "][notes]",
-                    name: "assistanceRequired[" + loop.index + "][notes]",
+                    id: "assistanceRequired[" + loop.index0 + "][notes]",
+                    name: "assistanceRequired[" + loop.index0 + "][notes]",
                     value: contact.assistanceNotes,
                     errorMessage: validationErrors | findError("assistanceRequired[" + loop.index + "][notes]")
                   })
