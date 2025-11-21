@@ -5,7 +5,14 @@ import nunjucks from 'nunjucks'
 import express from 'express'
 import fs from 'fs'
 import { flatten, groupBy, map } from 'lodash'
-import { convertToTitleCase, dateAtTime, formatDate, initialiseName, parseDate } from './utils'
+import {
+  convertToTitleCase,
+  dateAtTime,
+  formatDate,
+  initialiseName,
+  parseDate,
+  timeStringTo12HourPretty,
+} from './utils'
 import { FieldValidationError } from '../middleware/setUpFlash'
 import config from '../config'
 import logger from '../../logger'
@@ -68,4 +75,5 @@ export default function nunjucksSetup(app: express.Express): void {
   )
   njkEnv.addFilter('includes', (items: any[], selected: string) => items.includes(selected))
   njkEnv.addFilter('possessiveComma', (name: string) => (name.endsWith('s') ? `${name}’` : `${name}’s`))
+  njkEnv.addFilter('timeStringTo12HourPretty', timeStringTo12HourPretty)
 }

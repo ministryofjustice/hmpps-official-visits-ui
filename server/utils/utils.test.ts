@@ -12,6 +12,7 @@ import {
   toDuration,
   getParsedDateFromQueryString,
   getWeekOfDatesStartingMonday,
+  timeStringTo12HourPretty,
 } from './utils'
 
 describe('convert to title case', () => {
@@ -232,5 +233,18 @@ describe('getWeekOfDatesStartingMonday', () => {
       previousWeek: '',
       nextWeek: '',
     })
+  })
+})
+
+describe('timeStringTo12HourPretty', () => {
+  it.each([
+    ['00:00', '12am'],
+    ['01:00', '1am'],
+    ['12:00', '12pm'],
+    ['13:00', '1pm'],
+    ['23:59', '11:59pm'],
+    ['00:00', '12am'],
+  ])('converts %s to %s', (input, expected) => {
+    expect(timeStringTo12HourPretty(input)).toBe(expected)
   })
 })
