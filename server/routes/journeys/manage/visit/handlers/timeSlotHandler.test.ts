@@ -91,7 +91,7 @@ describe('Time slot handler', () => {
           expect($('.govuk-table__cell').eq(2).text()).toEqual('Activity')
           expect($('.govuk-table__cell').eq(3).text()).toEqual('Out of prison')
 
-          expect($('.govuk-radios__label').text()).toContain('08:00 - 17:00Room 1')
+          expect($('.govuk-radios__label').text()).toContain('8am to 5pmRoom 1')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.CHOOSE_TIME_SLOT_PAGE, {
             who: user.username,
