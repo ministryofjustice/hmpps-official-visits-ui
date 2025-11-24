@@ -2,16 +2,17 @@
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "partials/restriction-summary.njk" import restrictionSummary %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
 
-{% set pageTitle = "Select official vistor" %}
+{% set pageTitle = "Select official visitors from the prisoner's approved contact list" %}
 
 {% block content %}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
-      {# Who is attending, time and place, visitors, review, booking complete #}
       {{ progressTracker(true, true, false, false, false) }}
       {{ miniProfile(prisoner) }}
     </div>
@@ -26,57 +27,100 @@
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
-      <span class="govuk-hint">{{ (prisoner.lastName + ", " + prisoner.firstName) | convertToTitleCase }} active restrictions here</span>
+      {% set rows = [] %}
+      {% for pr in prisoner.restrictions %}
+
+        {% set restrictionTagHtml %}
+            {{ govukTag({ text: pr.typeDescription, classes: 'wide-tag ' + pr.typeCode | restrictionTagColour }) }}
+            {{ ' (expired)' if (pr.endDate | isDateAndInThePast) }}
+        {% endset %}
+
+        {% set rows = (rows.push([
+          { html: restrictionTagHtml },
+          { text: pr.comments },
+          { text: pr.startDate | formatDate },
+          { text: (pr.endDate | formatDate) or 'Not entered' }
+        ]), rows) %}
+      {% endfor %}
+
+      {% set captionText %}
+        {{ (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma }} active restrictions
+      {% endset %}
+
+      <div class="govuk-summary-card">
+        <div class="govuk-summary-card__content" data-qa="prisoner-restrictions-table">
+          {{ govukTable({
+            caption: captionText,
+            captionClasses: "govuk-table__caption--m",
+            firstCellIsHeader: true,
+            head: [
+              { text: "Type of restriction" },
+              { text: "Comments" },
+              { text: "Date from" },
+              { text: "Date to" }
+            ],
+            rows: rows
+          }) }}
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full-from-desktop">
+    <div class="govuk-grid-column-three-quarters">
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
         {% set rows = [] %}
         {% for contact in contacts %}
+
+          {% set addressHtml %}
+            {{ contact | formatAddressLines | escape | nl2br | safe }}
+          {% endset %}
+
+          {% set restrictionsHtml %}
+            {{ restrictionSummary(contact.restrictionSummary.active or []) }}
+          {% endset %}
+
           {% set rows = (rows.push([
             { html: govukCheckboxes({
-              name: "selected",
+              name: 'selected[]',
               classes: "govuk-checkboxes--small",
               items: [
                 {
                   value: contact.prisonerContactId,
-                  text: "Add",
+                  text: " ",
                   checked: selectedContacts | includes(contact.prisonerContactId)
                 }
               ]
             }) },
             { text: (contact.firstName + " " + contact.lastName) | convertToTitleCase },
-            { text: contact.dateOfBirth | formatDate },
+            { text: contact.dateOfBirth | formatOverEighteen } or '-',
             { text: contact.relationshipToPrisonerDescription or '-' },
-            { text: 'approval to visit is ' + contact.isApprovedVisitor },
-            { text: 'currentTerm is ' + contact.currentTerm }
+            { html: addressHtml or 'Not entered' },
+            { html: restrictionsHtml or 'None' }
           ]), rows) %}
         {% endfor %}
 
+        <div data-qa="visitors-table">
         {{ govukTable({
           caption: "Approved official contacts",
           captionClasses: "govuk-table__caption--m",
           firstCellIsHeader: true,
           head: [
-            {text: "Add"},
-            {text: "Name"},
-            {text: "Date of birth"},
-            {text: "Relationship"},
-            {text: "Address"},
-            {text: "Active restrictions"}
+            { text: "Add" },
+            { text: "Name" },
+            { text: "Age" },
+            { text: "Relationship" },
+            { text: "Address" },
+            { text: "Active restrictions" }
           ],
           rows: rows
         }) }}
+        </div>
 
         <div class="govuk-button-group">
-          {{ govukButton({
-                text: "Confirm",
-                preventDoubleClick: true
-            }) }}
+          {{ govukButton({ text: "Confirm", preventDoubleClick: true }) }}
           <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel</a>
         </div>
       </form>

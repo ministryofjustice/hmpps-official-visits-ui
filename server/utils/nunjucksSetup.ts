@@ -8,11 +8,15 @@ import { flatten, groupBy, map } from 'lodash'
 import {
   convertToTitleCase,
   dateAtTime,
+  formatAddressLines,
   formatDate,
+  formatOverEighteen,
   initialiseName,
+  isDateAndInThePast,
   parseDate,
   timeStringTo12HourPretty,
 } from './utils'
+import restrictionTagColour from './restrictionTagColour'
 import { FieldValidationError } from '../middleware/setUpFlash'
 import config from '../config'
 import logger from '../../logger'
@@ -66,10 +70,16 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('find', (l: any[], iteratee: string, eq: unknown) => l.find(o => o[iteratee] === eq))
   njkEnv.addFilter('filter', (l: any[], iteratee: string, eq: unknown) => l.filter(o => o[iteratee] === eq))
   njkEnv.addFilter('findError', (v: FieldValidationError[], i: string) => v?.find(e => e.fieldId === i))
+  njkEnv.addFilter('isDateAndInThePast', isDateAndInThePast)
   njkEnv.addFilter('parseDate', parseDate)
   njkEnv.addGlobal('DPS_HOME_PAGE_URL', config.serviceUrls.digitalPrison)
   njkEnv.addFilter('formatDate', formatDate)
+  njkEnv.addFilter('formatOverEighteen', formatOverEighteen)
+  njkEnv.addFilter('formatAddressLines', ({ flat, property, street, area, postcode, noFixedAddress }) =>
+    formatAddressLines(flat, property, street, area, postcode, noFixedAddress),
+  )
   njkEnv.addFilter('dateAtTime', dateAtTime)
+  njkEnv.addFilter('restrictionTagColour', restrictionTagColour)
   njkEnv.addFilter('selected', (items: any[], selected: string) =>
     items.map(o => ({ ...o, checked: o.value === selected })),
   )
