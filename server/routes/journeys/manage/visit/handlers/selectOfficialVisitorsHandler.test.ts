@@ -12,10 +12,10 @@ import {
   getProgressTrackerCompleted,
   getByDataQa,
 } from '../../../../testutils/cheerio'
+import { Journey } from '../../../../../@types/express'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockOfficialVisitors, mockRestrictionPlaceholder, prisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
-import { Journey } from '../../../../../@types/express'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
 
 jest.mock('../../../../../services/auditService')
@@ -40,19 +40,12 @@ const appSetup = (
 
 beforeEach(() => {
   appSetup()
-  jest.useFakeTimers({
-    now: new Date('2025-12-25'),
-    // Tests time out when faking nextTick and setImmediate
-    doNotFake: ['nextTick', 'setImmediate'],
-  })
-
   officialVisitsService.getApprovedOfficialContacts.mockResolvedValue(mockOfficialVisitors)
   officialVisitsService.getActiveRestrictions.mockResolvedValue(mockRestrictionPlaceholder)
 })
 
 afterEach(() => {
   jest.resetAllMocks()
-  jest.useRealTimers()
 })
 
 const URL = `/manage/create/${journeyId()}/select-official-visitors`
