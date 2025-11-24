@@ -49,7 +49,7 @@
       {% endset %}
 
       <div class="govuk-summary-card">
-        <div class="govuk-summary-card__content">
+        <div class="govuk-summary-card__content" data-qa="prisoner-restrictions-table">
           {{ govukTable({
             caption: captionText,
             captionClasses: "govuk-table__caption--m",
@@ -104,20 +104,22 @@
           ]), rows) %}
         {% endfor %}
 
-        {{ govukTable({
-          caption: "Approved social contacts",
-          captionClasses: "govuk-table__caption--m",
-          firstCellIsHeader: true,
-          head: [
-            { text: "Add" },
-            { text: "Name" },
-            { text: "Date of birth" },
-            { text: "Relationship" },
-            { text: "Address" },
-            { text: "Active restrictions" }
-          ],
-          rows: rows
-        }) }}
+        <div data-qa="visitors-table">
+          {{ govukTable({
+            caption: "Approved social contacts",
+            captionClasses: "govuk-table__caption--m",
+            firstCellIsHeader: true,
+            head: [
+              { text: "Add" },
+              { text: "Name" },
+              { text: "Date of birth" },
+              { text: "Relationship" },
+              { text: "Address" },
+              { text: "Active restrictions" }
+            ],
+            rows: rows
+          }) }}
+        </div>
 
         <div class="govuk-button-group">
           {{ govukButton({ text: "Confirm", preventDoubleClick: true }) }}

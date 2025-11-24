@@ -46,9 +46,8 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
   public POST = async (req: Request<unknown, SchemaType>, res: Response) => {
     // Use the prison and prisoner details from the session
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
-    const selected = Array.isArray(req.body.selected) ? req.body.selected : [req.body.selected].filter(o => o !== null)
+    const selected: string[] = Array.isArray(req.body.selected) ? req.body.selected : []
 
-    // Get the approved official visitors
     const allApprovedOfficialContacts = await this.officialVisitsService.getApprovedOfficialContacts(
       prisonCode,
       prisonerNumber,
@@ -56,12 +55,16 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     )
 
     // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Need to check against the time slot selected in the session
+    // TODO: Work out who is the lead visitor - first in list?
 
     // Update the session journey with selected approved official contacts
-    req.session.journey.officialVisit.officialVisitors = (selected || []).map((o: number) => {
-      const contact = allApprovedOfficialContacts?.find(c => c.prisonerContactId === Number(o))
-      return { ...contact } as JourneyVisitor
-    })
+    req.session.journey.officialVisit.officialVisitors =
+      selected.length > 0
+        ? selected.map((o: string) => {
+            const contact = allApprovedOfficialContacts?.find(c => c.prisonerContactId === Number(o))
+            return { ...contact, leadVisitor: false } as JourneyVisitor
+          })
+        : []
 
     return res.redirect(`select-social-visitors`)
   }
