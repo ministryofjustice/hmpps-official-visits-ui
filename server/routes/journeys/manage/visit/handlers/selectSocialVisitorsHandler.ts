@@ -10,11 +10,9 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   public GET = async (req: Request, res: Response) => {
-    // TODO: Assume caseload access checks are done in middleware
+    // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
 
-    // TODO: Get the contact restrictions
-    // TODO: Get the relationship restrictions
     // TODO: Do we need to get the prisoner restrictions here? They should be added to the prisoner session object when selected.
 
     // Get the prisoner's list of approved, social contacts
@@ -29,7 +27,6 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
       req.session.journey.officialVisit.socialVisitors?.map(v => v.prisonerContactId) ||
       []
 
-    // Record the prisoner restrictions in the session journey
     // TODO: Should be done earlier in the journey when we select a prisoner, not here
     req.session.journey.officialVisit.prisoner.restrictions = restrictions
 
@@ -46,24 +43,24 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
   public POST = async (req: Request, res: Response) => {
     // Use the prison and prisoner details from the session
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
-    const selected = Array.isArray(req.body.selected) ? req.body.selected : [req.body.selected].filter(o => o !== null)
+    const selected = Array.isArray(req.body.selected) ? req.body.selected : []
 
-    // Get the approved social visitors
     const allApprovedSocialContacts = await this.officialVisitsService.getApprovedSocialContacts(
       prisonCode,
       prisonerNumber,
       res.locals.user,
     )
 
-    // TODO: Validation middleware should allow an empty list for selected social contacts - 0 or more is OK
-
     // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Validation here.
 
-    // Update the session with the selected approved social visitors
-    req.session.journey.officialVisit.socialVisitors = (selected || []).map((o: number) => {
-      const contact = allApprovedSocialContacts.find(c => c.prisonerContactId === Number(o))
-      return { ...contact, leadVisitor: false } as JourneyVisitor
-    })
+    // Update the session with the selected approved social visitors, or an empty list if none
+    req.session.journey.officialVisit.socialVisitors =
+      selected.length > 0
+        ? selected.map((o: number) => {
+            const contact = allApprovedSocialContacts.find(c => c.prisonerContactId === Number(o))
+            return { ...contact, leadVisitor: false } as JourneyVisitor
+          })
+        : []
 
     return res.redirect(`assistance-required`)
   }

@@ -1,9 +1,11 @@
-import { TimeSlot } from '../@types/officialVisitsApi/types'
+import { ApprovedContact, RestrictionSummary, TimeSlot } from '../@types/officialVisitsApi/types'
+import { RestrictionPlaceholder } from '../data/officialVisitsApiClient'
 
 export const prisoner = {
   firstName: 'John',
   lastName: 'Smith',
   prisonerNumber: 'A1337AA',
+  prisonCode: 'MDI',
 }
 
 export const mockTimeslots = [
@@ -29,3 +31,119 @@ export const mockSchedule = [
     locationDescription: 'Out of prison',
   },
 ]
+
+export const contactRestrictionSummary = {
+  active: [
+    {
+      restrictionType: 'BAN',
+      restrictionTypeDescription: 'Banned',
+    },
+    {
+      restrictionType: 'CLOSED',
+      restrictionTypeDescription: 'Closed visits only',
+    },
+  ],
+  totalActive: 2,
+  totalExpired: 1,
+} as RestrictionSummary
+
+export const mockOfficialVisitors = [
+  {
+    prisonerContactId: 1,
+    contactId: 1,
+    prisonerNumber: 'A1337AA',
+    lastName: 'Smith',
+    firstName: 'Abe',
+    relationshipTypeCode: 'O',
+    relationshipTypeDescription: 'Official',
+    relationshipToPrisonerCode: 'BRO',
+    relationshipToPrisonerDescription: 'Brother',
+    isApprovedVisitor: true,
+    isNextOfKin: false,
+    isEmergencyContact: false,
+    isRelationshipActive: true,
+    currentTerm: true,
+    isStaff: false,
+    restrictionSummary: contactRestrictionSummary,
+    dateOfBirth: '2006-01-01',
+    street: '26 Acorn Road',
+    area: 'Bushby',
+    postcode: 'LE4 4NH',
+    noFixedAddress: false,
+    primaryAddress: true,
+  },
+  {
+    prisonerContactId: 2,
+    contactId: 2,
+    prisonerNumber: 'A1337AA',
+    lastName: 'Smith',
+    firstName: 'Bertie',
+    relationshipTypeCode: 'O',
+    relationshipTypeDescription: 'Official',
+    relationshipToPrisonerCode: 'BRO',
+    relationshipToPrisonerDescription: 'Brother',
+    isApprovedVisitor: true,
+    isNextOfKin: false,
+    isEmergencyContact: false,
+    isRelationshipActive: true,
+    currentTerm: true,
+    isStaff: false,
+    restrictionSummary: contactRestrictionSummary,
+    dateOfBirth: '2006-01-01',
+    street: '27 Acorn Road',
+    area: 'Bushby',
+    postcode: 'LE4 4NH',
+    noFixedAddress: false,
+    primaryAddress: true,
+  },
+  {
+    prisonerContactId: 3,
+    contactId: 3,
+    prisonerNumber: 'A1337AA',
+    lastName: 'Smith',
+    firstName: 'Chris',
+    relationshipTypeCode: 'O',
+    relationshipTypeDescription: 'Official',
+    relationshipToPrisonerCode: 'BRO',
+    relationshipToPrisonerDescription: 'Brother',
+    isApprovedVisitor: true,
+    isNextOfKin: false,
+    isEmergencyContact: false,
+    isRelationshipActive: true,
+    currentTerm: true,
+    isStaff: false,
+    restrictionSummary: contactRestrictionSummary,
+    dateOfBirth: '2006-01-01',
+    street: '28 Acorn Road',
+    area: 'Bushby',
+    postcode: 'LE4 4NH',
+    noFixedAddress: false,
+    primaryAddress: true,
+  },
+] as ApprovedContact[]
+
+export const mockRestrictionPlaceholder = [
+  {
+    contactId: 3,
+    typeCode: 'CLOSED',
+    typeDescription: 'Closed',
+    comments: 'Closed visits only',
+    startDate: '2022-12-01',
+    endDate: '2022-12-31',
+  },
+  {
+    contactId: 2,
+    typeCode: 'BAN',
+    typeDescription: 'Banned',
+    comments: 'Banned from all visits',
+    startDate: '2023-12-01',
+    endDate: '2023-12-31',
+  },
+  {
+    contactId: 1,
+    typeCode: 'RESTRICTED',
+    typeDescription: 'Restricted',
+    comments: 'Not to contact Sarah Philips until 03/08/2026.',
+    startDate: '2017-10-17',
+  },
+] as RestrictionPlaceholder[]

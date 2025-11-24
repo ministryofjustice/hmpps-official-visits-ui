@@ -2,6 +2,7 @@
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "partials/restriction-summary.njk" import restrictionSummary %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
@@ -30,14 +31,15 @@
       {% for pr in prisoner.restrictions %}
 
         {% set restrictionTagHtml %}
-          {{ govukTag({ text: pr.typeDescription, classes: 'wide-tag ' + pr.typeCode | restrictionTagColour }) }}{{ ' (expired)' if (pr.endDate | isDateAndInThePast) }}
+          {{ govukTag({ text: pr.typeDescription, classes: 'wide-tag ' + pr.typeCode | restrictionTagColour }) }}
+          {{ ' (expired)' if (pr.endDate | isDateAndInThePast) }}
         {% endset %}
 
         {% set rows = (rows.push([
           { html: restrictionTagHtml },
           { text: pr.comments },
           { text: pr.startDate | formatDate },
-          { text: pr.endDate | formatDate }
+          { text: (pr.endDate | formatDate) or "Not entered" }
         ]), rows) %}
 
       {% endfor %}
@@ -75,16 +77,16 @@
         {% for contact in contacts %}
 
           {% set addressHtml %}
-            <span>{{ contact | formatAddressLines | escape | nl2br | safe }}</span>
+            {{ contact | formatAddressLines | escape | nl2br | safe }}
           {% endset %}
 
           {% set restrictionsHtml %}
-            formatted restrictions
+            {{ restrictionSummary(contact.restrictionSummary.active or []) }}
           {% endset %}
 
           {% set rows = (rows.push([
             { html: govukCheckboxes({
-              name: "selected",
+              name: "selected[]",
               classes: "govuk-checkboxes--small",
               items: [
                 {
@@ -97,8 +99,8 @@
             { text: (contact.firstName + " " + contact.lastName) | convertToTitleCase },
             { text: contact.dateOfBirth | formatDate } or '-',
             { text: contact.relationshipToPrisonerDescription or '-' },
-            { html: addressHtml },
-            { html: restrictionsHtml }
+            { html: addressHtml or 'Not entered' },
+            { html: restrictionsHtml or 'None' }
           ]), rows) %}
         {% endfor %}
 
@@ -107,21 +109,18 @@
           captionClasses: "govuk-table__caption--m",
           firstCellIsHeader: true,
           head: [
-            {text: "Add"},
-            {text: "Name"},
-            {text: "Date of birth"},
-            {text: "Relationship"},
-            {text: "Address"},
-            {text: "Active restrictions"}
+            { text: "Add" },
+            { text: "Name" },
+            { text: "Date of birth" },
+            { text: "Relationship" },
+            { text: "Address" },
+            { text: "Active restrictions" }
           ],
           rows: rows
         }) }}
 
         <div class="govuk-button-group">
-          {{ govukButton({
-                text: "Confirm",
-                preventDoubleClick: true
-            }) }}
+          {{ govukButton({ text: "Confirm", preventDoubleClick: true }) }}
           <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel</a>
         </div>
       </form>

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
+import { schema, SchemaType } from './selectOfficialVisitorsSchema'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
 
@@ -9,12 +10,12 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
+  BODY = schema
+
   public GET = async (req: Request, res: Response) => {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
 
-    // TODO: Get the contact restrictions
-    // TODO: Get the relationship restrictions
     // TODO: Do we need to get the prisoner restrictions here? They should be added to the prisoner session object when selected.
 
     // Get the prisoner's list of approved, official contacts
@@ -29,7 +30,6 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       req.session.journey.officialVisit.officialVisitors?.map(v => v.prisonerContactId) ||
       []
 
-    // Record the prisoner restrictions into the session journey
     // TODO: Should be done earlier in the journey, when we select a prisoner, not here
     req.session.journey.officialVisit.prisoner.restrictions = restrictions
 
@@ -43,7 +43,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     })
   }
 
-  public POST = async (req: Request, res: Response) => {
+  public POST = async (req: Request<unknown, SchemaType>, res: Response) => {
     // Use the prison and prisoner details from the session
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
     const selected = Array.isArray(req.body.selected) ? req.body.selected : [req.body.selected].filter(o => o !== null)
@@ -55,8 +55,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       res.locals.user,
     )
 
-    // TODO: Validation middleware should detect an empty list for selected official contacts - at least 1 must be selecteds
-    // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Validation here.
+    // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Need to check against the time slot selected in the session
 
     // Update the session journey with selected approved official contacts
     req.session.journey.officialVisit.officialVisitors = (selected || []).map((o: number) => {

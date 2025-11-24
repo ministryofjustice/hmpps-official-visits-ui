@@ -1,0 +1,7 @@
+{% macro restrictionSummary(restrictions) %}
+
+  {% for r in restrictions %}
+      {{ r.restrictionType }}
+  {% endfor %}
+
+{% endmacro %}

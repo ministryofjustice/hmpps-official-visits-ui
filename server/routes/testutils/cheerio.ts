@@ -46,3 +46,19 @@ export const radioOptions = ($: Root, name: string) => {
     .get()
     .filter(s => s.length > 1)
 }
+
+export const getMiniProfile = ($: Root) => {
+  return getByDataQa($, 'mini-profile')
+}
+
+export const getProgressTrackerLabels = ($: Root) => {
+  return $('.moj-progress-bar > ol > li')
+}
+
+export const getProgressTrackerItems = ($: Root) => {
+  return $('.moj-progress-bar > .moj-progress-bar__list > .moj-progress-bar__item')
+}
+
+export const getProgressTrackerCompleted = ($: Root) => {
+  return $('.moj-progress-bar > .moj-progress-bar__list > .moj-progress-bar__item > .moj-progress-bar__icon--complete')
+}
