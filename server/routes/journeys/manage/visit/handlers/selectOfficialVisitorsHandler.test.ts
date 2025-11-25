@@ -16,7 +16,7 @@ import { Journey } from '../../../../../@types/express'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockOfficialVisitors, mockRestrictionPlaceholder, prisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
-import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
+import { convertToTitleCase } from '../../../../../utils/utils'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -89,8 +89,6 @@ describe('Select official visitors', () => {
           expect(restrictionHeaders.eq(1).text().trim()).toEqual('Comments')
           expect(restrictionHeaders.eq(2).text().trim()).toEqual('Date from')
           expect(restrictionHeaders.eq(3).text().trim()).toEqual('Date to')
-
-          const restrictionRows = getByDataQa($, 'prisoner-restrictions-table').find('tbody > tr > td')
 
           // Official visitor table
           const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')

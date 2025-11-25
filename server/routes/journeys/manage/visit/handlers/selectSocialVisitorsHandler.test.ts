@@ -90,8 +90,6 @@ describe('Select social visitors', () => {
           expect(restrictionHeaders.eq(2).text().trim()).toEqual('Date from')
           expect(restrictionHeaders.eq(3).text().trim()).toEqual('Date to')
 
-          const restrictionRows = getByDataQa($, 'prisoner-restrictions-table').find('tbody > tr > td')
-
           // Social visitor table
           const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')
           expect(visitorHeaders.eq(0).text().trim()).toEqual('Add')
