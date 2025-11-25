@@ -38,6 +38,8 @@ export default class AssistanceRequiredHandler implements PageHandler {
         foundContact.assistedVisit = contact.assistedVisit
       }
     })
-    return res.redirect(`equipment`)
+    return res.redirect(
+      req.session.journey.officialVisit.visitType === 'IN_PERSON' ? `equipment` : `check-your-answers`,
+    )
   }
 }
