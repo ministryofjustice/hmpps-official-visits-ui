@@ -26,6 +26,21 @@
                     <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Cell number</span>
                     <span class="govuk-body" data-qa="mini-profile-cell-location">{{ prisoner.cellLocation }}</span>
                 </li>
+ <li>
+     <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Restrictions and Alerts</span>
+      <p class="govuk-body govuk-!-margin-bottom-1">
+          <a id="prisoner-alerts-restrictions-link"
+            class="govuk-link--no-visited-state"
+            href="{{ CONTACTS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}/alerts-restrictions"
+            data-qa="contact-{{ prisoner.prisonerNumber }}-alerts-restrictions" target="_blank">
+            {{ prisoner.restrictionsCount }}
+            {% if prisoner.restrictionsCount == 1 %}restriction{% else %}restrictions{% endif %}
+                and
+               {{ prisoner.alertsCount }}
+               {% if prisoner.alertsCount == 1 %}alert{% else %}alerts{% endif %}
+           </a>
+        </p>
+   </li>
 
             </ul>
         </div>

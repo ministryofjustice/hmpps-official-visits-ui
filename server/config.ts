@@ -117,10 +117,22 @@ export default {
       },
       agent: new AgentConfig(Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000))),
     },
+    personalRelationshipsApi: {
+      url: get('PERSONAL_RELATIONSHIPS_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('CONTACTS_API_TIMEOUT_RESPONSE', 30000)),
+        deadline: Number(get('CONTACTS_API_TIMEOUT_DEADLINE', 35000)),
+      },
+      agent: new AgentConfig(Number(get('CONTACTS_API_TIMEOUT_RESPONSE', 30000))),
+      pageSize: 10,
+      referenceDataCacheTTL: Number(get('CONTACTS_API_REFERENCE_DATA_CACHE_TTL', 5 * 60)),
+    },
   },
   serviceUrls: {
     digitalPrison: get('DPS_HOME_PAGE_URL', 'http://localhost:3001', requiredInProduction),
     prisonerProfile: get('PRISONER_PROFILE_URL', 'http://localhost:3001', requiredInProduction),
+    prisonerContacts: get('CONTACTS_HOME_PAGE_URL', 'http://localhost:3001', requiredInProduction),
   },
   sqs: {
     audit: auditConfig(),

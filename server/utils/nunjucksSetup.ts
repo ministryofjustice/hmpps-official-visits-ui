@@ -61,6 +61,7 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('findError', (v: FieldValidationError[], i: string) => v?.find(e => e.fieldId === i))
   njkEnv.addFilter('parseDate', parseDate)
   njkEnv.addGlobal('DPS_HOME_PAGE_URL', config.serviceUrls.digitalPrison)
+  njkEnv.addGlobal('CONTACTS_HOME_PAGE_URL', config.serviceUrls.prisonerContacts)
   njkEnv.addFilter('formatDate', formatDate)
   njkEnv.addFilter('dateAtTime', dateAtTime)
   njkEnv.addFilter('selected', (items: any[], selected: string) =>

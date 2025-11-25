@@ -1,5 +1,6 @@
 import { components } from '../../../../@types/officialVisitsApi'
-import { ContactPlaceholder, RestrictionPlaceholder } from '../../../../data/officialVisitsApiClient'
+import { PrisonerRestrictionDetails } from '../../../../@types/personalRelationshipsApi/types'
+import { ContactPlaceholder } from '../../../../data/officialVisitsApiClient'
 
 export type OfficialVisitJourney = {
   searchTerm?: string
@@ -54,7 +55,9 @@ export type JourneyPrisoner = {
   pncNumber?: string
   croNumber?: string
   prisonCode?: string
-  restrictions?: RestrictionPlaceholder[]
+  restrictions?: PrisonerRestrictionDetails[]
   contacts?: ContactPlaceholder[]
   prisonName?: string
+  restrictionsCount?: number
+  alertsCount?: number
 }

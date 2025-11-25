@@ -4,6 +4,7 @@ import LocationsService from './locationsService'
 import PrisonerService from './prisonerService'
 import OfficialVisitsService from './officialVisitsService'
 import PrisonerImageService from './prisonerImageService'
+import PersonalRelationshipsService from './personalRelationshipsService'
 
 export const services = () => {
   const {
@@ -14,6 +15,7 @@ export const services = () => {
     prisonerSearchApi,
     officialVisitsApi,
     prisonApiClient,
+    personalRelationshipsApiClient,
   } = dataAccess()
 
   return {
@@ -24,6 +26,7 @@ export const services = () => {
     prisonerService: new PrisonerService(prisonerSearchApi),
     officialVisitsService: new OfficialVisitsService(officialVisitsApi),
     prisonerImageService: new PrisonerImageService(prisonApiClient),
+    personalRelationshipsService: new PersonalRelationshipsService(personalRelationshipsApiClient),
   }
 }
 

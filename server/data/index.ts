@@ -19,6 +19,7 @@ import LocationsInPrisonApiClient from './locationsInPrisonApiClient'
 import PrisonerSearchApiClient from './prisonerSearchApiClient'
 import OfficialVisitsApiClient from './officialVisitsApiClient'
 import PrisonApiClient from './prisonApiClient'
+import PersonalRelationshipsApiClient from './personalRelationshipsApiClient'
 
 export const dataAccess = () => {
   const hmppsAuthClient = new AuthenticationClient(
@@ -35,6 +36,7 @@ export const dataAccess = () => {
     officialVisitsApi: new OfficialVisitsApiClient(hmppsAuthClient),
     hmppsAuditClient: new HmppsAuditClient(config.sqs.audit),
     prisonApiClient: new PrisonApiClient(hmppsAuthClient),
+    personalRelationshipsApiClient: new PersonalRelationshipsApiClient(hmppsAuthClient),
   }
 }
 
@@ -47,4 +49,5 @@ export {
   PrisonerSearchApiClient,
   OfficialVisitsApiClient,
   PrisonApiClient,
+  PersonalRelationshipsApiClient,
 }

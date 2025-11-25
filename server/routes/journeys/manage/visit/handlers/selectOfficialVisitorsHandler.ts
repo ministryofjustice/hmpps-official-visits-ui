@@ -18,7 +18,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const selectedContacts =
       res.locals.formResponses?.selected || req.session.journey.officialVisit.officialVisitors?.map(v => v.id) || []
 
-    req.session.journey.officialVisit.prisoner.restrictions = restrictions
+    // req.session.journey.officialVisit.prisoner.restrictions = restrictions
     req.session.journey.officialVisit.prisoner.contacts = contacts
 
     res.render('pages/manage/selectOfficialVisitors', {

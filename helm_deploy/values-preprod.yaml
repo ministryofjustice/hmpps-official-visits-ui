@@ -18,6 +18,8 @@ generic-service:
     PRISONER_SEARCH_API_URL: 'https://prisoner-search-preprod.prison.service.justice.gov.uk'
     OFFICIAL_VISITS_API_URL: 'https://official-visits-api-preprod.hmpps.service.justice.gov.uk'
     PRISON_API_URL: 'https://prison-api-preprod.prison.service.justice.gov.uk'
+    PERSONAL_RELATIONSHIPS_API_URL: 'https://personal-relationships-api-preprod.hmpps.service.justice.gov.uk'
+    CONTACTS_HOME_PAGE_URL: 'https://contacts-preprod.hmpps.service.justice.gov.uk/'
     ENVIRONMENT_NAME: PRE-PRODUCTION
     AUDIT_ENABLED: "false"
 
