@@ -16,8 +16,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     // TODO: Do we need to get the prisoner restrictions here? They should be added to the prisoner session object when selected.
 
     // Get the prisoner's list of approved, social contacts
-    const [restrictions, approvedSocialContacts] = await Promise.all([
-      this.officialVisitsService.getActiveRestrictions(res, prisonCode, prisonerNumber),
+    const [approvedSocialContacts] = await Promise.all([
       this.officialVisitsService.getApprovedSocialContacts(prisonCode, prisonerNumber, res.locals.user),
     ])
 
@@ -28,11 +27,10 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
       []
 
     // req.session.journey.officialVisit.prisoner.restrictions = restrictions
-    req.session.journey.officialVisit.prisoner.contacts = contact
+    // req.session.journey.officialVisit.prisoner.contacts = contact
 
     // Show the list and prefill the checkboxes for the selected social visitors
     res.render('pages/manage/selectSocialVisitors', {
-      restrictions,
       contacts: approvedSocialContacts,
       selectedContacts,
       backUrl: `select-official-visitors`,

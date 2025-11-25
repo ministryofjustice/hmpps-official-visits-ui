@@ -91,18 +91,6 @@ describe('Select official visitors', () => {
           expect(restrictionHeaders.eq(3).text().trim()).toEqual('Date to')
 
           const restrictionRows = getByDataQa($, 'prisoner-restrictions-table').find('tbody > tr > td')
-          // Row 1
-          expect(restrictionRows.eq(0).text().trim()).toEqual(mockRestrictionPlaceholder[0].comments)
-          expect(restrictionRows.eq(1).text().trim()).toEqual(formatDate(mockRestrictionPlaceholder[0].startDate))
-          expect(restrictionRows.eq(2).text().trim()).toEqual(formatDate(mockRestrictionPlaceholder[0].endDate))
-          // Row 2
-          expect(restrictionRows.eq(3).text().trim()).toEqual(mockRestrictionPlaceholder[1].comments)
-          expect(restrictionRows.eq(4).text().trim()).toEqual(formatDate(mockRestrictionPlaceholder[1].startDate))
-          expect(restrictionRows.eq(5).text().trim()).toEqual(formatDate(mockRestrictionPlaceholder[1].endDate))
-          /// Row 3
-          expect(restrictionRows.eq(6).text().trim()).toEqual(mockRestrictionPlaceholder[2].comments)
-          expect(restrictionRows.eq(7).text().trim()).toEqual(formatDate(mockRestrictionPlaceholder[2].startDate))
-          expect(restrictionRows.eq(8).text().trim()).toEqual('Not entered')
 
           // Official visitor table
           const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')

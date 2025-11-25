@@ -31,15 +31,15 @@
       {% for pr in prisoner.restrictions %}
 
         {% set restrictionTagHtml %}
-            {{ govukTag({ text: pr.typeDescription, classes: 'wide-tag ' + pr.typeCode | restrictionTagColour }) }}
-            {{ ' (expired)' if (pr.endDate | isDateAndInThePast) }}
+            {{ govukTag({ text: pr.restrictionTypeDescription, classes: 'wide-tag ' + pr.restrictionType | restrictionTagColour }) }}
+            {{ ' (expired)' if (pr.expiryDate | isDateAndInThePast) }}
         {% endset %}
 
         {% set rows = (rows.push([
           { html: restrictionTagHtml },
           { text: pr.comments },
-          { text: pr.startDate | formatDate },
-          { text: (pr.endDate | formatDate) or 'Not entered' }
+          { text: pr.effectiveDate | formatDate },
+          { text: (pr.expiryDate | formatDate) or "Not entered" }
         ]), rows) %}
       {% endfor %}
 
