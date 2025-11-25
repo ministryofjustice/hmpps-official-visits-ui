@@ -42,3 +42,4 @@ export type Contact = {
   equipment?: boolean
   equipmentNotes?: string
 }
+export type RestrictionSummary = components['schemas']['RestrictionsSummary']
