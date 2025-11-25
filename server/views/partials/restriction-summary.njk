@@ -1,0 +1,13 @@
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% macro restrictionSummary(activeRestrictions) %}
+  <div>
+    {% if activeRestrictions.length > 0 %}
+      {% for r in activeRestrictions %}
+        {{ govukTag({ text: r.restrictionTypeDescription, classes: 'govuk-!-margin-top-2 wide-tag ' + r.restrictionType | restrictionTagColour }) }}
+      {% endfor %}
+    {% else %}
+      None
+    {% endif %}
+  </div>
+{% endmacro %}

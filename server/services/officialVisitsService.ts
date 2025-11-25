@@ -1,7 +1,7 @@
 import { Response } from 'express'
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { OfficialVisit, AvailableTimeSlots } from '../@types/officialVisitsApi/types'
+import { OfficialVisit } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
 import { components } from '../@types/officialVisitsApi'
@@ -31,22 +31,6 @@ export default class OfficialVisitsService {
     // TODO: Map the journey to a VisitAmendRequest, call the service amend, and return the amended visit
   }
 
-  public async getAvailableTimeSlots(username: string, prisonId: string, date: string): Promise<AvailableTimeSlots[]> {
-    logger.info(`Just using vars ${JSON.stringify(username)}, ${JSON.stringify(prisonId)}, ${JSON.stringify(date)}`)
-
-    const availableTimeSlots: AvailableTimeSlots[] = [
-      {
-        dayCode: 'One',
-        startTime: '11:30',
-        endTime: '12:30',
-        dpsLocationId: 'DPS',
-        maxAdults: '2',
-        maxGroups: '1',
-      },
-    ]
-    return availableTimeSlots
-  }
-
   public async getReferenceData(res: Response, code: components['schemas']['ReferenceDataGroup']) {
     return this.officialVisitsApiClient.getReferenceData(code, res.locals.user)
   }
@@ -55,8 +39,12 @@ export default class OfficialVisitsService {
     return this.officialVisitsApiClient.getActiveRestrictions(prisonId, prisonerNumber, res.locals.user)
   }
 
-  public async getOfficialContacts(res: Response, prisonId: string, prisonerNumber: string) {
-    return this.officialVisitsApiClient.getContacts(prisonId, prisonerNumber, res.locals.user)
+  public async getApprovedOfficialContacts(prisonId: string, prisonerNumber: string, user: HmppsUser) {
+    return this.officialVisitsApiClient.getApprovedOfficialContacts(prisonId, prisonerNumber, user)
+  }
+
+  public async getApprovedSocialContacts(prisonId: string, prisonerNumber: string, user: HmppsUser) {
+    return this.officialVisitsApiClient.getApprovedSocialContacts(prisonId, prisonerNumber, user)
   }
 
   public async getAvailableSlots(res: Response, prisonId: string, startDate: string, endDate: string) {

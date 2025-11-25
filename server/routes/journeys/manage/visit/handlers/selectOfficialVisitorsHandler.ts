@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
+import { schema, SchemaType } from './selectOfficialVisitorsSchema'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
 
@@ -9,38 +10,61 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
+  BODY = schema
+
   public GET = async (req: Request, res: Response) => {
+    // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
-    const restrictions = await this.officialVisitsService.getActiveRestrictions(res, prisonCode, prisonerNumber)
-    // One call to contacts and save on journey data so we don't need to make another call on the next page
-    // - although maybe we should still call again if the ability to add contacts exists
-    const contacts = await this.officialVisitsService.getOfficialContacts(res, prisonCode, prisonerNumber)
+
+    // TODO: Do we need to get the prisoner restrictions here? They should be added to the prisoner session object when selected.
+
+    // Get the prisoner's list of approved, official contacts
+    const [restrictions, approvedOfficialContacts] = await Promise.all([
+      this.officialVisitsService.getActiveRestrictions(res, prisonCode, prisonerNumber),
+      this.officialVisitsService.getApprovedOfficialContacts(prisonCode, prisonerNumber, res.locals.user),
+    ])
+
+    // Get the approved official contacts who are already selected for this visit from session data
     const selectedContacts =
-      res.locals.formResponses?.selected || req.session.journey.officialVisit.officialVisitors?.map(v => v.id) || []
+      res.locals.formResponses?.selected ||
+      req.session.journey.officialVisit.officialVisitors?.map(v => v.prisonerContactId) ||
+      []
 
     // req.session.journey.officialVisit.prisoner.restrictions = restrictions
     req.session.journey.officialVisit.prisoner.contacts = contacts
 
+    // Show the list and prefill the selected checkboxes for official visitors
     res.render('pages/manage/selectOfficialVisitors', {
       restrictions,
-      contacts: contacts.filter(o => o.visitorTypeCode === 'OFFICIAL'),
+      contacts: approvedOfficialContacts,
       selectedContacts,
       backUrl: `time-slot`,
       prisoner: req.session.journey.officialVisit.prisoner,
     })
   }
 
-  public POST = async (req: Request, res: Response) => {
-    // Validation - do we ensure all ids are found? Do we fetch a fresh list on POST?
-    req.session.journey.officialVisit.officialVisitors = (req.body.selected || []).map((o: number) => {
-      const contact = req.session.journey.officialVisit.prisoner.contacts.find(c => c.id === Number(o))
-      return {
-        ...contact,
-        // assistedVisit: false,
-        // leadVisitor: false,
-        // notes: '',
-      } as JourneyVisitor
-    })
+  public POST = async (req: Request<unknown, SchemaType>, res: Response) => {
+    // Use the prison and prisoner details from the session
+    const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
+    const selected: string[] = Array.isArray(req.body.selected) ? req.body.selected : []
+
+    const allApprovedOfficialContacts = await this.officialVisitsService.getApprovedOfficialContacts(
+      prisonCode,
+      prisonerNumber,
+      res.locals.user,
+    )
+
+    // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Need to check against the time slot selected in the session
+    // TODO: Work out who is the lead visitor - first in list?
+
+    // Update the session journey with selected approved official contacts
+    req.session.journey.officialVisit.officialVisitors =
+      selected.length > 0
+        ? selected.map((o: string) => {
+            const contact = allApprovedOfficialContacts?.find(c => c.prisonerContactId === Number(o))
+            return { ...contact, leadVisitor: false } as JourneyVisitor
+          })
+        : []
 
     return res.redirect(`select-social-visitors`)
   }

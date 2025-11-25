@@ -1,8 +1,9 @@
-import { isValid, parse, format } from 'date-fns'
+import { addYears, isValid, parse, format, subYears } from 'date-fns'
 import {
   convertToTitleCase,
   initialiseName,
   formatDate,
+  formatOverEighteen,
   dateToSimpleTime,
   dateAtTime,
   parseDatePickerDate,
@@ -12,6 +13,9 @@ import {
   toDuration,
   getParsedDateFromQueryString,
   getWeekOfDatesStartingMonday,
+  timeStringTo12HourPretty,
+  isDateAndInThePast,
+  formatAddressLines,
 } from './utils'
 
 describe('convert to title case', () => {
@@ -154,6 +158,18 @@ describe('dateAtTime', () => {
   })
 })
 
+describe('isDateAndInThePast', () => {
+  it('should be false if no end', () => {
+    expect(isDateAndInThePast(undefined)).toStrictEqual(false)
+  })
+  it('should be false if date is in the future', () => {
+    expect(isDateAndInThePast('2040-01-01')).toStrictEqual(false)
+  })
+  it('should be true if date is in the past', () => {
+    expect(isDateAndInThePast('2023-01-01')).toStrictEqual(true)
+  })
+})
+
 describe('toDuration', () => {
   it.each([
     [0, '0 minutes'],
@@ -233,4 +249,54 @@ describe('getWeekOfDatesStartingMonday', () => {
       nextWeek: '',
     })
   })
+})
+
+describe('timeStringTo12HourPretty', () => {
+  it.each([
+    ['00:00', '12am'],
+    ['01:00', '1am'],
+    ['12:00', '12pm'],
+    ['13:00', '1pm'],
+    ['23:59', '11:59pm'],
+    ['00:00', '12am'],
+  ])('converts %s to %s', (input, expected) => {
+    expect(timeStringTo12HourPretty(input)).toBe(expected)
+  })
+})
+
+describe('formatOverEighteen', () => {
+  it.each([
+    [format(subYears(new Date(), 18), 'yyyy-MM-dd'), 'Over 18'],
+    [format(subYears(new Date(), 17), 'yyyy-MM-dd'), 'Under 18'],
+    [format(subYears(new Date(), 28), 'yyyy-MM-dd'), 'Over 18'],
+    [format(subYears(new Date(), 1), 'yyyy-MM-dd'), 'Under 18'],
+    [format(addYears(new Date(), 1), 'yyyy-MM-dd'), 'Under 18'], // Any future date
+    [null, undefined], // null date
+    [undefined, undefined], // undefined date
+    ['2889-0909-09', undefined], // Invalid date
+  ])('formats %s as %s', (input, expected) => {
+    expect(formatOverEighteen(input)).toBe(expected)
+  })
+})
+
+describe('formatAddressLines', () => {
+  it.each([
+    [
+      'Flat1',
+      'Spring House',
+      'Main Road',
+      'Harling',
+      'HD3 3GF',
+      false,
+      'Flat1\nSpring House\nMain Road\nHarling\nHD3 3GF',
+    ],
+    [null, '34', 'Main Road', null, 'HD3 3GF', false, '34\nMain Road\nHD3 3GF'],
+    [null, null, null, null, 'GH2 1DD', false, 'GH2 1DD'],
+    [null, null, null, null, null, true, 'No fixed address'],
+  ])(
+    'formats address lines for %s %s %s %s %s %s -> %s',
+    (flat, property, street, area, postcode, noFixedAddress: boolean, expected) => {
+      expect(formatAddressLines(flat, property, street, area, postcode, noFixedAddress)).toBe(expected)
+    },
+  )
 })

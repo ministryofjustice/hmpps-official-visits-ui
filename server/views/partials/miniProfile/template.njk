@@ -2,15 +2,23 @@
    {% set imageUrl =  "/prisoner-image/" ~ prisoner.prisonerNumber  %}
     <div class="mini-profile-inner">
         <div class="mini-profile-left">
-
-            <img class="mini-profile-person-img" src="{{ imageUrl or '/assets/images/prisoner-profile-image.png'}}" alt="Image of {{ prisoner.lastName }}" loading="lazy" data-qa="mini-profile-person-img">
-
+            <img class="mini-profile-person-img"
+                 src="{{ imageUrl or '/assets/images/prisoner-profile-image.png'}}"
+                 alt="Image of {{ prisoner.lastName }}"
+                 loading="lazy"
+                 data-qa="mini-profile-person-img"
+            />
         </div>
         <div class="mini-profile-right">
             <ul class="mini-profile-info">
                 <li>
                     <p class="govuk-heading-s govuk-!-margin-bottom-1">
-                        <a id="mini-profile-link" class="govuk-link--no-visited-state" href="{{ DPS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}" target="_blank" data-qa="mini-profile-person-profile-link">{{ (prisoner.lastName + ', ' + prisoner.firstName) | convertToTitleCase }}</a>
+                        <a id="mini-profile-link"
+                           class="govuk-link--no-visited-state"
+                           href="{{ DPS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}"
+                           target="_blank"
+                           data-qa="mini-profile-person-profile-link">{{ (prisoner.lastName + ', ' + prisoner.firstName) | convertToTitleCase }}
+                        </a>
                     </p>
                     <span class="govuk-body" data-qa="mini-profile-prisoner-number">{{ prisoner.prisonerNumber }}</span>
                 </li>
