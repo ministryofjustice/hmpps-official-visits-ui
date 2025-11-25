@@ -4,7 +4,7 @@ import PersonalRelationshipsApiClient from './personalRelationshipsApiClient'
 import config from '../config'
 import { HmppsUser } from '../interfaces/hmppsUser'
 
-describe('Contacts api client tests', () => {
+describe('Personal relationships api client tests', () => {
   let personalRelationshipsApiClient: PersonalRelationshipsApiClient
   let mockAuthenticationClient: jest.Mocked<AuthenticationClient>
 
@@ -25,10 +25,10 @@ describe('Contacts api client tests', () => {
   it('Get prisoner contacts restrictions', async () => {
     const expected = { data: 'data' }
     nock(config.apis.personalRelationshipsApi.url)
-      .get(`/prisoner-restrictions/ABC1234?page=0&size=10&currentTerm=false&paged=false`)
+      .get(`/prisoner-restrictions/ABC1234?page=0&size=10&currentTerm=true&paged=false`)
       .matchHeader('authorization', 'Bearer test-system-token')
       .reply(200, expected)
-    const result = await personalRelationshipsApiClient.getPrisonerRestrictions('ABC1234', 0, 10, user, false, false)
+    const result = await personalRelationshipsApiClient.getPrisonerRestrictions('ABC1234', 0, 10, user, true, false)
     expect(result).toEqual(expected)
     expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
   })

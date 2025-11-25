@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import PrisonerService from '../../../../../services/prisonerService'
-import ContactsService from '../../../../../services/personalRelationshipsService'
+import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import { schema } from './prisonerSearchSchema'
 import {
   PagedModelPrisonerRestrictionDetails,
@@ -17,7 +17,7 @@ export default class PrisonerSelectHandler implements PageHandler {
 
   constructor(
     private readonly prisonerService: PrisonerService,
-    private readonly contactsService: ContactsService,
+    private readonly personalRelationshipsService: PersonalRelationshipsService,
   ) {}
 
   public GET = async (req: Request, res: Response) => {
@@ -31,7 +31,7 @@ export default class PrisonerSelectHandler implements PageHandler {
     let restrictions: PrisonerRestrictionDetails[] = []
     try {
       const restrictionsPagedModel: PagedModelPrisonerRestrictionDetails =
-        await this.contactsService.getPrisonerRestrictions(prisonerNumber, 0, 10, user, false, false)
+        await this.personalRelationshipsService.getPrisonerRestrictions(prisonerNumber, 0, 10, user, true, false)
       restrictionsCount = restrictionsPagedModel?.content?.length ?? 0
       restrictions = restrictionsPagedModel?.content
       logger.info(` restrictions for prisoner: ${restrictionsPagedModel}`)

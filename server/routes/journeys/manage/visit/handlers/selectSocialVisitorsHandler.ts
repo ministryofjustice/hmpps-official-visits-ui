@@ -25,10 +25,6 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
       res.locals.formResponses?.selected ||
       req.session.journey.officialVisit.socialVisitors?.map(v => v.prisonerContactId) ||
       []
-
-    // req.session.journey.officialVisit.prisoner.restrictions = restrictions
-    // req.session.journey.officialVisit.prisoner.contacts = contact
-
     // Show the list and prefill the checkboxes for the selected social visitors
     res.render('pages/manage/selectSocialVisitors', {
       contacts: approvedSocialContacts,
