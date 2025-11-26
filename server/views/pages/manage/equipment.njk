@@ -13,11 +13,12 @@
     <div class="govuk-grid-column-three-quarters">
       {# Who is attending, time and place, visitors, review, booking complete #}
       {{ progressTracker(true, true, false, false, false) }}
-      {{ miniProfile(prisoner) }}
     </div>
   </div>
 
-  <div class="govuk-grid-row">
+  {{ miniProfile(prisoner) }}
+  
+  <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Schedule an official visit</span>
       <h1 class="govuk-heading-l">{{pageTitle}} (optional)</h1>
@@ -27,25 +28,30 @@
 
         {% set contactItems = [] %}
         {% for contact in contacts %}
-          {% set contactItems = (contactItems.push(
-            {
-              name: "equipment[" + loop.index0 + "][id]",
-              id: "equipment[" + loop.index0 + "][id]",
-              value: contact.contactId,
-              text: contact.firstName + " " + contact.lastName + " (" + contact.relationshipToPrisonerDescription + ")",
-              checked: formResponses.equipment[loop.index0].id if formResponses.equipment else contact.equipment,
-              conditional: {
-                html: govukCharacterCount({
+          {% set contactItems = (contactItems.push({
+            name: "equipment[" + loop.index0 + "][id]",
+            id: "equipment[" + loop.index0 + "][id]",
+            value: contact.contactId,
+            text: contact.firstName + " " + contact.lastName + " (" + contact.relationshipToPrisonerDescription + ")",
+            checked: formResponses
+              .equipment[loop.index0]
+              .id if formResponses
+              .equipment else 
+                contact.equipment,
+                conditional: {
+                  html: govukCharacterCount({
                     maxlength: 400,
                     rows: 5,
                     id: "equipment[" + loop.index0 + "][notes]",
                     name: "equipment[" + loop.index0 + "][notes]",
-                    value: formResponses.equipment[loop.index0].notes or contact.equipmentNotes,
+                    value: formResponses
+                      .equipment[loop.index0]
+                      .notes or contact
+                      .equipmentNotes,
                     errorMessage: validationErrors | findError("equipment[" + loop.index0 + "][notes]")
                   })
-              }
-            }
-          ), contactItems) %}
+                }
+              }), contactItems) %}
         {% endfor %}
 
         {{ govukCheckboxes({
