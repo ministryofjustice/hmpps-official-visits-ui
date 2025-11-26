@@ -66,17 +66,18 @@ describe('Select social visitors', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          // Check we have completed step 2/5 on the progress tracker
+          // Check we have completed step 2/6 on the progress tracker
           expect(getProgressTrackerCompleted($)).toHaveLength(2)
-          expect(getProgressTrackerItems($)).toHaveLength(5)
+          expect(getProgressTrackerItems($)).toHaveLength(6)
 
           // Displaying the right progress bar labels and sequence
           const labels = getProgressTrackerLabels($)
           expect(labels.eq(0).text().trim()).toContain('Who is attending')
           expect(labels.eq(1).text().trim()).toContain('Visit time and place')
           expect(labels.eq(2).text().trim()).toContain('Visit type and visitors')
-          expect(labels.eq(3).text().trim()).toContain('Review')
-          expect(labels.eq(4).text().trim()).toContain('Confirm')
+          expect(labels.eq(3).text().trim()).toContain('Optional information')
+          expect(labels.eq(4).text().trim()).toContain('Review')
+          expect(labels.eq(5).text().trim()).toContain('Confirm')
 
           // Check the prisoner mini-profile is present with correct prisoner details
           expect(getByDataQa($, 'mini-profile-person-profile-link').text().trim()).toEqual(
