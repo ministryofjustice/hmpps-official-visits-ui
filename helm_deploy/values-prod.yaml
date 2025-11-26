@@ -17,7 +17,7 @@ generic-service:
     OFFICIAL_VISITS_API_URL: 'https://official-visits-api.hmpps.service.justice.gov.uk'
     PRISON_API_URL: 'https://prison-api.prison.service.justice.gov.uk'
     PERSONAL_RELATIONSHIPS_API_URL: 'https://personal-relationships-api.hmpps.service.justice.gov.uk'
-    CONTACTS_HOME_PAGE_URL: 'https://contacts.hmpps.service.justice.gov.uk/'
+    CONTACTS_HOME_PAGE_URL: 'https://contacts.hmpps.service.justice.gov.uk'
     AUDIT_ENABLED: "false"
 
 generic-prometheus-alerts:

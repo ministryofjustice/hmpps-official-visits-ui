@@ -19,7 +19,7 @@ generic-service:
     OFFICIAL_VISITS_API_URL: 'https://official-visits-api-dev.hmpps.service.justice.gov.uk'
     PRISON_API_URL: 'https://prison-api-dev.prison.service.justice.gov.uk'
     PERSONAL_RELATIONSHIPS_API_URL: 'https://personal-relationships-api-dev.hmpps.service.justice.gov.uk'
-    CONTACTS_HOME_PAGE_URL: 'https://contacts-dev.hmpps.service.justice.gov.uk/'
+    CONTACTS_HOME_PAGE_URL: 'https://contacts-dev.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: DEV
     AUDIT_ENABLED: "false"
 
