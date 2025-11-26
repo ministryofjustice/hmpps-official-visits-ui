@@ -14,9 +14,9 @@
     <div class="govuk-grid-column-three-quarters">
       {# Who is attending, time and place, visitors, review, booking complete #}
       {{ progressTracker(true, false, false, false, false) }}
-      {{ miniProfile(prisoner) }}
     </div>
   </div>
+      {{ miniProfile(prisoner) }}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
@@ -54,7 +54,7 @@
           <ul class="govuk-list bapv-timetable-dates">
 
             <li class="moj-pagination__item  moj-pagination__item--prev">
-              {% if (weekOfDates | first) 
+              {% if (weekOfDates | first)
                   .isInFuture and(weekOfDates | first)
                   .date != today %}
                 <a class="moj-pagination__link" href="?date={{ previousWeek | formatDate('yyyy-MM-dd') }}">Previous week</a>

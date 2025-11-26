@@ -16,7 +16,12 @@ import SelectSocialVisitorsHandler from './handlers/selectSocialVisitorsHandler'
 import AssistanceRequiredHandler from './handlers/assistanceRequiredHandler'
 import EquipmentHandler from './handlers/equipmentHandler'
 
-export default function CreateRoutes({ auditService, prisonerService, officialVisitsService }: Services): Router {
+export default function CreateRoutes({
+  auditService,
+  prisonerService,
+  officialVisitsService,
+  personalRelationshipsService,
+}: Services): Router {
   const router = Router({ mergeParams: true })
 
   const route = (path: string | string[], handler: PageHandler) =>
@@ -27,7 +32,7 @@ export default function CreateRoutes({ auditService, prisonerService, officialVi
   // Prisoner search steps
   route('/search', new PrisonerSearchHandler(prisonerService))
   route('/results', new PrisonerSearchResultsHandler(prisonerService))
-  route('/prisoner-select', new PrisonerSelectHandler(prisonerService))
+  route('/prisoner-select', new PrisonerSelectHandler(prisonerService, personalRelationshipsService))
   route(`/confirmation/:officialVisitId`, new ConfirmationHandler(officialVisitsService, prisonerService))
 
   // Subsequent steps require the official visit journey session data to exist

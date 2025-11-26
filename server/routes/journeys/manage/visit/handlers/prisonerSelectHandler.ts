@@ -2,7 +2,9 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import PrisonerService from '../../../../../services/prisonerService'
+import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import { schema } from './prisonerSearchSchema'
+import { PagedModelPrisonerRestrictionDetails } from '../../../../../@types/personalRelationshipsApi/types'
 import logger from '../../../../../../logger'
 
 export default class PrisonerSelectHandler implements PageHandler {
@@ -10,7 +12,10 @@ export default class PrisonerSelectHandler implements PageHandler {
 
   public BODY = schema
 
-  constructor(private readonly prisonerService: PrisonerService) {}
+  constructor(
+    private readonly prisonerService: PrisonerService,
+    private readonly personalRelationshipsService: PersonalRelationshipsService,
+  ) {}
 
   public GET = async (req: Request, res: Response) => {
     const prisonerNumber = req.query.prisonerNumber as string
@@ -18,6 +23,11 @@ export default class PrisonerSelectHandler implements PageHandler {
     const { user } = res.locals
     const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(prisonerNumber, user)
 
+    const restrictionsPagedModel: PagedModelPrisonerRestrictionDetails =
+      await this.personalRelationshipsService.getPrisonerRestrictions(prisonerNumber, 0, 10, user, true, false)
+    const restrictionsCount = restrictionsPagedModel?.content?.length ?? 0
+    const restrictions = restrictionsPagedModel?.content
+    const alertsCount = prisoner?.alerts?.length ?? 0
     // Populate what we can in the official visit journey - the prison and prisoner details
     req.session.journey.officialVisit = {
       ...req.session.journey.officialVisit,
@@ -34,6 +44,9 @@ export default class PrisonerSelectHandler implements PageHandler {
         croNumber: prisoner.croNumber,
         prisonCode: prisoner.prisonId,
         prisonName: prisoner.prisonName,
+        restrictions,
+        alertsCount,
+        restrictionsCount,
       },
     }
 
