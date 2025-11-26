@@ -1,5 +1,5 @@
 import { ApprovedContact, RestrictionSummary, TimeSlot } from '../@types/officialVisitsApi/types'
-import { RestrictionPlaceholder } from '../data/officialVisitsApiClient'
+import { PrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
 
 export const prisoner = {
   firstName: 'John',
@@ -173,28 +173,46 @@ export const mockSocialVisitors = [
   },
 ] as ApprovedContact[]
 
-export const mockRestrictionPlaceholder = [
+export const mockPrisonerRestrictions = [
   {
-    contactId: 3,
-    typeCode: 'CLOSED',
-    typeDescription: 'Closed',
-    comments: 'Closed visits only',
-    startDate: '2022-12-01',
-    endDate: '2022-12-31',
+    prisonerRestrictionId: 3,
+    prisonerNumber: 'A1337AA',
+    restrictionType: 'CLOSED',
+    restrictionTypeDescription: 'Closed',
+    commentText: 'Closed visits only',
+    effectiveDate: '2022-12-01',
+    expiryDate: '2022-12-31',
+    authorisedUsername: 'XXX',
+    authorisedByDisplayName: 'XXX YYY',
+    currentTerm: true,
+    createdBy: 'XXX',
+    createdTime: '2022-12-01 10:00',
   },
   {
-    contactId: 2,
-    typeCode: 'BAN',
-    typeDescription: 'Banned',
-    comments: 'Banned from all visits',
-    startDate: '2023-12-01',
-    endDate: '2023-12-31',
+    prisonerRestrictionId: 2,
+    prisonerNumber: 'A1337AA',
+    restrictionType: 'BAN',
+    restrictionTypeDescription: 'Banned',
+    commentText: 'Banned from all visits',
+    effectiveDate: '2023-12-01',
+    expiryDate: '2023-12-31',
+    authorisedUsername: 'XXX',
+    authorisedByDisplayName: 'XXX YYY',
+    currentTerm: true,
+    createdBy: 'XXX',
+    createdTime: '2023-12-01 10:00',
   },
   {
-    contactId: 1,
-    typeCode: 'RESTRICTED',
-    typeDescription: 'Restricted',
-    comments: 'Not to contact Sarah Philips until 03/08/2026.',
-    startDate: '2017-10-17',
+    prisonerRestrictionId: 1,
+    prisonerNumber: 'A1337AA',
+    restrictionType: 'RESTRICTED',
+    restrictionTypeDescription: 'Restricted',
+    commentText: 'Not to contact Sarah Philips until 03/08/2026.',
+    effectiveDate: '2017-10-17',
+    authorisedUsername: 'XXX',
+    authorisedByDisplayName: 'XXX YYY',
+    currentTerm: true,
+    createdBy: 'XXX',
+    createdTime: '2017-10-17 10:00',
   },
-] as RestrictionPlaceholder[]
+] as PrisonerRestrictionDetails[]

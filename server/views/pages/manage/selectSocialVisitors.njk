@@ -37,7 +37,7 @@
 
         {% set rows = (rows.push([
           { html: restrictionTagHtml },
-          { text: pr.comments },
+          { text: pr.commentText },
           { text: pr.effectiveDate | formatDate },
           { text: (pr.expiryDate | formatDate) or "Not entered" }
         ]), rows) %}
@@ -68,10 +68,11 @@
     </div>
   </div>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-three-quarters">
-      <form method='POST'>
-        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+  <form method='POST'>
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+
+    <div class="govuk-grid-row govuk-body">
+      <div class="govuk-grid-column-three-quarters">
 
         {% set rows = [] %}
         {% for contact in contacts %}
@@ -120,12 +121,30 @@
             rows: rows
           }) }}
         </div>
+      </div>
+    </div>
 
+    <div class="govuk-grid-row govuk-body">
+      <div class="govuk-grid-column-three-quarters">
+        If you cannot find the contact in the list, you can
+        <a class="govuk-link govuk-link--no-visited-state"
+           data-qa="contacts-link"
+           target="_blank"
+           href="{{ CONTACTS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}/contacts/list">
+          view and add new contacts
+        </a>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row govuk-body">
+      <div class="govuk-grid-column-three-quarters">
         <div class="govuk-button-group">
           {{ govukButton({ text: "Confirm", preventDoubleClick: true }) }}
           <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel</a>
         </div>
-      </form>
+      </div>
     </div>
-  </div>
+
+  </form>
+
 {% endblock %}
