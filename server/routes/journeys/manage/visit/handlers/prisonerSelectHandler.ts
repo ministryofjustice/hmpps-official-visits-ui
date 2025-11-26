@@ -27,7 +27,7 @@ export default class PrisonerSelectHandler implements PageHandler {
       await this.personalRelationshipsService.getPrisonerRestrictions(prisonerNumber, 0, 10, user, true, false)
     const restrictionsCount = restrictionsPagedModel?.content?.length ?? 0
     const restrictions = restrictionsPagedModel?.content
-    const alertsCount = prisoner?.alerts?.length ?? 0
+    const alertsCount = prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0
     // Populate what we can in the official visit journey - the prison and prisoner details
     req.session.journey.officialVisit = {
       ...req.session.journey.officialVisit,
