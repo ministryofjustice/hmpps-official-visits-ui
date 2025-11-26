@@ -16,8 +16,6 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
 
-    // TODO: Do we need to get the prisoner restrictions here? They should be added to the prisoner session object when selected.
-
     // Get the prisoner's list of approved, official contacts
     const [approvedOfficialContacts] = await Promise.all([
       this.officialVisitsService.getApprovedOfficialContacts(prisonCode, prisonerNumber, res.locals.user),
@@ -49,7 +47,6 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     )
 
     // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Need to check against the time slot selected in the session
-    // TODO: Work out who is the lead visitor - first in list?
 
     // Update the session journey with selected approved official contacts
     req.session.journey.officialVisit.officialVisitors =

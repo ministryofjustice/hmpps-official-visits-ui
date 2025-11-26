@@ -14,9 +14,9 @@ import {
 } from '../../../../testutils/cheerio'
 import { Journey } from '../../../../../@types/express'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { mockOfficialVisitors, mockRestrictionPlaceholder, prisoner } from '../../../../../testutils/mocks'
+import { mockOfficialVisitors, mockPrisonerRestrictions, prisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
-import { convertToTitleCase } from '../../../../../utils/utils'
+import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -29,7 +29,15 @@ const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<Off
 let app: Express
 
 const appSetup = (
-  journeySession = { officialVisit: { prisoner, availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }] } },
+  journeySession = {
+    officialVisit: {
+      prisoner: {
+        ...prisoner,
+        restrictions: mockPrisonerRestrictions,
+      },
+      availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+    },
+  },
 ) => {
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService },
@@ -41,7 +49,6 @@ const appSetup = (
 beforeEach(() => {
   appSetup()
   officialVisitsService.getApprovedOfficialContacts.mockResolvedValue(mockOfficialVisitors)
-  officialVisitsService.getActiveRestrictions.mockResolvedValue(mockRestrictionPlaceholder)
 })
 
 afterEach(() => {
@@ -89,6 +96,21 @@ describe('Select official visitors', () => {
           expect(restrictionHeaders.eq(1).text().trim()).toEqual('Comments')
           expect(restrictionHeaders.eq(2).text().trim()).toEqual('Date from')
           expect(restrictionHeaders.eq(3).text().trim()).toEqual('Date to')
+
+          // Prisoner restrictions rows
+          const restrictionRows = getByDataQa($, 'prisoner-restrictions-table').find('tbody > tr > td')
+          // Row 1
+          expect(restrictionRows.eq(0).text().trim()).toEqual(mockPrisonerRestrictions[0].commentText)
+          expect(restrictionRows.eq(1).text().trim()).toEqual(formatDate(mockPrisonerRestrictions[0].effectiveDate))
+          expect(restrictionRows.eq(2).text().trim()).toEqual(formatDate(mockPrisonerRestrictions[0].expiryDate))
+          // Row 2
+          expect(restrictionRows.eq(3).text().trim()).toEqual(mockPrisonerRestrictions[1].commentText)
+          expect(restrictionRows.eq(4).text().trim()).toEqual(formatDate(mockPrisonerRestrictions[1].effectiveDate))
+          expect(restrictionRows.eq(5).text().trim()).toEqual(formatDate(mockPrisonerRestrictions[1].expiryDate))
+          /// Row 3
+          expect(restrictionRows.eq(6).text().trim()).toEqual(mockPrisonerRestrictions[2].commentText)
+          expect(restrictionRows.eq(7).text().trim()).toEqual(formatDate(mockPrisonerRestrictions[2].effectiveDate))
+          expect(restrictionRows.eq(8).text().trim()).toEqual('Not entered')
 
           // Official visitor table
           const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')

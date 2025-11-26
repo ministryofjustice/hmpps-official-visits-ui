@@ -13,8 +13,6 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
 
-    // TODO: Do we need to get the prisoner restrictions here? They should be added to the prisoner session object when selected.
-
     // Get the prisoner's list of approved, social contacts
     const [approvedSocialContacts] = await Promise.all([
       this.officialVisitsService.getApprovedSocialContacts(prisonCode, prisonerNumber, res.locals.user),
