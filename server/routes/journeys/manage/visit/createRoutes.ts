@@ -15,6 +15,7 @@ import SelectOfficialVisitorsHandler from './handlers/selectOfficialVisitorsHand
 import SelectSocialVisitorsHandler from './handlers/selectSocialVisitorsHandler'
 import AssistanceRequiredHandler from './handlers/assistanceRequiredHandler'
 import EquipmentHandler from './handlers/equipmentHandler'
+import CommentsHandler from './handlers/commentsHandler'
 
 export default function CreateRoutes({
   auditService,
@@ -51,6 +52,7 @@ export default function CreateRoutes({
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService))
   route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
   route('/equipment', new EquipmentHandler(officialVisitsService))
+  route('/comments', new CommentsHandler(officialVisitsService))
   route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService, prisonerService))
 
   return router
