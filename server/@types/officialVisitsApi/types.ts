@@ -35,8 +35,8 @@ export type ApprovedContact = components['schemas']['ApprovedContact']
 
 export type TimeSlot = components['schemas']['AvailableSlot']
 
-export type Contact = {
-  contactId: number
+export type ContactRelationship = {
+  prisonerContactId: number
   assistanceNotes?: string
   assistedVisit?: boolean
   equipment?: boolean

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { Request } from 'express'
 import { createSchema } from '../../../../../middleware/validationMiddleware'
-import { Contact } from '../../../../../@types/officialVisitsApi/types'
+import { ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
 
 const ERROR_MIN = 'Enter information about equipment for this visitor'
 const ERROR_MAX = 'Information about equipment must be 400 characters or less'
@@ -43,12 +43,12 @@ export const schema = async (req: Request) => {
       ]
 
       return contacts.map(contact => {
-        const formContact = equipment.find(o => Number(o.id) === contact.contactId)
+        const formContact = equipment.find(o => Number(o.id) === contact.prisonerContactId)
         return {
-          contactId: contact.contactId,
+          prisonerContactId: contact.prisonerContactId,
           equipmentNotes: formContact?.notes,
           equipment: !!formContact,
-        } as Contact
+        } as ContactRelationship
       })
     })
 }

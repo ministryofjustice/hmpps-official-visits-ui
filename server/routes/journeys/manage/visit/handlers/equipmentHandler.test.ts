@@ -30,7 +30,7 @@ const defaultJourneySession = () => ({
         firstName: 'John',
         lastName: 'Dasolicitor',
         relationshipToPrisonerDescription: 'Solicitor',
-        contactId: 111,
+        prisonerContactId: 111,
       },
     ],
     socialVisitors: [
@@ -38,7 +38,7 @@ const defaultJourneySession = () => ({
         firstName: 'Jane',
         lastName: 'Dafriend',
         relationshipToPrisonerDescription: 'Friend',
-        contactId: 222,
+        prisonerContactId: 222,
       },
     ],
   } as Partial<OfficialVisitJourney>,

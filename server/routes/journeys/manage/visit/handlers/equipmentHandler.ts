@@ -3,7 +3,7 @@ import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { schema } from './equipmentSchema'
-import { Contact } from '../../../../../@types/officialVisitsApi/types'
+import { ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
 
 export default class EquipmentHandler implements PageHandler {
   public PAGE_NAME = Page.EQUIPMENT_PAGE
@@ -14,7 +14,7 @@ export default class EquipmentHandler implements PageHandler {
     const contacts = [
       ...req.session.journey.officialVisit.socialVisitors,
       ...req.session.journey.officialVisit.officialVisitors,
-    ]
+    ].filter(o => o.prisonerContactId)
 
     res.render('pages/manage/equipment', {
       contacts,
@@ -29,10 +29,10 @@ export default class EquipmentHandler implements PageHandler {
     const contacts = [
       ...req.session.journey.officialVisit.socialVisitors,
       ...req.session.journey.officialVisit.officialVisitors,
-    ].filter(o => o.contactId)
+    ].filter(o => o.prisonerContactId)
 
-    ;(req.body as Contact[]).forEach(contact => {
-      const foundContact = contacts.find(o => o.contactId === contact.contactId)
+    ;(req.body as ContactRelationship[]).forEach(contact => {
+      const foundContact = contacts.find(o => o.prisonerContactId === contact.prisonerContactId)
       if (foundContact) {
         foundContact.equipmentNotes = contact.equipmentNotes
         foundContact.equipment = contact.equipment

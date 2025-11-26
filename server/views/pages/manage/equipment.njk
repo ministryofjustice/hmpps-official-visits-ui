@@ -17,7 +17,7 @@
   </div>
 
   {{ miniProfile(prisoner) }}
-  
+
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Schedule an official visit</span>
@@ -31,27 +31,23 @@
           {% set contactItems = (contactItems.push({
             name: "equipment[" + loop.index0 + "][id]",
             id: "equipment[" + loop.index0 + "][id]",
-            value: contact.contactId,
+            value: contact.prisonerContactId,
             text: contact.firstName + " " + contact.lastName + " (" + contact.relationshipToPrisonerDescription + ")",
-            checked: formResponses
-              .equipment[loop.index0]
-              .id if formResponses
-              .equipment else 
-                contact.equipment,
-                conditional: {
-                  html: govukCharacterCount({
-                    maxlength: 400,
-                    rows: 5,
-                    id: "equipment[" + loop.index0 + "][notes]",
-                    name: "equipment[" + loop.index0 + "][notes]",
-                    value: formResponses
-                      .equipment[loop.index0]
-                      .notes or contact
-                      .equipmentNotes,
-                    errorMessage: validationErrors | findError("equipment[" + loop.index0 + "][notes]")
-                  })
-                }
-              }), contactItems) %}
+            checked: formResponses.equipment[loop.index0].id if formResponses.equipment else contact.equipment,
+            conditional: {
+              html: govukCharacterCount({
+                maxlength: 400,
+                rows: 5,
+                id: "equipment[" + loop.index0 + "][notes]",
+                name: "equipment[" + loop.index0 + "][notes]",
+                value: formResponses
+                  .equipment[loop.index0]
+                  .notes or contact
+                  .equipmentNotes,
+                errorMessage: validationErrors | findError("equipment[" + loop.index0 + "][notes]")
+              })
+            }
+          }), contactItems) %}
         {% endfor %}
 
         {{ govukCheckboxes({
@@ -61,9 +57,9 @@
 
         <div class="govuk-button-group">
           {{ govukButton({
-                text: "Confirm",
-                preventDoubleClick: true
-            }) }}
+              text: "Confirm",
+              preventDoubleClick: true
+          }) }}
           <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel</a>
         </div>
       </form>

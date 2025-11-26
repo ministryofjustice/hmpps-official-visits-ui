@@ -32,7 +32,7 @@
             {
               name: "assistanceRequired[" + loop.index0 + "][id]",
               id: "assistanceRequired[" + loop.index0 + "][id]",
-              value: contact.contactId,
+              value: contact.prisonerContactId,
               text: contact.firstName + " " + contact.lastName + " (" + contact.relationshipToPrisonerDescription + ")",
               checked: formResponses.assistanceRequired[loop.index0].id if formResponses.assistanceRequired else contact.assistedVisit,
               conditional: {
