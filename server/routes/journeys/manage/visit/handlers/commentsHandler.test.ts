@@ -5,9 +5,9 @@ import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetu
 import AuditService, { Page } from '../../../../../services/auditService'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import { getArrayItemPropById, getPageHeader } from '../../../../testutils/cheerio'
+import { getPageHeader, getTextById } from '../../../../testutils/cheerio'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { mockSchedule, mockTimeslots, prisoner } from '../../../../../testutils/mocks'
+import { prisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
@@ -24,23 +24,7 @@ let app: Express
 const defaultJourneySession = () => ({
   officialVisit: {
     prisoner,
-    visitType: 'IN_PERSON',
-    officialVisitors: [
-      {
-        firstName: 'John',
-        lastName: 'Dasolicitor',
-        relationshipToPrisonerDescription: 'Solicitor',
-        prisonerContactId: 111,
-      },
-    ],
-    socialVisitors: [
-      {
-        firstName: 'Jane',
-        lastName: 'Dafriend',
-        relationshipToPrisonerDescription: 'Friend',
-        prisonerContactId: 222,
-      },
-    ],
+    prisonerNotes: 'Some previously entered notes',
   } as Partial<OfficialVisitJourney>,
 })
 
@@ -54,18 +38,15 @@ const appSetup = (journeySession = defaultJourneySession()) => {
 
 beforeEach(() => {
   appSetup()
-  officialVisitsService.getAvailableSlots.mockResolvedValue(mockTimeslots)
-
-  officialVisitsService.getSchedule.mockResolvedValue(mockSchedule)
 })
 
 afterEach(() => {
   jest.resetAllMocks()
 })
 
-const URL = `/manage/create/${journeyId()}/equipment`
+const URL = `/manage/create/${journeyId()}/comments`
 
-describe('Equipment handler', () => {
+describe('comments handler', () => {
   describe('GET', () => {
     it('should render the correct view page', () => {
       return request(app)
@@ -75,18 +56,10 @@ describe('Equipment handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
 
-          expect(heading).toEqual('Will visitors have equipment with them? (optional)')
+          expect(heading).toEqual('Add extra information (optional)')
+          expect(getTextById($, 'comments')).toEqual('Some previously entered notes')
 
-          expect(getArrayItemPropById($, 'equipment', 0, 'id').val()).toEqual('222')
-          expect(getArrayItemPropById($, 'equipment', 1, 'id').val()).toEqual('111')
-
-          expect(getArrayItemPropById($, 'equipment', 0, 'id').attr('checked')).toBeFalsy()
-          expect(getArrayItemPropById($, 'equipment', 1, 'id').attr('checked')).toBeFalsy()
-
-          expect($('.govuk-checkboxes__label').eq(0).text()).toContain('Jane Dafriend (Friend)')
-          expect($('.govuk-checkboxes__label').eq(1).text()).toContain('John Dasolicitor (Solicitor)')
-
-          expect(auditService.logPageView).toHaveBeenCalledWith(Page.EQUIPMENT_PAGE, {
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.COMMENTS_PAGE, {
             who: user.username,
             correlationId: expect.any(String),
           })
@@ -95,25 +68,25 @@ describe('Equipment handler', () => {
   })
 
   describe('POST', () => {
-    it('should allow empty submission', () => {
+    it('should allow empty submissions', () => {
       return request(app)
         .post(URL)
-        .send({ equipment: [{ notes: '' }] })
+        .send({})
         .expect(302)
-        .expect('location', 'comments')
+        .expect('location', 'check-your-answers')
         .expect(() => expectNoErrorMessages())
     })
 
-    it('should error when no description is given for a contact with equipment', () => {
+    it('should disallow comments over 400 characters', () => {
       return request(app)
         .post(URL)
-        .send({ equipment: [{ id: '111', notes: '' }] })
+        .send({ comments: 'a'.repeat(401) })
         .expect(() =>
           expectErrorMessages([
             {
-              fieldId: 'equipment[0][notes]',
-              href: '#equipment[0][notes]',
-              text: 'Enter information about equipment for this visitor',
+              fieldId: 'comments',
+              href: '#comments',
+              text: 'Extra information must be 400 characters or less',
             },
           ]),
         )
@@ -122,13 +95,13 @@ describe('Equipment handler', () => {
     it('should accept a form submission', async () => {
       await request(app)
         .post(URL)
-        .send({ equipment: [{ id: '111', notes: 'note' }] })
+        .send({ comments: 'comment' })
         .expect(302)
-        .expect('location', 'comments')
+        .expect('location', 'check-your-answers')
         .expect(() => expectNoErrorMessages())
 
       const journeySession = await getJourneySession(app, 'officialVisit')
-      expect(journeySession.officialVisitors[0].equipmentNotes).toEqual('note')
+      expect(journeySession.prisonerNotes).toEqual('comment')
     })
   })
 })

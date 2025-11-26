@@ -113,7 +113,7 @@ describe('Assistance required handler', () => {
         .post(URL)
         .send({ assistanceRequired: [{ notes: '' }] })
         .expect(302)
-        .expect('location', 'check-your-answers')
+        .expect('location', 'comments')
         .expect(() => expectNoErrorMessages())
     })
 

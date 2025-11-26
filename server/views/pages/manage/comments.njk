@@ -1,0 +1,49 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "partials/miniProfile/macro.njk" import miniProfile %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+
+{% set pageTitle = "Add extra information" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      {{ progressTracker(true, true, true) }}
+    </div>
+  </div>
+
+  {{ miniProfile(prisoner) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Schedule an official visit</span>
+      <h1 class="govuk-heading-l" for="comments">{{ pageTitle }} (optional)</h1>
+
+      <p>Add any important information about how to prepare for the official visit. It will be printed on the movement slip.</p>
+      <p>Wing staff will be notified there is extra information on the printed unlock list, but for confidentiality the full text will only be visible when you view the details of the official visit in this service.</p>
+      <form method='POST'>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+
+        {{ govukCharacterCount({
+          name: "comments",
+          id: "comments",
+          maxlength: 400,
+          rows: 5,
+          value: comments,
+          errorMessage: validationErrors | findError("comments")
+        })}}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+              text: "Confirm",
+              preventDoubleClick: true
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel and return to homepage</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

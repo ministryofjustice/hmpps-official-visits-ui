@@ -39,6 +39,6 @@ export default class EquipmentHandler implements PageHandler {
       }
     })
 
-    return res.redirect(`check-your-answers`)
+    return res.redirect(`comments`)
   }
 }
