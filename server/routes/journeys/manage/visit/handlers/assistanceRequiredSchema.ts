@@ -4,7 +4,7 @@ import { createSchema } from '../../../../../middleware/validationMiddleware'
 import { Contact } from '../../../../../@types/officialVisitsApi/types'
 
 const ERROR_MIN = 'Enter information about assistance for this visitor'
-const ERROR_MAX = 'Notes must be 400 characters or less'
+const ERROR_MAX = 'Information about assistance must be 400 characters or less'
 
 export const schema = async (req: Request) => {
   return createSchema({
