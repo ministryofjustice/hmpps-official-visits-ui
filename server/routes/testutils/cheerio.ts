@@ -62,3 +62,7 @@ export const getProgressTrackerItems = ($: Root) => {
 export const getProgressTrackerCompleted = ($: Root) => {
   return $('.moj-progress-bar > .moj-progress-bar__list > .moj-progress-bar__item > .moj-progress-bar__icon--complete')
 }
+
+export const getArrayItemPropById = ($: Root, id: string, index: number, property: string) => {
+  return $(`#${id}\\[${index}\\]\\[${property}\\]`)
+}
