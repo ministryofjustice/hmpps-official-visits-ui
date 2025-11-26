@@ -5,7 +5,7 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 
-{% set pageTitle = "Will visitors need assistance?" %}
+{% set pageTitle = "Will visitors need assistance during their visit?" %}
 
 {% block content %}
 
@@ -17,14 +17,12 @@
   </div>
       {{ miniProfile(prisoner) }}
 
-  <div class="govuk-grid-row govuk-body">
+  <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Schedule an official visit</span>
-    </div>
-  </div>
-
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full-from-desktop">
+      <h1 class="govuk-heading-l">{{pageTitle}} (optional)</h1>
+      <p>Add any important information about assistance needed for the official visit.</p>
+      <p>Wing staff will be notified there is assistance needed for the visitor on the printed unlock list, but for confidentiality the full text will only be visible when you view the details of the official visit in this service.</p>
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
@@ -32,17 +30,19 @@
         {% for contact in contacts %}
           {% set contactItems = (contactItems.push(
             {
-              value: contact.id,
-              text: contact.firstName + " " + contact.lastName,
-              checked: contact.assistedVisit,
+              name: "assistanceRequired[" + loop.index0 + "][id]",
+              id: "assistanceRequired[" + loop.index0 + "][id]",
+              value: contact.prisonerContactId,
+              text: contact.firstName + " " + contact.lastName + " (" + contact.relationshipToPrisonerDescription + ")",
+              checked: formResponses.assistanceRequired[loop.index0].id if formResponses.assistanceRequired else contact.assistedVisit,
               conditional: {
                 html: govukCharacterCount({
                     maxlength: 400,
                     rows: 5,
-                    id: "note-" + contact.id,
-                    name: "note-" + contact.id,
-                    value: contact.assistanceNotes,
-                    errorMessage: validationErrors | findError("note-" + contact.id)
+                    id: "assistanceRequired[" + loop.index0 + "][notes]",
+                    name: "assistanceRequired[" + loop.index0 + "][notes]",
+                    value: formResponses.assistanceRequired[loop.index0].notes or contact.assistanceNotes,
+                    errorMessage: validationErrors | findError("assistanceRequired[" + loop.index0 + "][notes]")
                   })
               }
             }
@@ -51,13 +51,6 @@
 
         {{ govukCheckboxes({
           name: "assistanceRequired",
-          fieldset: {
-            legend: {
-              text: "Will visitors need assistance?",
-              isPageHeading: true,
-              classes: "govuk-fieldset__legend--l"
-            }
-          },
           items: contactItems
         }) }}
 
