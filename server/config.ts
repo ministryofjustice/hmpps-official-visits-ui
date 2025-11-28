@@ -121,12 +121,21 @@ export default {
       url: get('PERSONAL_RELATIONSHIPS_API_URL', 'http://localhost:8080', requiredInProduction),
       healthPath: '/health/ping',
       timeout: {
-        response: Number(get('CONTACTS_API_TIMEOUT_RESPONSE', 30000)),
-        deadline: Number(get('CONTACTS_API_TIMEOUT_DEADLINE', 35000)),
+        response: Number(get('PERSONAL_RELATIONSHIPS_API_TIMEOUT_RESPONSE', 30000)),
+        deadline: Number(get('PERSONAL_RELATIONSHIPS_API_TIMEOUT_DEADLINE', 35000)),
       },
-      agent: new AgentConfig(Number(get('CONTACTS_API_TIMEOUT_RESPONSE', 30000))),
+      agent: new AgentConfig(Number(get('PERSONAL_RELATIONSHIPS_API_TIMEOUT_RESPONSE', 30000))),
       pageSize: 10,
-      referenceDataCacheTTL: Number(get('CONTACTS_API_REFERENCE_DATA_CACHE_TTL', 5 * 60)),
+      referenceDataCacheTTL: Number(get('PERSONAL_RELATIONSHIPS_API_REFERENCE_DATA_CACHE_TTL', 5 * 60)),
+    },
+    activitiesApi: {
+      url: get('ACTIVITIES_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('ACTIVITIES_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('ACTIVITIES_API_TIMEOUT_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(Number(get('ACTIVITIES_API_TIMEOUT_RESPONSE', 10000))),
     },
   },
   serviceUrls: {

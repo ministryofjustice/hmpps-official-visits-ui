@@ -1,0 +1,30 @@
+{% macro showLocation(event, internalLocation, makeCapitals = false) %}
+    {% set location = '' %}
+
+    {% if event.inCell %}
+        {% set location = "In cell" %}
+    {% elseif event.onWing %}
+        {% set location = "On wing" %}
+    {% elseif event.offWing %}
+        {% set location = "Off wing" %}
+    {% elseif internalLocation %}
+        {% set location = internalLocation %}
+    {% else %}
+        {%  set location = (
+                event.location.name or
+                event.location or
+                event.internalLocation.description or
+                event.internalLocationUserDescription or
+                event.internalLocationDescription
+            )
+        %}
+    {% endif %}
+
+    {% if location %}
+        {% if makeCapitals %}
+            {{ location | trim | capitalize }}
+        {% else %}
+            {{ location | trim }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
