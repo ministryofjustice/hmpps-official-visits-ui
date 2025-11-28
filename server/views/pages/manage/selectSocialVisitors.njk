@@ -50,22 +50,26 @@
       {% endset %}
 
       <div class="govuk-summary-card">
-        <div class="govuk-summary-card__content" data-qa="prisoner-restrictions-table">
-          {{ govukTable({
-            caption: captionText,
-            captionClasses: "govuk-table__caption--m",
-            firstCellIsHeader: true,
-            head: [
-              { text: "Type of restriction" },
-              { text: "Comments" },
-              { text: "Date from" },
-              { text: "Date to" }
-            ],
-            rows: rows
-          }) }}
-        </div>
+        {% if rows.length > 0 %}
+          <div class="govuk-summary-card__content" data-qa="prisoner-restrictions-table">
+            {{ govukTable({
+              caption: captionText,
+              captionClasses: "govuk-table__caption--m",
+              firstCellIsHeader: true,
+              head: [
+                { text: "Type of restriction" },
+                { text: "Comments" },
+                { text: "Date from" },
+                { text: "Date to" }
+              ],
+              rows: rows
+            }) }}
+          </div>
+        {% else %}
+          <div class="govuk-summary-card__content govuk-summary-card__title">{{ captionText }}</div>
+          <div class="govuk-body govuk-!-margin-top-0 govuk-!-margin-left-4">No active restrictions</div>
+        {% endif %}
       </div>
-
     </div>
   </div>
 
@@ -106,22 +110,27 @@
           ]), rows) %}
         {% endfor %}
 
-        <div data-qa="visitors-table">
-          {{ govukTable({
-            caption: "Approved social contacts",
-            captionClasses: "govuk-table__caption--m",
-            firstCellIsHeader: true,
-            head: [
-              { text: "Add" },
-              { text: "Name" },
-              { text: "Date of birth" },
-              { text: "Relationship" },
-              { text: "Address" },
-              { text: "Active restrictions" }
-            ],
-            rows: rows
-          }) }}
-        </div>
+        {% if rows.length > 0 %}
+          <div data-qa="visitors-table">
+            {{ govukTable({
+              caption: "Approved social contacts",
+              captionClasses: "govuk-table__caption--m",
+              firstCellIsHeader: true,
+              head: [
+                { text: "Add" },
+                { text: "Name" },
+                { text: "Date of birth" },
+                { text: "Relationship" },
+                { text: "Address" },
+                { text: "Active restrictions" }
+              ],
+              rows: rows
+            }) }}
+          </div>
+        {% else %}
+          <div class="govuk-summary-card__title">Approved official contacts</div>
+          <div class="govuk-body govuk-!-margin-top-3">No approved official contacts</div>
+        {% endif %}
       </div>
     </div>
 
