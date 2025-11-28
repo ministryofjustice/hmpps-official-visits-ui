@@ -17,6 +17,7 @@ import SelectSocialContactPage from '../pages/selectSocialContactPage'
 import AssistanceRequiredPage from '../pages/assistanceRequiredPage'
 import EquipmentPage from '../pages/equipmentPage'
 import CommentsPage from '../pages/commentsPage'
+import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
 
 const mockPrisoner = {
   prisonerNumber: '1',
@@ -35,6 +36,7 @@ test.describe('/example', () => {
     await hmppsAuth.stubSignInPage()
     await componentsApi.stubComponents()
     await prisonerSearchApi.stubGetByPrisonerNumber(mockPrisoner)
+    await personalRelationshipsApi.stubRestrictions()
     await prisonerSearchApi.stubSearchInCaseload({
       content: [mockPrisoner],
       first: true,
@@ -116,6 +118,5 @@ test.describe('/example', () => {
     await commentsPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/check-your-answers/)
-    expect(page.locator('#json')).toContainText('idklol')
   })
 })
