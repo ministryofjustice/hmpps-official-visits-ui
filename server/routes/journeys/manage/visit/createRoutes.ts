@@ -22,6 +22,7 @@ export default function CreateRoutes({
   prisonerService,
   officialVisitsService,
   personalRelationshipsService,
+  activitiesService,
 }: Services): Router {
   const router = Router({ mergeParams: true })
 
@@ -46,7 +47,7 @@ export default function CreateRoutes({
 
   // These are the subsequent steps in the journey to create an official visit
   route(`/visit-type`, new VisitTypeHandler(officialVisitsService))
-  route(`/time-slot`, new TimeSlotHandler(officialVisitsService))
+  route(`/time-slot`, new TimeSlotHandler(officialVisitsService, activitiesService))
   route(`/review-scheduled-events`, new ReviewScheduledEventsHandler(officialVisitsService))
   route(`/select-official-visitors`, new SelectOfficialVisitorsHandler(officialVisitsService))
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService))

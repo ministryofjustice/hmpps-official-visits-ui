@@ -1,6 +1,7 @@
 {% extends "partials/layout.njk" %}
 
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
+{% from "partials/showLocation.njk" import showLocation %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
@@ -73,11 +74,11 @@
               {
                 text: (event.startTime + ' to ' + event.endTime)
               }, {
-                text: event.eventName
+                text: event.summary | trim
               }, {
-                text: event.typeDescription
+                text: eventTypeText(event)
               }, {
-                text: event.locationDescription
+                text: locationText(event)
               }
             ]), rows) %}
           {% endfor %}
@@ -123,3 +124,24 @@
     </div>
   </div>
 {% endblock %}
+
+{% macro eventTypeText(scheduledEvent) %}
+    {% if scheduledEvent.eventType === 'ACTIVITY' %}
+        Activity
+    {% elseif scheduledEvent.eventType === 'APPOINTMENT' %}
+        Appointment
+    {% elseif scheduledEvent.eventType === 'COURT_HEARING' %}
+        Court hearing
+    {% elseif scheduledEvent.eventType === 'VISIT' %}
+        Visit
+    {% elseif scheduledEvent.eventType === 'EXTERNAL_TRANSFER' %}
+        External transfer
+    {% elseif scheduledEvent.eventType === 'ADJUDICATION_HEARING' %}
+        Adjudication hearing
+    {% endif %}
+{% endmacro %}
+{% macro locationText(scheduledEvent) %}
+    {% if scheduledEvent.eventType != 'EXTERNAL_TRANSFER' and scheduledEvent.eventType != 'COURT_HEARING' %}
+        {{ showLocation(scheduledEvent) }}
+    {% endif %}
+{% endmacro %}

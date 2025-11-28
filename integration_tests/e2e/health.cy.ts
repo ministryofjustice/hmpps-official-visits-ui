@@ -10,6 +10,7 @@ context('Healthcheck', () => {
       cy.task('stubOfficialVisitsApiPing')
       cy.task('stubPrisonApiPing')
       cy.task('stubPersonalRelationshipsApiPing')
+      cy.task('stubActivitiesApiPing')
     })
 
     it('Health check page is visible and UP', () => {
@@ -36,6 +37,7 @@ context('Healthcheck', () => {
       cy.task('stubOfficialVisitsApiPing')
       cy.task('stubPrisonApiPing')
       cy.task('stubPersonalRelationshipsApiPing')
+      cy.task('stubActivitiesApiPing')
     })
 
     it('Reports correctly when token verification down', () => {
@@ -46,6 +48,7 @@ context('Healthcheck', () => {
         expect(response.body.components.officialVisitsApi.status).to.equal('UP')
         expect(response.body.components.prisonApi.status).to.equal('UP')
         expect(response.body.components.personalRelationshipsApi.status).to.equal('UP')
+        expect(response.body.components.activitiesApi.status).to.equal('UP')
         expect(response.body.components.tokenVerification.status).to.equal('DOWN')
         expect(response.body.components.tokenVerification.details).to.contain({ status: 500, attempts: 3 })
       })
