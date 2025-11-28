@@ -2,11 +2,12 @@ import { format } from 'date-fns'
 import ActivitiesApiClient from '../data/activitiesApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { ScheduledEvent } from '../@types/activitiesApi/types'
+import logger from '../../logger'
 
 export default class ActivitiesService {
   constructor(private readonly activitiesApiClient: ActivitiesApiClient) {}
 
-  async getPrisonersSchedule(
+  async getScheduledEventsByPrisonerNumbers(
     prisonCode: string,
     date: string,
     prisonerNumbers: string[],
@@ -18,21 +19,20 @@ export default class ActivitiesService {
       prisonerNumbers,
       user,
     )
-
+    logger.info(`Events : ${JSON.stringify(scheduledEvents, null, 2)}`)
     const { appointments, courtHearings, visits, activities, externalTransfers, adjudications } = scheduledEvents
     const events = [...appointments, ...courtHearings, ...visits, ...activities, ...externalTransfers, ...adjudications]
+    logger.info(`Events : ${JSON.stringify(events, null, 2)}`)
 
     // filter cancelled
-    const activeEvents = events?.filter(event => event.cancelled === false)
-    // to handle null/empty startTime
-    const toMinutes = (time: string | null | undefined): number => {
-      // return largest possible number so that it displayed at the end of list
-      if (!time) return Number.POSITIVE_INFINITY
-      const [h, m] = time.split(':').map(Number)
-      return h * 60 * m
-    }
+    const activeEvent = events?.filter(event => event.cancelled === false)
+    logger.info(`Events : ${JSON.stringify(activeEvent, null, 2)}`)
 
     // sort it based on start time
-    return activeEvents?.sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime))
+    return activeEvent?.sort((a, b) => {
+      const [ah, am] = a.startTime.split(':').map(Number)
+      const [bh, bm] = b.startTime.split(':').map(Number)
+      return ah !== bh ? ah - bh : am - bm
+    })
   }
 }

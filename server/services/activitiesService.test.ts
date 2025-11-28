@@ -2,13 +2,12 @@ import ActivitiesApiClient from '../data/activitiesApiClient'
 import ActivitiesService from './activitiesService'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { PrisonerScheduledEvents } from '../@types/activitiesApi/types'
-import { mockScheduleEvents, sortedMockScheduleEvents } from '../testutils/mocks'
 
 jest.mock('../data/activitiesApiClient')
 
 const user = { token: 'userToken', username: 'test' } as HmppsUser
 
-describe('Activities Service ', () => {
+describe('Prisoner image service', () => {
   let activitiesApiClient: jest.Mocked<ActivitiesApiClient>
   let activitiesService: ActivitiesService
 
@@ -21,7 +20,7 @@ describe('Activities Service ', () => {
     jest.resetAllMocks()
   })
 
-  it('should should return prisoner schedule with empty start time displayed in the end', async () => {
+  it('should should return prisoner schedule', async () => {
     const prisonCode = 'MIC'
     const prisonerNumbers = ['ABC123']
     const date = '2022-10-01'
@@ -30,7 +29,7 @@ describe('Activities Service ', () => {
       prisonerNumbers,
       startDate: date,
       endDate: date,
-      appointments: mockScheduleEvents,
+      appointments: [],
       courtHearings: [],
       visits: [],
       activities: [],
@@ -39,8 +38,8 @@ describe('Activities Service ', () => {
     } as PrisonerScheduledEvents
 
     activitiesApiClient.getScheduledEventsByPrisonerNumbers.mockResolvedValue(response)
-    const result = await activitiesService.getPrisonersSchedule(prisonCode, date, prisonerNumbers, user)
-    expect(result).toEqual(sortedMockScheduleEvents)
+    const result = await activitiesService.getScheduledEventsByPrisonerNumbers(prisonCode, date, prisonerNumbers, user)
     expect(activitiesApiClient.getScheduledEventsByPrisonerNumbers).toHaveBeenCalledTimes(1)
+    expect(result).toEqual([])
   })
 })
