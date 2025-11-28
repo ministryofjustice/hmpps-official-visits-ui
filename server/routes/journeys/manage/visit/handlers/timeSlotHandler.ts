@@ -25,7 +25,7 @@ export default class TimeSlotHandler implements PageHandler {
     const { prisonCode, prisonerNumber } = officialVisit.prisoner
     const timeSlots = await this.officialVisitsService.getAvailableSlots(res, prisonCode, selectedDate, selectedDate)
     officialVisit.availableSlots = timeSlots
-    const schedule = await this.activitiesService.getScheduledEventsByPrisonerNumbers(
+    const schedule = await this.activitiesService.getPrisonersSchedule(
       prisonCode,
       selectedDate,
       Array.of(prisonerNumber),

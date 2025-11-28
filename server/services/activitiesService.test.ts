@@ -7,7 +7,7 @@ jest.mock('../data/activitiesApiClient')
 
 const user = { token: 'userToken', username: 'test' } as HmppsUser
 
-describe('Prisoner image service', () => {
+describe('Activities Service ', () => {
   let activitiesApiClient: jest.Mocked<ActivitiesApiClient>
   let activitiesService: ActivitiesService
 
@@ -38,7 +38,7 @@ describe('Prisoner image service', () => {
     } as PrisonerScheduledEvents
 
     activitiesApiClient.getScheduledEventsByPrisonerNumbers.mockResolvedValue(response)
-    const result = await activitiesService.getScheduledEventsByPrisonerNumbers(prisonCode, date, prisonerNumbers, user)
+    const result = await activitiesService.getPrisonersSchedule(prisonCode, date, prisonerNumbers, user)
     expect(activitiesApiClient.getScheduledEventsByPrisonerNumbers).toHaveBeenCalledTimes(1)
     expect(result).toEqual([])
   })

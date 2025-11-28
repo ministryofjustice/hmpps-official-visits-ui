@@ -44,7 +44,7 @@ beforeEach(() => {
 
   officialVisitsService.getAvailableSlots.mockResolvedValue(mockTimeslots)
 
-  activitiesService.getScheduledEventsByPrisonerNumbers.mockResolvedValue(mockScheduleEvents)
+  activitiesService.getPrisonersSchedule.mockResolvedValue(mockScheduleEvents)
 })
 
 afterEach(() => {
@@ -89,12 +89,10 @@ describe('Time slot handler', () => {
           expect($('.govuk-table__header').eq(2).text()).toEqual('Type')
           expect($('.govuk-table__header').eq(3).text()).toEqual('Location')
 
-          // expect($('.govuk-table__cell').eq(0).text()).toEqual('08:00 to 17:00')
-          // expect($('.govuk-table__cell').eq(1).text()).toEqual('ROTL - out of prison')
-          // expect($('.govuk-table__cell').eq(2).text()).toEqual('Activity')
-          // expect($('.govuk-table__cell').eq(3).text()).toEqual('Out of prison')
-
-          // expect($('.govuk-radios__label').text()).toContain('8am to 5pmRoom 1')
+          expect($('.govuk-table__cell').eq(0).text()).toEqual('08:00 to 17:00')
+          expect($('.govuk-table__cell').eq(1).text()).toEqual('Summary')
+          expect($('.govuk-table__cell').eq(2).text().trim()).toEqual('Appointment')
+          expect($('.govuk-table__cell').eq(3).text().trim()).toEqual('In cell')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.CHOOSE_TIME_SLOT_PAGE, {
             who: user.username,
