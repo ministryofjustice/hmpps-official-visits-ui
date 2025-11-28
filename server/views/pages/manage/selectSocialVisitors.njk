@@ -6,6 +6,7 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "partials/continueCancel.njk" import continueCancel %}
 
 {% set pageTitle = "Select social visitors from the prisoner's approved contact list (optional)" %}
 
@@ -138,10 +139,7 @@
 
     <div class="govuk-grid-row govuk-body">
       <div class="govuk-grid-column-three-quarters">
-        <div class="govuk-button-group">
-          {{ govukButton({ text: "Confirm", preventDoubleClick: true }) }}
-          <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel</a>
-        </div>
+        {{ continueCancel({}) }}
       </div>
     </div>
 

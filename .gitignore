@@ -129,3 +129,4 @@ integration_tests/screenshots/
 
 # Cypress
 cypress/
+playwright-report/

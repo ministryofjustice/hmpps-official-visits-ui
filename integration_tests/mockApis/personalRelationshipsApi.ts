@@ -1,8 +1,9 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
+import { simpleApiMock } from '../testUtils'
 
 export default {
-  stubPersonalRelationshipsApiPing: (httpStatus: number = 200): SuperAgentRequest =>
+  stubPing: (httpStatus = 200): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
@@ -14,4 +15,6 @@ export default {
         jsonBody: { status: httpStatus === 200 ? 'UP' : 'DOWN' },
       },
     }),
+  stubRestrictions: (restrictions: unknown[] = []) =>
+    simpleApiMock(`/personal-relationships-api/prisoner-restrictions/.*`, restrictions),
 }

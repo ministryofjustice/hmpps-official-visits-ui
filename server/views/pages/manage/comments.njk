@@ -4,6 +4,7 @@
 {% from "partials/progress-tracker.njk" import progressTracker %}
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "partials/continueCancel.njk" import continueCancel %}
 
 {% set pageTitle = "Add extra information" %}
 
@@ -36,13 +37,7 @@
           errorMessage: validationErrors | findError("comments")
         })}}
 
-        <div class="govuk-button-group">
-          {{ govukButton({
-              text: "Confirm",
-              preventDoubleClick: true
-          }) }}
-          <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel and return to homepage</a>
-        </div>
+        {{ continueCancel({}) }}
       </form>
     </div>
   </div>
