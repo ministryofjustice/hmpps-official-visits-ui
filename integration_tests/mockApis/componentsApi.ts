@@ -1,27 +1,26 @@
-import type { SuperAgentRequest } from 'superagent'
+import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 
 export default {
-  stubComponentsFail: (httpStatus: number = 500): SuperAgentRequest =>
+  stubComponentsFail: (): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: '/components/components\\?component=header&component=footer',
+        url: '/components/components?component=header&component=footer',
       },
       response: {
-        status: httpStatus,
-        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        status: 500,
       },
     }),
 
-  stubComponents: (httpStatus: number = 200): SuperAgentRequest =>
+  stubComponents: (): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: '/components/components\\?component=header&component=footer',
+        url: '/components/components?component=header&component=footer',
       },
       response: {
-        status: httpStatus,
+        status: 200,
         headers: {
           'Content-Type': 'application/json;charset=UTF-8',
         },
@@ -39,11 +38,7 @@ export default {
               description: 'Leeds (HMP)',
               currentlyActive: true,
             },
-            services: [
-              {
-                id: 'official-visits',
-              },
-            ],
+            services: [],
           },
           header: {
             html: '',

@@ -1,8 +1,10 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
+import { PagePrisoner, Prisoner } from '../../server/@types/prisonerSearchApi/types'
+import { RecursivePartial, simpleApiMock } from '../testUtils'
 
 export default {
-  stubPrisonerSearchApiPing: (httpStatus: number = 200): SuperAgentRequest =>
+  stubPing: (httpStatus = 200): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
@@ -14,4 +16,9 @@ export default {
         jsonBody: { status: httpStatus === 200 ? 'UP' : 'DOWN' },
       },
     }),
+
+  stubSearchInCaseload: (response: RecursivePartial<PagePrisoner>) =>
+    simpleApiMock(`/prisoner-search-api/prison/LEI/prisoners.*`, response),
+  stubGetByPrisonerNumber: (response: RecursivePartial<Prisoner>) =>
+    simpleApiMock(`/prisoner-search-api/prisoner/.*`, response),
 }

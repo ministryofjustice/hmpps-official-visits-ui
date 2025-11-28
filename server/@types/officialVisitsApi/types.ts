@@ -20,7 +20,7 @@ export type OfficialVisit = {
   prisonerNotes: string
 }
 
-export type AvailableTimeSlots = {
+export type AvailableTimeSlot = {
   dayCode: string
   startTime: string
   endTime: string

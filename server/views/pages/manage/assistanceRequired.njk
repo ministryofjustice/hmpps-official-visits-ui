@@ -4,6 +4,7 @@
 {% from "partials/progress-tracker.njk" import progressTracker %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "partials/continueCancel.njk" import continueCancel %}
 
 {% set pageTitle = "Will visitors need assistance during their visit?" %}
 
@@ -53,13 +54,7 @@
           items: contactItems
         }) }}
 
-        <div class="govuk-button-group">
-          {{ govukButton({
-                text: "Confirm",
-                preventDoubleClick: true
-            }) }}
-          <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel</a>
-        </div>
+        {{ continueCancel({}) }}
       </form>
     </div>
   </div>
