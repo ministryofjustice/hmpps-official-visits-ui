@@ -26,6 +26,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       res.locals.formResponses?.selected ||
       req.session.journey.officialVisit.officialVisitors?.map(v => v.prisonerContactId) ||
       []
+
     // Show the list and prefill the selected checkboxes for official visitors
     res.render('pages/manage/selectOfficialVisitors', {
       contacts: approvedOfficialContacts,

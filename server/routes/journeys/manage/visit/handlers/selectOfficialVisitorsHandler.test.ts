@@ -59,7 +59,7 @@ const URL = `/manage/create/${journeyId()}/select-official-visitors`
 
 describe('Select official visitors', () => {
   describe('GET', () => {
-    it('should render the correct view page', () => {
+    it('should render the correct view page with restrictions and contacts', () => {
       return request(app)
         .get(URL)
         .expect('Content-Type', /html/)
@@ -147,6 +147,54 @@ describe('Select official visitors', () => {
           expect(visitorRows.eq(12).text().trim()).toEqual(mockOfficialVisitors[2].relationshipToPrisonerDescription)
           expect(visitorRows.eq(13).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(14).text().trim()).toBeDefined() // Restrictions
+
+          // Calls expected
+          expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
+            prisoner.prisonCode,
+            prisoner.prisonerNumber,
+            user,
+          )
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_OFFICIAL_VISITORS_PAGE, {
+            who: user.username,
+            correlationId: expect.any(String),
+          })
+        })
+    })
+
+    it('should render the correct view page with no restrictions or contacts', () => {
+      // No contacts or restrictions
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...prisoner,
+            restrictions: [],
+          },
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+        },
+      })
+
+      officialVisitsService.getApprovedOfficialContacts.mockResolvedValue([])
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          // Check we have completed step 2/6 on the progress tracker
+          expect(getProgressTrackerCompleted($)).toHaveLength(2)
+          expect(getProgressTrackerItems($)).toHaveLength(6)
+
+          const heading = getPageHeader($)
+          expect(heading).toEqual("Select official visitors from the prisoner's approved contact list")
+
+          // Prisoner restrictions - empty
+          expect(getByDataQa($, 'empty-restrictions-title').text().trim()).toContain('active restrictions')
+          expect(getByDataQa($, 'empty-restrictions-message').text().trim()).toEqual('No active restrictions')
+
+          // Prisoner contacts - empty content
+          expect(getByDataQa($, 'empty-contacts-title').text().trim()).toEqual('Approved official contacts')
+          expect(getByDataQa($, 'empty-contacts-message').text().trim()).toEqual('No approved official contacts')
 
           // Calls expected
           expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
