@@ -65,8 +65,8 @@
             }) }}
           </div>
         {% else %}
-          <div class="govuk-summary-card__content govuk-summary-card__title">{{ captionText }}</div>
-          <div class="govuk-body govuk-!-margin-top-0 govuk-!-margin-left-4">No active restrictions</div>
+          <div class="govuk-summary-card__content govuk-summary-card__title" data-qa="empty-restrictions-title">{{ captionText }}</div>
+          <div class="govuk-body govuk-!-margin-top-0 govuk-!-margin-left-4" data-qa="empty-restrictions-message">No active restrictions</div>
         {% endif %}
       </div>
     </div>
@@ -126,8 +126,8 @@
             }) }}
           </div>
         {% else %}
-          <div class="govuk-summary-card__title">Approved official contacts</div>
-          <div class="govuk-body govuk-!-margin-top-3">No approved official contacts</div>
+          <div class="govuk-summary-card__title" data-qa="empty-contacts-title">Approved official contacts</div>
+          <div class="govuk-body govuk-!-margin-top-3" data-qa="empty-contacts-message">No approved official contacts</div>
         {% endif %}
       </div>
     </div>
