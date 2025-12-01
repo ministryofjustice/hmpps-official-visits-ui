@@ -8,9 +8,13 @@ import TimeSlotHandler from './handlers/timeSlotHandler'
 import CheckYourAnswersHandler from './handlers/checkYourAnswersHandler'
 import ConfirmationHandler from './handlers/confirmationHandler'
 
-export default function AmendRoutes({ auditService, prisonerService, officialVisitsService }: Services): Router {
+export default function AmendRoutes({
+  auditService,
+  prisonerService,
+  officialVisitsService,
+  activitiesService,
+}: Services): Router {
   const router = Router({ mergeParams: true })
-
   const route = (path: string | string[], handler: PageHandler) =>
     router.get(path, logPageViewMiddleware(auditService, handler), handler.GET) &&
     handler.POST &&
@@ -29,7 +33,7 @@ export default function AmendRoutes({ auditService, prisonerService, officialVis
   })
 
   // TODO: Fill in the routes for amending an official visit
-  route('/official-visit/choose-time-slot', new TimeSlotHandler(officialVisitsService))
+  route('/official-visit/choose-time-slot', new TimeSlotHandler(officialVisitsService, activitiesService))
   route('/official-visit/check-your-answers', new CheckYourAnswersHandler(officialVisitsService, prisonerService))
 
   return router

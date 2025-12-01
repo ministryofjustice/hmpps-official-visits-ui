@@ -8,10 +8,11 @@ import PrisonerSearchPage from '../pages/prisonerSearchPage'
 import componentsApi from '../mockApis/componentsApi'
 import PrisonerSearchResultsPage from '../pages/prisonerSearchResultsPage'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
+import activitiesApi from '../mockApis/activitiesApi'
 import VisitTypePage from '../pages/visitTypePage'
 import TimeSlotPage from '../pages/timeSlotPage'
 import { AvailableTimeSlot } from '../../server/@types/officialVisitsApi/types'
-import { mockOfficialVisitors, mockSocialVisitors } from '../../server/testutils/mocks'
+import { mockOfficialVisitors, mockSocialVisitors, mockScheduleTimeSlots } from '../../server/testutils/mocks'
 import SelectOfficialContactPage from '../pages/selectOfficialContactPage'
 import SelectSocialContactPage from '../pages/selectSocialContactPage'
 import AssistanceRequiredPage from '../pages/assistanceRequiredPage'
@@ -45,6 +46,7 @@ test.describe('/example', () => {
       totalPages: 1,
     })
     await officialVisitsApi.stubRefData('VIS_TYPE_CODE', [{ code: 'IN_PERSON', description: 'Phone' }])
+    await activitiesApi.stubAvailableSlots(mockScheduleTimeSlots)
     await officialVisitsApi.stubAvailableSlots([
       {
         visitSlotId: 1,

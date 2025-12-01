@@ -1,5 +1,6 @@
 import { ApprovedContact, RestrictionSummary, TimeSlot } from '../@types/officialVisitsApi/types'
 import { PrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
+import { PrisonerScheduledEvents, ScheduledEvent } from '../@types/activitiesApi/types'
 
 export const prisoner = {
   firstName: 'John',
@@ -19,6 +20,65 @@ export const mockTimeslots = [
   } as TimeSlot & { description: string },
 ]
 
+export const mockScheduleTimeSlots = {
+  prisonCode: 'MIC',
+  prisonerNumbers: ['ABC123'],
+  startDate: '2022-10-01',
+  endDate: '2022-10-01',
+  appointments: [
+    {
+      startTime: '08:00',
+      endTime: '17:00',
+      summary: 'Summary',
+      eventType: 'APPOINTMENT',
+      cancelled: false,
+      inCell: true,
+    },
+  ] as ScheduledEvent[],
+  courtHearings: [],
+  visits: [],
+  activities: [],
+  externalTransfers: [],
+  adjudications: [],
+} as PrisonerScheduledEvents
+
+export const mockScheduleEvents = [
+  {
+    startTime: '',
+    endTime: '17:00',
+    summary: 'Summary',
+    eventType: 'APPOINTMENT',
+    cancelled: false,
+    inCell: true,
+  },
+  {
+    startTime: '08:00',
+    endTime: '17:00',
+    summary: 'Summary',
+    eventType: 'APPOINTMENT',
+    cancelled: false,
+    inCell: true,
+  },
+] as ScheduledEvent[]
+
+export const sortedMockScheduleEvents = [
+  {
+    startTime: '08:00',
+    endTime: '17:00',
+    summary: 'Summary',
+    eventType: 'APPOINTMENT',
+    cancelled: false,
+    inCell: true,
+  },
+  {
+    startTime: '',
+    endTime: '17:00',
+    summary: 'Summary',
+    eventType: 'APPOINTMENT',
+    cancelled: false,
+    inCell: true,
+  },
+] as ScheduledEvent[]
 export const mockSchedule = [
   {
     id: 1,

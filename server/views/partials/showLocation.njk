@@ -1,0 +1,24 @@
+{% macro showLocation(event, internalLocation) %}
+    {% set location = '' %}
+
+    {% if event.inCell %}
+        {% set location = "In cell" %}
+    {% elseif event.onWing %}
+        {% set location = "On wing" %}
+    {% elseif event.offWing %}
+        {% set location = "Off wing" %}
+    {% elseif internalLocation %}
+        {% set location = internalLocation %}
+    {% else %}
+        {%  set location = (
+                event.location.name or
+                event.location or
+                event.internalLocation.description or
+                event.internalLocationUserDescription or
+                event.internalLocationDescription
+            )
+        %}
+    {% endif %}
+    {{ location | trim }}
+
+{% endmacro %}
