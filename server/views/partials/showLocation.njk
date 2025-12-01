@@ -1,4 +1,4 @@
-{% macro showLocation(event, internalLocation, makeCapitals = false) %}
+{% macro showLocation(event, internalLocation) %}
     {% set location = '' %}
 
     {% if event.inCell %}
@@ -19,12 +19,6 @@
             )
         %}
     {% endif %}
+    {{ location | trim }}
 
-    {% if location %}
-        {% if makeCapitals %}
-            {{ location | trim | capitalize }}
-        {% else %}
-            {{ location | trim }}
-        {% endif %}
-    {% endif %}
 {% endmacro %}

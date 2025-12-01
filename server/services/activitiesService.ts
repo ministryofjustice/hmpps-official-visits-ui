@@ -18,16 +18,21 @@ export default class ActivitiesService {
       prisonerNumbers,
       user,
     )
+
     const { appointments, courtHearings, visits, activities, externalTransfers, adjudications } = scheduledEvents
     const events = [...appointments, ...courtHearings, ...visits, ...activities, ...externalTransfers, ...adjudications]
 
     // filter cancelled
     const activeEvents = events?.filter(event => event.cancelled === false)
+    // to handle null/empty startTime
+    const toMinutes = (time: string | null | undefined): number => {
+      // return largest possible number so that it displayed at the end of list
+      if (!time) return Number.POSITIVE_INFINITY
+      const [h, m] = time.split(':').map(Number)
+      return h * 60 * m
+    }
+
     // sort it based on start time
-    return activeEvents?.sort((a, b) => {
-      const [ah, am] = a.startTime.split(':').map(Number)
-      const [bh, bm] = b.startTime.split(':').map(Number)
-      return ah !== bh ? ah - bh : am - bm
-    })
+    return activeEvents?.sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime))
   }
 }
