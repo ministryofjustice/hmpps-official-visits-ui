@@ -29,7 +29,8 @@ export default class ActivitiesService {
       // return largest possible number so that it displayed at the end of list
       if (!time) return Number.POSITIVE_INFINITY
       const [h, m] = time.split(':').map(Number)
-      return h * 60 * m
+      // convert time to minutes
+      return h * 60 + m
     }
 
     // sort it based on start time
