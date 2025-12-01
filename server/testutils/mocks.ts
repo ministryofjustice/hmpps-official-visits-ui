@@ -25,7 +25,16 @@ export const mockScheduleTimeSlots = {
   prisonerNumbers: ['ABC123'],
   startDate: '2022-10-01',
   endDate: '2022-10-01',
-  appointments: [],
+  appointments: [
+    {
+      startTime: '08:00',
+      endTime: '17:00',
+      summary: 'Summary',
+      eventType: 'APPOINTMENT',
+      cancelled: false,
+      inCell: true,
+    },
+  ] as ScheduledEvent[],
   courtHearings: [],
   visits: [],
   activities: [],
@@ -35,12 +44,41 @@ export const mockScheduleTimeSlots = {
 
 export const mockScheduleEvents = [
   {
+    startTime: '',
+    endTime: '17:00',
+    summary: 'Summary',
+    eventType: 'APPOINTMENT',
+    cancelled: false,
+    inCell: true,
+  },
+  {
     startTime: '08:00',
     endTime: '17:00',
     summary: 'Summary',
+    eventType: 'APPOINTMENT',
+    cancelled: false,
+    inCell: true,
   },
 ] as ScheduledEvent[]
 
+export const sortedMockScheduleEvents = [
+  {
+    startTime: '08:00',
+    endTime: '17:00',
+    summary: 'Summary',
+    eventType: 'APPOINTMENT',
+    cancelled: false,
+    inCell: true,
+  },
+  {
+    startTime: '',
+    endTime: '17:00',
+    summary: 'Summary',
+    eventType: 'APPOINTMENT',
+    cancelled: false,
+    inCell: true,
+  },
+] as ScheduledEvent[]
 export const mockSchedule = [
   {
     id: 1,

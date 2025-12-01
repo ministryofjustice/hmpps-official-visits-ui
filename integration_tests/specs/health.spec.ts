@@ -9,6 +9,7 @@ import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
 import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
 import prisonApi from '../mockApis/prisonApi'
+import activitiesApi from '../mockApis/activitiesApi'
 
 test.describe('Health', () => {
   test.afterEach(async () => {
@@ -25,6 +26,7 @@ test.describe('Health', () => {
         personalRelationshipsApi.stubPing(),
         officialVisitsApi.stubPing(),
         prisonerSearchApi.stubPing(),
+        activitiesApi.stubPing(),
       ])
     })
 

@@ -50,3 +50,16 @@ export function simpleApiMock<T>(urlPattern: string, response: RecursivePartial<
     },
   })
 }
+export function simplePostApiMock<T>(urlPattern: string, response: RecursivePartial<T>): SuperAgentRequest {
+  return stubFor({
+    request: {
+      method: 'POST',
+      urlPattern,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: response,
+    },
+  })
+}
