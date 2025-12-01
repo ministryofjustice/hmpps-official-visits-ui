@@ -298,15 +298,15 @@ export interface components {
        */
       visitTypeCode: string
       /**
-       * @description Notes that will not be shared on movement slips
-       * @example Private note
+       * @description Notes for staff that will not be shared on movement slips
+       * @example Staff notes
        */
-      privateNotes?: string
+      staffNotes?: string
       /**
-       * @description Notes that may be shared on movement slips
-       * @example Public note
+       * @description Notes for prisoners that may be shared on movement slips
+       * @example Prisoner notes
        */
-      publicNotes?: string
+      prisonerNotes?: string
       officialVisitors: components['schemas']['OfficialVisitor'][]
     }
     OfficialVisitor: {
@@ -317,7 +317,7 @@ export interface components {
       visitorTypeCode: string
       /**
        * @description The contact type code
-       * @example SOCIAL
+       * @example OFFICIAL
        */
       contactTypeCode: string
       /**
@@ -352,16 +352,6 @@ export interface components {
        * @example false
        */
       assistedVisit?: boolean
-      /**
-       * @description The email address for this visitor
-       * @example bob@harris.com
-       */
-      emailAddress?: string
-      /**
-       * @description The phone number for this visitor
-       * @example 09090 9090900
-       */
-      phoneNumber?: string
       /**
        * @description Any notes to keep about this visitor
        * @example notes
@@ -449,37 +439,24 @@ export interface components {
        */
       dpsLocationId: string
       /**
-       * @description The visit status code from NOMIS (reference data - VIS_STS)
+       * @description The visit status code from NOMIS
        * @example SCH
        */
       visitStatusCode: components['schemas']['CodedValue']
-      /**
-       * @description The visit type code from NOMIS expected to be O for all(reference data - VISIT_TYPE)
-       * @example O
-       */
-      visitTypeCode: components['schemas']['CodedValue']
       /**
        * @description The comment text from NOMIS
        * @example This is a comment
        */
       commentText?: string
       /**
-       * @description The search type code from NOMIS (reference data - SEARCH_TYPE)
+       * @description The search type code from NOMIS
        * @example RUB_A
        */
       searchTypeCode?: components['schemas']['CodedValue']
-      /** @description The event outcome code NOMIS (reference data - VIS_COMPLETE) */
+      /** @description The event outcome code NOMIS */
       eventOutcomeCode?: components['schemas']['CodedValue']
-      /** @description The outcome reason code NOMIS (reference data - MOVE_CANC_RS) */
+      /** @description The outcome reason code NOMIS */
       outcomeReasonCode?: components['schemas']['CodedValue']
-      /** @description The raised indcident type code from NOMIS (reference data - INC_TYPE) */
-      raisedIncidentTypeCode?: components['schemas']['CodedValue']
-      /**
-       * Format: int64
-       * @description The raised incident number from NOMIS
-       * @example 1333
-       */
-      incidentNumber?: number
       /**
        * @description Concerns raised by the visitor
        * @example Visitor concern notes
@@ -561,9 +538,9 @@ export interface components {
        * @example Comment text
        */
       commentText?: string
-      /** @description The event outcome code NOMIS (reference data) */
+      /** @description The visitor event outcome code from NOMIS */
       eventOutcomeCode?: components['schemas']['CodedValue']
-      /** @description The outcome reason code NOMIS (reference data) */
+      /** @description The visitor outcome reason code from NOMIS */
       outcomeReasonCode?: components['schemas']['CodedValue']
       /**
        * Format: date-time
@@ -803,15 +780,15 @@ export interface components {
     }
     /** @enum {string} */
     ReferenceDataGroup:
+      | 'ATTENDANCE'
       | 'DAY'
-      | 'CONTACTS'
-      | 'EQUIP_CATEGORY'
+      | 'CONTACT_TYPE'
       | 'SEARCH_LEVEL'
       | 'TEST_TYPE'
-      | 'VIS_COMPLETE'
-      | 'VIS_LOC_TYPE'
-      | 'VIS_STS'
-      | 'VIS_TYPE_CODE'
+      | 'VIS_COMPLETION'
+      | 'VIS_STATUS'
+      | 'VIS_TYPE'
+      | 'VISITOR_TYPE'
     /** @description Describes the details of a reference code */
     ReferenceDataItem: {
       /**
@@ -822,7 +799,7 @@ export interface components {
       referenceDataId: number
       /**
        * @description The group name for related reference codes.
-       * @example VIS_STS
+       * @example VIS_STATUS
        */
       groupCode: components['schemas']['ReferenceDataGroup']
       /**
@@ -1297,7 +1274,7 @@ export interface operations {
       path: {
         /**
          * @description The group code of the reference codes to load
-         * @example VIS_STS
+         * @example VIS_STATUS
          */
         groupCode: components['schemas']['ReferenceDataGroup']
       }
