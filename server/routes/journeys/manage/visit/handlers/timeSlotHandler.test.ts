@@ -102,6 +102,8 @@ describe('Time slot handler', () => {
           expect($('.govuk-table__cell').eq(6).eq(0).text().trim()).toEqual('Appointment')
           expect($('.govuk-table__cell').eq(7).eq(0).text().trim()).toEqual('In cell')
 
+          // TODO: Check the available slots?
+
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.CHOOSE_TIME_SLOT_PAGE, {
             who: user.username,
             correlationId: expect.any(String),
