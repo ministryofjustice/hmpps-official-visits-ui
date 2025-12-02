@@ -20,7 +20,7 @@ export default {
     simpleApiMock(`/official-visits-api/reference-data/group/${group}`, response),
   stubAvailableSlots: (response: AvailableSlot[]) => simpleApiMock(`/official-visits-api/available-slots/.*`, response),
   stubOfficialContacts: (response: ApprovedContact[]) =>
-    simpleApiMock(`/official-visits-api/prisoner/.*/approved-relationships.*`, response),
+    simpleApiMock(`/official-visits-api/prisoner/.*/approved-relationships\\?relationshipType=O`, response),
   stubSocialContacts: (response: ApprovedContact[]) =>
-    simpleApiMock(`/official-visits-api/prisoner/.*/approved-relationships?relationshipType=S.*`, response),
+    simpleApiMock(`/official-visits-api/prisoner/.*/approved-relationships\\?relationshipType=S`, response),
 }
