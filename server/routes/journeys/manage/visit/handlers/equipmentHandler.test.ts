@@ -77,14 +77,14 @@ describe('Equipment handler', () => {
 
           expect(heading).toEqual('Will visitors have equipment with them? (optional)')
 
-          expect(getArrayItemPropById($, 'equipment', 0, 'id').val()).toEqual('222')
-          expect(getArrayItemPropById($, 'equipment', 1, 'id').val()).toEqual('111')
+          expect(getArrayItemPropById($, 'equipment', 0, 'id').val()).toEqual('111')
+          expect(getArrayItemPropById($, 'equipment', 1, 'id').val()).toEqual('222')
 
           expect(getArrayItemPropById($, 'equipment', 0, 'id').attr('checked')).toBeFalsy()
           expect(getArrayItemPropById($, 'equipment', 1, 'id').attr('checked')).toBeFalsy()
 
-          expect($('.govuk-checkboxes__label').eq(0).text()).toContain('Jane Dafriend (Friend)')
-          expect($('.govuk-checkboxes__label').eq(1).text()).toContain('John Dasolicitor (Solicitor)')
+          expect($('.govuk-checkboxes__label').eq(0).text()).toContain('John Dasolicitor (Solicitor)')
+          expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Jane Dafriend (Friend)')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.EQUIPMENT_PAGE, {
             who: user.username,

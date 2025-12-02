@@ -1,4 +1,4 @@
-import { ApprovedContact, RestrictionSummary, TimeSlot } from '../@types/officialVisitsApi/types'
+import { ApprovedContact, RestrictionSummary, AvailableSlot } from '../@types/officialVisitsApi/types'
 import { PrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
 import { PrisonerScheduledEvents, ScheduledEvent } from '../@types/activitiesApi/types'
 
@@ -11,13 +11,19 @@ export const prisoner = {
 
 export const mockTimeslots = [
   {
-    timeSlotId: 1,
     visitSlotId: 1,
+    timeSlotId: 1,
+    prisonCode: 'MDI',
+    dayCode: 'MON',
+    dayDescription: 'Monday',
     visitDate: '2025-12-25',
     startTime: '08:00',
     endTime: '17:00',
-    description: 'Room 1',
-  } as TimeSlot & { description: string },
+    dpsLocationId: 'xxx',
+    availableVideoSessions: 1,
+    availableGroups: 1,
+    availableAdults: 1,
+  } as AvailableSlot,
 ]
 
 export const mockScheduleTimeSlots = {
@@ -79,6 +85,7 @@ export const sortedMockScheduleEvents = [
     inCell: true,
   },
 ] as ScheduledEvent[]
+
 export const mockSchedule = [
   {
     id: 1,

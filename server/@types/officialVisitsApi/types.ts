@@ -20,20 +20,11 @@ export type OfficialVisit = {
   prisonerNotes: string
 }
 
-export type AvailableTimeSlot = {
-  dayCode: string
-  startTime: string
-  endTime: string
-  dpsLocationId: string
-  maxAdults: string
-  maxGroups: string
-}
-
-export type RefDataItem = Partial<components['schemas']['ReferenceDataItem']>
+export type ReferenceDataItem = Partial<components['schemas']['ReferenceDataItem']>
 
 export type ApprovedContact = components['schemas']['ApprovedContact']
 
-export type TimeSlot = components['schemas']['AvailableSlot']
+export type AvailableSlot = components['schemas']['AvailableSlot']
 
 export type ContactRelationship = {
   prisonerContactId: number

@@ -41,7 +41,7 @@ export default {
             services: [],
           },
           header: {
-            html: '',
+            html: '<header>Sign in <a href="/sign-out">Sign out</a></header>',
             css: [''],
             javascript: [''],
           },

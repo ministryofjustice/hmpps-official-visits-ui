@@ -21,13 +21,13 @@ describe('Activities Service ', () => {
     jest.resetAllMocks()
   })
 
-  it('should should return prisoner schedule with empty start time displayed in the end', async () => {
+  it('should return prisoner schedule with empty start time displayed in the end', async () => {
     const prisonCode = 'MIC'
-    const prisonerNumbers = ['ABC123']
+    const prisonerNumber = 'ABC123'
     const date = '2022-10-01'
     const response = {
       prisonCode,
-      prisonerNumbers,
+      prisonerNumbers: [prisonerNumber],
       startDate: date,
       endDate: date,
       appointments: mockScheduleEvents,
@@ -39,7 +39,7 @@ describe('Activities Service ', () => {
     } as PrisonerScheduledEvents
 
     activitiesApiClient.getScheduledEventsByPrisonerNumbers.mockResolvedValue(response)
-    const result = await activitiesService.getPrisonersSchedule(prisonCode, date, prisonerNumbers, user)
+    const result = await activitiesService.getPrisonersSchedule(prisonCode, date, prisonerNumber, user)
     expect(result).toEqual(sortedMockScheduleEvents)
     expect(activitiesApiClient.getScheduledEventsByPrisonerNumbers).toHaveBeenCalledTimes(1)
   })

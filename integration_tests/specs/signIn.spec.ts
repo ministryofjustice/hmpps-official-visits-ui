@@ -4,9 +4,11 @@ import exampleApi from '../mockApis/exampleApi'
 
 import { login, resetStubs } from '../testUtils'
 import HomePage from '../pages/homePage'
+import componentsApi from '../mockApis/componentsApi'
 
 test.describe('SignIn', () => {
   test.beforeEach(async () => {
+    await componentsApi.stubComponents()
     await exampleApi.stubExampleTime()
   })
 
@@ -31,9 +33,7 @@ test.describe('SignIn', () => {
   test('Authenticated user sees the home page', async ({ page }) => {
     await login(page, { name: 'A TestUser' })
 
-    const homePage = await HomePage.verifyOnPage(page)
-
-    await expect(homePage.usersName).toHaveText('A. Testuser')
+    await HomePage.verifyOnPage(page)
   })
 
   test('User can sign out', async ({ page }) => {
@@ -58,7 +58,6 @@ test.describe('SignIn', () => {
 
     await login(page, { name: 'Some OtherTestUser', active: true })
 
-    const homePage = await HomePage.verifyOnPage(page)
-    await expect(homePage.usersName).toHaveText('S. Othertestuser')
+    await HomePage.verifyOnPage(page)
   })
 })

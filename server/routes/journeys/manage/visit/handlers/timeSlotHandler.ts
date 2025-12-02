@@ -23,12 +23,22 @@ export default class TimeSlotHandler implements PageHandler {
     const { user } = res.locals
     const { officialVisit } = req.session.journey
     const { prisonCode, prisonerNumber } = officialVisit.prisoner
-    const timeSlots = await this.officialVisitsService.getAvailableSlots(res, prisonCode, selectedDate, selectedDate)
-    officialVisit.availableSlots = timeSlots
-    const schedule = await this.activitiesService.getPrisonersSchedule(
+
+    // Get the available slots with some capacity on the date selected
+    const availableSlots = await this.officialVisitsService.getAvailableSlots(
+      res,
       prisonCode,
       selectedDate,
-      Array.of(prisonerNumber),
+      selectedDate,
+    )
+
+    req.session.journey.officialVisit.availableSlots = availableSlots
+
+    // Get the prisoner's schedule on the date selected
+    const prisonerSchedule = await this.activitiesService.getPrisonersSchedule(
+      prisonCode,
+      selectedDate,
+      prisonerNumber,
       user,
     )
 
@@ -38,8 +48,8 @@ export default class TimeSlotHandler implements PageHandler {
       weekOfDates,
       previousWeek,
       nextWeek,
-      schedule,
-      slots: timeSlots.filter(o => o.visitDate === selectedDate),
+      prisonerSchedule,
+      slots: availableSlots,
       selectedTimeSlot:
         res.locals.formResponses?.['timeSlot'] ||
         `${officialVisit?.selectedTimeSlot?.visitSlotId}-${officialVisit?.selectedTimeSlot?.timeSlotId}`,
