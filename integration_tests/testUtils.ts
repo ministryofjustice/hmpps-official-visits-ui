@@ -37,7 +37,7 @@ export const login = async (
   await attemptHmppsAuthLogin(page)
 }
 
-export function apiMock<T>(method: string, urlPattern: string, response: RecursivePartial<unknown>): SuperAgentRequest {
+export function apiMock<T>(method: string, urlPattern: string, response: RecursivePartial<T>): SuperAgentRequest {
   return stubFor({
     request: {
       method,
