@@ -74,13 +74,13 @@ the development environment.
 
 ### Running integration tests
 
-Integration tests (using Cypress) can be run against the UI and need an extra dependency to mock out any
+Integration tests (using Playwright) can be run against the UI and need an extra dependency to mock out any
 API calls that will be made during the tests. This is done with Wiremock running locally in a container.
 
 There is a 3-step process:
 * Run wiremock container
 * Run the service in integration test mode
-* Run the Cypress test tool
+* Run the Playwright test tool
 
 Start wiremock with:
 
@@ -94,9 +94,13 @@ And then either, run tests in headless mode with:
 
 `npm run int-test`
 
-Or run tests with the cypress UI:
+Or run tests with the Playwright UI:
 
 `npm run int-test-ui`
+
+Alternatively, `concurrently` can be used to run the service and playwright in a single command with:
+
+`npx concurrently "npm run start-feature" "npm run int-test-ui"`
 
 ## Change log
 
