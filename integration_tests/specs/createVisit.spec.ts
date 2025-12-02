@@ -45,7 +45,7 @@ test.describe('/example', () => {
       number: 1,
       totalPages: 1,
     })
-    await officialVisitsApi.stubRefData('VIS_TYPE_CODE', [{ code: 'IN_PERSON', description: 'Phone' }])
+    await officialVisitsApi.stubRefData('VIS_TYPE', [{ code: 'IN_PERSON', description: 'In person' }])
     await activitiesApi.stubAvailableSlots(mockScheduleTimeSlots)
     await officialVisitsApi.stubAvailableSlots([
       {
@@ -82,7 +82,7 @@ test.describe('/example', () => {
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/visit-type/)
     const visitTypePage = await VisitTypePage.verifyOnPage(page)
-    await visitTypePage.selectRadioButton('Phone')
+    await visitTypePage.selectRadioButton('In person')
     await visitTypePage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/time-slot/)

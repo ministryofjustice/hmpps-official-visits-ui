@@ -16,7 +16,7 @@ export default class VisitTypeHandler implements PageHandler {
   BODY: SchemaFactory
 
   public GET = async (req: Request, res: Response) => {
-    const visitTypes = await this.officialVisitsService.getReferenceData(res, 'VIS_TYPE_CODE')
+    const visitTypes = await this.officialVisitsService.getReferenceData(res, 'VIS_TYPE')
     res.render('pages/manage/visitType', {
       backUrl: `results?page=${req.session.journey.officialVisit.searchPage || '0'}`,
       visitType: req.session.journey.officialVisit.visitType,
