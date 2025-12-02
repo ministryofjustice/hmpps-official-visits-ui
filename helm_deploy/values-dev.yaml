@@ -25,4 +25,4 @@ generic-service:
     AUDIT_ENABLED: "false"
 
 generic-prometheus-alerts:
-  alertSeverity: hmpps-official-visits-non-prod
+  alertSeverity: hmpps-alerts-api-non-prod
