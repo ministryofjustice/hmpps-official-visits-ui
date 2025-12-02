@@ -11,7 +11,7 @@ import officialVisitsApi from '../mockApis/officialVisitsApi'
 import activitiesApi from '../mockApis/activitiesApi'
 import VisitTypePage from '../pages/visitTypePage'
 import TimeSlotPage from '../pages/timeSlotPage'
-import { AvailableTimeSlot } from '../../server/@types/officialVisitsApi/types'
+import { AvailableSlot } from '../../server/@types/officialVisitsApi/types'
 import { mockOfficialVisitors, mockSocialVisitors, mockScheduleTimeSlots } from '../../server/testutils/mocks'
 import SelectOfficialContactPage from '../pages/selectOfficialContactPage'
 import SelectSocialContactPage from '../pages/selectSocialContactPage'
@@ -33,7 +33,7 @@ const mockPrisoner = {
   prisonCode: 'LEI',
 }
 
-test.describe('/example', () => {
+test.describe('Create an official visit', () => {
   const uuid = uuidV4()
   test.beforeEach(async () => {
     await hmppsAuth.stubSignInPage()
@@ -54,15 +54,17 @@ test.describe('/example', () => {
       {
         visitSlotId: 1,
         timeSlotId: 1,
+        prisonCode: 'MDI',
         dayCode: 'WED',
+        dayDescription: 'Wednesday',
         startTime: '08:00',
         endTime: '17:00',
-        dpsLocationId: 'OUT',
-        maxAdults: '1',
-        maxGroups: '1',
-        description: 'Room 1',
+        dpsLocationId: 'xxx',
+        availableAdults: 1,
+        availableGroups: 1,
+        availableVideoSessions: 1,
         visitDate: format(new Date(), 'yyyy-MM-dd'),
-      } as unknown as AvailableTimeSlot,
+      } as AvailableSlot,
     ])
     await officialVisitsApi.stubOfficialContacts(mockOfficialVisitors)
     await officialVisitsApi.stubSocialContacts(mockSocialVisitors)
@@ -90,7 +92,7 @@ test.describe('/example', () => {
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/time-slot/)
     const timeSlotPage = await TimeSlotPage.verifyOnPage(page)
-    await timeSlotPage.selectRadioButton('8am to 5pm Room 1')
+    await timeSlotPage.selectRadioButton('8am to 5pm Groups 1, people 1, video 1')
     await timeSlotPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)

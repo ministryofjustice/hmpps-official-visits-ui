@@ -3,7 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { ApprovedContact, OfficialVisit, RefDataItem } from '../@types/officialVisitsApi/types'
+import { ApprovedContact, AvailableSlot, OfficialVisit, ReferenceDataItem } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
 
 export type RestrictionPlaceholder = {
@@ -45,7 +45,7 @@ export default class OfficialVisitsApiClient extends RestClient {
   }
 
   async getReferenceData(code: components['schemas']['ReferenceDataGroup'], user: HmppsUser) {
-    return this.get<RefDataItem[]>({ path: `/reference-data/group/${code}` }, asSystem(user.username))
+    return this.get<ReferenceDataItem[]>({ path: `/reference-data/group/${code}` }, asSystem(user.username))
   }
 
   async getSchedule(_prisonId: string, _date: string, _user: HmppsUser): Promise<ScheduleItemPlaceholder[]> {
@@ -79,8 +79,8 @@ export default class OfficialVisitsApiClient extends RestClient {
     startDate: string,
     endDate: string,
     user: HmppsUser,
-  ): Promise<components['schemas']['AvailableSlot'][]> {
-    return this.get<components['schemas']['AvailableSlot'][]>(
+  ): Promise<AvailableSlot[]> {
+    return this.get<AvailableSlot[]>(
       { path: `/available-slots/${prisonId}?fromDate=${startDate}&toDate=${endDate}&videoOnly=false` },
       asSystem(user.username),
     )

@@ -1,7 +1,7 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import { simpleApiMock } from '../testUtils'
-import { ApprovedContact, AvailableTimeSlot, RefDataItem } from '../../server/@types/officialVisitsApi/types'
+import { ApprovedContact, AvailableSlot, ReferenceDataItem } from '../../server/@types/officialVisitsApi/types'
 
 export default {
   stubPing: (httpStatus = 200): SuperAgentRequest =>
@@ -16,10 +16,9 @@ export default {
         jsonBody: { status: httpStatus === 200 ? 'UP' : 'DOWN' },
       },
     }),
-  stubRefData: (group: string, response: RefDataItem[]) =>
+  stubRefData: (group: string, response: ReferenceDataItem[]) =>
     simpleApiMock(`/official-visits-api/reference-data/group/${group}`, response),
-  stubAvailableSlots: (response: AvailableTimeSlot[]) =>
-    simpleApiMock(`/official-visits-api/available-slots/.*`, response),
+  stubAvailableSlots: (response: AvailableSlot[]) => simpleApiMock(`/official-visits-api/available-slots/.*`, response),
   stubOfficialContacts: (response: ApprovedContact[]) =>
     simpleApiMock(`/official-visits-api/prisoner/.*/approved-relationships\\?relationshipType=O`, response),
   stubSocialContacts: (response: ApprovedContact[]) =>

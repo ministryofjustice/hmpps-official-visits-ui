@@ -1,9 +1,9 @@
 import { RequestHandler, Request, Response } from 'express'
 import z, { RefinementCtx } from 'zod'
 import { $ZodSuperRefineIssue } from 'zod/v4/core'
-import { RefDataItem } from '../@types/officialVisitsApi/types'
+import { ReferenceDataItem } from '../@types/officialVisitsApi/types'
 
-export const fromRefData = (refData: RefDataItem[], errorMessage: string) => {
+export const fromRefData = (refData: ReferenceDataItem[], errorMessage: string) => {
   return (val: string, ctx: RefinementCtx) => {
     const item = refData.find(o => o.code === val)
     if (!item) {
