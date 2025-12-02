@@ -67,48 +67,57 @@
           </ul>
         </nav>
 
-        {% if schedule | length %}
-          {% set rows = [] %}
-          {% for event in schedule %}
+        {% set rows = [] %}
+        {% for event in prisonerSchedule %}
+          {% set rows = (rows.push([
+            { text: (event.startTime + ' to ' + event.endTime) },
+            { text: event.summary | trim },
+            { text: eventTypeText(event) },
+            { text: locationText(event) }
+          ]), rows) %}
+        {% endfor %}
+
+        <div class="govuk-inset-text">
+          {% if prisonerSchedule.length === 0 %}
             {% set rows = (rows.push([
-              {
-                text: (event.startTime + ' to ' + event.endTime)
-              }, {
-                text: event.summary | trim
-              }, {
-                text: eventTypeText(event)
-              }, {
-                text: locationText(event)
-              }
+              { text: '--' },
+              { text: 'Nothing scheduled' },
+              { text: '--' },
+              { text: '--' }
             ]), rows) %}
-          {% endfor %}
-          <div class="govuk-inset-text">
-            {{ govukTable({
+          {% endif %}
+
+          {{ govukTable({
             caption: (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase | possessiveComma + " schedule",
             captionClasses: "govuk-table__caption--m",
             head: [
-              {text: "Time"},
-              {text: "Event name"},
-              {text: "Type"},
-              {text: "Location"}
+              { text: "Time" },
+              { text: "Event name" },
+              { text: "Type" },
+              { text: "Location" }
             ],
             rows: rows
           }) }}
+        </div>
 
-            {% set items = [] %}
-            {% for slot in slots %}
-              {% set items = (items.push(
-              {
-                value: slot.visitSlotId + '-' + slot.timeSlotId,
-                html: '<b>' + (slot.startTime | timeStringTo12HourPretty) + ' to ' + (slot.endTime | timeStringTo12HourPretty) +'</b><br />' + (slot.description  or 'API description'),
-                checked: selectedTimeSlot == (slot.visitSlotId + '-' + slot.timeSlotId)
-              }
-            ), items) %}
-            {% endfor %}
-          </div>
-        {% endif %}
+        {% set items = [] %}
+        {% for slot in slots %}
 
-        {% if items | length %}
+          {# Show capacity for different types of visit #}
+          {% set slotDescription %}
+            Groups {{ slot.availableGroups }}, people {{ slot.availableAdults }}, video {{ slot.availableVideoSessions }}
+          {% endset %}
+
+          {% set items = (items.push(
+            {
+              value: slot.visitSlotId + '-' + slot.timeSlotId,
+              html: '<b>' + (slot.startTime | timeStringTo12HourPretty) + ' to ' + (slot.endTime | timeStringTo12HourPretty) + '</b><br />' + slotDescription,
+              checked: selectedTimeSlot == (slot.visitSlotId + '-' + slot.timeSlotId)
+            }
+          ), items) %}
+        {% endfor %}
+
+        {% if items | length > 0 %}
           {{ govukRadios({
             idPrefix: "timeSlot",
             name: "timeSlot",
@@ -140,6 +149,7 @@
         Adjudication hearing
     {% endif %}
 {% endmacro %}
+
 {% macro locationText(scheduledEvent) %}
     {% if scheduledEvent.eventType != 'EXTERNAL_TRANSFER' and scheduledEvent.eventType != 'COURT_HEARING' %}
         {{ showLocation(scheduledEvent) }}

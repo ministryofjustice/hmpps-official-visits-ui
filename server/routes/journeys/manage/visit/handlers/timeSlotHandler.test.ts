@@ -73,6 +73,7 @@ describe('Time slot handler', () => {
           expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(1).text()).toEqual('23')
           expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(2).text()).toEqual('24')
           expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(3).text()).toEqual('25')
+
           // Clickable dates (in the future)
           expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(0).text()).toEqual('26')
           expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(1).text()).toEqual('27')
@@ -82,13 +83,16 @@ describe('Time slot handler', () => {
           expect($('.moj-pagination__item--prev').children().length).toBeFalsy()
           expect($('.moj-pagination__item--next').children().length).toBeTruthy()
 
+          // Prisoner's schedule
           expect($('caption').text()).toEqual('John Smith’s schedule')
 
+          // Schedule header
           expect($('.govuk-table__header').eq(0).text()).toEqual('Time')
           expect($('.govuk-table__header').eq(1).text()).toEqual('Event name')
           expect($('.govuk-table__header').eq(2).text()).toEqual('Type')
           expect($('.govuk-table__header').eq(3).text()).toEqual('Location')
 
+          // Scheduled events
           expect($('.govuk-table__cell').eq(0).eq(0).text()).toEqual('08:00 to 17:00')
           expect($('.govuk-table__cell').eq(1).eq(0).text()).toEqual('Summary')
           expect($('.govuk-table__cell').eq(2).eq(0).text().trim()).toEqual('Appointment')

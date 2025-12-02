@@ -9,13 +9,13 @@ export default class ActivitiesService {
   async getPrisonersSchedule(
     prisonCode: string,
     date: string,
-    prisonerNumbers: string[],
+    prisonerNumber: string,
     user: HmppsUser,
   ): Promise<ScheduledEvent[]> {
     const scheduledEvents = await this.activitiesApiClient.getScheduledEventsByPrisonerNumbers(
       prisonCode,
       format(date, 'yyyy-MM-dd'),
-      prisonerNumbers,
+      [prisonerNumber],
       user,
     )
 
