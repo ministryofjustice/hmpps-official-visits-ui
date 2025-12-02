@@ -21,7 +21,7 @@ describe('Activities Service ', () => {
     jest.resetAllMocks()
   })
 
-  it('should should return prisoner schedule with empty start time displayed in the end', async () => {
+  it('should return prisoner schedule with empty start time displayed in the end', async () => {
     const prisonCode = 'MIC'
     const prisonerNumber = 'ABC123'
     const date = '2022-10-01'
