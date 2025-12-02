@@ -77,14 +77,14 @@ describe('Assistance required handler', () => {
 
           expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
 
-          expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').val()).toEqual('222')
-          expect(getArrayItemPropById($, 'assistanceRequired', 1, 'id').val()).toEqual('111')
+          expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').val()).toEqual('111')
+          expect(getArrayItemPropById($, 'assistanceRequired', 1, 'id').val()).toEqual('222')
 
           expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').attr('checked')).toBeFalsy()
           expect(getArrayItemPropById($, 'assistanceRequired', 1, 'id').attr('checked')).toBeFalsy()
 
-          expect($('.govuk-checkboxes__label').eq(0).text()).toContain('Jane Dafriend (Friend)')
-          expect($('.govuk-checkboxes__label').eq(1).text()).toContain('John Dasolicitor (Solicitor)')
+          expect($('.govuk-checkboxes__label').eq(0).text()).toContain('John Dasolicitor (Solicitor)')
+          expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Jane Dafriend (Friend)')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.ASSISTANCE_REQUIRED_PAGE, {
             who: user.username,

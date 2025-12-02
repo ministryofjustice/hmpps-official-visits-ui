@@ -37,10 +37,10 @@ export const login = async (
   await attemptHmppsAuthLogin(page)
 }
 
-export function simpleApiMock<T>(urlPattern: string, response: RecursivePartial<T>): SuperAgentRequest {
+export function apiMock<T>(method: string, urlPattern: string, response: RecursivePartial<unknown>): SuperAgentRequest {
   return stubFor({
     request: {
-      method: 'GET',
+      method,
       urlPattern,
     },
     response: {
@@ -50,16 +50,10 @@ export function simpleApiMock<T>(urlPattern: string, response: RecursivePartial<
     },
   })
 }
+
+export function simpleApiMock<T>(urlPattern: string, response: RecursivePartial<T>): SuperAgentRequest {
+  return apiMock('GET', urlPattern, response)
+}
 export function simplePostApiMock<T>(urlPattern: string, response: RecursivePartial<T>): SuperAgentRequest {
-  return stubFor({
-    request: {
-      method: 'POST',
-      urlPattern,
-    },
-    response: {
-      status: 200,
-      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-      jsonBody: response,
-    },
-  })
+  return apiMock('POST', urlPattern, response)
 }

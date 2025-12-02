@@ -14,8 +14,8 @@ export default class AssistanceRequiredHandler implements PageHandler {
 
   public GET = async (req: Request, res: Response) => {
     const contacts = [
-      ...req.session.journey.officialVisit.socialVisitors,
       ...req.session.journey.officialVisit.officialVisitors,
+      ...req.session.journey.officialVisit.socialVisitors,
     ].filter(o => o.prisonerContactId)
 
     res.render('pages/manage/assistanceRequired', {
@@ -27,8 +27,8 @@ export default class AssistanceRequiredHandler implements PageHandler {
 
   public POST = async (req: Request<unknown, unknown, SchemaType>, res: Response) => {
     const contacts = [
-      ...req.session.journey.officialVisit.socialVisitors,
       ...req.session.journey.officialVisit.officialVisitors,
+      ...req.session.journey.officialVisit.socialVisitors,
     ].filter(o => o.prisonerContactId)
 
     ;(req.body as ContactRelationship[]).forEach(contact => {
