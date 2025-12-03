@@ -4,8 +4,6 @@ export default configureAllowedScripts({
   allowlist: {
     // Needed by esbuild for watching files during development
     'node_modules/@parcel/watcher@2.5.1': 'ALLOW',
-    // Needed by Cypress for pulling in the Cypress binary
-    'node_modules/cypress@15.6.0': 'ALLOW',
     // Provides native integration, supporting the ability to write dtrace probes for bunyan
     'node_modules/dtrace-provider@0.8.8': 'ALLOW',
     // ESBuild is written in GoLang - this is needed to download prebuilt binaries for the specific platform
