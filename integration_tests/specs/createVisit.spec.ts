@@ -137,27 +137,6 @@ test.describe('Create an official visit', () => {
     await commentsPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/check-your-answers/)
-    const checkYourAnswersPage = await CheckYourAnswersPage.verifyOnPage(page)
-    // Temporary asserts to test user responses are being stored
-    // TODO: Replace this with actual HTML CYA items
-    const json = await checkYourAnswersPage.json.textContent()
-    const actual = JSON.parse(json!)
-    expect(actual.searchTerm).toEqual('John')
-    expect(actual.searchPage).toEqual('1')
-    expect(actual.selectedTimeSlot.timeSlotId).toEqual(1)
-    expect(actual.selectedTimeSlot.visitSlotId).toEqual(1)
-    expect(actual.visitType).toEqual('IN_PERSON')
-    expect(actual.prisoner.prisonerNumber).toEqual('A1111AA')
-    expect(actual.officialVisitors[0].prisonerContactId).toEqual(1)
-    expect(actual.officialVisitors[0].assistedVisit).toBeTruthy()
-    expect(actual.officialVisitors[0].assistanceNotes).toEqual('Assistance required')
-    expect(actual.officialVisitors[0].equipment).toBeTruthy()
-    expect(actual.officialVisitors[0].equipmentNotes).toEqual('Equipment required')
-
-    expect(actual.socialVisitors[0].prisonerContactId).toEqual(2)
-    expect(actual.socialVisitors[0].assistedVisit).toBeTruthy()
-    expect(actual.socialVisitors[0].assistanceNotes).toEqual('Assistance required (social)')
-    expect(actual.socialVisitors[0].equipment).toBeTruthy()
-    expect(actual.socialVisitors[0].equipmentNotes).toEqual('Equipment required (social)')
+    await CheckYourAnswersPage.verifyOnPage(page)
   })
 })
