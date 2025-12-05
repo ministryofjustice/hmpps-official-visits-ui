@@ -10,7 +10,7 @@ export default class CheckYourAnswersPage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.header = page.locator('h1', { hasText: `Check your answers` })
+    this.header = page.locator('h1', { hasText: `Check and confirm the official visit details` })
     this.caption = page.locator('.govuk-hint', { hasText: 'Schedule an official visit' })
     this.json = page.locator('#json')
   }
