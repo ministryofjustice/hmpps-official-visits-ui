@@ -2,8 +2,11 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "partials/continueCancel.njk" import continueCancel %}
 
-{% set pageTitle = "Check your Answers" %}
+{% set pageTitle = "Check and confirm the official visit details" %}
 
 {% block content %}
 
@@ -20,20 +23,171 @@
     </div>
   </div>
 
-  <pre id="json">{{raw}}</pre>
+  <h2 class="govuk-heading-l">Visit details</h2>
+  {% set tags = [] %}
+  {% for pr in prisoner.restrictions %}
+
+    {% set restrictionTagHtml %}
+    {{ govukTag({ text: pr.restrictionTypeDescription, classes: 'govuk-!-margin-1 wide-tag ' + pr.restrictionType | restrictionTagColour }) }}
+    {% endset %}
+
+    {% set tags = (tags.push(restrictionTagHtml), tags) %}
+  {% endfor %}
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukSummaryList({
+        classes: "govuk-!-margin-bottom-7",
+        rows: [
+          {
+            key: { text: "Prisoner" },
+            value: {
+              text: (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase + " (" + prisoner.prisonerNumber + ")"
+            },
+            actions: {
+              items: [
+                {
+                  href: "prisoner-search",
+                  text: "Change",
+                  visuallyHiddenText: "the selected prisoner",
+                  classes: "govuk-link--no-visited-state"
+                }
+              ]
+            }
+          },
+          {
+            key: { text: "Prisoner restrictions" },
+            value: { html: tags | join(' ') }
+          },
+          {
+            key: { text: "Visit type" },
+            value: { text: visit.visitTypeDescription },
+            actions: {
+              items: [
+                {
+                  href: "visit-type",
+                  text: "Change",
+                  visuallyHiddenText: "the type of visit",
+                  classes: "govuk-link--no-visited-state"
+                }
+              ]
+            }
+          },
+          {
+            key: { text: "Date" },
+            value: { text: visit.selectedTimeSlot.visitDate | formatDate("EEEE, d MMMM yyyy") },
+            actions: {
+              items: [
+                {
+                  href: "time-slot",
+                  text: "Change",
+                  visuallyHiddenText: "the date of the visit",
+                  classes: "govuk-link--no-visited-state"
+                }
+              ]
+            }
+          },
+          {
+            key: { text: "Time" },
+            value: {
+              text: (visit.selectedTimeSlot.startTime | timeStringTo12HourPretty) + ' to ' + (visit.selectedTimeSlot.endTime | timeStringTo12HourPretty) + ' (' +  visit.selectedTimeSlot.startTime | durationText(visit.selectedTimeSlot.endTime) + ')'
+            },
+            actions: {
+              items: [
+                {
+                  href: "time-slot",
+                  text: "Change",
+                  visuallyHiddenText: "the time of the visit",
+                  classes: "govuk-link--no-visited-state"
+                }
+              ]
+            }
+          },
+          {
+            key: { text: "Location" },
+            value: { text: visit.location },
+            actions: {
+              items: [
+                {
+                  href: "time-slot",
+                  text: "Change",
+                  visuallyHiddenText: "the location of the visit",
+                  classes: "govuk-link--no-visited-state"
+                }
+              ]
+            }
+          },
+          {
+            key: { text: "Notes" },
+            value: { text: visit.prisonerNotes or 'None' },
+            actions: {
+              items: [
+                {
+                  href: "comments",
+                  text: "Change",
+                  visuallyHiddenText: "extra information about the visit",
+                  classes: "govuk-link--no-visited-state"
+                }
+              ]
+            }
+        }
+      ]
+    }) }}
+    </div>
+  </div>
+
+  <h2 class="govuk-heading-l">Visitor details</h2>
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    {% for contact in contacts %}
+      <div class="govuk-grid-column-two-thirds">
+        <div class="hmpps-summary-card">
+          <div class="hmpps-summary-card__header">
+            <div class="govuk-grid-row govuk-body">
+              <div class="govuk-grid-column-two-thirds">
+                <h4>{{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }} ({{ contact.relationshipToPrisonerDescription }})</h4>
+              </div>
+              <div class="govuk-summary-list govuk-summary-list__actions govuk-!-font-weight-bold">
+                <a class="govuk-link govuk-link--no-visited-state" href="">Change<span class="govuk-visually-hidden"></span></a>
+              </div>
+            </div>
+          </div>
+          <div class="hmpps-summary-card__body">
+            <div class="govuk-grid-row card-body govuk-!-padding-left-4">
+              {{ govukSummaryList({
+                  classes: "govuk-!-margin-bottom-7",
+                  rows: [
+                    {
+                      key: { text: "Contact type" },
+                      value: { text: contact.relationshipTypeDescription }
+                    }, 
+                    {
+                      key: { text: "Does this visitor need assistance?" },
+                      value: { text: "Yes" if contact.assistedVisit else "No" }
+                    },
+                    {
+                      key: { text: "Assistance details" },
+                      value: { text: contact.assistanceNotes or "None" }
+                    } if contact.assistedVisit,
+                    {
+                      key: { text: "Equipment" },
+                      value: { text: contact.equipmentNotes or "None" }
+                    } if visit.visitType == 'IN_PERSON'
+                  ]
+                })}}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-from-desktop">
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
-        <div class="govuk-button-group">
-          {{ govukButton({
-                text: "Confirm",
-                preventDoubleClick: true
-            }) }}
-          <a class="govuk-link govuk-link--no-visited-state" href="/">Cancel</a>
-        </div>
+        {{continueCancel({})}}
       </form>
     </div>
   </div>

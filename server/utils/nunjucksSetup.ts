@@ -11,10 +11,12 @@ import {
   formatAddressLines,
   formatDate,
   formatOverEighteen,
+  getTimeDiff,
   initialiseName,
   isDateAndInThePast,
   parseDate,
   timeStringTo12HourPretty,
+  toDuration,
 } from './utils'
 import restrictionTagColour from './restrictionTagColour'
 import { FieldValidationError } from '../middleware/setUpFlash'
@@ -87,4 +89,7 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('includes', (items: any[], selected: string) => items.includes(selected))
   njkEnv.addFilter('possessiveComma', (name: string) => (name.endsWith('s') ? `${name}’` : `${name}’s`))
   njkEnv.addFilter('timeStringTo12HourPretty', timeStringTo12HourPretty)
+  njkEnv.addFilter('durationText', (startTime: string, endTime: string) =>
+    toDuration(getTimeDiff(startTime, endTime) / 60000),
+  )
 }

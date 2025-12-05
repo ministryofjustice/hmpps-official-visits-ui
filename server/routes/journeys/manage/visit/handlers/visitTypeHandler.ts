@@ -26,7 +26,10 @@ export default class VisitTypeHandler implements PageHandler {
   }
 
   public POST = async (req: Request, res: Response) => {
-    req.session.journey.officialVisit.visitType = req.body.visitType
+    const visitTypes = await this.officialVisitsService.getReferenceData(res, 'VIS_TYPE')
+    const foundType = visitTypes.find(t => t.code === req.body.visitType)
+    req.session.journey.officialVisit.visitType = foundType.code
+    req.session.journey.officialVisit.visitTypeDescription = foundType.description
     return res.redirect(`time-slot`)
   }
 }

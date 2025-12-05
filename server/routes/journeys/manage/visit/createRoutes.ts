@@ -54,7 +54,7 @@ export default function CreateRoutes({
   route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
   route('/equipment', new EquipmentHandler(officialVisitsService))
   route('/comments', new CommentsHandler(officialVisitsService))
-  route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService, prisonerService))
+  route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService))
 
   return router
 }

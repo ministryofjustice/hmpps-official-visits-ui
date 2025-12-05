@@ -26,6 +26,7 @@ export type OfficialVisitJourney = {
   socialVisitors?: JourneyVisitor[]
   availableSlots?: components['schemas']['AvailableSlot'][]
   selectedTimeSlot?: components['schemas']['AvailableSlot']
+  refVisitTypes?: components['schemas']['ReferenceDataItem'][]
 }
 /*
  Define the additional data over and above the ApprovedContact structure for each visitor.

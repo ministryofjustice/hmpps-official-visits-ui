@@ -197,3 +197,13 @@ export const formatAddressLines = (
   const addressArray = [flat, property, street, area, postcode].filter(s => s)
   return addressArray.length ? addressArray.join('\n') : null
 }
+
+export const getTimeDiff = (start: string, end: string): number => {
+  const [sh, sm, ss] = start.split(':').map(Number)
+  const [eh, em, es] = end.split(':').map(Number)
+
+  const d1 = new Date(0, 0, 1, sh, sm, ss)
+  const d2 = new Date(0, 0, 1, eh, em, es)
+
+  return d2.getTime() - d1.getTime()
+}

@@ -98,6 +98,7 @@ describe('Visit type handler', () => {
         .then(() =>
           expectJourneySession(app, 'officialVisit', {
             visitType: 'PHONE',
+            visitTypeDescription: 'Phone',
           }),
         )
     })
