@@ -24,16 +24,6 @@
   </div>
 
   <h2 class="govuk-heading-l">Visit details</h2>
-  {% set tags = [] %}
-  {% for pr in prisoner.restrictions %}
-
-    {% set restrictionTagHtml %}
-    {{ govukTag({ text: pr.restrictionTypeDescription, classes: 'govuk-!-margin-1 wide-tag ' + pr.restrictionType | restrictionTagColour }) }}
-    {% endset %}
-
-    {% set tags = (tags.push(restrictionTagHtml), tags) %}
-  {% endfor %}
-
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-two-thirds">
       {{ govukSummaryList({
@@ -54,10 +44,6 @@
                 }
               ]
             }
-          },
-          {
-            key: { text: "Prisoner restrictions" },
-            value: { html: tags | join(' ') }
           },
           {
             key: { text: "Visit type" },
