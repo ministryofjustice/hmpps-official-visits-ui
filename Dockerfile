@@ -37,7 +37,6 @@ ARG GIT_REF
 ARG GIT_BRANCH
 
 COPY package*.json ./
-RUN CYPRESS_INSTALL_BINARY=0 npm run setup --no-audit
 ENV NODE_ENV='production'
 
 COPY . .
