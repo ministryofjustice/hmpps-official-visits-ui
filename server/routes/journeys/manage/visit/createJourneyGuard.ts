@@ -43,6 +43,7 @@ export function saveTimeSlot(journey: Journey, timeSlot: AvailableSlot) {
 export function saveVisitors(journey: Journey, relationshipType: 'O' | 'S', visitors: JourneyVisitor[]) {
   if (relationshipType === 'O') {
     journey.officialVisit.officialVisitors = visitors
+    delete journey.officialVisit.socialVisitorsPageCompleted
   } else {
     journey.officialVisit.socialVisitors = visitors
   }

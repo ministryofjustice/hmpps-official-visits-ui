@@ -17,14 +17,8 @@ export default function journeyStateGuard(rules: JourneyStateGuard) {
       return next()
     }
 
-    const journeyData = req.session.journey
     const requestedPage = req.originalUrl.split('/').pop()
     const flow = req.originalUrl.substring(0, uuidMatch.index - 1)
-
-    // if (!journeyData.usesStateGuard) {
-    //   /// Guard disabled (possibly for testing)
-    //   return next()
-    // }
 
     if (!requestedPage || !flow) {
       return next()
@@ -34,15 +28,6 @@ export default function journeyStateGuard(rules: JourneyStateGuard) {
     let latestValidPage = requestedPage
 
     while (latestValidPage !== null) {
-      if (latestValidPage === 'confirmation') {
-        if (journeyData?.journeyCompleted) {
-          return next()
-        }
-
-        latestValidPage = 'check-answers'
-        redirectTo = '/check-answers'
-      }
-
       const guardFn = rules[latestValidPage] || rules['*']
 
       if (guardFn === undefined) {
