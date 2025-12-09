@@ -3,7 +3,7 @@ import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { schema, SchemaType } from './assistanceRequiredSchema'
-import { ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
+import { ApprovedContact, ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
 
 export default class AssistanceRequiredHandler implements PageHandler {
   public PAGE_NAME = Page.ASSISTANCE_REQUIRED_PAGE
@@ -26,18 +26,26 @@ export default class AssistanceRequiredHandler implements PageHandler {
   }
 
   public POST = async (req: Request<unknown, unknown, SchemaType>, res: Response) => {
-    const contacts = [
-      ...req.session.journey.officialVisit.officialVisitors,
-      ...req.session.journey.officialVisit.socialVisitors,
-    ].filter(o => o.prisonerContactId)
+    const { officialVisit } = req.session.journey
+    officialVisit.officialVisitors = getSelected(officialVisit.officialVisitors, req.body as ContactRelationship[])
+    officialVisit.socialVisitors = getSelected(officialVisit.socialVisitors, req.body as ContactRelationship[])
 
-    ;(req.body as ContactRelationship[]).forEach(contact => {
-      const foundContact = contacts.find(o => o.prisonerContactId === contact.prisonerContactId)
-      if (foundContact) {
-        foundContact.assistanceNotes = contact.assistanceNotes
-        foundContact.assistedVisit = contact.assistedVisit
-      }
-    })
-    return res.redirect(req.session.journey.officialVisit.visitType === 'IN_PERSON' ? `equipment` : `comments`)
+    officialVisit.assistancePageCompleted = true
+    return res.redirect(officialVisit.visitType === 'IN_PERSON' ? `equipment` : `comments`)
   }
+}
+
+const getSelected = (contacts: ApprovedContact[], body: ContactRelationship[]) => {
+  return contacts
+    .map(contact => {
+      const foundContact = body.find(o => o.prisonerContactId === contact.prisonerContactId)
+      return foundContact
+        ? {
+            ...contact,
+            assistanceNotes: foundContact.assistanceNotes,
+            assistedVisit: foundContact.assistedVisit,
+          }
+        : undefined
+    })
+    .filter(o => o)
 }

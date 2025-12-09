@@ -5,6 +5,7 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import { refDataRadiosMapper } from '../../../../../utils/utils'
 import { schemaFactory } from './visitTypeSchema'
 import { SchemaFactory } from '../../../../../middleware/validationMiddleware'
+import { saveVisitType } from '../createJourneyGuard'
 
 export default class VisitTypeHandler implements PageHandler {
   public PAGE_NAME = Page.VISIT_TYPE_PAGE
@@ -27,9 +28,10 @@ export default class VisitTypeHandler implements PageHandler {
 
   public POST = async (req: Request, res: Response) => {
     const visitTypes = await this.officialVisitsService.getReferenceData(res, 'VIS_TYPE')
-    const foundType = visitTypes.find(t => t.code === req.body.visitType)
-    req.session.journey.officialVisit.visitType = foundType.code
-    req.session.journey.officialVisit.visitTypeDescription = foundType.description
+    saveVisitType(
+      req.session.journey,
+      visitTypes.find(t => t.code === req.body.visitType),
+    )
     return res.redirect(`time-slot`)
   }
 }

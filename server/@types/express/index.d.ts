@@ -10,6 +10,7 @@ export interface Journey {
   officialVisit?: OfficialVisitJourney
   journeyCompleted?: boolean
   reachedCheckAnswers?: boolean
+  usesStateGuard?: boolean
 }
 
 export declare module 'express-session' {

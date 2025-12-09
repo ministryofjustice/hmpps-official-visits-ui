@@ -16,6 +16,7 @@ import {
   timeStringTo12HourPretty,
   isDateAndInThePast,
   formatAddressLines,
+  getTimeDiff,
 } from './utils'
 
 describe('convert to title case', () => {
@@ -299,4 +300,17 @@ describe('formatAddressLines', () => {
       expect(formatAddressLines(flat, property, street, area, postcode, noFixedAddress)).toBe(expected)
     },
   )
+})
+
+describe('getTimeDiff', () => {
+  it.each([
+    [0, '13:00:00', '13:00:00'],
+    [0, '13:00', '13:00'],
+    [1000, '13:00', '13:00:01'],
+    [60000, '13:00', '13:01:00'],
+    [-60000, '13:01', '13:00:00'],
+    [NaN, '13:00', ''],
+  ])('returns %s for %s and %s', (expected, start, end) => {
+    expect(getTimeDiff(start, end)).toBe(expected)
+  })
 })

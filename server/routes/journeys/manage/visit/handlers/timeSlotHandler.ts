@@ -5,9 +5,10 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import ActivitiesService from '../../../../../services/activitiesService'
 import { getParsedDateFromQueryString, getWeekOfDatesStartingMonday } from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
+import { saveTimeSlot } from '../createJourneyGuard'
 
 export default class TimeSlotHandler implements PageHandler {
-  public PAGE_NAME = Page.CHOOSE_TIME_SLOT_PAGE
+  public PAGE_NAME = Page.TIME_SLOT_PAGE
 
   constructor(
     private readonly officialVisitsService: OfficialVisitsService,
@@ -60,6 +61,7 @@ export default class TimeSlotHandler implements PageHandler {
 
   public POST = async (req: Request, res: Response) => {
     req.session.journey.officialVisit.selectedTimeSlot = req.body
+    saveTimeSlot(req.session.journey, req.body)
     return res.redirect(`select-official-visitors`)
   }
 }
