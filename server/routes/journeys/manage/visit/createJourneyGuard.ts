@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { Journey } from '../../../../@types/express'
 import { ApprovedContact, AvailableSlot, ReferenceDataItem } from '../../../../@types/officialVisitsApi/types'
 import { Page } from '../../../../services/auditService'
