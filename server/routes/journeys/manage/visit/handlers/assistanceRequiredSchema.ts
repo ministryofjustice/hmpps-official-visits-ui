@@ -53,4 +53,4 @@ export const schema = async (req: Request) => {
     })
 }
 
-export type SchemaType = z.infer<typeof schema>
+export type SchemaType = z.infer<Awaited<ReturnType<typeof schema>>>

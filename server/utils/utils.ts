@@ -202,8 +202,8 @@ export const getTimeDiff = (start: string, end: string): number => {
   const [sh, sm, ss] = start.split(':').map(Number)
   const [eh, em, es] = end.split(':').map(Number)
 
-  const d1 = new Date(0, 0, 1, sh, sm, ss)
-  const d2 = new Date(0, 0, 1, eh, em, es)
+  const d1 = new Date(0, 0, 1, sh, sm, ss || 0)
+  const d2 = new Date(0, 0, 1, eh, em, es || 0)
 
   return d2.getTime() - d1.getTime()
 }

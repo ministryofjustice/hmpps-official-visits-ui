@@ -82,30 +82,48 @@ test.describe('Create an official visit', () => {
     await prisonerSearchPage.searchButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/results/)
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/results/)
+
     const prisonerSearchResultsPage = await PrisonerSearchResultsPage.verifyOnPage(page)
     await prisonerSearchResultsPage.selectThisPrisoner()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/visit-type/)
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/visit-type/)
+
     const visitTypePage = await VisitTypePage.verifyOnPage(page)
     await visitTypePage.selectRadioButton('In person')
     await visitTypePage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/time-slot/)
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/time-slot/)
+
     const timeSlotPage = await TimeSlotPage.verifyOnPage(page)
     await timeSlotPage.selectRadioButton('8am to 5pm Groups 1, people 1, video 1')
     await timeSlotPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
+
     const selectOfficialContactPage = await SelectOfficialContactPage.verifyOnPage(page)
     await selectOfficialContactPage.checkContact(0)
     await selectOfficialContactPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-social-visitors/)
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/select-social-visitors/)
+
     const selectSocialContactPage = await SelectSocialContactPage.verifyOnPage(page)
     await selectSocialContactPage.checkContact(1)
     await selectSocialContactPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/assistance-required/)
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/assistance-required/)
+
     const assistanceRequiredPage = await AssistanceRequiredPage.verifyOnPage(page)
     await assistanceRequiredPage.selectCheckbox(
       `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName} (${mockOfficialVisitors[0].relationshipToPrisonerDescription})`,
@@ -119,6 +137,9 @@ test.describe('Create an official visit', () => {
     await assistanceRequiredPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/equipment/)
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/equipment/)
+
     const equipmentPage = await EquipmentPage.verifyOnPage(page)
     await equipmentPage.selectCheckbox(
       `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName} (${mockOfficialVisitors[0].relationshipToPrisonerDescription})`,
@@ -133,6 +154,9 @@ test.describe('Create an official visit', () => {
     await equipmentPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/comments/)
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/comments/)
+
     const commentsPage = await CommentsPage.verifyOnPage(page)
     await commentsPage.continueButton.click()
 

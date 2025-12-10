@@ -44,7 +44,6 @@ function appSetup(
   middlewares: RequestHandler[],
 ): Express {
   const app = express()
-
   app.set('view engine', 'njk')
 
   flashProvider.mockReturnValue([])

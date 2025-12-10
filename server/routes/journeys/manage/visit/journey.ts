@@ -26,6 +26,11 @@ export type OfficialVisitJourney = {
   socialVisitors?: JourneyVisitor[]
   availableSlots?: components['schemas']['AvailableSlot'][]
   selectedTimeSlot?: components['schemas']['AvailableSlot']
+  // Pages are optional but we need to ensure they are shown at least once
+  assistancePageCompleted?: boolean
+  equipmentPageCompleted?: boolean
+  socialVisitorsPageCompleted?: boolean
+  commentsPageCompleted?: boolean
 }
 /*
  Define the additional data over and above the ApprovedContact structure for each visitor.

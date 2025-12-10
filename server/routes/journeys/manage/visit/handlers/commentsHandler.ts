@@ -21,6 +21,7 @@ export default class CommentsHandler implements PageHandler {
 
   public POST = async (req: Request, res: Response) => {
     req.session.journey.officialVisit.prisonerNotes = req.body.comments
+    req.session.journey.officialVisit.commentsPageCompleted = true
     return res.redirect(`check-your-answers`)
   }
 }

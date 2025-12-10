@@ -16,6 +16,7 @@ import SelectSocialVisitorsHandler from './handlers/selectSocialVisitorsHandler'
 import AssistanceRequiredHandler from './handlers/assistanceRequiredHandler'
 import EquipmentHandler from './handlers/equipmentHandler'
 import CommentsHandler from './handlers/commentsHandler'
+import journeyStateGuard from '../../../../middleware/journey/journeyStateGuard'
 
 export default function CreateRoutes({
   auditService,
@@ -31,7 +32,49 @@ export default function CreateRoutes({
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
-  // Prisoner search steps
+  if (process.env.NODE_ENV !== 'test') {
+    router.use(
+      journeyStateGuard({
+        search: _req => {
+          return undefined
+        },
+        results: req => {
+          return req.session.journey.officialVisit?.searchTerm?.length > 1 ? undefined : '/search'
+        },
+        'visit-type': req => {
+          return req.session.journey.officialVisit?.prisoner ? undefined : '/results'
+        },
+        'time-slot': req => {
+          return req.session.journey.officialVisit?.visitType ? undefined : '/visit-type'
+        },
+        'select-official-visitors': req => {
+          return req.session.journey.officialVisit?.selectedTimeSlot ? undefined : '/time-slot'
+        },
+        'select-social-visitors': req => {
+          return req.session.journey.officialVisit?.officialVisitors?.length ? undefined : '/select-official-visitors'
+        },
+        'assistance-required': req => {
+          return req.session.journey.officialVisit?.socialVisitorsPageCompleted ? undefined : '/select-social-visitors'
+        },
+        equipment: req => {
+          return req.session.journey.officialVisit?.assistancePageCompleted ? undefined : '/assistance-required'
+        },
+        comments: req => {
+          if (req.session.journey.officialVisit?.visitType === 'IN_PERSON') {
+            return req.session.journey.officialVisit?.equipmentPageCompleted ? undefined : '/equipment'
+          }
+          return req.session.journey.officialVisit?.assistancePageCompleted ? undefined : '/assistance-required'
+        },
+        'check-your-answers': req => {
+          return req.session.journey.officialVisit?.commentsPageCompleted ? undefined : '/comments'
+        },
+        confirmation: req => {
+          return req.session.journey.journeyCompleted ? undefined : '/check-answers'
+        },
+      }),
+    )
+  }
+
   route('/search', new PrisonerSearchHandler(prisonerService))
   route('/results', new PrisonerSearchResultsHandler(prisonerService))
   route('/prisoner-select', new PrisonerSelectHandler(prisonerService, personalRelationshipsService))

@@ -104,7 +104,7 @@ describe('Time slot handler', () => {
 
           // TODO: Check the available slots?
 
-          expect(auditService.logPageView).toHaveBeenCalledWith(Page.CHOOSE_TIME_SLOT_PAGE, {
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.TIME_SLOT_PAGE, {
             who: user.username,
             correlationId: expect.any(String),
           })
