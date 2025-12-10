@@ -29,7 +29,7 @@ export default function redirectCheckAnswersMiddleware(excludePaths: RegExp[] = 
       if (
         options &&
         'backUrl' in options &&
-        options?.backUrl &&
+        options.backUrl &&
         req.session.journeyData?.[journeyId]?.reachedCheckAnswers
       ) {
         resRender.call(res, view, { ...options, backUrl: checkAnswersUrl } as never)
