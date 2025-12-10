@@ -4,7 +4,7 @@ import { PageHandler } from '../../../../interfaces/pageHandler'
 import { schema, SchemaType } from './selectOfficialVisitorsSchema'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
-import { recallContacts, saveVisitors } from '../createJourneyGuard'
+import { recallContacts, saveVisitors } from '../createJourneyState'
 
 export default class SelectOfficialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_OFFICIAL_VISITORS_PAGE

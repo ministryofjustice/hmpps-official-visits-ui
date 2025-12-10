@@ -3,7 +3,7 @@ import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
-import { recallContacts, saveVisitors } from '../createJourneyGuard'
+import { recallContacts, saveVisitors } from '../createJourneyState'
 
 export default class SelectSocialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_SOCIAL_VISITORS_PAGE

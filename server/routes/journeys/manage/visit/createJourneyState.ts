@@ -4,6 +4,11 @@ import { ApprovedContact, AvailableSlot, ReferenceDataItem } from '../../../../@
 import { Page } from '../../../../services/auditService'
 import { JourneyPrisoner, JourneyVisitor, OfficialVisitJourney } from './journey'
 
+/**
+ * Array of pages and the fields they set in the journey.
+ * Used for deleting keys on the journey object when a page needs to be reset.
+ * Page ordering is significant
+ */
 const pageData: { page: Page; keys: (keyof OfficialVisitJourney)[] }[] = [
   { page: Page.PRISONER_SEARCH_PAGE, keys: ['searchTerm'] },
   { page: Page.PRISONER_SELECT_PAGE, keys: ['prisoner', 'searchPage'] },
@@ -52,6 +57,9 @@ export function saveVisitors(journey: Journey, relationshipType: 'O' | 'S', visi
   resetPages(journey, [Page.ASSISTANCE_REQUIRED_PAGE, Page.EQUIPMENT_PAGE])
 }
 
+/**
+ * Restore any saved equipment and assistance notes for a contact from session data into a fresh contact object
+ */
 export function recallContacts(journey: Journey, relationshipType: 'O' | 'S', contacts: ApprovedContact[]) {
   const existing =
     relationshipType === 'O' ? journey.officialVisit.officialVisitors : journey.officialVisit.socialVisitors
@@ -67,6 +75,9 @@ export function recallContacts(journey: Journey, relationshipType: 'O' | 'S', co
   })
 }
 
+/**
+ * Delete keys set by all pages after the given page
+ */
 function resetLaterPages(journey: Journey, page: Page) {
   const pageIndex = pageData.findIndex(p => p.page === page) + 1
   pageData.slice(pageIndex).forEach(p => {
@@ -77,6 +88,9 @@ function resetLaterPages(journey: Journey, page: Page) {
   journey.reachedCheckAnswers = false
 }
 
+/**
+ * Delete keys set by the given pages
+ */
 function resetPages(journey: Journey, pages: Page[]) {
   pages.forEach(page => {
     const foundPage = pageData.find(p => p.page === page)

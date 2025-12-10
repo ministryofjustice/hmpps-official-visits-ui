@@ -1,6 +1,6 @@
 import { Journey } from '../../../../@types/express'
 import { ApprovedContact } from '../../../../@types/officialVisitsApi/types'
-import { recallContacts, savePrisonerSelection, saveVisitors, saveVisitType } from './createJourneyGuard'
+import { recallContacts, savePrisonerSelection, saveVisitors, saveVisitType } from './createJourneyState'
 
 describe('Create Journey Guard', () => {
   const mockJourney = () => {

@@ -5,7 +5,7 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import ActivitiesService from '../../../../../services/activitiesService'
 import { getParsedDateFromQueryString, getWeekOfDatesStartingMonday } from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
-import { saveTimeSlot } from '../createJourneyGuard'
+import { saveTimeSlot } from '../createJourneyState'
 
 export default class TimeSlotHandler implements PageHandler {
   public PAGE_NAME = Page.TIME_SLOT_PAGE

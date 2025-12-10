@@ -5,7 +5,7 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import { refDataRadiosMapper } from '../../../../../utils/utils'
 import { schemaFactory } from './visitTypeSchema'
 import { SchemaFactory } from '../../../../../middleware/validationMiddleware'
-import { saveVisitType } from '../createJourneyGuard'
+import { saveVisitType } from '../createJourneyState'
 
 export default class VisitTypeHandler implements PageHandler {
   public PAGE_NAME = Page.VISIT_TYPE_PAGE

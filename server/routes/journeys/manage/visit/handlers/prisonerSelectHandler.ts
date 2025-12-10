@@ -5,7 +5,7 @@ import PrisonerService from '../../../../../services/prisonerService'
 import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import { schema } from './prisonerSearchSchema'
 import logger from '../../../../../../logger'
-import { savePrisonerSelection } from '../createJourneyGuard'
+import { savePrisonerSelection } from '../createJourneyState'
 
 export default class PrisonerSelectHandler implements PageHandler {
   public PAGE_NAME = Page.PRISONER_SELECT_PAGE
