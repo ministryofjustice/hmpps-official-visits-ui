@@ -21,11 +21,11 @@ export default class PrisonerSelectHandler implements PageHandler {
     const prisonerNumber = req.query.prisonerNumber as string
     const searchPage = req.query.page as string
     const { user } = res.locals
-    const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(prisonerNumber, user)
 
-    const restrictions = (
-      await this.personalRelationshipsService.getPrisonerRestrictions(prisonerNumber, 0, 10, user, true, false)
-    )?.content
+    const [restrictions, prisoner] = await Promise.all([
+      this.personalRelationshipsService.getPrisonerRestrictions(prisonerNumber, 0, 10, user, true, false),
+      this.prisonerService.getPrisonerByPrisonerNumber(prisonerNumber, user),
+    ])
 
     req.session.journey.officialVisit.searchPage = searchPage
     savePrisonerSelection(req.session.journey, {
@@ -38,9 +38,9 @@ export default class PrisonerSelectHandler implements PageHandler {
       croNumber: prisoner.croNumber,
       prisonCode: prisoner.prisonId,
       prisonName: prisoner.prisonName,
-      restrictions,
+      restrictions: restrictions?.content || [],
       alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
-      restrictionsCount: restrictions?.length ?? 0,
+      restrictionsCount: restrictions?.content?.length ?? 0,
     })
 
     logger.info(`Session journey officialVisit : ${JSON.stringify(req.session.journey.officialVisit, null, 2)}`)

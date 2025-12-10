@@ -13,7 +13,7 @@ export default function journeyStateGuard(rules: JourneyStateGuard) {
     const uuid = uuidMatch?.[0]
 
     if (!uuid || !validate(uuid)) {
-      // This page does not concern us
+      // Requested page is not part of a journey
       return next()
     }
 
@@ -21,6 +21,7 @@ export default function journeyStateGuard(rules: JourneyStateGuard) {
     const flow = req.originalUrl.substring(0, uuidMatch.index - 1)
 
     if (!requestedPage || !flow) {
+      // URL does not follow expected pattern of flow/uuid/page
       return next()
     }
 
