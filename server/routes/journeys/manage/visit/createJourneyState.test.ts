@@ -1,5 +1,5 @@
 import { Journey } from '../../../../@types/express'
-import { ApprovedContact } from '../../../../@types/officialVisitsApi/types'
+import { ApprovedContact, VisitType } from '../../../../@types/officialVisitsApi/types'
 import { recallContacts, savePrisonerSelection, saveVisitors, saveVisitType } from './createJourneyState'
 
 describe('Create Journey Guard', () => {
@@ -8,7 +8,7 @@ describe('Create Journey Guard', () => {
       officialVisit: {
         searchPage: '1',
         searchTerm: 'data',
-        visitType: 'SOCIAL',
+        visitType: 'SOCIAL' as VisitType,
         visitTypeDescription: 'Social',
         selectedTimeSlot: {
           timeSlotId: 1,

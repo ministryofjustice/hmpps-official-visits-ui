@@ -33,6 +33,7 @@ export default class TimeSlotHandler implements PageHandler {
       selectedDate,
     )
 
+    // Stored here and used in the schema check on the POST
     req.session.journey.officialVisit.availableSlots = availableSlots
 
     // Get the prisoner's schedule on the date selected

@@ -1,6 +1,11 @@
 /* eslint-disable no-param-reassign */
 import { Journey } from '../../../../@types/express'
-import { ApprovedContact, AvailableSlot, ReferenceDataItem } from '../../../../@types/officialVisitsApi/types'
+import {
+  ApprovedContact,
+  AvailableSlot,
+  ReferenceDataItem,
+  VisitType,
+} from '../../../../@types/officialVisitsApi/types'
 import { Page } from '../../../../services/auditService'
 import { JourneyPrisoner, JourneyVisitor, OfficialVisitJourney } from './journey'
 
@@ -33,7 +38,7 @@ export function savePrisonerSelection(journey: Journey, prisoner: JourneyPrisone
 }
 
 export function saveVisitType(journey: Journey, visitType: ReferenceDataItem) {
-  journey.officialVisit.visitType = visitType.code
+  journey.officialVisit.visitType = visitType.code as VisitType
   journey.officialVisit.visitTypeDescription = visitType.description
 
   resetLaterPages(journey, Page.VISIT_TYPE_PAGE)
@@ -41,6 +46,7 @@ export function saveVisitType(journey: Journey, visitType: ReferenceDataItem) {
 
 export function saveTimeSlot(journey: Journey, timeSlot: AvailableSlot) {
   journey.officialVisit.selectedTimeSlot = timeSlot
+  journey.officialVisit.locationDescription = timeSlot.locationDescription
 
   resetLaterPages(journey, Page.TIME_SLOT_PAGE)
 }
