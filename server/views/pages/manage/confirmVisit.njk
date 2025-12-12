@@ -21,10 +21,11 @@
         {% endfor %}
       </ul>
 
-      <p>The visit will take place on {{ visit.visitDate | formatDate("EEEE, d MMMM yyyy") }} from {{ (visit.startTime | timeStringTo12HourPretty) + ' to ' + (visit.endTime | timeStringTo12HourPretty) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' }} in {{ visit.locationDescription }}.</p>
+      <p id="visit-details">The visit will take place on {{ visit.visitDate | formatDate("EEEE, d MMMM yyyy") }} from {{ (visit.startTime | timeStringTo12HourPretty) + ' to ' + (visit.endTime | timeStringTo12HourPretty) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' }} in {{ visit.locationDescription }}.</p>
 
       <h2 class='govuk-heading-m'>What you can do next</h2>
 
+      {# TODO: Add links to the correct pages #}
       <ul class="govuk-list">
         <li class="govuk-!-margin-bottom-2">
           <a href="" class="govuk-link govuk-link--no-visited-state ">Download confirmation</a>
