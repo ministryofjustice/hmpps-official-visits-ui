@@ -163,5 +163,7 @@ test.describe('Create an official visit', () => {
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/check-your-answers/)
     await CheckYourAnswersPage.verifyOnPage(page)
+
+    // TODO: POST and check confirmation page
   })
 })

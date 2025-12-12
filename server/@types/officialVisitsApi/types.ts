@@ -1,24 +1,6 @@
 import { components } from '.'
 
-// For testing API client only
-export type OfficialVisit = {
-  officialVisitId: number
-  prisonCode: string
-  prisonName: string
-  prisonerNumber: string
-  visitStatusCode: string
-  visitStatusDescription: string
-  visitType: string
-  visitTypeDescription: string
-  visitDate: string
-  startTime: string
-  endTime: string
-  visitSlotId: number
-  timeSlotId: number
-  dpsLocationId: string
-  staffNotes: string
-  prisonerNotes: string
-}
+export type OfficialVisit = components['schemas']['OfficialVisitDetails']
 
 export type ReferenceDataItem = Partial<components['schemas']['ReferenceDataItem']>
 

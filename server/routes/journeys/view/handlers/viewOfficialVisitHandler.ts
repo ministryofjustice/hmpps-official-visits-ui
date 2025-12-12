@@ -16,7 +16,8 @@ export default class ViewOfficialVisitHandler implements PageHandler {
     const { officialVisitId } = req.params
     const { user } = res.locals
 
-    const visit = await this.officialVisitsService.getOfficialVisitById(+officialVisitId, user)
+    const prisonCode = req.session.activeCaseLoadId
+    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, +officialVisitId, user)
 
     // TODO: Get the prisoner number from the visit & enrich info
     /*

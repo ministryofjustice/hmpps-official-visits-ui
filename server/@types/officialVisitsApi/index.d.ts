@@ -4,1703 +4,1713 @@
  */
 
 export interface paths {
-    '/queue-admin/retry-dlq/{dlqName}': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        get?: never
-        /**
-         * @description Requires one of the following roles:
-         *     * OFFICIAL_VISITS_ADMIN
-         */
-        put: operations['retryDlq']
-        post?: never
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+  '/queue-admin/retry-dlq/{dlqName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/queue-admin/retry-all-dlqs': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        get?: never
-        put: operations['retryAllDlqs']
-        post?: never
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    get?: never
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    put: operations['retryDlq']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/queue-admin/retry-all-dlqs': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/queue-admin/purge-queue/{queueName}': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        get?: never
-        /**
-         * @description Requires one of the following roles:
-         *     * OFFICIAL_VISITS_ADMIN
-         */
-        put: operations['purgeQueue']
-        post?: never
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    get?: never
+    put: operations['retryAllDlqs']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/queue-admin/purge-queue/{queueName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/official-visit': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        get?: never
-        put?: never
-        /**
-         * Endpoint to support the creation of official visits.
-         * @description Requires one of the following roles:
-         *     * ROLE_OFFICIAL_VISITS_ADMIN
-         *     * ROLE_OFFICIAL_VISITS__RW
-         */
-        post: operations['createOfficialVisit']
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    get?: never
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    put: operations['purgeQueue']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/official-visit/prison/{prisonCode}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/migrate/visit': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        get?: never
-        put?: never
-        /**
-         * Migrate a single official visit and its visitors
-         * @description Migrate a visit and all visitors
-         *
-         *     Requires one of the following roles:
-         *     * OFFICIAL_VISITS_MIGRATION
-         *     * OFFICIAL_VISITS_ADMIN
-         */
-        post: operations['migrateVisit']
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    get?: never
+    put?: never
+    /**
+     * Endpoint to support the creation of official visits.
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__RW
+     */
+    post: operations['createOfficialVisit']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/migrate/visit': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/migrate/visit-configuration': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        get?: never
-        put?: never
-        /**
-         * Migrate official visits configuration
-         * @description Migrate a visit time slot and its associated visit slots, locations and capacity limits
-         *
-         *     Requires one of the following roles:
-         *     * OFFICIAL_VISITS_MIGRATION
-         *     * OFFICIAL_VISITS_ADMIN
-         */
-        post: operations['migrateVisitConfiguration']
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    get?: never
+    put?: never
+    /**
+     * Migrate a single official visit and its visitors
+     * @description Migrate a visit and all visitors
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    post: operations['migrateVisit']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/migrate/visit-configuration': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/visits-booked/prison/{prisonCode}': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        /**
-         * Endpoint to return the official visits booked for a prison - TRIAL ONLY
-         * @description Requires one of the following roles:
-         *     * ROLE_OFFICIAL_VISITS_ADMIN
-         *     * ROLE_OFFICIAL_VISITS__R
-         *     * ROLE_OFFICIAL_VISITS__RW
-         */
-        get: operations['getVisitsBookedForPrison']
-        put?: never
-        post?: never
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    get?: never
+    put?: never
+    /**
+     * Migrate official visits configuration
+     * @description Migrate a visit time slot and its associated visit slots, locations and capacity limits
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    post: operations['migrateVisitConfiguration']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/visits-booked/prison/{prisonCode}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/reference-data/group/{groupCode}': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        /**
-         * Endpoint to return reference data for a provided group key, sorted by display sequence and description
-         * @description Requires one of the following roles:
-         *     * ROLE_OFFICIAL_VISITS_ADMIN
-         *     * ROLE_OFFICIAL_VISITS__R
-         *     * ROLE_OFFICIAL_VISITS__RW
-         */
-        get: operations['getReferenceDataByGroup']
-        put?: never
-        post?: never
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    /**
+     * Endpoint to return the official visits booked for a prison - TRIAL ONLY
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS__RW
+     */
+    get: operations['getVisitsBookedForPrison']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/reference-data/group/{groupCode}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/queue-admin/get-dlq-messages/{dlqName}': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        /**
-         * @description Requires one of the following roles:
-         *     * OFFICIAL_VISITS_ADMIN
-         */
-        get: operations['getDlqMessages']
-        put?: never
-        post?: never
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    /**
+     * Endpoint to return reference data for a provided group key, sorted by display sequence and description
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS__RW
+     */
+    get: operations['getReferenceDataByGroup']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/queue-admin/get-dlq-messages/{dlqName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/prisoner/{prisonerNumber}/approved-relationships': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        /**
-         * Get the approved contacts for a prisoner for official or social visits
-         * @description Requires one of the following roles:
-         *     * ROLE_OFFICIAL_VISITS_ADMIN
-         *     * ROLE_OFFICIAL_VISITS__R
-         *     * ROLE_OFFICIAL_VISITS__RW
-         */
-        get: operations['getApprovedContacts']
-        put?: never
-        post?: never
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    get: operations['getDlqMessages']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/prisoner/{prisonerNumber}/approved-relationships': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/official-visit/prison/{prisonCode}/id/{officialVisitId}': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        /**
-         * Get an official visit by prison code and ID
-         * @description Get the full details of an official visit, its visitors and prisoner details
-         *
-         *     Requires one of the following roles:
-         *     * ROLE_OFFICIAL_VISITS_ADMIN
-         *     * ROLE_OFFICIAL_VISITS__R
-         *     * ROLE_OFFICIAL_VISITS_RW
-         */
-        get: operations['getOfficialVisits']
-        put?: never
-        post?: never
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    /**
+     * Get the approved contacts for a prisoner for official or social visits
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS__RW
+     */
+    get: operations['getApprovedContacts']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/official-visit/prison/{prisonCode}/id/{officialVisitId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    '/available-slots/{prisonCode}': {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        /**
-         * Endpoint to return the available slots for official visits for a prison for a given date range.
-         * @description Requires one of the following roles:
-         *     * ROLE_OFFICIAL_VISITS_ADMIN
-         *     * ROLE_OFFICIAL_VISITS__R
-         *     * ROLE_OFFICIAL_VISITS__RW
-         */
-        get: operations['getAvailableSlotsForPrison']
-        put?: never
-        post?: never
-        delete?: never
-        options?: never
-        head?: never
-        patch?: never
-        trace?: never
+    /**
+     * Get an official visit by prison code and ID
+     * @description Get the full details of an official visit, its visitors and prisoner details
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS_RW
+     */
+    get: operations['getOfficialVisits']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/available-slots/{prisonCode}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
+    /**
+     * Endpoint to return the available slots for official visits for a prison for a given date range.
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS__RW
+     */
+    get: operations['getAvailableSlotsForPrison']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
+
 export type webhooks = Record<string, never>
+
 export interface components {
-    schemas: {
-        RetryDlqResult: {
-            /** Format: int32 */
-            messagesFoundCount: number
-        }
-        PurgeQueueResult: {
-            /** Format: int32 */
-            messagesFoundCount: number
-        }
-        /** @description The request with the official visit details */
-        CreateOfficialVisitRequest: {
-            /** Format: int64 */
-            prisonVisitSlotId: number
-            /**
-             * @description The prison code for the prisoner
-             * @example PVI
-             */
-            prisonCode: string
-            /**
-             * @description The prisoner number (NOMIS ID)
-             * @example A1234AA
-             */
-            prisonerNumber: string
-            /**
-             * Format: date
-             * @description The date the official visit will take place
-             * @example 2022-12-23
-             */
-            visitDate: string
-            /**
-             * @description The start time of the official visit
-             * @example 10:00
-             */
-            startTime: string
-            /**
-             * @description The end time of the official visit
-             * @example 11:00
-             */
-            endTime: string
-            /**
-             * Format: uuid
-             * @description The DPS location ID where the official visit is to take place
-             * @example aaaa-bbbb-9f9f9f9f-9f9f9f9f
-             */
-            dpsLocationId: string
-            /**
-             * @description The visit type code
-             * @example IN_PERSON
-             */
-            visitTypeCode: components['schemas']['VisitType']
-            /**
-             * @description Notes for staff that will not be shared on movement slips
-             * @example Staff notes
-             */
-            staffNotes?: string
-            /**
-             * @description Notes for prisoners that may be shared on movement slips
-             * @example Prisoner notes
-             */
-            prisonerNotes?: string
-            /**
-             * @description Search type code relates to the search that will be done on the prisoner after the visit
-             * @example FULL
-             */
-            searchTypeCode?: components['schemas']['SearchLevelType']
-            officialVisitors: components['schemas']['OfficialVisitor'][]
-        }
-        OfficialVisitor: {
-            /**
-             * @description The visitor type code (CONTACT, OPV, PRISONER)
-             * @example CONTACT
-             */
-            visitorTypeCode: components['schemas']['VisitorType']
-            /**
-             * Format: int64
-             * @description The contact ID for the visitor
-             * @example 123456
-             */
-            contactId?: number
-            /**
-             * Format: int64
-             * @description The prisoner contact ID for the visitor
-             * @example 123456
-             */
-            prisonerContactId?: number
-            /**
-             * @description The relationship code
-             * @example POM
-             */
-            relationshipCode: string
-            /**
-             * @description Set to true if this is the lead visitor
-             * @example false
-             */
-            leadVisitor?: boolean
-            /**
-             * @description Set to true if this visitor requires an assisted visit
-             * @example false
-             */
-            assistedVisit?: boolean
-            /**
-             * @description Any required assistance notes to keep about this visitor.  Will be ignored if assisted visit is not true
-             * @example Wheelchair access required
-             */
-            assistedNotes?: string
-            /** @description Details of any equipment the visitor will bring to the visit. */
-            visitorEquipment?: components['schemas']['VisitorEquipment']
-        }
-        /** @enum {string} */
-        SearchLevelType: 'FULL' | 'PAT' | 'RUB' | 'RUB_A' | 'RUB_B' | 'STR'
-        /** @enum {string} */
-        VisitType: 'IN_PERSON' | 'TELEPHONE' | 'VIDEO' | 'UNKNOWN'
-        /** @description Represents details of any equipment the visitor will bring to the visit. */
-        VisitorEquipment: {
-            /**
-             * @description A description of the equipment the visitor will bring
-             * @example Laptop
-             */
-            description: string
-        }
-        /** @enum {string} */
-        VisitorType: 'CONTACT' | 'OPV' | 'PRISONER'
-        CreateOfficialVisitResponse: {
-            /** Format: int64 */
-            officialVisitId: number
-        }
-        ErrorResponse: {
-            /** Format: int32 */
-            status: number
-            errorCode?: string
-            userMessage?: string
-            developerMessage?: string
-            moreInfo?: string
-        }
-        /** @enum {string} */
-        AttendanceType: 'ATTENDED' | 'ABSENT'
-        MigrateVisitRequest: {
-            /**
-             * Format: int64
-             * @description The NOMIS offender visit ID
-             * @example 133232
-             */
-            offenderVisitId: number
-            /**
-             * Format: int64
-             * @description The DPS visit slot ID - this provides the location, start time and end time via configuration data
-             * @example 123132
-             */
-            prisonVisitSlotId: number
-            /**
-             * @description The prison code where the visit takes place
-             * @example PVI
-             */
-            prisonCode: string
-            /**
-             * Format: int64
-             * @description The offender book ID to echo back. It will be stored in DPS against the visit.
-             * @example 74748
-             */
-            offenderBookId: number
-            /**
-             * @description The prisoner number (NOMS ID)
-             * @example A1234AA
-             */
-            prisonerNumber: string
-            /**
-             * @description If this visits relates to the current or latest term (booking) in prison true, else false.
-             * @example true
-             */
-            currentTerm: boolean
-            /**
-             * Format: date
-             * @description The date the official visit will take place
-             * @example 2022-12-23
-             */
-            visitDate: string
-            /**
-             * @description The start time for this official visit
-             * @example 09:15
-             */
-            startTime: string
-            /**
-             * @description The end time for this official visit
-             * @example 10:15
-             */
-            endTime: string
-            /**
-             * Format: uuid
-             * @description The DPS location where the visit takes place.
-             * @example aaaa-bbbb-xxxxxxxx-yyyyyyyy
-             */
-            dpsLocationId: string
-            /**
-             * @description The DPS visit status code. The Syscon migration service will map the NOMIS state to a value in this enumerated type.
-             * @example SCHEDULED
-             */
-            visitStatusCode: components['schemas']['VisitStatusType']
-            /**
-             * @description The DPS visit type code. For migrated NOMIS visits this will default to type UNKNOWN. Other values are IN_PERSON, VIDEO, or TELEPHONE.
-             * @example UNKNOWN
-             */
-            visitTypeCode?: components['schemas']['VisitType']
-            /**
-             * @description The visit comment text
-             * @example This is a comment
-             */
-            commentText?: string
-            /**
-             * @description The prisoner search type code. Maps to the same reference code values in both NOMIS and DPS.
-             * @example RUB_A
-             */
-            searchTypeCode?: components['schemas']['SearchLevelType']
-            /**
-             * @description The DPS visit completion code. Default is NORMAL if not supplied.
-             * @example NORMAL
-             */
-            visitCompletionCode?: components['schemas']['VisitCompletionType']
-            /**
-             * @description Visit concern text from NOMIS
-             * @example I am concerned
-             */
-            visitorConcernText?: string
-            /**
-             * @description The staff username who authorised an override for a ban for this visit
-             * @example X3243H
-             */
-            overrideBanStaffUsername?: string
-            /**
-             * Format: int64
-             * @description The visit order number (if present) for the official visit
-             * @example 12344
-             */
-            visitOrderNumber?: number
-            /**
-             * Format: date-time
-             * @description The data and time the record was created
-             * @example 2022-10-01T16:45:45
-             */
-            createDateTime: string
-            /**
-             * @description The username who created the row
-             * @example X999X
-             */
-            createUsername: string
-            /**
-             * Format: date-time
-             * @description The date and time the record was last amended
-             * @example 2022-10-01T16:45:45
-             */
-            modifyDateTime?: string
-            /**
-             * @description The username who last modified the row
-             * @example X999X
-             */
-            modifyUsername?: string
-            visitors: components['schemas']['MigrateVisitor'][]
-        }
-        /** @description The details of an official visitor */
-        MigrateVisitor: {
-            /**
-             * Format: int64
-             * @description The NOMIS offender visit visitor ID
-             * @example 133232
-             */
-            offenderVisitVisitorId: number
-            /**
-             * Format: int64
-             * @description The NOMIS person ID (same as contactId) for this visitor
-             * @example 13989898
-             */
-            personId: number
-            /**
-             * @description The first name of the visitor
-             * @example Bob
-             */
-            firstName?: string
-            /**
-             * @description The last name of the visitor
-             * @example Harris
-             */
-            lastName?: string
-            /**
-             * Format: date
-             * @description The visitors date of birth
-             * @example 2011-01-03
-             */
-            dateOfBirth?: string
-            /**
-             * @description The relationship type OFFICIAL or SOCIAL. Default is null if not known.
-             * @example OFFICIAL
-             */
-            relationshipTypeCode?: components['schemas']['RelationshipType']
-            /**
-             * @description The relationship code between visitor and prisoner, from NOMIS reference data. A null value will indicate no relationship.
-             * @example POL
-             */
-            relationshipToPrisoner?: string
-            /**
-             * @description Set to true if this person is the lead visitor. Defaults to false if not supplied.
-             * @example true
-             */
-            groupLeaderFlag?: boolean
-            /**
-             * @description Set to true if this person requires assistance at the visit. Defaults to false if not supplied.
-             * @example true
-             */
-            assistedVisitFlag?: boolean
-            /**
-             * @description The visitor comment text from NOMIS
-             * @example Some comments
-             */
-            commentText?: string
-            /**
-             * @description The visitor attendance code (ATTENDED or ABSENT). A null indicates no attendance was added.
-             * @example ATTENDED
-             */
-            attendanceCode?: components['schemas']['AttendanceType']
-            /**
-             * Format: date-time
-             * @description The data and time the record was created
-             * @example 2022-10-01T16:45:45
-             */
-            createDateTime: string
-            /**
-             * @description The username who created the row
-             * @example X999X
-             */
-            createUsername: string
-            /**
-             * Format: date-time
-             * @description The date and time the record was last amended
-             * @example 2022-10-01T16:45:45
-             */
-            modifyDateTime?: string
-            /**
-             * @description The username who last modified the row
-             * @example X999X
-             */
-            modifyUsername?: string
-        }
-        /** @enum {string} */
-        RelationshipType: 'OFFICIAL' | 'SOCIAL'
-        /** @enum {string} */
-        VisitCompletionType: 'NORMAL' | 'STAFF_CANCELLED' | 'VISITOR_CANCELLED' | 'VISITOR_DENIED' | 'PRISONER_EARLY' | 'VISITOR_EARLY' | 'PRISONER_REFUSED' | 'STAFF_EARLY' | 'PRISONER_CANCELLED' | 'VISITOR_NO_SHOW'
-        /** @enum {string} */
-        VisitStatusType: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'EXPIRED'
-        IdPair: {
-            /**
-             * @description The category of information returned
-             * @example PRISON_VISIT_SLOT
-             * @enum {string}
-             */
-            elementType: 'PRISON_VISIT_SLOT' | 'OFFICIAL_VISIT' | 'OFFICIAL_VISITOR' | 'PRISONER_VISITED'
-            /**
-             * Format: int64
-             * @description The unique ID for this data item provided in the request
-             * @example 123435
-             */
-            nomisId: number
-            /**
-             * Format: int64
-             * @description The unique ID created in the DPS official visits service
-             * @example 1234
-             */
-            dpsId: number
-        }
-        /** @description The migration response for an official visit and the visitors attending */
-        MigrateVisitResponse: {
-            /** @description The pair of IDs for this visit */
-            visit: components['schemas']['IdPair']
-            /** @description The list of ID pairs for each visitor on this visit */
-            visitors: components['schemas']['IdPair'][]
-            /** @description The pair of IDs for the prisoner on this visit. NOMS ID is used as the NOMIS ID, as it has no other ID */
-            prisoner: components['schemas']['IdPair']
-        }
-        /** @description Request to migrate a day and time slot for a prison and its associated visit slots from NOMIS */
-        MigrateVisitConfigRequest: {
-            /**
-             * @description The 3-letter agy_loc_id from NOMIS where this visit time slot exists
-             * @example MDI
-             */
-            prisonCode: string
-            /**
-             * @description The 3-letter day of the week code where this slot falls in this prison.
-             * @example TUE
-             */
-            dayCode: string
-            /**
-             * Format: int32
-             * @description The time slot sequence in NOMIS. This is used to build a response object for cross-reference
-             * @example 1
-             */
-            timeSlotSeq: number
-            /**
-             * @description The start time for this visit time slot
-             * @example 13:30
-             */
-            startTime: string
-            /**
-             * @description The end time for this visit time slot
-             * @example 14:30
-             */
-            endTime: string
-            /**
-             * Format: date
-             * @description The date from which this row will be effective
-             * @example 1980-01-01
-             */
-            effectiveDate: string
-            /**
-             * Format: date
-             * @description The date from which this row will no longer be effective
-             * @example 1980-01-01
-             */
-            expiryDate?: string
-            /** @description The list of visit slots which are linked to this time slot */
-            visitSlots: components['schemas']['MigrateVisitSlot'][]
-            /**
-             * Format: date-time
-             * @description The data and time the record was created
-             * @example 2022-10-01T16:45:45
-             */
-            createDateTime?: string
-            /**
-             * @description The username who created the record
-             * @example X999X
-             */
-            createUsername?: string
-            /**
-             * Format: date-time
-             * @description The date and time the record was last amended
-             * @example 2022-10-01T16:45:45
-             */
-            modifyDateTime?: string
-            /**
-             * @description The username who last modified the record
-             * @example X999X
-             */
-            modifyUsername?: string
-        }
-        MigrateVisitSlot: {
-            /**
-             * Format: int64
-             * @description Unique ID for this visit slot in NOMIS. For building a response to cross-reference with a DPS visit slot.
-             * @example 1
-             */
-            agencyVisitSlotId: number
-            /**
-             * Format: int64
-             * @description The internal location ID from NOMIS. Information only
-             * @example 1090909
-             */
-            internalLocationId?: number
-            /**
-             * @description The location key from NOMIS. Information only
-             * @example MDI-OFFICIAL_VISITS
-             */
-            locationKey?: string
-            /**
-             * Format: uuid
-             * @description The DPS location ID (mapped from the NOMIS internal location ID)
-             * @example 9485cf4a-750b-4d74-b594-59bacbcda247
-             */
-            dpsLocationId: string
-            /**
-             * Format: int32
-             * @description The maximum number of groups that can be booked into this visit slot. Effectively, the max visits limit for the slot.
-             * @example 8
-             */
-            maxGroups?: number
-            /**
-             * Format: int32
-             * @description The maximum number of adults who can be booked into this visits slot.
-             * @example 22
-             */
-            maxAdults?: number
-            /**
-             * Format: int32
-             * @description The maximum number of video sessions that can be booked into this visits slot.
-             * @example 8
-             */
-            maxVideoSessions?: number
-            /**
-             * Format: date-time
-             * @description The data and time the record was created
-             * @example 2022-10-01T16:45:45
-             */
-            createDateTime?: string
-            /**
-             * @description The username who created the record
-             * @example X999X
-             */
-            createUsername?: string
-            /**
-             * Format: date-time
-             * @description The date and time the record was last amended
-             * @example 2022-10-01T16:45:45
-             */
-            modifyDateTime?: string
-            /**
-             * @description The username who last modified the record
-             * @example X999X
-             */
-            modifyUsername?: string
-        }
-        /** @description The migration response for an official visit time slot and its visit slots */
-        MigrateVisitConfigResponse: {
-            /**
-             * @description The 3-letter agy_loc_id from NOMIS where this time slot exists
-             * @example MDI
-             */
-            prisonCode: string
-            /**
-             * @description The 3-letter day of the week code where this slot exists in this prison.
-             * @example TUE
-             */
-            dayCode: string
-            /**
-             * Format: int32
-             * @description The time slot sequence from NOMIS
-             * @example 1
-             */
-            timeSlotSeq: number
-            /**
-             * Format: int64
-             * @description The ID created in DPS for this prison time slot
-             * @example 123456
-             */
-            dpsTimeSlotId: number
-            /** @description List of NOMIS and DPS IDs for the visit slots created */
-            visitSlots: components['schemas']['IdPair'][]
-        }
-        VisitBookedEntity: {
-            /** Format: int64 */
-            officialVisitId: number
-            prisonCode: string
-            dayCode: string
-            dayDescription: string
-            /** Format: int64 */
-            prisonVisitSlotId: number
-            /** Format: int64 */
-            prisonTimeSlotId: number
-            /** Format: date */
-            visitDate: string
-            startTime: string
-            endTime: string
-            visitStatusCode?: string
-            visitTypeCode: string
-            prisonerNumber: string
-            /** Format: int64 */
-            contactId?: number
-            visitorTypeCode?: string
-            relationshipTypeCode?: string
-            relationshipCode?: string
-            firstName?: string
-            lastName?: string
-            /** Format: uuid */
-            dpsLocationId: string
-        }
-        /** @enum {string} */
-        ReferenceDataGroup: 'ATTENDANCE' | 'DAY' | 'RELATIONSHIP_TYPE' | 'SEARCH_LEVEL' | 'TEST_TYPE' | 'VIS_COMPLETION' | 'VIS_STATUS' | 'VIS_TYPE' | 'VISITOR_TYPE'
-        /** @description Describes the details of a reference code */
-        ReferenceDataItem: {
-            /**
-             * Format: int64
-             * @description An internally-generated unique identifier for this reference code.
-             * @example 12345
-             */
-            referenceDataId: number
-            /**
-             * @description The group name for related reference codes.
-             * @example VIS_STATUS
-             */
-            groupCode: components['schemas']['ReferenceDataGroup']
-            /**
-             * @description The code for this reference data
-             * @example SCHEDULED
-             */
-            code: string
-            /**
-             * @description A fuller description of the reference code
-             * @example Scheduled
-             */
-            description: string
-            /**
-             * Format: int32
-             * @description The default order configured for the reference code, lowest number first.
-             * @example 5
-             */
-            displaySequence: number
-            /**
-             * @description Whether the reference code is still in use. Old reference codes are maintained for compatability with legacy data.
-             * @example true
-             */
-            enabled: boolean
-        }
-        DlqMessage: {
-            body: {
-                [key: string]: unknown
-            }
-            messageId: string
-        }
-        GetDlqResult: {
-            /** Format: int32 */
-            messagesFoundCount: number
-            /** Format: int32 */
-            messagesReturnedCount: number
-            messages: components['schemas']['DlqMessage'][]
-        }
-        ApprovedContact: {
-            /**
-             * Format: int64
-             * @description The prisoner contact number
-             * @example 1
-             */
-            prisonerContactId: number
-            /**
-             * Format: int64
-             * @description The unique identifier for the prisoner contact
-             * @example 1
-             */
-            contactId: number
-            /** @description Prisoner number (NOMS ID) */
-            prisonerNumber: string
-            /** @description The last name of the contact */
-            lastName: string
-            /** @description The first name of the contact */
-            firstName: string
-            /** @description Coded value indicating either a social or official contact */
-            relationshipTypeCode: string
-            /** @description Relationship type Description */
-            relationshipTypeDescription: string
-            /** @description The relationship to the prisoner. A code from SOCIAL_RELATIONSHIP or OFFICIAL_RELATIONSHIP reference data groups depending on the relationship type. */
-            relationshipToPrisonerCode: string
-            /** @description Relationship type Description */
-            relationshipToPrisonerDescription: string
-            /** @description Indicates whether the contact is an approved visitor */
-            isApprovedVisitor: boolean
-            /** @description Is this contact the prisoner's next of kin? */
-            isNextOfKin: boolean
-            /** @description Is this contact the prisoner's emergency contact? */
-            isEmergencyContact: boolean
-            /** @description Is this prisoner's contact relationship active? */
-            isRelationshipActive: boolean
-            /** @description Is this relationship active for the current booking? */
-            currentTerm: boolean
-            /** @description Whether the contact is a staff member */
-            isStaff: boolean
-            /** @description Restriction Summary */
-            restrictionSummary: components['schemas']['RestrictionsSummary']
-            /** @description The title code for the contact */
-            titleCode?: string
-            /** @description The description of the title code, if present */
-            titleDescription?: string
-            /** @description The middle names of the contact, if any */
-            middleNames?: string
-            /**
-             * Format: date
-             * @description The date of birth of the contact
-             */
-            dateOfBirth?: string
-            /**
-             * Format: date
-             * @description The date the contact deceased, if known
-             */
-            deceasedDate?: string
-            /** @description Flat number in the address, if any */
-            flat?: string
-            /** @description Property name or number */
-            property?: string
-            /** @description Street Name */
-            street?: string
-            /** @description Area or locality, if any */
-            area?: string
-            /** @description City code */
-            cityCode?: string
-            /** @description The description of city code */
-            cityDescription?: string
-            /** @description Country code */
-            countyCode?: string
-            /** @description The description of county code */
-            countyDescription?: string
-            /** @description Postal code */
-            postcode?: string
-            /** @description Country Code */
-            countryCode?: string
-            /** @description Flag to indicate whether this address indicates no fixed address */
-            countryDescription?: string
-            /** @description Flag to indicate whether this address indicates no fixed address */
-            noFixedAddress?: boolean
-            /** @description If true this address should be considered as the primary residential address */
-            primaryAddress?: boolean
-            /** @description If true this address should be considered for sending mail to */
-            mailAddress?: boolean
-            /** @description Type of the latest phone number */
-            phoneType?: string
-            /** @description Description of the type of the latest phone number */
-            phoneTypeDescription?: string
-            /** @description The latest phone number, if there are any */
-            phoneNumber?: string
-            /** @description The extension number of the latest phone number */
-            extNumber?: string
-        }
-        RestrictionTypeDetails: {
-            restrictionType: string
-            restrictionTypeDescription: string
-        }
-        RestrictionsSummary: {
-            active: components['schemas']['RestrictionTypeDetails'][]
-            /** Format: int32 */
-            totalActive: number
-            /** Format: int32 */
-            totalExpired: number
-        }
-        OfficialVisitDetails: {
-            /**
-             * Format: int64
-             * @description The official visit id
-             * @example 1
-             */
-            officialVisitId: number
-            /** @description The prisoner code */
-            prisonCode: string
-            /** @description The Official visit prison description */
-            prisonDescription?: string
-            /** @description The Official visit status type */
-            visitStatus: components['schemas']['VisitStatusType']
-            /**
-             * @description The Official visit status description
-             * @example Visit Status
-             */
-            visitStatusDescription?: string
-            /**
-             * @description The Official visit visit type
-             * @example AP
-             */
-            visitTypeCode: components['schemas']['VisitType']
-            /** @description The Official visit type description */
-            visitTypeDescription: string
-            /**
-             * Format: date
-             * @description The Official visit date
-             */
-            visitDate: string
-            /** @description The Official visit start time */
-            startTime: string
-            /** @description The Official visit end time */
-            endTime: string
-            /**
-             * Format: uuid
-             * @description The Official visit Location Id
-             */
-            dpsLocationId: string
-            /** @description The Official visit location description */
-            locationDescription?: string
-            /**
-             * Format: int64
-             * @description The Official visit - visitor slot slot identifier for the official visit takes place
-             */
-            visitSlotId?: number
-            /** @description The Official visit - staff notes */
-            staffNotes?: string
-            /** @description The Official visit - prisoner notes */
-            prisonerNotes?: string
-            /** @description The Official visit - visitor concern notes */
-            visitorConcernNotes?: string
-            /** @description The Official visit completion type */
-            completionCode?: components['schemas']['VisitCompletionType']
-            /** @description The Official visit creation description */
-            completionDescription?: string
-            /** @description The Official visit Search Level type */
-            searchTypeCode?: components['schemas']['SearchLevelType']
-            /** @description The Official visit search type */
-            searchTypeDescription?: string
-            /**
-             * Format: date-time
-             * @description The Official visit creation time
-             */
-            createdTime: string
-            /** @description The Official visit created by User */
-            createdBy: string
-            /**
-             * Format: date-time
-             * @description The Official visit updated date time
-             */
-            updatedTime?: string
-            /** @description The Official visit updated by user */
-            updatedBy?: string
-            /** @description The Official visit updated by user */
-            officialVisitors?: components['schemas']['OfficialVisitorDetails'][]
-            /** @description The Prisoner Information */
-            prisonerVisited?: components['schemas']['PrisonerVisitedDetails']
-        }
-        OfficialVisitorDetails: {
-            /** @description The Official visitor Visit Type code */
-            visitorTypeCode: components['schemas']['VisitorType']
-            /** @description The Official visitor TypeDescription */
-            visitorTypeDescription?: string
-            /** @description The Official visitor first name */
-            firstName?: string
-            /** @description The Official visitor last name */
-            lastName?: string
-            /**
-             * Format: int64
-             * @description The Official visitor contact id
-             */
-            contactId?: number
-            /**
-             * Format: int64
-             * @description The prisoner contact id
-             */
-            prisonerContactId?: number
-            /** @description The Official visitor relationship type code */
-            relationshipTypeCode?: components['schemas']['RelationshipType']
-            /** @description The Official visitor relationship Type Description */
-            relationshipTypeDescription?: string
-            /** @description The Official visitor relationship code */
-            relationshipCode?: string
-            /** @description The Official visitor - is lead visitor */
-            leadVisitor: boolean
-            /** @description The Official visitor - is assisted visit */
-            assistedVisit: boolean
-            /** @description The Official visitor visitor notes */
-            visitorNotes?: string
-            /** @description The Official visitor attendance type */
-            attendanceCode?: components['schemas']['AttendanceType']
-            /** @description The Official visitor attendance description */
-            attendanceDescription?: string
-            /** @description The Official visitor created by user */
-            createdBy: string
-            /**
-             * Format: date-time
-             * @description The Official visitor created date time
-             */
-            createdTime: string
-            /** @description The Official visitor updated by user */
-            updatedBy?: string
-            /**
-             * Format: date-time
-             * @description The Official visitor updated date time
-             */
-            updatedTime?: string
-            /**
-             * Format: int64
-             * @description The Official visitor offender visit visitor id
-             */
-            offenderVisitVisitorId?: number
-        }
-        PrisonerVisitedDetails: {
-            /**
-             * @description The official visitor - prisoner number
-             * @example 1
-             */
-            prisonerNumber: string
-            /** @description The official visitor Prisoner code */
-            prisonCode: string
-            /** @description The official visitor - Prisoner first name */
-            firstName?: string
-            /** @description The official visitor prisoner last name */
-            lastName?: string
-            /**
-             * Format: date
-             * @description The official visitor - Prisoner date of birth
-             */
-            dateOfBirth?: string
-            /** @description Prisoner Cell location */
-            cellLocation?: string
-            /** @description Prisoner middle name */
-            middleNames?: string
-            /** @description Prisoner offender boo id */
-            offenderBookId?: string
-            /** @description Prisoner attendance code */
-            attendanceCode?: string
-            /** @description Prisoner attendance code */
-            attendanceCodeDescription?: string
-        }
-        AvailableSlot: {
-            /**
-             * Format: int64
-             * @description The prison visit slot identifier for the official visit slot
-             * @example 1
-             */
-            visitSlotId: number
-            /**
-             * Format: int64
-             * @description The prison time slot identifier for the official visit slot
-             * @example 1
-             */
-            timeSlotId: number
-            /**
-             * @description The prison code where the visit takes place
-             * @example PVI
-             */
-            prisonCode: string
-            /**
-             * @description The 3-letter day of the week code where this slot falls in this prison.
-             * @example TUE
-             */
-            dayCode: string
-            /**
-             * @description The day of the week code where this slot falls in this prison.
-             * @example Tuesday
-             */
-            dayDescription: string
-            /**
-             * Format: date
-             * @description The date for the official visit slot
-             */
-            visitDate: string
-            /** @description The start time for the official visit slot */
-            startTime: string
-            /** @description The end time for the official visit slot */
-            endTime: string
-            /**
-             * Format: uuid
-             * @description The DPS location where the official visit takes place for the slot
-             * @example aaaa-bbbb-xxxxxxxx-yyyyyyyy
-             */
-            dpsLocationId: string
-            /**
-             * Format: int32
-             * @description The available video sessions for official visit slot
-             */
-            availableVideoSessions: number
-            /**
-             * Format: int32
-             * @description The available adults for official visit slot
-             */
-            availableAdults: number
-            /**
-             * Format: int32
-             * @description The available groups for official visit slot
-             */
-            availableGroups: number
-            /**
-             * @description The description of the location where this slot exists
-             * @example Legal visits room 8
-             */
-            locationDescription?: string
-        }
+  schemas: {
+    RetryDlqResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
     }
-    responses: never
-    parameters: never
-    requestBodies: never
-    headers: never
-    pathItems: never
+    PurgeQueueResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+    }
+    /** @description The request with the official visit details */
+    CreateOfficialVisitRequest: {
+      /** Format: int64 */
+      prisonVisitSlotId: number
+      /**
+       * @description The prison code for the prisoner
+       * @example PVI
+       */
+      prisonCode: string
+      /**
+       * @description The prisoner number (NOMIS ID)
+       * @example A1234AA
+       */
+      prisonerNumber: string
+      /**
+       * Format: date
+       * @description The date the official visit will take place
+       * @example 2022-12-23
+       */
+      visitDate: string
+      /**
+       * @description The start time of the official visit
+       * @example 10:00
+       */
+      startTime: string
+      /**
+       * @description The end time of the official visit
+       * @example 11:00
+       */
+      endTime: string
+      /**
+       * Format: uuid
+       * @description The DPS location ID where the official visit is to take place
+       * @example aaaa-bbbb-9f9f9f9f-9f9f9f9f
+       */
+      dpsLocationId: string
+      /**
+       * @description The visit type code
+       * @example IN_PERSON
+       */
+      visitTypeCode: components['schemas']['VisitType']
+      /**
+       * @description Notes for staff that will not be shared on movement slips
+       * @example Staff notes
+       */
+      staffNotes?: string
+      /**
+       * @description Notes for prisoners that may be shared on movement slips
+       * @example Prisoner notes
+       */
+      prisonerNotes?: string
+      /**
+       * @description Search type code relates to the search that will be done on the prisoner after the visit
+       * @example FULL
+       */
+      searchTypeCode?: components['schemas']['SearchLevelType']
+      officialVisitors: components['schemas']['OfficialVisitor'][]
+    }
+    OfficialVisitor: {
+      /**
+       * @description The visitor type code (CONTACT, OPV, PRISONER)
+       * @example CONTACT
+       */
+      visitorTypeCode: components['schemas']['VisitorType']
+      /**
+       * Format: int64
+       * @description The contact ID for the visitor
+       * @example 123456
+       */
+      contactId?: number
+      /**
+       * Format: int64
+       * @description The prisoner contact ID for the visitor
+       * @example 123456
+       */
+      prisonerContactId?: number
+      /**
+       * @description The relationship code
+       * @example POM
+       */
+      relationshipCode: string
+      /**
+       * @description Set to true if this is the lead visitor
+       * @example false
+       */
+      leadVisitor?: boolean
+      /**
+       * @description Set to true if this visitor requires an assisted visit
+       * @example false
+       */
+      assistedVisit?: boolean
+      /**
+       * @description Any required assistance notes to keep about this visitor.  Will be ignored if assisted visit is not true
+       * @example Wheelchair access required
+       */
+      assistedNotes?: string
+      /** @description Details of any equipment the visitor will bring to the visit. */
+      visitorEquipment?: components['schemas']['VisitorEquipment']
+    }
+    /** @enum {string} */
+    SearchLevelType: 'FULL' | 'PAT' | 'RUB' | 'RUB_A' | 'RUB_B' | 'STR'
+    /** @enum {string} */
+    VisitType: 'IN_PERSON' | 'TELEPHONE' | 'VIDEO' | 'UNKNOWN'
+    /** @description Represents details of any equipment the visitor will bring to the visit. */
+    VisitorEquipment: {
+      /**
+       * @description A description of the equipment the visitor will bring
+       * @example Laptop
+       */
+      description: string
+    }
+    /** @enum {string} */
+    VisitorType: 'CONTACT' | 'OPV' | 'PRISONER'
+    CreateOfficialVisitResponse: {
+      /** Format: int64 */
+      officialVisitId: number
+    }
+    ErrorResponse: {
+      /** Format: int32 */
+      status: number
+      errorCode?: string
+      userMessage?: string
+      developerMessage?: string
+      moreInfo?: string
+    }
+    /** @enum {string} */
+    AttendanceType: 'ATTENDED' | 'ABSENT'
+    MigrateVisitRequest: {
+      /**
+       * Format: int64
+       * @description The NOMIS offender visit ID
+       * @example 133232
+       */
+      offenderVisitId: number
+      /**
+       * Format: int64
+       * @description The DPS visit slot ID - this provides the location, start time and end time via configuration data
+       * @example 123132
+       */
+      prisonVisitSlotId: number
+      /**
+       * @description The prison code where the visit takes place
+       * @example PVI
+       */
+      prisonCode: string
+      /**
+       * Format: int64
+       * @description The offender book ID to echo back. It will be stored in DPS against the visit.
+       * @example 74748
+       */
+      offenderBookId: number
+      /**
+       * @description The prisoner number (NOMS ID)
+       * @example A1234AA
+       */
+      prisonerNumber: string
+      /**
+       * @description If this visits relates to the current or latest term (booking) in prison true, else false.
+       * @example true
+       */
+      currentTerm: boolean
+      /**
+       * Format: date
+       * @description The date the official visit will take place
+       * @example 2022-12-23
+       */
+      visitDate: string
+      /**
+       * @description The start time for this official visit
+       * @example 09:15
+       */
+      startTime: string
+      /**
+       * @description The end time for this official visit
+       * @example 10:15
+       */
+      endTime: string
+      /**
+       * Format: uuid
+       * @description The DPS location where the visit takes place.
+       * @example aaaa-bbbb-xxxxxxxx-yyyyyyyy
+       */
+      dpsLocationId: string
+      /**
+       * @description The DPS visit status code. The Syscon migration service will map the NOMIS state to a value in this enumerated type.
+       * @example SCHEDULED
+       */
+      visitStatusCode: components['schemas']['VisitStatusType']
+      /**
+       * @description The DPS visit type code. For migrated NOMIS visits this will default to type UNKNOWN. Other values are IN_PERSON, VIDEO, or TELEPHONE.
+       * @example UNKNOWN
+       */
+      visitTypeCode?: components['schemas']['VisitType']
+      /**
+       * @description The visit comment text
+       * @example This is a comment
+       */
+      commentText?: string
+      /**
+       * @description The prisoner search type code. Maps to the same reference code values in both NOMIS and DPS.
+       * @example RUB_A
+       */
+      searchTypeCode?: components['schemas']['SearchLevelType']
+      /**
+       * @description The DPS visit completion code. Default is NORMAL if not supplied.
+       * @example NORMAL
+       */
+      visitCompletionCode?: components['schemas']['VisitCompletionType']
+      /**
+       * @description Visit concern text from NOMIS
+       * @example I am concerned
+       */
+      visitorConcernText?: string
+      /**
+       * @description The staff username who authorised an override for a ban for this visit
+       * @example X3243H
+       */
+      overrideBanStaffUsername?: string
+      /**
+       * Format: int64
+       * @description The visit order number (if present) for the official visit
+       * @example 12344
+       */
+      visitOrderNumber?: number
+      /**
+       * Format: date-time
+       * @description The data and time the record was created
+       * @example 2022-10-01T16:45:45
+       */
+      createDateTime: string
+      /**
+       * @description The username who created the row
+       * @example X999X
+       */
+      createUsername: string
+      /**
+       * Format: date-time
+       * @description The date and time the record was last amended
+       * @example 2022-10-01T16:45:45
+       */
+      modifyDateTime?: string
+      /**
+       * @description The username who last modified the row
+       * @example X999X
+       */
+      modifyUsername?: string
+      visitors: components['schemas']['MigrateVisitor'][]
+    }
+    /** @description The details of an official visitor */
+    MigrateVisitor: {
+      /**
+       * Format: int64
+       * @description The NOMIS offender visit visitor ID
+       * @example 133232
+       */
+      offenderVisitVisitorId: number
+      /**
+       * Format: int64
+       * @description The NOMIS person ID (same as contactId) for this visitor
+       * @example 13989898
+       */
+      personId: number
+      /**
+       * @description The first name of the visitor
+       * @example Bob
+       */
+      firstName?: string
+      /**
+       * @description The last name of the visitor
+       * @example Harris
+       */
+      lastName?: string
+      /**
+       * Format: date
+       * @description The visitors date of birth
+       * @example 2011-01-03
+       */
+      dateOfBirth?: string
+      /**
+       * @description The relationship type OFFICIAL or SOCIAL. Default is null if not known.
+       * @example OFFICIAL
+       */
+      relationshipTypeCode?: components['schemas']['RelationshipType']
+      /**
+       * @description The relationship code between visitor and prisoner, from NOMIS reference data. A null value will indicate no relationship.
+       * @example POL
+       */
+      relationshipToPrisoner?: string
+      /**
+       * @description Set to true if this person is the lead visitor. Defaults to false if not supplied.
+       * @example true
+       */
+      groupLeaderFlag?: boolean
+      /**
+       * @description Set to true if this person requires assistance at the visit. Defaults to false if not supplied.
+       * @example true
+       */
+      assistedVisitFlag?: boolean
+      /**
+       * @description The visitor comment text from NOMIS
+       * @example Some comments
+       */
+      commentText?: string
+      /**
+       * @description The visitor attendance code (ATTENDED or ABSENT). A null indicates no attendance was added.
+       * @example ATTENDED
+       */
+      attendanceCode?: components['schemas']['AttendanceType']
+      /**
+       * Format: date-time
+       * @description The data and time the record was created
+       * @example 2022-10-01T16:45:45
+       */
+      createDateTime: string
+      /**
+       * @description The username who created the row
+       * @example X999X
+       */
+      createUsername: string
+      /**
+       * Format: date-time
+       * @description The date and time the record was last amended
+       * @example 2022-10-01T16:45:45
+       */
+      modifyDateTime?: string
+      /**
+       * @description The username who last modified the row
+       * @example X999X
+       */
+      modifyUsername?: string
+    }
+    /** @enum {string} */
+    RelationshipType: 'OFFICIAL' | 'SOCIAL'
+    /** @enum {string} */
+    VisitCompletionType: 'NORMAL' | 'STAFF_CANCELLED' | 'VISITOR_CANCELLED' | 'VISITOR_DENIED' | 'PRISONER_EARLY' | 'VISITOR_EARLY' | 'PRISONER_REFUSED' | 'STAFF_EARLY' | 'PRISONER_CANCELLED' | 'VISITOR_NO_SHOW'
+    /** @enum {string} */
+    VisitStatusType: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'EXPIRED'
+    IdPair: {
+      /**
+       * @description The category of information returned
+       * @example PRISON_VISIT_SLOT
+       * @enum {string}
+       */
+      elementType: 'PRISON_VISIT_SLOT' | 'OFFICIAL_VISIT' | 'OFFICIAL_VISITOR' | 'PRISONER_VISITED'
+      /**
+       * Format: int64
+       * @description The unique ID for this data item provided in the request
+       * @example 123435
+       */
+      nomisId: number
+      /**
+       * Format: int64
+       * @description The unique ID created in the DPS official visits service
+       * @example 1234
+       */
+      dpsId: number
+    }
+    /** @description The migration response for an official visit and the visitors attending */
+    MigrateVisitResponse: {
+      /** @description The pair of IDs for this visit */
+      visit: components['schemas']['IdPair']
+      /** @description The list of ID pairs for each visitor on this visit */
+      visitors: components['schemas']['IdPair'][]
+      /** @description The pair of IDs for the prisoner on this visit. NOMS ID is used as the NOMIS ID, as it has no other ID */
+      prisoner: components['schemas']['IdPair']
+    }
+    /** @description Request to migrate a day and time slot for a prison and its associated visit slots from NOMIS */
+    MigrateVisitConfigRequest: {
+      /**
+       * @description The 3-letter agy_loc_id from NOMIS where this visit time slot exists
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description The 3-letter day of the week code where this slot falls in this prison.
+       * @example TUE
+       */
+      dayCode: string
+      /**
+       * Format: int32
+       * @description The time slot sequence in NOMIS. This is used to build a response object for cross-reference
+       * @example 1
+       */
+      timeSlotSeq: number
+      /**
+       * @description The start time for this visit time slot
+       * @example 13:30
+       */
+      startTime: string
+      /**
+       * @description The end time for this visit time slot
+       * @example 14:30
+       */
+      endTime: string
+      /**
+       * Format: date
+       * @description The date from which this row will be effective
+       * @example 1980-01-01
+       */
+      effectiveDate: string
+      /**
+       * Format: date
+       * @description The date from which this row will no longer be effective
+       * @example 1980-01-01
+       */
+      expiryDate?: string
+      /** @description The list of visit slots which are linked to this time slot */
+      visitSlots: components['schemas']['MigrateVisitSlot'][]
+      /**
+       * Format: date-time
+       * @description The data and time the record was created
+       * @example 2022-10-01T16:45:45
+       */
+      createDateTime?: string
+      /**
+       * @description The username who created the record
+       * @example X999X
+       */
+      createUsername?: string
+      /**
+       * Format: date-time
+       * @description The date and time the record was last amended
+       * @example 2022-10-01T16:45:45
+       */
+      modifyDateTime?: string
+      /**
+       * @description The username who last modified the record
+       * @example X999X
+       */
+      modifyUsername?: string
+    }
+    MigrateVisitSlot: {
+      /**
+       * Format: int64
+       * @description Unique ID for this visit slot in NOMIS. For building a response to cross-reference with a DPS visit slot.
+       * @example 1
+       */
+      agencyVisitSlotId: number
+      /**
+       * Format: int64
+       * @description The internal location ID from NOMIS. Information only
+       * @example 1090909
+       */
+      internalLocationId?: number
+      /**
+       * @description The location key from NOMIS. Information only
+       * @example MDI-OFFICIAL_VISITS
+       */
+      locationKey?: string
+      /**
+       * Format: uuid
+       * @description The DPS location ID (mapped from the NOMIS internal location ID)
+       * @example 9485cf4a-750b-4d74-b594-59bacbcda247
+       */
+      dpsLocationId: string
+      /**
+       * Format: int32
+       * @description The maximum number of groups that can be booked into this visit slot. Effectively, the max visits limit for the slot.
+       * @example 8
+       */
+      maxGroups?: number
+      /**
+       * Format: int32
+       * @description The maximum number of adults who can be booked into this visits slot.
+       * @example 22
+       */
+      maxAdults?: number
+      /**
+       * Format: int32
+       * @description The maximum number of video sessions that can be booked into this visits slot.
+       * @example 8
+       */
+      maxVideoSessions?: number
+      /**
+       * Format: date-time
+       * @description The data and time the record was created
+       * @example 2022-10-01T16:45:45
+       */
+      createDateTime?: string
+      /**
+       * @description The username who created the record
+       * @example X999X
+       */
+      createUsername?: string
+      /**
+       * Format: date-time
+       * @description The date and time the record was last amended
+       * @example 2022-10-01T16:45:45
+       */
+      modifyDateTime?: string
+      /**
+       * @description The username who last modified the record
+       * @example X999X
+       */
+      modifyUsername?: string
+    }
+    /** @description The migration response for an official visit time slot and its visit slots */
+    MigrateVisitConfigResponse: {
+      /**
+       * @description The 3-letter agy_loc_id from NOMIS where this time slot exists
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description The 3-letter day of the week code where this slot exists in this prison.
+       * @example TUE
+       */
+      dayCode: string
+      /**
+       * Format: int32
+       * @description The time slot sequence from NOMIS
+       * @example 1
+       */
+      timeSlotSeq: number
+      /**
+       * Format: int64
+       * @description The ID created in DPS for this prison time slot
+       * @example 123456
+       */
+      dpsTimeSlotId: number
+      /** @description List of NOMIS and DPS IDs for the visit slots created */
+      visitSlots: components['schemas']['IdPair'][]
+    }
+    VisitBookedEntity: {
+      /** Format: int64 */
+      officialVisitId: number
+      prisonCode: string
+      dayCode: string
+      dayDescription: string
+      /** Format: int64 */
+      prisonVisitSlotId: number
+      /** Format: int64 */
+      prisonTimeSlotId: number
+      /** Format: date */
+      visitDate: string
+      startTime: string
+      endTime: string
+      visitStatusCode?: string
+      visitTypeCode: string
+      prisonerNumber: string
+      /** Format: int64 */
+      contactId?: number
+      visitorTypeCode?: string
+      relationshipTypeCode?: string
+      relationshipCode?: string
+      firstName?: string
+      lastName?: string
+      /** Format: uuid */
+      dpsLocationId: string
+    }
+    /** @enum {string} */
+    ReferenceDataGroup: 'ATTENDANCE' | 'DAY' | 'RELATIONSHIP_TYPE' | 'SEARCH_LEVEL' | 'TEST_TYPE' | 'VIS_COMPLETION' | 'VIS_STATUS' | 'VIS_TYPE' | 'VISITOR_TYPE'
+    /** @description Describes the details of a reference code */
+    ReferenceDataItem: {
+      /**
+       * Format: int64
+       * @description An internally-generated unique identifier for this reference code.
+       * @example 12345
+       */
+      referenceDataId: number
+      /**
+       * @description The group name for related reference codes.
+       * @example VIS_STATUS
+       */
+      groupCode: components['schemas']['ReferenceDataGroup']
+      /**
+       * @description The code for this reference data
+       * @example SCHEDULED
+       */
+      code: string
+      /**
+       * @description A fuller description of the reference code
+       * @example Scheduled
+       */
+      description: string
+      /**
+       * Format: int32
+       * @description The default order configured for the reference code, lowest number first.
+       * @example 5
+       */
+      displaySequence: number
+      /**
+       * @description Whether the reference code is still in use. Old reference codes are maintained for compatability with legacy data.
+       * @example true
+       */
+      enabled: boolean
+    }
+    DlqMessage: {
+      body: {
+        [key: string]: unknown
+      }
+      messageId: string
+    }
+    GetDlqResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+      /** Format: int32 */
+      messagesReturnedCount: number
+      messages: components['schemas']['DlqMessage'][]
+    }
+    ApprovedContact: {
+      /**
+       * Format: int64
+       * @description The prisoner contact number
+       * @example 1
+       */
+      prisonerContactId: number
+      /**
+       * Format: int64
+       * @description The unique identifier for the prisoner contact
+       * @example 1
+       */
+      contactId: number
+      /** @description Prisoner number (NOMS ID) */
+      prisonerNumber: string
+      /** @description The last name of the contact */
+      lastName: string
+      /** @description The first name of the contact */
+      firstName: string
+      /** @description Coded value indicating either a social or official contact */
+      relationshipTypeCode: string
+      /** @description Relationship type Description */
+      relationshipTypeDescription: string
+      /** @description The relationship to the prisoner. A code from SOCIAL_RELATIONSHIP or OFFICIAL_RELATIONSHIP reference data groups depending on the relationship type. */
+      relationshipToPrisonerCode: string
+      /** @description Relationship type Description */
+      relationshipToPrisonerDescription: string
+      /** @description Indicates whether the contact is an approved visitor */
+      isApprovedVisitor: boolean
+      /** @description Is this contact the prisoner's next of kin? */
+      isNextOfKin: boolean
+      /** @description Is this contact the prisoner's emergency contact? */
+      isEmergencyContact: boolean
+      /** @description Is this prisoner's contact relationship active? */
+      isRelationshipActive: boolean
+      /** @description Is this relationship active for the current booking? */
+      currentTerm: boolean
+      /** @description Whether the contact is a staff member */
+      isStaff: boolean
+      /** @description Restriction Summary */
+      restrictionSummary: components['schemas']['RestrictionsSummary']
+      /** @description The title code for the contact */
+      titleCode?: string
+      /** @description The description of the title code, if present */
+      titleDescription?: string
+      /** @description The middle names of the contact, if any */
+      middleNames?: string
+      /**
+       * Format: date
+       * @description The date of birth of the contact
+       */
+      dateOfBirth?: string
+      /**
+       * Format: date
+       * @description The date the contact deceased, if known
+       */
+      deceasedDate?: string
+      /** @description Flat number in the address, if any */
+      flat?: string
+      /** @description Property name or number */
+      property?: string
+      /** @description Street Name */
+      street?: string
+      /** @description Area or locality, if any */
+      area?: string
+      /** @description City code */
+      cityCode?: string
+      /** @description The description of city code */
+      cityDescription?: string
+      /** @description Country code */
+      countyCode?: string
+      /** @description The description of county code */
+      countyDescription?: string
+      /** @description Postal code */
+      postcode?: string
+      /** @description Country Code */
+      countryCode?: string
+      /** @description Flag to indicate whether this address indicates no fixed address */
+      countryDescription?: string
+      /** @description Flag to indicate whether this address indicates no fixed address */
+      noFixedAddress?: boolean
+      /** @description If true this address should be considered as the primary residential address */
+      primaryAddress?: boolean
+      /** @description If true this address should be considered for sending mail to */
+      mailAddress?: boolean
+      /** @description Type of the latest phone number */
+      phoneType?: string
+      /** @description Description of the type of the latest phone number */
+      phoneTypeDescription?: string
+      /** @description The latest phone number, if there are any */
+      phoneNumber?: string
+      /** @description The extension number of the latest phone number */
+      extNumber?: string
+    }
+    RestrictionTypeDetails: {
+      restrictionType: string
+      restrictionTypeDescription: string
+    }
+    RestrictionsSummary: {
+      active: components['schemas']['RestrictionTypeDetails'][]
+      /** Format: int32 */
+      totalActive: number
+      /** Format: int32 */
+      totalExpired: number
+    }
+    OfficialVisitDetails: {
+      /**
+       * Format: int64
+       * @description The official visit id
+       * @example 1
+       */
+      officialVisitId: number
+      /** @description The prisoner code */
+      prisonCode: string
+      /** @description The Official visit prison description */
+      prisonDescription?: string
+      /** @description The Official visit status type */
+      visitStatus: components['schemas']['VisitStatusType']
+      /**
+       * @description The Official visit status description
+       * @example Visit Status
+       */
+      visitStatusDescription?: string
+      /**
+       * @description The Official visit visit type
+       * @example AP
+       */
+      visitTypeCode: components['schemas']['VisitType']
+      /** @description The Official visit type description */
+      visitTypeDescription: string
+      /**
+       * Format: date
+       * @description The Official visit date
+       */
+      visitDate: string
+      /** @description The Official visit start time */
+      startTime: string
+      /** @description The Official visit end time */
+      endTime: string
+      /**
+       * Format: uuid
+       * @description The Official visit Location Id
+       */
+      dpsLocationId: string
+      /** @description The Official visit location description */
+      locationDescription?: string
+      /**
+       * Format: int64
+       * @description The Official visit - visitor slot slot identifier for the official visit takes place
+       */
+      visitSlotId?: number
+      /** @description The Official visit - staff notes */
+      staffNotes?: string
+      /** @description The Official visit - prisoner notes */
+      prisonerNotes?: string
+      /** @description The Official visit - visitor concern notes */
+      visitorConcernNotes?: string
+      /** @description The Official visit completion type */
+      completionCode?: components['schemas']['VisitCompletionType']
+      /** @description The Official visit creation description */
+      completionDescription?: string
+      /** @description The Official visit Search Level type */
+      searchTypeCode?: components['schemas']['SearchLevelType']
+      /** @description The Official visit search type */
+      searchTypeDescription?: string
+      /**
+       * Format: date-time
+       * @description The Official visit creation time
+       */
+      createdTime: string
+      /** @description The Official visit created by User */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The Official visit updated date time
+       */
+      updatedTime?: string
+      /** @description The Official visit updated by user */
+      updatedBy?: string
+      /** @description The Official visit updated by user */
+      officialVisitors?: components['schemas']['OfficialVisitorDetails'][]
+      /** @description The Prisoner Information */
+      prisonerVisited?: components['schemas']['PrisonerVisitedDetails']
+    }
+    OfficialVisitorDetails: {
+      /** @description The Official visitor Visit Type code */
+      visitorTypeCode: components['schemas']['VisitorType']
+      /** @description The Official visitor TypeDescription */
+      visitorTypeDescription?: string
+      /** @description The Official visitor first name */
+      firstName?: string
+      /** @description The Official visitor last name */
+      lastName?: string
+      /**
+       * Format: int64
+       * @description The Official visitor contact id
+       */
+      contactId?: number
+      /**
+       * Format: int64
+       * @description The prisoner contact id
+       */
+      prisonerContactId?: number
+      /** @description The Official visitor relationship type code */
+      relationshipTypeCode?: components['schemas']['RelationshipType']
+      /** @description The Official visitor relationship Type Description */
+      relationshipTypeDescription?: string
+      /** @description The Official visitor relationship code */
+      relationshipCode?: string
+      /** @description The Official visitor - is lead visitor */
+      leadVisitor: boolean
+      /** @description The Official visitor - is assisted visit */
+      assistedVisit: boolean
+      /** @description The Official visitor visitor notes */
+      visitorNotes?: string
+      /** @description The Official visitor attendance type */
+      attendanceCode?: components['schemas']['AttendanceType']
+      /** @description The Official visitor attendance description */
+      attendanceDescription?: string
+      /** @description The Official visitor created by user */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The Official visitor created date time
+       */
+      createdTime: string
+      /** @description The Official visitor updated by user */
+      updatedBy?: string
+      /**
+       * Format: date-time
+       * @description The Official visitor updated date time
+       */
+      updatedTime?: string
+      /**
+       * Format: int64
+       * @description The Official visitor offender visit visitor id
+       */
+      offenderVisitVisitorId?: number
+    }
+    PrisonerVisitedDetails: {
+      /**
+       * @description The official visitor - prisoner number
+       * @example 1
+       */
+      prisonerNumber: string
+      /** @description The official visitor Prisoner code */
+      prisonCode: string
+      /** @description The official visitor - Prisoner first name */
+      firstName?: string
+      /** @description The official visitor prisoner last name */
+      lastName?: string
+      /**
+       * Format: date
+       * @description The official visitor - Prisoner date of birth
+       */
+      dateOfBirth?: string
+      /** @description Prisoner Cell location */
+      cellLocation?: string
+      /** @description Prisoner middle name */
+      middleNames?: string
+      /** @description Prisoner offender boo id */
+      offenderBookId?: string
+      /** @description Prisoner attendance code */
+      attendanceCode?: string
+      /** @description Prisoner attendance code */
+      attendanceCodeDescription?: string
+    }
+    AvailableSlot: {
+      /**
+       * Format: int64
+       * @description The prison visit slot identifier for the official visit slot
+       * @example 1
+       */
+      visitSlotId: number
+      /**
+       * Format: int64
+       * @description The prison time slot identifier for the official visit slot
+       * @example 1
+       */
+      timeSlotId: number
+      /**
+       * @description The prison code where the visit takes place
+       * @example PVI
+       */
+      prisonCode: string
+      /**
+       * @description The 3-letter day of the week code where this slot falls in this prison.
+       * @example TUE
+       */
+      dayCode: string
+      /**
+       * @description The day of the week code where this slot falls in this prison.
+       * @example Tuesday
+       */
+      dayDescription: string
+      /**
+       * Format: date
+       * @description The date for the official visit slot
+       */
+      visitDate: string
+      /** @description The start time for the official visit slot */
+      startTime: string
+      /** @description The end time for the official visit slot */
+      endTime: string
+      /**
+       * Format: uuid
+       * @description The DPS location where the official visit takes place for the slot
+       * @example aaaa-bbbb-xxxxxxxx-yyyyyyyy
+       */
+      dpsLocationId: string
+      /**
+       * Format: int32
+       * @description The available video sessions for official visit slot
+       */
+      availableVideoSessions: number
+      /**
+       * Format: int32
+       * @description The available adults for official visit slot
+       */
+      availableAdults: number
+      /**
+       * Format: int32
+       * @description The available groups for official visit slot
+       */
+      availableGroups: number
+      /**
+       * @description The description of the location where this slot exists
+       * @example Legal visits room 8
+       */
+      locationDescription?: string
+    }
+  }
+  responses: never
+  parameters: never
+  requestBodies: never
+  headers: never
+  pathItems: never
 }
+
 export type $defs = Record<string, never>
+
 export interface operations {
-    retryDlq: {
-        parameters: {
-            query?: never
-            header?: never
-            path: {
-                dlqName: string
-            }
-            cookie?: never
-        }
-        requestBody?: never
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    '*/*': components['schemas']['RetryDlqResult']
-                }
-            }
-        }
+  retryDlq: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        dlqName: string
+      }
+      cookie?: never
     }
-    retryAllDlqs: {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
         }
-        requestBody?: never
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    '*/*': components['schemas']['RetryDlqResult'][]
-                }
-            }
+        content: {
+          '*/*': components['schemas']['RetryDlqResult']
         }
+      }
     }
-    purgeQueue: {
-        parameters: {
-            query?: never
-            header?: never
-            path: {
-                queueName: string
-            }
-            cookie?: never
-        }
-        requestBody?: never
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    '*/*': components['schemas']['PurgeQueueResult']
-                }
-            }
-        }
+  }
+  retryAllDlqs: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    createOfficialVisit: {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
         }
-        requestBody: {
-            content: {
-                'application/json': components['schemas']['CreateOfficialVisitRequest']
-            }
+        content: {
+          '*/*': components['schemas']['RetryDlqResult'][]
         }
-        responses: {
-            /** @description The response containing the details of the created official visit */
-            201: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['CreateOfficialVisitResponse']
-                }
-            }
-            /** @description Unauthorised, requires a valid Oauth2 token */
-            401: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description Forbidden, requires an appropriate role */
-            403: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-        }
+      }
     }
-    migrateVisit: {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
-        }
-        requestBody: {
-            content: {
-                'application/json': components['schemas']['MigrateVisitRequest']
-            }
-        }
-        responses: {
-            /** @description The visit and visitor ID mappings between NOMIS and DPS */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['MigrateVisitResponse']
-                }
-            }
-            /** @description The request failed validation with invalid or missing data */
-            400: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description Unauthorised, requires a valid Oauth2 token */
-            401: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description Forbidden, requires an appropriate role */
-            403: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-        }
+  }
+  purgeQueue: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        queueName: string
+      }
+      cookie?: never
     }
-    migrateVisitConfiguration: {
-        parameters: {
-            query?: never
-            header?: never
-            path?: never
-            cookie?: never
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
         }
-        requestBody: {
-            content: {
-                'application/json': components['schemas']['MigrateVisitConfigRequest']
-            }
+        content: {
+          '*/*': components['schemas']['PurgeQueueResult']
         }
-        responses: {
-            /** @description The time slot and associated visit slots was migrated successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['MigrateVisitConfigResponse']
-                }
-            }
-            /** @description The request failed validation with invalid or missing data */
-            400: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description Unauthorised, requires a valid Oauth2 token */
-            401: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description Forbidden, requires an appropriate role */
-            403: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-        }
+      }
     }
-    getVisitsBookedForPrison: {
-        parameters: {
-            query?: never
-            header?: never
-            path: {
-                /**
-                 * @description The prison code
-                 * @example MDI
-                 */
-                prisonCode: string
-            }
-            cookie?: never
-        }
-        requestBody?: never
-        responses: {
-            /** @description List of visits booked at the prison */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['VisitBookedEntity'][]
-                }
-            }
-            /** @description Unauthorised, requires a valid Oauth2 token */
-            401: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description Forbidden, requires an appropriate role */
-            403: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-        }
+  }
+  createOfficialVisit: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+      }
+      cookie?: never
     }
-    getReferenceDataByGroup: {
-        parameters: {
-            query?: {
-                /** @description Whether to only return active codes or not, defaults to true */
-                activeOnly?: boolean
-            }
-            header?: never
-            path: {
-                /**
-                 * @description The group code of the reference codes to load
-                 * @example VIS_STATUS
-                 */
-                groupCode: components['schemas']['ReferenceDataGroup']
-            }
-            cookie?: never
-        }
-        requestBody?: never
-        responses: {
-            /** @description List of reference data codes/values */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ReferenceDataItem'][]
-                }
-            }
-            /** @description Unauthorised, requires a valid Oauth2 token */
-            401: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description Forbidden, requires an appropriate role */
-            403: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-        }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateOfficialVisitRequest']
+      }
     }
-    getDlqMessages: {
-        parameters: {
-            query?: {
-                maxMessages?: number
-            }
-            header?: never
-            path: {
-                dlqName: string
-            }
-            cookie?: never
+    responses: {
+      /** @description The response containing the details of the created official visit */
+      201: {
+        headers: {
+          [name: string]: unknown
         }
-        requestBody?: never
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    '*/*': components['schemas']['GetDlqResult']
-                }
-            }
+        content: {
+          'application/json': components['schemas']['CreateOfficialVisitResponse']
         }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
     }
-    getApprovedContacts: {
-        parameters: {
-            query?: {
-                /** @description The relationship type should be S for social or O for official */
-                relationshipType?: string
-            }
-            header?: never
-            path: {
-                prisonerNumber: string
-            }
-            cookie?: never
-        }
-        requestBody?: never
-        responses: {
-            /** @description List of approved contacts of the prisoner */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ApprovedContact'][]
-                }
-            }
-            /** @description Unauthorised, requires a valid Oauth2 token */
-            401: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description Forbidden, requires an appropriate role */
-            403: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description The prisoner was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-        }
+  }
+  migrateVisit: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
     }
-    getOfficialVisits: {
-        parameters: {
-            query?: never
-            header?: never
-            path: {
-                /**
-                 * @description The prison code
-                 * @example MIC
-                 */
-                prisonCode: string
-                /**
-                 * @description The id of the Official visit
-                 * @example 123456
-                 */
-                officialVisitId: number
-            }
-            cookie?: never
-        }
-        requestBody?: never
-        responses: {
-            /** @description Official visit found */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['OfficialVisitDetails']
-                }
-            }
-            /** @description Unauthorised, requires a valid Oauth2 token */
-            401: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description Forbidden, requires an appropriate role */
-            403: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description No Official visit found */
-            404: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-        }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['MigrateVisitRequest']
+      }
     }
-    getAvailableSlotsForPrison: {
-        parameters: {
-            query: {
-                /** @description The from date in ISO format (YYYY-MM-DD). */
-                fromDate: string
-                /** @description The to date in ISO format (YYYY-MM-DD). */
-                toDate: string
-                /** @description Boolean flag. A value of 'true' will only return video reservable slots. */
-                videoOnly?: boolean
-            }
-            header?: never
-            path: {
-                /**
-                 * @description The prison code
-                 * @example MDI
-                 */
-                prisonCode: string
-            }
-            cookie?: never
+    responses: {
+      /** @description The visit and visitor ID mappings between NOMIS and DPS */
+      200: {
+        headers: {
+          [name: string]: unknown
         }
-        requestBody?: never
-        responses: {
-            /** @description List of available slots at the prison */
-            200: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['AvailableSlot'][]
-                }
-            }
-            /** @description Unauthorised, requires a valid Oauth2 token */
-            401: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
-            /** @description Forbidden, requires an appropriate role */
-            403: {
-                headers: {
-                    [name: string]: unknown
-                }
-                content: {
-                    'application/json': components['schemas']['ErrorResponse']
-                }
-            }
+        content: {
+          'application/json': components['schemas']['MigrateVisitResponse']
         }
+      }
+      /** @description The request failed validation with invalid or missing data */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
     }
+  }
+  migrateVisitConfiguration: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['MigrateVisitConfigRequest']
+      }
+    }
+    responses: {
+      /** @description The time slot and associated visit slots was migrated successfully */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['MigrateVisitConfigResponse']
+        }
+      }
+      /** @description The request failed validation with invalid or missing data */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getVisitsBookedForPrison: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description List of visits booked at the prison */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VisitBookedEntity'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getReferenceDataByGroup: {
+    parameters: {
+      query?: {
+        /** @description Whether to only return active codes or not, defaults to true */
+        activeOnly?: boolean
+      }
+      header?: never
+      path: {
+        /**
+         * @description The group code of the reference codes to load
+         * @example VIS_STATUS
+         */
+        groupCode: components['schemas']['ReferenceDataGroup']
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description List of reference data codes/values */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ReferenceDataItem'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getDlqMessages: {
+    parameters: {
+      query?: {
+        maxMessages?: number
+      }
+      header?: never
+      path: {
+        dlqName: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['GetDlqResult']
+        }
+      }
+    }
+  }
+  getApprovedContacts: {
+    parameters: {
+      query?: {
+        /** @description The relationship type should be S for social or O for official */
+        relationshipType?: string
+      }
+      header?: never
+      path: {
+        prisonerNumber: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description List of approved contacts of the prisoner */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ApprovedContact'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description The prisoner was not found. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getOfficialVisits: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MIC
+         */
+        prisonCode: string
+        /**
+         * @description The id of the Official visit
+         * @example 123456
+         */
+        officialVisitId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Official visit found */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OfficialVisitDetails']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description No Official visit found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getAvailableSlotsForPrison: {
+    parameters: {
+      query: {
+        /** @description The from date in ISO format (YYYY-MM-DD). */
+        fromDate: string
+        /** @description The to date in ISO format (YYYY-MM-DD). */
+        toDate: string
+        /** @description Boolean flag. A value of 'true' will only return video reservable slots. */
+        videoOnly?: boolean
+      }
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description List of available slots at the prison */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AvailableSlot'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
 }
