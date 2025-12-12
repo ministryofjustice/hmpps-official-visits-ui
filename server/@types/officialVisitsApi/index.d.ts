@@ -60,7 +60,7 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/official-visit': {
+  '/official-visit/prison/{prisonCode}': {
     parameters: {
       query?: never
       header?: never
@@ -268,7 +268,9 @@ export interface paths {
     trace?: never
   }
 }
+
 export type webhooks = Record<string, never>
+
 export interface components {
   schemas: {
     RetryDlqResult: {
@@ -283,11 +285,6 @@ export interface components {
     CreateOfficialVisitRequest: {
       /** Format: int64 */
       prisonVisitSlotId: number
-      /**
-       * @description The prison code for the prisoner
-       * @example PVI
-       */
-      prisonCode: string
       /**
        * @description The prisoner number (NOMIS ID)
        * @example A1234AA
@@ -1236,7 +1233,9 @@ export interface components {
   headers: never
   pathItems: never
 }
+
 export type $defs = Record<string, never>
+
 export interface operations {
   retryDlq: {
     parameters: {
@@ -1306,7 +1305,13 @@ export interface operations {
     parameters: {
       query?: never
       header?: never
-      path?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+      }
       cookie?: never
     }
     requestBody: {

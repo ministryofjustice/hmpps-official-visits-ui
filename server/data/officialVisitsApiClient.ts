@@ -3,7 +3,14 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { ApprovedContact, AvailableSlot, OfficialVisit, ReferenceDataItem } from '../@types/officialVisitsApi/types'
+import {
+  ApprovedContact,
+  AvailableSlot,
+  CreateOfficialVisitRequest,
+  CreateOfficialVisitResponse,
+  OfficialVisit,
+  ReferenceDataItem,
+} from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
 
 export type RestrictionPlaceholder = {
@@ -32,9 +39,9 @@ export default class OfficialVisitsApiClient extends RestClient {
     super('Official Visits API Client', config.apis.officialVisitsApi, logger, authenticationClient)
   }
 
-  async createOfficialVisit(request: components['schemas']['CreateOfficialVisitRequest'], user: HmppsUser) {
-    return this.post<components['schemas']['CreateOfficialVisitResponse']>(
-      { path: `/official-visit`, data: request },
+  async createOfficialVisit(prisonCode: string, request: CreateOfficialVisitRequest, user: HmppsUser) {
+    return this.post<CreateOfficialVisitResponse>(
+      { path: `/official-visit/prison/${prisonCode}`, data: request },
       asSystem(user.username),
     )
   }

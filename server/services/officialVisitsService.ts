@@ -1,7 +1,15 @@
 import { Response } from 'express'
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { OfficialVisit } from '../@types/officialVisitsApi/types'
+import {
+  CreateOfficialVisitRequest,
+  CreateOfficialVisitResponse,
+  OfficialVisit,
+  OfficialVisitor,
+  SearchLevelType,
+  VisitorEquipment,
+  VisitorType,
+} from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
 import { components } from '../@types/officialVisitsApi'
@@ -19,15 +27,41 @@ export default class OfficialVisitsService {
     return true
   }
 
-  public async createVisit(visit: components['schemas']['CreateOfficialVisitRequest'], user: HmppsUser) {
-    logger.info(`Just using vars ${JSON.stringify(visit)}, ${JSON.stringify(user)}`)
-    // TODO: Bypass create code while for demo
-    return '1'
-    // return await this.officialVisitsApiClient.createOfficialVisit(visit, user)
+  public async createVisit(sessionVisit: OfficialVisitJourney, user: HmppsUser): Promise<CreateOfficialVisitResponse> {
+    // Populate the create visit request from the session object
+    const request = {
+      prisonVisitSlotId: sessionVisit.selectedTimeSlot.visitSlotId,
+      prisonCode: sessionVisit.prisonCode,
+      prisonerNumber: sessionVisit.prisoner.prisonerNumber,
+      visitDate: sessionVisit.selectedTimeSlot.visitDate,
+      startTime: sessionVisit.selectedTimeSlot.startTime,
+      endTime: sessionVisit.selectedTimeSlot.endTime,
+      dpsLocationId: sessionVisit.selectedTimeSlot.dpsLocationId,
+      visitTypeCode: sessionVisit.visitType,
+      staffNotes: sessionVisit.staffNotes, // Not supplied by UI journey yet
+      prisonerNotes: sessionVisit.prisonerNotes,
+      searchTypeCode: 'FULL' as SearchLevelType, // Not supplied by UI journey yet
+      officialVisitors: [...sessionVisit.officialVisitors, ...sessionVisit.socialVisitors].map(o => ({
+        visitorTypeCode: 'CONTACT' as VisitorType,
+        contactId: o.contactId,
+        prisonerContactId: o.prisonerContactId,
+        relationshipCode: o.relationshipToPrisonerCode,
+        leadVisitor: o.leadVisitor,
+        assistedVisit: o.assistedVisit,
+        assistedNotes: o.assistanceNotes,
+        visitorEquipment: {
+          description: o.assistanceNotes,
+        } as VisitorEquipment,
+      })) as OfficialVisitor[],
+    } as CreateOfficialVisitRequest
+
+    logger.info(`Create visit request ${JSON.stringify(request, null, 2)}`)
+
+    return this.officialVisitsApiClient.createOfficialVisit(sessionVisit.prisonCode, request, user)
   }
 
-  public async amendVisit(visit: OfficialVisitJourney, user: HmppsUser) {
-    logger.info(`Just using vars ${JSON.stringify(visit)}, ${JSON.stringify(user)}`)
+  public async amendVisit(sessionVisit: OfficialVisitJourney, user: HmppsUser) {
+    logger.info(`Just using vars ${JSON.stringify(sessionVisit)}, ${JSON.stringify(user)}`)
     // TODO: Map the journey to a VisitAmendRequest, call the service amend, and return the amended visit
   }
 
