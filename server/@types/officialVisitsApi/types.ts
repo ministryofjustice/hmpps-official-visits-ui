@@ -34,3 +34,9 @@ export type ContactRelationship = {
   equipmentNotes?: string
 }
 export type RestrictionSummary = components['schemas']['RestrictionsSummary']
+
+export type VisitStatusType = components['schemas']['VisitStatusType']
+export type VisitType = components['schemas']['VisitType']
+export type VisitCompletionType = components['schemas']['VisitCompletionType']
+export type VisitorType = components['schemas']['VisitorType']
+export type CreateOfficialVisitRequest = components['schemas']['CreateOfficialVisitRequest']

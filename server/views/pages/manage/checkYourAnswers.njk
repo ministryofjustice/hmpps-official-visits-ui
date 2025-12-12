@@ -94,7 +94,7 @@
           },
           {
             key: { text: "Location" },
-            value: { text: visit.location },
+            value: { text: visit.locationDescription },
             actions: {
               items: [
                 {
@@ -149,7 +149,7 @@
                     {
                       key: { text: "Contact type" },
                       value: { text: contact.relationshipTypeDescription }
-                    }, 
+                    },
                     {
                       key: { text: "Does this visitor need assistance?" },
                       value: { text: "Yes" if contact.assistedVisit else "No" }

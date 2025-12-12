@@ -11,6 +11,7 @@ import { mockSchedule, mockTimeslots, prisoner } from '../../../../../testutils/
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
+import { VisitType } from '../../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -106,7 +107,7 @@ describe('Assistance required handler', () => {
 
     it('should allow empty submission and redirect to cya when visit type is not IN_PERSON', () => {
       const journey = defaultJourneySession()
-      journey.officialVisit.visitType = 'SOCIAL'
+      journey.officialVisit.visitType = 'SOCIAL' as VisitType
       appSetup(journey)
 
       return request(app)
