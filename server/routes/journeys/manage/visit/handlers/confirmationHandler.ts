@@ -10,17 +10,21 @@ export default class ConfirmationHandler implements PageHandler {
   constructor(
     private readonly officialVisitsService: OfficialVisitsService,
     private readonly prisonerService: PrisonerService,
-  ) { }
+  ) {}
 
   public GET = async (req: Request, res: Response) => {
-    const visit = await this.officialVisitsService.getOfficialVisitById(req.session.journey.officialVisit.prisonCode, Number(req.params.officialVisitId), res.locals.user)
-    const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerNumber, res.locals.user)
-
+    const prisonCode = res.locals.feComponents.sharedData.activeCaseLoad.caseLoadId
+    const visit = await this.officialVisitsService.getOfficialVisitById(
+      prisonCode,
+      Number(req.params.officialVisitId),
+      res.locals.user,
+    )
+    const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(
+      visit.prisonerVisited.prisonerNumber,
+      res.locals.user,
+    )
     req.session.journey.journeyCompleted = true
-    req.session.journey.officialVisit = {
-      // Persisting prisonCode for now
-      prisonCode: req.session.journey.officialVisit.prisonCode,
-    }
+    req.session.journey.officialVisit = undefined
 
     res.render('pages/manage/confirmVisit', { visit, prisoner })
   }

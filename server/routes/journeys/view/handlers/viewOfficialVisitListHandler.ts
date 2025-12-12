@@ -17,7 +17,8 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
     const { user } = res.locals
 
     // TODO: Implement a get official vists for the prison, between two dates or on this date
-    const visit = await this.officialVisitsService.getOfficialVisitById(+officialVisitId, user)
+    const prisonCode = res.locals.feComponents.sharedData.activeCaseLoad.caseLoadId
+    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, +officialVisitId, user)
 
     // TODO: Get the prisoner number from the visit & enrich info
     /*

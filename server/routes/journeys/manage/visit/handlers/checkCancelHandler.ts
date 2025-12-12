@@ -16,8 +16,9 @@ export default class CheckCancelHandler implements PageHandler {
     const officialVisitId = Number(req.params.officialVisitId)
     const { user } = res.locals
 
-    const visit = await this.officialVisitsService.getOfficialVisitById(officialVisitId, user)
-    const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerNumber, user)
+    const prisonCode = res.locals.feComponents.sharedData.activeCaseLoad.caseLoadId
+    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, officialVisitId, user)
+    const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerVisited.prisonerNumber, user)
 
     res.render('pages/manage/checkCancelVisit', { visit, prisoner })
   }

@@ -17,7 +17,8 @@ export default class ConfirmCancelledHandler implements PageHandler {
     const { user } = res.locals
 
     // TODO: Fill in the proper details and checks here
-    const visit = await this.officialVisitsService.getOfficialVisitById(officialVisitId, user)
+    const prisonCode = res.locals.feComponents.sharedData.activeCaseLoad.caseLoadId
+    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, officialVisitId, user)
     req.session.journey.officialVisit = null
 
     res.render('pages/manage/confirmCancel', { visit })

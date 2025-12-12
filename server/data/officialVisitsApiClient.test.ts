@@ -25,15 +25,16 @@ describe('OfficialVisitsApiClient', () => {
 
   describe('getOfficialVisitById', () => {
     it('should get an official visit by ID and return the response body', async () => {
+      const prisonCode = 'AAA'
       const visitId = 1
       const expected = { data: 'data' }
 
       nock(config.apis.officialVisitsApi.url)
-        .get(`/official-visits/${visitId}`)
+        .get(`/official-visit/prison/${prisonCode}/id/${visitId}`)
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, expected)
 
-      const response = await officialVisitsApiClient.getOfficialVisitById(visitId, user)
+      const response = await officialVisitsApiClient.getOfficialVisitById('AAA', visitId, user)
 
       expect(response).toEqual(expected)
       expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)

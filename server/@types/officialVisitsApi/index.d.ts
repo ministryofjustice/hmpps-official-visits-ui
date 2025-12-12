@@ -330,6 +330,11 @@ export interface components {
        * @example Prisoner notes
        */
       prisonerNotes?: string
+      /**
+       * @description Search type code relates to the search that will be done on the prisoner after the visit
+       * @example FULL
+       */
+      searchTypeCode?: components['schemas']['SearchLevelType']
       officialVisitors: components['schemas']['OfficialVisitor'][]
     }
     OfficialVisitor: {
@@ -366,13 +371,25 @@ export interface components {
        */
       assistedVisit?: boolean
       /**
-       * @description Any notes to keep about this visitor
-       * @example notes
+       * @description Any required assistance notes to keep about this visitor.  Will be ignored if assisted visit is not true
+       * @example Wheelchair access required
        */
-      visitorNotes?: string
+      assistedNotes?: string
+      /** @description Details of any equipment the visitor will bring to the visit. */
+      visitorEquipment?: components['schemas']['VisitorEquipment']
     }
     /** @enum {string} */
+    SearchLevelType: 'FULL' | 'PAT' | 'RUB' | 'RUB_A' | 'RUB_B' | 'STR'
+    /** @enum {string} */
     VisitType: 'IN_PERSON' | 'TELEPHONE' | 'VIDEO' | 'UNKNOWN'
+    /** @description Represents details of any equipment the visitor will bring to the visit. */
+    VisitorEquipment: {
+      /**
+       * @description A description of the equipment the visitor will bring
+       * @example Laptop
+       */
+      description: string
+    }
     /** @enum {string} */
     VisitorType: 'CONTACT' | 'OPV' | 'PRISONER'
     CreateOfficialVisitResponse: {
@@ -595,8 +612,6 @@ export interface components {
     }
     /** @enum {string} */
     RelationshipType: 'OFFICIAL' | 'SOCIAL'
-    /** @enum {string} */
-    SearchLevelType: 'FULL' | 'PAT' | 'RUB' | 'RUB_A' | 'RUB_B' | 'STR'
     /** @enum {string} */
     VisitCompletionType:
       | 'NORMAL'
@@ -987,6 +1002,168 @@ export interface components {
       totalActive: number
       /** Format: int32 */
       totalExpired: number
+    }
+    OfficialVisitDetails: {
+      /**
+       * Format: int64
+       * @description The official visit id
+       * @example 1
+       */
+      officialVisitId: number
+      /** @description The prisoner code */
+      prisonCode: string
+      /** @description The Official visit prison description */
+      prisonDescription?: string
+      /** @description The Official visit status type */
+      visitStatus: components['schemas']['VisitStatusType']
+      /**
+       * @description The Official visit status description
+       * @example Visit Status
+       */
+      visitStatusDescription?: string
+      /**
+       * @description The Official visit visit type
+       * @example AP
+       */
+      visitTypeCode: components['schemas']['VisitType']
+      /** @description The Official visit type description */
+      visitTypeDescription: string
+      /**
+       * Format: date
+       * @description The Official visit date
+       */
+      visitDate: string
+      /** @description The Official visit start time */
+      startTime: string
+      /** @description The Official visit end time */
+      endTime: string
+      /**
+       * Format: uuid
+       * @description The Official visit Location Id
+       */
+      dpsLocationId: string
+      /** @description The Official visit location description */
+      locationDescription?: string
+      /**
+       * Format: int64
+       * @description The Official visit - visitor slot slot identifier for the official visit takes place
+       */
+      visitSlotId?: number
+      /** @description The Official visit - staff notes */
+      staffNotes?: string
+      /** @description The Official visit - prisoner notes */
+      prisonerNotes?: string
+      /** @description The Official visit - visitor concern notes */
+      visitorConcernNotes?: string
+      /** @description The Official visit completion type */
+      completionCode?: components['schemas']['VisitCompletionType']
+      /** @description The Official visit creation description */
+      completionDescription?: string
+      /** @description The Official visit Search Level type */
+      searchTypeCode?: components['schemas']['SearchLevelType']
+      /** @description The Official visit search type */
+      searchTypeDescription?: string
+      /**
+       * Format: date-time
+       * @description The Official visit creation time
+       */
+      createdTime: string
+      /** @description The Official visit created by User */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The Official visit updated date time
+       */
+      updatedTime?: string
+      /** @description The Official visit updated by user */
+      updatedBy?: string
+      /** @description The Official visit updated by user */
+      officialVisitors?: components['schemas']['OfficialVisitorDetails'][]
+      /** @description The Prisoner Information */
+      prisonerVisited?: components['schemas']['PrisonerVisitedDetails']
+    }
+    OfficialVisitorDetails: {
+      /** @description The Official visitor Visit Type code */
+      visitorTypeCode: components['schemas']['VisitorType']
+      /** @description The Official visitor TypeDescription */
+      visitorTypeDescription?: string
+      /** @description The Official visitor first name */
+      firstName?: string
+      /** @description The Official visitor last name */
+      lastName?: string
+      /**
+       * Format: int64
+       * @description The Official visitor contact id
+       */
+      contactId?: number
+      /**
+       * Format: int64
+       * @description The prisoner contact id
+       */
+      prisonerContactId?: number
+      /** @description The Official visitor relationship type code */
+      relationshipTypeCode?: components['schemas']['RelationshipType']
+      /** @description The Official visitor relationship Type Description */
+      relationshipTypeDescription?: string
+      /** @description The Official visitor relationship code */
+      relationshipCode?: string
+      /** @description The Official visitor - is lead visitor */
+      leadVisitor: boolean
+      /** @description The Official visitor - is assisted visit */
+      assistedVisit: boolean
+      /** @description The Official visitor visitor notes */
+      visitorNotes?: string
+      /** @description The Official visitor attendance type */
+      attendanceCode?: components['schemas']['AttendanceType']
+      /** @description The Official visitor attendance description */
+      attendanceDescription?: string
+      /** @description The Official visitor created by user */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The Official visitor created date time
+       */
+      createdTime: string
+      /** @description The Official visitor updated by user */
+      updatedBy?: string
+      /**
+       * Format: date-time
+       * @description The Official visitor updated date time
+       */
+      updatedTime?: string
+      /**
+       * Format: int64
+       * @description The Official visitor offender visit visitor id
+       */
+      offenderVisitVisitorId?: number
+    }
+    PrisonerVisitedDetails: {
+      /**
+       * @description The official visitor - prisoner number
+       * @example 1
+       */
+      prisonerNumber: string
+      /** @description The official visitor Prisoner code */
+      prisonCode: string
+      /** @description The official visitor - Prisoner first name */
+      firstName?: string
+      /** @description The official visitor prisoner last name */
+      lastName?: string
+      /**
+       * Format: date
+       * @description The official visitor - Prisoner date of birth
+       */
+      dateOfBirth?: string
+      /** @description Prisoner Cell location */
+      cellLocation?: string
+      /** @description Prisoner middle name */
+      middleNames?: string
+      /** @description Prisoner offender boo id */
+      offenderBookId?: string
+      /** @description Prisoner attendance code */
+      attendanceCode?: string
+      /** @description Prisoner attendance code */
+      attendanceCodeDescription?: string
     }
     AvailableSlot: {
       /**
