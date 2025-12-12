@@ -286,11 +286,6 @@ export interface components {
       /** Format: int64 */
       prisonVisitSlotId: number
       /**
-       * @description The prison code for the prisoner
-       * @example PVI
-       */
-      prisonCode: string
-      /**
        * @description The prisoner number (NOMIS ID)
        * @example A1234AA
        */
