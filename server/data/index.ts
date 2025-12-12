@@ -31,7 +31,6 @@ export const dataAccess = () => {
 
   return {
     applicationInfo,
-    hmppsAuthClient,
     locationsInPrisonApi: new LocationsInPrisonApiClient(hmppsAuthClient),
     prisonerSearchApi: new PrisonerSearchApiClient(hmppsAuthClient),
     officialVisitsApi: new OfficialVisitsApiClient(hmppsAuthClient),
@@ -45,7 +44,6 @@ export const dataAccess = () => {
 export type DataAccess = ReturnType<typeof dataAccess>
 
 export {
-  AuthenticationClient,
   HmppsAuditClient,
   LocationsInPrisonApiClient,
   PrisonerSearchApiClient,

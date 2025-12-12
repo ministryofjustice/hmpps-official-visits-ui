@@ -11,7 +11,6 @@ export const services = () => {
   const {
     applicationInfo,
     hmppsAuditClient,
-    hmppsAuthClient,
     locationsInPrisonApi,
     prisonerSearchApi,
     officialVisitsApi,
@@ -22,7 +21,6 @@ export const services = () => {
 
   return {
     applicationInfo,
-    hmppsAuthClient,
     auditService: new AuditService(hmppsAuditClient),
     locationsService: new LocationsService(locationsInPrisonApi),
     prisonerService: new PrisonerService(prisonerSearchApi),

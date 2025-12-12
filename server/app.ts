@@ -47,7 +47,6 @@ export default function createApp(services: Services): express.Application {
     getFrontendComponents({
       requestOptions: { includeSharedData: true },
       componentApiConfig: config.apis.componentApi,
-      authenticationClient: services.hmppsAuthClient,
       dpsUrl: config.serviceUrls.digitalPrison,
     }),
   )
