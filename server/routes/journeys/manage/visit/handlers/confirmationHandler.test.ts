@@ -1,7 +1,6 @@
 import type { Express } from 'express'
 import request from 'supertest'
 import * as cheerio from 'cheerio'
-import { expect } from '@playwright/test'
 import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetup'
 import AuditService, { Page } from '../../../../../services/auditService'
 import PrisonerService from '../../../../../services/prisonerService'
