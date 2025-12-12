@@ -13,7 +13,7 @@ export default class ConfirmationHandler implements PageHandler {
   ) {}
 
   public GET = async (req: Request, res: Response) => {
-    const prisonCode = res.locals.feComponents.sharedData.activeCaseLoad.caseLoadId
+    const prisonCode = req.session.activeCaseLoadId
     const visit = await this.officialVisitsService.getOfficialVisitById(
       prisonCode,
       Number(req.params.officialVisitId),

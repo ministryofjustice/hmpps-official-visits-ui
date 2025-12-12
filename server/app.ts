@@ -2,7 +2,7 @@ import express from 'express'
 
 import createError from 'http-errors'
 
-import { getFrontendComponents } from '@ministryofjustice/hmpps-connect-dps-components'
+import { getFrontendComponents, retrieveCaseLoadData } from '@ministryofjustice/hmpps-connect-dps-components'
 
 import nunjucksSetup from './utils/nunjucksSetup'
 import errorHandler from './errorHandler'
@@ -51,6 +51,7 @@ export default function createApp(services: Services): express.Application {
     }),
   )
 
+  app.use(retrieveCaseLoadData({ prisonApiConfig: config.apis.prisonApi }))
   app.use(breadcrumbs())
   app.use(routes(services))
 
