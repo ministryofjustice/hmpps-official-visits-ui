@@ -10,22 +10,18 @@ export default class ConfirmationHandler implements PageHandler {
   constructor(
     private readonly officialVisitsService: OfficialVisitsService,
     private readonly prisonerService: PrisonerService,
-  ) {}
+  ) { }
 
   public GET = async (req: Request, res: Response) => {
-    const visit = req.session.journey.officialVisit
-    const { prisoner } = visit
+    const visit = await this.officialVisitsService.getOfficialVisitById(req.session.journey.officialVisit.prisonCode, Number(req.params.officialVisitId), res.locals.user)
+    const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerNumber, res.locals.user)
 
     req.session.journey.journeyCompleted = true
-    req.session.journey.officialVisit = null
+    req.session.journey.officialVisit = {
+      // Persisting prisonCode for now
+      prisonCode: req.session.journey.officialVisit.prisonCode,
+    }
 
     res.render('pages/manage/confirmVisit', { visit, prisoner })
-
-    // const officialVisitId = Number(req.params.officialVisitId)
-    // const { user } = res.locals
-
-    // const visit = await this.officialVisitsService.getOfficialVisitById(officialVisitId, user)
-    // const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerNumber, user)
-    // res.render('pages/manage/confirmVisit', { visit, prisoner })
   }
 }

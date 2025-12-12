@@ -6,7 +6,8 @@
 {# {% from "partials/formatCvpLink.njk" import formatCvpLink %} #}
 
 {% set mode = session.req.routeContext.mode %}
-{% set pageTitle = "The visit has been booked" if mode == 'create' else 'The visit has been updated' %}
+{% set pageTitle = "Official visit booked for " + (
+prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase %}
 {% set hideBackLink = true %}
 
 {% block content %}
@@ -14,44 +15,21 @@
     <div class="govuk-grid-column-two-thirds">
       {{ govukPanel({ titleText: pageTitle, classes: 'govuk-!-margin-bottom-6' }) }}
 
-      <h2 class='govuk-heading-m'>Visit details</h2>
-      {{ govukSummaryList({
-        rows: [
-          {
-            key: {
-              text: "Name"
-            },
-            value: {
-              text: ((prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase) + ' (' + prisoner.prisonerNumber + ')'
-            }
-          },
-          {
-            key: {
-              text: "Prison"
-            },
-            value: {
-              text: prison.name
-            }
-          },
-          {
-            key: {
-              text: "Date"
-            },
-            value: {
-              text: visit.visitDate | formatDate
-            }
-          }
-        ],
-        attributes: { 'data-qa': 'confirmation-details' }
-      }) }}
+      <p>You have successfully scheduled an official visit with:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for contact in visit.officialVisitors %}
+          <li>{{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }} ({{ contact.relationshipToPrisonerDescription or 'TODO' }})</li>
+        {% endfor %}
+      </ul>
 
-      <div class="govuk-button-group">
-        {% if mode == 'create' %}
-          {{ govukButton({ text: "Exit to main menu", href: '/' }) }}
-        {% else %}
-          {{ govukButton({ text: "Return to view visit", href: '/view/' + visit.officialVisitId }) }}
-        {% endif %}
-      </div>
+      <p>The visit will take place on {{ visit.visitDate | formatDate("EEEE, d MMMM yyyy") }} from {{ (visit.startTime | timeStringTo12HourPretty) + ' to ' + (visit.endTime | timeStringTo12HourPretty) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' }} in {{ visit.location or 'TODO' }}.</p>
+
+      <h2 class='govuk-heading-m'>What you can do next</h2>
+
+      <a href="" class="govuk-link">Download confirmation</a>
+      <a href="" class="govuk-link">View visit</a>
+      <a href="" class="govuk-link">Schedule another visit</a>
+      <a href="" class="govuk-link">Print a movement slip</a>
 
     </div>
   </div>
