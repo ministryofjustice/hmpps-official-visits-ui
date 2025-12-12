@@ -1,6 +1,6 @@
 import { components } from '../../../../@types/officialVisitsApi'
 import { PrisonerRestrictionDetails } from '../../../../@types/personalRelationshipsApi/types'
-import { ApprovedContact } from '../../../../@types/officialVisitsApi/types'
+import { ApprovedContact, VisitStatusType, VisitType } from '../../../../@types/officialVisitsApi/types'
 
 export type OfficialVisitJourney = {
   searchTerm?: string
@@ -8,9 +8,9 @@ export type OfficialVisitJourney = {
   officialVisitId?: number
   prisonCode?: string
   prisonName?: string
-  visitStatusCode?: string
+  visitStatusCode?: VisitStatusType
   visitStatusDescription?: string
-  visitType?: string
+  visitType?: VisitType
   visitTypeDescription?: string
   visitDate?: string
   startTime?: string

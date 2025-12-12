@@ -293,10 +293,10 @@ export interface components {
        */
       dpsLocationId: string
       /**
-       * @description The visit type code (VIDEO, IN_PERSON, TELEPHONE)
+       * @description The visit type code
        * @example IN_PERSON
        */
-      visitTypeCode: string
+      visitTypeCode: components['schemas']['VisitType']
       /**
        * @description Notes for staff that will not be shared on movement slips
        * @example Staff notes
@@ -311,15 +311,10 @@ export interface components {
     }
     OfficialVisitor: {
       /**
-       * @description The visitor type code
+       * @description The visitor type code (CONTACT, OPV, PRISONER)
        * @example CONTACT
        */
-      visitorTypeCode: string
-      /**
-       * @description The contact type code
-       * @example OFFICIAL
-       */
-      contactTypeCode: string
+      visitorTypeCode: components['schemas']['VisitorType']
       /**
        * Format: int64
        * @description The contact ID for the visitor
@@ -333,15 +328,10 @@ export interface components {
        */
       prisonerContactId?: number
       /**
-       * @description The first name of the contact
-       * @example Bob
+       * @description The relationship code
+       * @example POM
        */
-      firstName?: string
-      /**
-       * @description The last name of the contact
-       * @example Harris
-       */
-      lastName?: string
+      relationshipCode: string
       /**
        * @description Set to true if this is the lead visitor
        * @example false
@@ -358,6 +348,10 @@ export interface components {
        */
       visitorNotes?: string
     }
+    /** @enum {string} */
+    VisitType: 'IN_PERSON' | 'TELEPHONE' | 'VIDEO' | 'UNKNOWN'
+    /** @enum {string} */
+    VisitorType: 'CONTACT' | 'OPV' | 'PRISONER'
     CreateOfficialVisitResponse: {
       /** Format: int64 */
       officialVisitId: number
@@ -370,18 +364,8 @@ export interface components {
       developerMessage?: string
       moreInfo?: string
     }
-    CodedValue: {
-      /**
-       * @description A coded value from NOMIS reference data
-       * @example CODE
-       */
-      code?: string
-      /**
-       * @description The description for this coded value in NOMIS
-       * @example Description
-       */
-      description?: string
-    }
+    /** @enum {string} */
+    AttendanceType: 'ATTENDED' | 'ABSENT'
     MigrateVisitRequest: {
       /**
        * Format: int64
@@ -402,7 +386,7 @@ export interface components {
       prisonCode: string
       /**
        * Format: int64
-       * @description The offender book ID to echo back
+       * @description The offender book ID to echo back. It will be stored in DPS against the visit.
        * @example 74748
        */
       offenderBookId: number
@@ -412,7 +396,7 @@ export interface components {
        */
       prisonerNumber: string
       /**
-       * @description If this visits relates to the current term (booking) in prison true, else false.
+       * @description If this visits relates to the current or latest term (booking) in prison true, else false.
        * @example true
        */
       currentTerm: boolean
@@ -434,39 +418,51 @@ export interface components {
       endTime: string
       /**
        * Format: uuid
-       * @description The DPS location where the visit takes place
+       * @description The DPS location where the visit takes place.
        * @example aaaa-bbbb-xxxxxxxx-yyyyyyyy
        */
       dpsLocationId: string
       /**
-       * @description The visit status code from NOMIS
-       * @example SCH
+       * @description The DPS visit status code. The Syscon migration service will map the NOMIS state to a value in this enumerated type.
+       * @example SCHEDULED
        */
-      visitStatusCode: components['schemas']['CodedValue']
+      visitStatusCode: components['schemas']['VisitStatusType']
       /**
-       * @description The comment text from NOMIS
+       * @description The DPS visit type code. For migrated NOMIS visits this will default to type UNKNOWN. Other values are IN_PERSON, VIDEO, or TELEPHONE.
+       * @example UNKNOWN
+       */
+      visitTypeCode?: components['schemas']['VisitType']
+      /**
+       * @description The visit comment text
        * @example This is a comment
        */
       commentText?: string
       /**
-       * @description The search type code from NOMIS
+       * @description The prisoner search type code. Maps to the same reference code values in both NOMIS and DPS.
        * @example RUB_A
        */
-      searchTypeCode?: components['schemas']['CodedValue']
-      /** @description The event outcome code NOMIS */
-      eventOutcomeCode?: components['schemas']['CodedValue']
-      /** @description The outcome reason code NOMIS */
-      outcomeReasonCode?: components['schemas']['CodedValue']
+      searchTypeCode?: components['schemas']['SearchLevelType']
       /**
-       * @description Concerns raised by the visitor
-       * @example Visitor concern notes
+       * @description The DPS visit completion code. Default is NORMAL if not supplied.
+       * @example NORMAL
+       */
+      visitCompletionCode?: components['schemas']['VisitCompletionType']
+      /**
+       * @description Visit concern text from NOMIS
+       * @example I am concerned
        */
       visitorConcernText?: string
       /**
-       * @description The staff username who authorised an override for a ban
+       * @description The staff username who authorised an override for a ban for this visit
        * @example X3243H
        */
       overrideBanStaffUsername?: string
+      /**
+       * Format: int64
+       * @description The visit order number (if present) for the official visit
+       * @example 12344
+       */
+      visitOrderNumber?: number
       /**
        * Format: date-time
        * @description The data and time the record was created
@@ -521,8 +517,16 @@ export interface components {
        * @example 2011-01-03
        */
       dateOfBirth?: string
-      /** @description The coded relationships between this visitor and the prisoner */
-      relationshipToPrisoner?: components['schemas']['CodedValue']
+      /**
+       * @description The relationship type OFFICIAL or SOCIAL. Default is null if not known.
+       * @example OFFICIAL
+       */
+      relationshipTypeCode?: components['schemas']['RelationshipType']
+      /**
+       * @description The relationship code between visitor and prisoner, from NOMIS reference data. A null value will indicate no relationship.
+       * @example POL
+       */
+      relationshipToPrisoner?: string
       /**
        * @description Set to true if this person is the lead visitor. Defaults to false if not supplied.
        * @example true
@@ -534,14 +538,15 @@ export interface components {
        */
       assistedVisitFlag?: boolean
       /**
-       * @description The comment text from NOMIS
-       * @example Comment text
+       * @description The visitor comment text from NOMIS
+       * @example Some comments
        */
       commentText?: string
-      /** @description The visitor event outcome code from NOMIS */
-      eventOutcomeCode?: components['schemas']['CodedValue']
-      /** @description The visitor outcome reason code from NOMIS */
-      outcomeReasonCode?: components['schemas']['CodedValue']
+      /**
+       * @description The visitor attendance code (ATTENDED or ABSENT). A null indicates no attendance was added.
+       * @example ATTENDED
+       */
+      attendanceCode?: components['schemas']['AttendanceType']
       /**
        * Format: date-time
        * @description The data and time the record was created
@@ -565,6 +570,24 @@ export interface components {
        */
       modifyUsername?: string
     }
+    /** @enum {string} */
+    RelationshipType: 'OFFICIAL' | 'SOCIAL'
+    /** @enum {string} */
+    SearchLevelType: 'FULL' | 'PAT' | 'RUB' | 'RUB_A' | 'RUB_B' | 'STR'
+    /** @enum {string} */
+    VisitCompletionType:
+      | 'NORMAL'
+      | 'STAFF_CANCELLED'
+      | 'VISITOR_CANCELLED'
+      | 'VISITOR_DENIED'
+      | 'PRISONER_EARLY'
+      | 'VISITOR_EARLY'
+      | 'PRISONER_REFUSED'
+      | 'STAFF_EARLY'
+      | 'PRISONER_CANCELLED'
+      | 'VISITOR_NO_SHOW'
+    /** @enum {string} */
+    VisitStatusType: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'EXPIRED'
     IdPair: {
       /**
        * @description The category of information returned
@@ -771,7 +794,7 @@ export interface components {
       /** Format: int64 */
       contactId?: number
       visitorTypeCode?: string
-      contactTypeCode?: string
+      relationshipTypeCode?: string
       relationshipCode?: string
       firstName?: string
       lastName?: string
@@ -782,7 +805,7 @@ export interface components {
     ReferenceDataGroup:
       | 'ATTENDANCE'
       | 'DAY'
-      | 'CONTACT_TYPE'
+      | 'RELATIONSHIP_TYPE'
       | 'SEARCH_LEVEL'
       | 'TEST_TYPE'
       | 'VIS_COMPLETION'
@@ -804,7 +827,7 @@ export interface components {
       groupCode: components['schemas']['ReferenceDataGroup']
       /**
        * @description The code for this reference data
-       * @example SCH
+       * @example SCHEDULED
        */
       code: string
       /**
@@ -1000,6 +1023,11 @@ export interface components {
        * @description The available groups for official visit slot
        */
       availableGroups: number
+      /**
+       * @description The description of the location where this slot exists
+       * @example Legal visits room 8
+       */
+      locationDescription?: string
     }
   }
   responses: never

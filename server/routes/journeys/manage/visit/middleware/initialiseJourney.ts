@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express'
 import { parse } from 'date-fns'
 import { Services } from '../../../../../services'
+import { VisitStatusType, VisitType } from '../../../../../@types/officialVisitsApi/types'
 
 /**
  * This middleware will populate the official visit journey data for the requested officialVisitId
@@ -32,9 +33,9 @@ export default ({ officialVisitsService, prisonerService }: Services): RequestHa
       officialVisitId: Number(officialVisitId),
       prisonCode: visit.prisonCode,
       prisonName: visit.prisonName,
-      visitStatusCode: visit.visitStatusCode,
+      visitStatusCode: visit.visitStatusCode as VisitStatusType,
       visitStatusDescription: visit.visitStatusDescription,
-      visitType: visit.visitType,
+      visitType: visit.visitType as VisitType,
       visitTypeDescription: visit.visitTypeDescription,
       visitDate: parseDateToISOString(visit.visitDate),
       startTime: parseTimeToISOString(visit.startTime),

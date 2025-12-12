@@ -2,6 +2,8 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import { CreateOfficialVisitRequest } from '../../../../../@types/officialVisitsApi/types'
+import logger from '../../../../../../logger'
 
 export default class CheckYourAnswersHandler implements PageHandler {
   public PAGE_NAME = Page.CHECK_YOUR_ANSWERS_PAGE
@@ -11,6 +13,9 @@ export default class CheckYourAnswersHandler implements PageHandler {
   public GET = async (req: Request, res: Response) => {
     const { officialVisit } = req.session.journey
     const { prisoner } = officialVisit
+
+    logger.info(`CYA session is ${JSON.stringify(officialVisit, null, 2)}`)
+
     req.session.journey.reachedCheckAnswers = true
     return res.render('pages/manage/checkYourAnswers', {
       visit: officialVisit,
@@ -55,7 +60,7 @@ export default class CheckYourAnswersHandler implements PageHandler {
             relationshipTypeDescription: o.relationshipTypeDescription,
             visitorNotes: o.assistanceNotes,
           })),
-        },
+        } as unknown as CreateOfficialVisitRequest,
         user,
       )
       return res.redirect(`confirmation/${id}`)
