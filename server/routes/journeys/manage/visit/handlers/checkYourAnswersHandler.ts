@@ -2,7 +2,6 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import { CreateOfficialVisitRequest } from '../../../../../@types/officialVisitsApi/types'
 import logger from '../../../../../../logger'
 
 export default class CheckYourAnswersHandler implements PageHandler {
@@ -31,44 +30,17 @@ export default class CheckYourAnswersHandler implements PageHandler {
     const visit = req.session.journey.officialVisit
     const timeSlot = visit.selectedTimeSlot
 
+    // TODO: Re-check this slot is still available
+    // TODO: Re-check number of visitors still fit into the available capacity of the slot
+    // Has someone else booked the slot whilst the user has been completing the journey?
+
     if (mode === 'create') {
-      // I see this happening by passing the journey session into a method in the
-      // officialVisitsService, and have it translate the session data into the
-      // createVisitRequest type required by the API.
-      const id = await this.officialVisitsService.createVisit(
-        {
-          prisonVisitSlotId: timeSlot.visitSlotId,
-          prisonCode: visit.prisonCode,
-          prisonerNumber: visit.prisoner.prisonerNumber,
-          visitDate: timeSlot.visitDate,
-          startTime: timeSlot.startTime,
-          endTime: timeSlot.endTime,
-          dpsLocationId: timeSlot.dpsLocationId,
-          visitTypeCode: visit.visitType,
-          staffNotes: '<TODO>',
-          prisonerNotes: '<TODO>',
-          officialVisitors: [...visit.officialVisitors, ...visit.socialVisitors].map(o => ({
-            visitorTypeCode: 'CONTACT',
-            contactTypeCode: o.relationshipTypeCode,
-            contactId: o.contactId,
-            prisonerContactId: o.prisonerContactId,
-            firstName: o.firstName,
-            lastName: o.lastName,
-            leadVisitor: o.leadVisitor,
-            assistVisit: o.assistedVisit,
-            relationshipTypeCode: o.relationshipTypeCode,
-            relationshipTypeDescription: o.relationshipTypeDescription,
-            visitorNotes: o.assistanceNotes,
-          })),
-        } as unknown as CreateOfficialVisitRequest,
-        user,
-      )
-      return res.redirect(`confirmation/${id}`)
+      const response = await this.officialVisitsService.createVisit(visit, user)
+      return res.redirect(`confirmation/${response.officialVisitId}`)
     }
 
     if (mode === 'amend') {
-      // Similar to above here - pass the session info and have it produce the required request type
-      await this.officialVisitsService.amendVisit(req.session.journey.officialVisit, user)
+      await this.officialVisitsService.amendVisit(visit, user)
     }
 
     return res.redirect(`confirmation`)
