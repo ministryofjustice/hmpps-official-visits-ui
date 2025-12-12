@@ -3,56 +3,43 @@
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{# {% from "partials/formatCvpLink.njk" import formatCvpLink %} #}
 
+{% set prisonerName = (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase %}
 {% set mode = session.req.routeContext.mode %}
-{% set pageTitle = "The visit has been booked" if mode == 'create' else 'The visit has been updated' %}
+{% set pageTitle = "Official visit booked for " + prisonerName%}
 {% set hideBackLink = true %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {{ govukPanel({ titleText: pageTitle, classes: 'govuk-!-margin-bottom-6' }) }}
+      {{ govukPanel({ titleText: "New official visit booked", html: "<b>Prisoner:</b> " + prisonerName + " (" + prisoner.prisonerNumber + ")" }) }}
 
-      <h2 class='govuk-heading-m'>Visit details</h2>
-      {{ govukSummaryList({
-        rows: [
-          {
-            key: {
-              text: "Name"
-            },
-            value: {
-              text: ((prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase) + ' (' + prisoner.prisonerNumber + ')'
-            }
-          },
-          {
-            key: {
-              text: "Prison"
-            },
-            value: {
-              text: prison.name
-            }
-          },
-          {
-            key: {
-              text: "Date"
-            },
-            value: {
-              text: visit.visitDate | formatDate
-            }
-          }
-        ],
-        attributes: { 'data-qa': 'confirmation-details' }
-      }) }}
+      <p>You have successfully scheduled an official visit with:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for contact in visit.officialVisitors %}
+          <li>{{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }} ({{ contact.visitorTypeDescription }})</li>
+        {% endfor %}
+      </ul>
 
-      <div class="govuk-button-group">
-        {% if mode == 'create' %}
-          {{ govukButton({ text: "Exit to main menu", href: '/' }) }}
-        {% else %}
-          {{ govukButton({ text: "Return to view visit", href: '/view/' + visit.officialVisitId }) }}
-        {% endif %}
-      </div>
+      <p id="visit-details">The visit will take place on {{ visit.visitDate | formatDate("EEEE, d MMMM yyyy") }} from {{ (visit.startTime | timeStringTo12HourPretty) + ' to ' + (visit.endTime | timeStringTo12HourPretty) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' }} in {{ visit.locationDescription }}.</p>
 
+      <h2 class='govuk-heading-m'>What you can do next</h2>
+
+      {# TODO: Add links to the correct pages #}
+      <ul class="govuk-list">
+        <li class="govuk-!-margin-bottom-2">
+          <a href="" class="govuk-link govuk-link--no-visited-state ">Download confirmation</a>
+        </li>
+        <li class="govuk-!-margin-bottom-2">
+          <a href="" class="govuk-link govuk-link--no-visited-state">View visit</a>
+        </li>
+        <li class="govuk-!-margin-bottom-2">
+          <a href="" class="govuk-link govuk-link--no-visited-state">Schedule another visit</a>
+        </li>
+        <li>
+          <a href="" class="govuk-link govuk-link--no-visited-state">Print a movement slip</a>
+        </li>
+      </ul>
     </div>
   </div>
 {% endblock %}

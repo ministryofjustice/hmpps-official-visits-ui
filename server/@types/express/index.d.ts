@@ -19,6 +19,7 @@ export declare module 'express-session' {
     nowInMinutes: number
     journey: Journey
     journeyData: Record<string, JourneyData>
+    activeCaseLoadId: string
   }
 }
 
@@ -41,6 +42,7 @@ export declare global {
       username: string
       token: string
       authSource: string
+      activeCaseLoad?: CaseLoad | undefined
     }
 
     interface Request {

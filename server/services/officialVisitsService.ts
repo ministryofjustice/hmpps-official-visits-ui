@@ -9,8 +9,8 @@ import { components } from '../@types/officialVisitsApi'
 export default class OfficialVisitsService {
   constructor(private readonly officialVisitsApiClient: OfficialVisitsApiClient) {}
 
-  public async getOfficialVisitById(visitId: number, user: HmppsUser): Promise<OfficialVisit> {
-    return this.officialVisitsApiClient.getOfficialVisitById(visitId, user)
+  public async getOfficialVisitById(prisonCode: string, visitId: number, user: HmppsUser): Promise<OfficialVisit> {
+    return this.officialVisitsApiClient.getOfficialVisitById(prisonCode, visitId, user)
   }
 
   public visitIsAmendable(date: Date, startTime: Date, visitStatusCode: string) {
