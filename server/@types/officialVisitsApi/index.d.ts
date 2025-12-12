@@ -615,7 +615,17 @@ export interface components {
     /** @enum {string} */
     RelationshipType: 'OFFICIAL' | 'SOCIAL'
     /** @enum {string} */
-    VisitCompletionType: 'NORMAL' | 'STAFF_CANCELLED' | 'VISITOR_CANCELLED' | 'VISITOR_DENIED' | 'PRISONER_EARLY' | 'VISITOR_EARLY' | 'PRISONER_REFUSED' | 'STAFF_EARLY' | 'PRISONER_CANCELLED' | 'VISITOR_NO_SHOW'
+    VisitCompletionType:
+      | 'NORMAL'
+      | 'STAFF_CANCELLED'
+      | 'VISITOR_CANCELLED'
+      | 'VISITOR_DENIED'
+      | 'PRISONER_EARLY'
+      | 'VISITOR_EARLY'
+      | 'PRISONER_REFUSED'
+      | 'STAFF_EARLY'
+      | 'PRISONER_CANCELLED'
+      | 'VISITOR_NO_SHOW'
     /** @enum {string} */
     VisitStatusType: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'EXPIRED'
     IdPair: {
@@ -832,7 +842,16 @@ export interface components {
       dpsLocationId: string
     }
     /** @enum {string} */
-    ReferenceDataGroup: 'ATTENDANCE' | 'DAY' | 'RELATIONSHIP_TYPE' | 'SEARCH_LEVEL' | 'TEST_TYPE' | 'VIS_COMPLETION' | 'VIS_STATUS' | 'VIS_TYPE' | 'VISITOR_TYPE'
+    ReferenceDataGroup:
+      | 'ATTENDANCE'
+      | 'DAY'
+      | 'RELATIONSHIP_TYPE'
+      | 'SEARCH_LEVEL'
+      | 'TEST_TYPE'
+      | 'VIS_COMPLETION'
+      | 'VIS_STATUS'
+      | 'VIS_TYPE'
+      | 'VISITOR_TYPE'
     /** @description Describes the details of a reference code */
     ReferenceDataItem: {
       /**

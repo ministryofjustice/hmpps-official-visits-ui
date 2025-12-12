@@ -3,11 +3,12 @@ import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import {
   CreateOfficialVisitRequest,
+  CreateOfficialVisitResponse,
   OfficialVisit,
   OfficialVisitor,
   SearchLevelType,
   VisitorEquipment,
-  VisitorType
+  VisitorType,
 } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
@@ -26,8 +27,8 @@ export default class OfficialVisitsService {
     return true
   }
 
-  public async createVisit(sessionVisit: OfficialVisitJourney, user: HmppsUser) {
-    // Populate request from session object
+  public async createVisit(sessionVisit: OfficialVisitJourney, user: HmppsUser): Promise<CreateOfficialVisitResponse> {
+    // Populate the create visit request from the session object
     const request = {
       prisonVisitSlotId: sessionVisit.selectedTimeSlot.visitSlotId,
       prisonCode: sessionVisit.prisonCode,
@@ -37,9 +38,9 @@ export default class OfficialVisitsService {
       endTime: sessionVisit.selectedTimeSlot.endTime,
       dpsLocationId: sessionVisit.selectedTimeSlot.dpsLocationId,
       visitTypeCode: sessionVisit.visitType,
-      staffNotes: sessionVisit.staffNotes,  // Will be supplied from another comments box
+      staffNotes: sessionVisit.staffNotes, // Not supplied by UI journey yet
       prisonerNotes: sessionVisit.prisonerNotes,
-      searchTypeCode: 'FULL' as SearchLevelType,
+      searchTypeCode: 'FULL' as SearchLevelType, // Not supplied by UI journey yet
       officialVisitors: [...sessionVisit.officialVisitors, ...sessionVisit.socialVisitors].map(o => ({
         visitorTypeCode: 'CONTACT' as VisitorType,
         contactId: o.contactId,
@@ -54,7 +55,9 @@ export default class OfficialVisitsService {
       })) as OfficialVisitor[],
     } as CreateOfficialVisitRequest
 
-    return await this.officialVisitsApiClient.createOfficialVisit(request, user)
+    logger.info(`Create visit request ${JSON.stringify(request, null, 2)}`)
+
+    return this.officialVisitsApiClient.createOfficialVisit(sessionVisit.prisonCode, request, user)
   }
 
   public async amendVisit(sessionVisit: OfficialVisitJourney, user: HmppsUser) {
