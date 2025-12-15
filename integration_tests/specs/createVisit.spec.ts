@@ -30,7 +30,7 @@ const mockPrisoner = {
   cellLocation: 'LEI-1-1',
   pncNumber: '429',
   croNumber: '123456/12A',
-  prisonCode: 'LEI',
+  prisonId: 'LEI',
 }
 
 test.describe('Create an official visit', () => {
