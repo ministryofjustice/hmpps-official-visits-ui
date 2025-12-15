@@ -13,7 +13,7 @@ export default class EquipmentHandler implements PageHandler {
   public GET = async (req: Request, res: Response) => {
     const contacts = [
       ...req.session.journey.officialVisit.officialVisitors,
-      ...req.session.journey.officialVisit.socialVisitors,
+      ...(req.session.journey.officialVisit.socialVisitors || []),
     ].filter(o => o.prisonerContactId)
 
     res.render('pages/manage/equipment', {
@@ -36,7 +36,7 @@ export default class EquipmentHandler implements PageHandler {
 }
 
 const getSelected = (contacts: ApprovedContact[], body: ContactRelationship[]) => {
-  return contacts
+  return (contacts || [])
     .map(contact => {
       const foundContact = body.find(o => o.prisonerContactId === contact.prisonerContactId)
       return foundContact

@@ -14,7 +14,9 @@ import {
   isBefore,
 } from 'date-fns'
 import { enGB } from 'date-fns/locale'
+import { Request } from 'express'
 import { components } from '../@types/officialVisitsApi'
+import config from '../config'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -206,4 +208,10 @@ export const getTimeDiff = (start: string, end: string): number => {
   const d2 = new Date(0, 0, 1, eh, em, es || 0)
 
   return d2.getTime() - d1.getTime()
+}
+
+export const socialVisitorsPageEnabled = (req: Request) => {
+  return config.featureToggles.allowSocialVisitorsPrisoners
+    .split(',')
+    .includes(req.session.journey.officialVisit.prisonCode)
 }

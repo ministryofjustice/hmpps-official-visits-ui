@@ -5,6 +5,7 @@ import { schema, SchemaType } from './selectOfficialVisitorsSchema'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
 import { recallContacts, saveVisitors } from '../createJourneyState'
+import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 
 export default class SelectOfficialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_OFFICIAL_VISITORS_PAGE
@@ -64,6 +65,6 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
         .filter((o: JourneyVisitor) => o),
     )
 
-    return res.redirect(`select-social-visitors`)
+    return res.redirect(socialVisitorsPageEnabled(req as Request) ? `select-social-visitors` : `assistance-required`)
   }
 }

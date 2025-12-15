@@ -59,6 +59,8 @@ generic-service:
     #   AUDIT_SQS_QUEUE_URL: 'sqs_queue_url'
     maintenance:
       MAINTENANCE_MODE: "maintenance_mode"
+    feature-toggles:
+      ALLOW_SOCIAL_VISITORS_PRISONERS: 'allow_social_visitors_prisoners'
 
   allowlist:
     groups:

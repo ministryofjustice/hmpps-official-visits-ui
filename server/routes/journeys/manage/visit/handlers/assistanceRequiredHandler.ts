@@ -4,6 +4,7 @@ import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { schema, SchemaType } from './assistanceRequiredSchema'
 import { ApprovedContact, ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
+import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 
 export default class AssistanceRequiredHandler implements PageHandler {
   public PAGE_NAME = Page.ASSISTANCE_REQUIRED_PAGE
@@ -15,12 +16,12 @@ export default class AssistanceRequiredHandler implements PageHandler {
   public GET = async (req: Request, res: Response) => {
     const contacts = [
       ...req.session.journey.officialVisit.officialVisitors,
-      ...req.session.journey.officialVisit.socialVisitors,
+      ...(req.session.journey.officialVisit.socialVisitors || []),
     ].filter(o => o.prisonerContactId)
 
     res.render('pages/manage/assistanceRequired', {
       contacts,
-      backUrl: `select-social-visitors`,
+      backUrl: socialVisitorsPageEnabled(req as Request) ? `select-social-visitors` : `select-official-visitors`,
       prisoner: req.session.journey.officialVisit.prisoner,
     })
   }
@@ -36,7 +37,7 @@ export default class AssistanceRequiredHandler implements PageHandler {
 }
 
 const getSelected = (contacts: ApprovedContact[], body: ContactRelationship[]) => {
-  return contacts
+  return (contacts || [])
     .map(contact => {
       const foundContact = body.find(o => o.prisonerContactId === contact.prisonerContactId)
       return foundContact

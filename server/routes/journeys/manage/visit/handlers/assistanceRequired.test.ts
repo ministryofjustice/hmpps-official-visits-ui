@@ -12,6 +12,7 @@ import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutil
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
 import { VisitType } from '../../../../../@types/officialVisitsApi/types'
+import config from '../../../../../config'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -26,6 +27,7 @@ const defaultJourneySession = () => ({
   officialVisit: {
     prisoner,
     visitType: 'IN_PERSON',
+    prisonCode: 'MDI',
     officialVisitors: [
       {
         firstName: 'John',
@@ -46,6 +48,7 @@ const defaultJourneySession = () => ({
 })
 
 const appSetup = (journeySession = defaultJourneySession()) => {
+  config.featureToggles.allowSocialVisitorsPrisoners = 'MDI'
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService },
     userSupplier: () => user,
@@ -75,6 +78,33 @@ describe('Assistance required handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
+          expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
+
+          expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').val()).toEqual('111')
+          expect(getArrayItemPropById($, 'assistanceRequired', 1, 'id').val()).toEqual('222')
+
+          expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').attr('checked')).toBeFalsy()
+          expect(getArrayItemPropById($, 'assistanceRequired', 1, 'id').attr('checked')).toBeFalsy()
+
+          expect($('.govuk-checkboxes__label').eq(0).text()).toContain('John Dasolicitor (Solicitor)')
+          expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Jane Dafriend (Friend)')
+          expect($('.govuk-back-link').attr('href')).toEqual('select-social-visitors')
+
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.ASSISTANCE_REQUIRED_PAGE, {
+            who: user.username,
+            correlationId: expect.any(String),
+          })
+        })
+    })
+
+    it('should go back to official visitors page when social visitors is disabled for the prison', () => {
+      config.featureToggles.allowSocialVisitorsPrisoners = ''
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          const heading = getPageHeader($)
 
           expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
 
@@ -86,6 +116,7 @@ describe('Assistance required handler', () => {
 
           expect($('.govuk-checkboxes__label').eq(0).text()).toContain('John Dasolicitor (Solicitor)')
           expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Jane Dafriend (Friend)')
+          expect($('.govuk-back-link').attr('href')).toEqual('select-official-visitors')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.ASSISTANCE_REQUIRED_PAGE, {
             who: user.username,
