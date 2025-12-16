@@ -17,6 +17,7 @@ import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockOfficialVisitors, mockPrisonerRestrictions, prisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
+import config from '../../../../../config'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -35,10 +36,12 @@ const appSetup = (
         ...prisoner,
         restrictions: mockPrisonerRestrictions,
       },
+      prisonCode: 'MDI',
       availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
     },
   },
 ) => {
+  config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService },
     userSupplier: () => user,
@@ -169,6 +172,7 @@ describe('Select official visitors', () => {
             ...prisoner,
             restrictions: [],
           },
+          prisonCode: 'MDI',
           availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
         },
       })
@@ -226,7 +230,7 @@ describe('Select official visitors', () => {
         )
     })
 
-    it('should accept the selection of one official visitor', async () => {
+    it('should accept the selection of one official visitor and redirect to social visitors page', async () => {
       await request(app)
         .post(URL)
         .send({ selected: ['1'] })
@@ -238,7 +242,21 @@ describe('Select official visitors', () => {
       expect(journeySession.officialVisitors).toHaveLength(1)
     })
 
+    it('should accept the selection of one official visitor and redirect to assistance page', async () => {
+      config.featureToggles.allowSocialVisitorsPrisons = ''
+      await request(app)
+        .post(URL)
+        .send({ selected: ['1'] })
+        .expect(302)
+        .expect('location', 'assistance-required')
+        .expect(() => expectNoErrorMessages())
+
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.officialVisitors).toHaveLength(1)
+    })
+
     it('should accept the selection of two or more official visitors', async () => {
+      config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
       await request(app)
         .post(URL)
         .send({ selected: ['1', '2', '3'] })
