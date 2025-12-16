@@ -48,7 +48,7 @@ const defaultJourneySession = () => ({
 })
 
 const appSetup = (journeySession = defaultJourneySession()) => {
-  config.featureToggles.allowSocialVisitorsPrisoners = 'MDI'
+  config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService },
     userSupplier: () => user,
@@ -98,7 +98,7 @@ describe('Assistance required handler', () => {
     })
 
     it('should go back to official visitors page when social visitors is disabled for the prison', () => {
-      config.featureToggles.allowSocialVisitorsPrisoners = ''
+      config.featureToggles.allowSocialVisitorsPrisons = ''
       return request(app)
         .get(URL)
         .expect('Content-Type', /html/)

@@ -60,7 +60,7 @@ generic-service:
     maintenance:
       MAINTENANCE_MODE: "maintenance_mode"
     feature-toggles:
-      ALLOW_SOCIAL_VISITORS_PRISONERS: 'allow_social_visitors_prisoners'
+      ALLOW_SOCIAL_VISITORS_PRISONS: 'allow_social_visitors_prisons'
 
   allowlist:
     groups:

@@ -150,6 +150,6 @@ export default {
   environmentName: get('ENVIRONMENT_NAME', ''),
   maintenanceMode: get('MAINTENANCE_MODE', 'false') === 'true',
   featureToggles: {
-    allowSocialVisitorsPrisoners: get('ALLOW_SOCIAL_VISITORS_PRISONERS', ''),
+    allowSocialVisitorsPrisons: get('ALLOW_SOCIAL_VISITORS_PRISONS', ''),
   },
 }

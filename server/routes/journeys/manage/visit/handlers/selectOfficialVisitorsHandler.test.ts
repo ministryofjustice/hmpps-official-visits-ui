@@ -41,7 +41,7 @@ const appSetup = (
     },
   },
 ) => {
-  config.featureToggles.allowSocialVisitorsPrisoners = 'MDI'
+  config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService },
     userSupplier: () => user,
@@ -243,7 +243,7 @@ describe('Select official visitors', () => {
     })
 
     it('should accept the selection of one official visitor and redirect to assistance page', async () => {
-      config.featureToggles.allowSocialVisitorsPrisoners = ''
+      config.featureToggles.allowSocialVisitorsPrisons = ''
       await request(app)
         .post(URL)
         .send({ selected: ['1'] })
@@ -256,7 +256,7 @@ describe('Select official visitors', () => {
     })
 
     it('should accept the selection of two or more official visitors', async () => {
-      config.featureToggles.allowSocialVisitorsPrisoners = 'MDI'
+      config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
       await request(app)
         .post(URL)
         .send({ selected: ['1', '2', '3'] })

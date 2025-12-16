@@ -211,7 +211,7 @@ export const getTimeDiff = (start: string, end: string): number => {
 }
 
 export const socialVisitorsPageEnabled = (req: Request) => {
-  return config.featureToggles.allowSocialVisitorsPrisoners
+  return config.featureToggles.allowSocialVisitorsPrisons
     .split(',')
     .includes(req.session.journey.officialVisit.prisonCode)
 }
