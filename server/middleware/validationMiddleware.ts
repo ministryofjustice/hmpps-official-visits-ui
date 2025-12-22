@@ -16,7 +16,8 @@ export const fromRefData = (refData: ReferenceDataItem[], errorMessage: string) 
 
 export type SchemaFactory = (request: Request, res: Response) => Promise<z.ZodTypeAny>
 
-export const createSchema = <T = object>(shape: T) => zodAlwaysRefine(zObjectStrict(shape))
+export const createSchema = <T = object>(shape: T, strict = true) =>
+  zodAlwaysRefine(strict ? zObjectStrict(shape) : z.looseObject(shape))
 
 const zObjectStrict = <T = object>(shape: T) => z.object({ _csrf: z.string().optional(), ...shape }).strict()
 
@@ -43,6 +44,25 @@ const pathArrayToString = (previous: string | number | symbol, next: string | nu
     return next.toString()
   }
   return `${String(previous)}[${next.toString()}]`
+}
+
+export function validateOnGET(schema: z.ZodTypeAny | SchemaFactory, ...queryProps: string[]): RequestHandler {
+  return async (req, res, next) => {
+    if (queryProps.some(prop => prop === '*' || Object.hasOwn(req.query, prop))) {
+      const resolvedSchema = typeof schema === 'function' ? await schema(req, res) : schema
+      const result = await resolvedSchema.safeParseAsync(normaliseNewLines(req.query))
+      req.rawBody = req.query
+      if (!result.success) {
+        res.locals['validationErrors'] = result.error
+        result.error?.issues?.forEach(key => {
+          res.addValidationError(key.message, key.path.reduce(pathArrayToString) as string)
+        })
+
+        return res.validationFailed()
+      }
+    }
+    return next()
+  }
 }
 
 /**

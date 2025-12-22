@@ -14,9 +14,10 @@ export const validateDateBase = (missingDateErrorMsg: string, invalidDateErrorMs
     .transform(value => value.split(/[-/]/).reverse())
     .transform(value => {
       // Prefix month and date with a 0 if needed
-      const month = value[1]?.length === 2 ? value[1] : `0${value[1]}`
-      const date = value[2]?.length === 2 ? value[2] : `0${value[2]}`
-      return `${value[0]}-${month}-${date}T00:00:00Z` // We put a full timestamp on it so it gets parsed as UTC time and the date doesn't get changed due to locale
+      const year = value[0]?.length === 4 ? value[0] : value[2]
+      const month = value[1].padStart(2, '0')
+      const date = value[0]?.length === 4 ? value[2] : value[0].padStart(2, '0')
+      return `${year}-${month}-${date}T00:00:00Z` // We put a full timestamp on it so it gets parsed as UTC time and the date doesn't get changed due to locale
     })
     .transform(date => parseISO(date))
     .check(ctx => {
