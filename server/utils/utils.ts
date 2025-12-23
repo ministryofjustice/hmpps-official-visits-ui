@@ -215,37 +215,3 @@ export const socialVisitorsPageEnabled = (req: Request) => {
     .split(',')
     .includes(req.session.journey.officialVisit.prisonCode)
 }
-
-// add aria-sort attributes to govukTable head row, so that moj-sortable-table css will be applied
-export const convertToSortableColumns = (
-  headings: { text: string; key?: string }[],
-  sort: string,
-  hrefTemplate: string,
-) => {
-  const [sortKey, direction] = sort.split(',')
-
-  return headings.map(heading => {
-    if (!heading.key) {
-      return heading
-    }
-    const href = hrefTemplate.replace(
-      '{sort}',
-      `${heading.key},${direction === 'asc' && heading.key === sortKey ? 'desc' : 'asc'}`,
-    )
-
-    if (heading.key === sortKey) {
-      return {
-        attributes: {
-          'aria-sort': direction === 'asc' ? 'ascending' : 'descending',
-        },
-        html: `<a href="${href}"><button tabindex="-1">${heading.text}<span aria-hidden="true"></span></button></a>`,
-      }
-    }
-    return {
-      attributes: {
-        'aria-sort': 'none',
-      },
-      html: `<a href="${href}"><button tabindex="-1">${heading.text}<span aria-hidden="true"></span></button></a>`,
-    }
-  })
-}
