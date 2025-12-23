@@ -1,0 +1,47 @@
+{% from "partials/mojPagination.njk" import mojPagination %}
+
+{% macro simplePagination(params) %}
+  {% if params.totalPages > 1 %}
+    {% set previous = undefined if params.page <= 1 else ({ text: 'Previous', visuallyHiddenText: ' Results page', href: params.hrefTemplate | replace('{page}', params.page - 1) }) %}
+    {% set next = undefined if params.page >= params.totalPages else 
+      ({
+        text: 'Next',
+        visuallyHiddenText: ' Results page',
+        href: params.hrefTemplate | replace('%7Bpage%7D', params.page + 1)
+      }) %}
+
+    {% set items = [] %}
+    {% for page in range(1, params.totalPages + 1) %}
+      {% if page == 1 or page == params.totalPages or (page - params.page) | abs <= 2 %}
+        {% set items = (items.push({
+          text: page,
+          selected: page === params.page,
+          href: (params.hrefTemplate or '?page=%7Bpage%7D') | replace('%7Bpage%7D', page)
+        }), items) %}
+      {% elseif page == 2 or page == params.totalPages - 1 %}
+        {% set items = (items.push({type: 'dots'}), items) %}
+      {% endif %}
+    {% endfor %}
+
+    {{ mojPagination({
+            previous: previous,
+            next: next,
+            items: items,
+            results: {
+        count: params.totalElements,
+        from: ((params.page - 1) * params.size) | max(1),
+        to: (params.page * params.size) | min(params.totalElements),
+        text: "results"
+            }
+        }) }}
+  {% else %}
+    {{ mojPagination({
+            results: {
+        count: params.totalElements,
+        from: 1,
+        to: (params.page * params.size) | min(params.totalElements),
+        text: "results"
+            }
+        }) }}
+  {% endif %}
+{% endmacro %}

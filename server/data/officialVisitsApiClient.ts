@@ -8,6 +8,8 @@ import {
   AvailableSlot,
   CreateOfficialVisitRequest,
   CreateOfficialVisitResponse,
+  FindByCriteria,
+  FindByCriteriaResults,
   OfficialVisit,
   ReferenceDataItem,
 } from '../@types/officialVisitsApi/types'
@@ -151,6 +153,19 @@ export default class OfficialVisitsApiClient extends RestClient {
       {
         path: `/prisoner/${prisonerNumber}/approved-relationships?relationshipType=S`,
       },
+      asSystem(user.username),
+    )
+  }
+
+  async getVisits(
+    prisonId: string,
+    criteria: FindByCriteria,
+    page: number,
+    size: number,
+    user: HmppsUser,
+  ): Promise<FindByCriteriaResults> {
+    return this.post<FindByCriteriaResults>(
+      { path: `/official-visit/prison/${prisonId}/find-by-criteria?page=${page}&size=${size}`, data: criteria },
       asSystem(user.username),
     )
   }

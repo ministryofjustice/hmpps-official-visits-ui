@@ -92,4 +92,13 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('durationText', (startTime: string, endTime: string) =>
     toDuration(getTimeDiff(startTime, endTime) / 60000),
   )
+  njkEnv.addFilter('min', (a: number, b: number) => Math.min(a, b))
+  njkEnv.addFilter('max', (a: number, b: number) => Math.max(a, b))
+  njkEnv.addFilter('setSelected', (items: any[], selected: string) =>
+    items.map(o => ({ ...o, selected: o.value === selected })),
+  )
+  njkEnv.addFilter('addSelectValue', (items: any[], value: string, text: string) =>
+    items.concat([{ value, text, selected: false }]),
+  )
+  njkEnv.addFilter('mojDate', (date: string) => date.split('-').reverse().join('/'))
 }

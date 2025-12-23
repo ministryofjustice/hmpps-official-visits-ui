@@ -7,5 +7,6 @@ export interface PageHandler {
   PAGE_NAME: Page
   GET(req: Request, res: Response, next?: NextFunction): Promise<void>
   POST?(req: Request, res: Response, next?: NextFunction): Promise<void>
+  QUERY?: z.ZodTypeAny | SchemaFactory
   BODY?: z.ZodTypeAny | SchemaFactory
 }

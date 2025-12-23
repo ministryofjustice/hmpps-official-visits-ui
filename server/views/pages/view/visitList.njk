@@ -1,12 +1,146 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "partials/simplePagination.njk" import simplePagination %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+{%- from "moj/components/filter/macro.njk" import mojFilter -%}
+{%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
 {% extends "partials/layout.njk" %}
 
 {% set pageTitle = "View a list of official visits" %}
 {% set hideBackLink = true %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      Page awaiting build
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
     </div>
   </div>
-{% endblock %}
+
+  <form method="post" class="govuk-grid-row govuk-!-margin-bottom-7 govuk-!-padding-6 search-form">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+    <h2 class="govuk-heading-m">Filter by</h2>
+    <div class="date-search-form">
+      {{ mojDatePicker({
+          id: "startDate",
+          name: "startDate",
+          label: {
+            text: "From"
+          },
+          errorMessage: validationErrors | findError('startDate'),
+          value: (formResponses.startDate or filter.startDate) | mojDate
+      }) }}
+
+      {{ mojDatePicker({
+          id: "endDate",
+          name: "endDate",
+          label: {
+            text: "To"
+          },
+          errorMessage: validationErrors | findError('endDate'),
+          value: (formResponses.endDate or filter.endDate) | mojDate
+      }) }}
+    </div>
+    <div class="horizontal-form">
+      {{ govukInput({
+        id: "queryPrisonerNumber",
+        name: "queryPrisonerNumber",
+        value: formResponses.queryPrisonerNumber or filter.queryPrisonerNumber,
+        classes: "min-width-one-quarter",
+        label: {
+          text: 'Prisoner number'
+        }
+      }) }}
+
+      {{ govukSelect({
+        id: "type",
+        name: "type",
+        classes: "min-width-one-quarter",
+        label: {
+          text: "Visit type"
+        },
+        items: types | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.type or filter.type or '')
+      }) }}
+
+      {{ govukSelect({
+        id: "status",
+        name: "status",
+        classes: "min-width-one-quarter",
+        label: {
+          text: "Visit status"
+        },
+        items: statuses | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.status or filter.status or '')
+      }) }}
+
+      {{ govukButton({
+        text: "Apply filters",
+        preventDoubleClick: true
+      }) }}
+      <a class="govuk-link govuk-link--no-visited-state govuk-body no-label-form-clear-link" href="?clear=true">Clear</a>
+    </div>
+  </form>
+
+  {% set rows = [] %}
+  {% for visitRecord in visits %}
+    {% set rows = (rows.push([
+      {
+        html: visitRecord.visitDate | formatDate
+      },
+      {
+        html: '<a class="govuk-link--no-visited-state" href="' + prisonerProfileUrl + '/prisoner/' + visitRecord.prisoner.prisonerNumber + '">' + (visitRecord.prisoner.firstName + ' ' + visitRecord.prisoner.lastName) | convertToTitleCase + "</a><br/>" + visitRecord.prisoner.prisonerNumber
+      },
+      {
+        html: visitRecord.locationDescription or '-'
+      },
+      {
+        text: visitRecord.startTime
+      },
+      {
+        html: visitRecord.endTime
+      },
+      {
+        html: visitRecord.visitTypeDescription or '-'
+      },
+      {
+        html: visitRecord.visitStatusDescription or '-'
+      },
+      {
+        html: visitRecord.numberOfVisitors or '-'
+      },
+      {
+        html: '<a class="govuk-link govuk-link--no-visited-state" href="/view/' + visitRecord.officialVisitId + '">View</a>'
+      }
+    ]), rows) %}
+  {% endfor %}
+
+  {% if pagination.totalElements > 0 %}
+
+    {{ simplePagination(pagination)  }}
+
+    {{ govukTable({
+      firstCellIsHeader: false,
+      classes: 'table-vertical-align-middle govuk-!-margin-top-6',
+      head: [
+        { text: 'Visit Date', attributes: { "aria-sort": "none" } },
+        { text: "Prisoner", attributes: { "aria-sort": "none" } },
+        { text: "Location", attributes: { "aria-sort": "none" } },
+        { text: "Start", attributes: { "aria-sort": "none" } },
+        { text: "End", attributes: { "aria-sort": "none" } },
+        { text: "Type", attributes: { "aria-sort": "none" } } ,
+        { text: "Status", attributes: { "aria-sort": "none" } },
+        { text: 'Visitors', attributes: { "aria-sort": "none" } },
+        { text: '', attributes: { "aria-sort": "none" } }
+      ],
+      rows: rows
+    }) }}
+
+    {{ simplePagination(pagination)  }}
+
+    {% else %}
+      <p class="govuk-body">No visits found matching the current filters.</p>
+    {% endif %}
+
+  {% endblock %}

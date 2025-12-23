@@ -26,3 +26,5 @@ export type CreateOfficialVisitRequest = components['schemas']['CreateOfficialVi
 export type CreateOfficialVisitResponse = components['schemas']['CreateOfficialVisitResponse']
 export type OfficialVisitor = components['schemas']['OfficialVisitor']
 export type VisitorEquipment = components['schemas']['VisitorEquipment']
+export type FindByCriteria = components['schemas']['OfficialVisitSummarySearchRequest']
+export type FindByCriteriaResults = components['schemas']['PagedModelOfficialVisitSummarySearchResponse']

@@ -4,6 +4,7 @@ import { HmppsUser } from '../interfaces/hmppsUser'
 import {
   CreateOfficialVisitRequest,
   CreateOfficialVisitResponse,
+  FindByCriteria,
   OfficialVisit,
   OfficialVisitor,
   SearchLevelType,
@@ -87,5 +88,11 @@ export default class OfficialVisitsService {
 
   public async getSchedule(res: Response, prisonId: string, date: string) {
     return this.officialVisitsApiClient.getSchedule(prisonId, date, res.locals.user)
+  }
+
+  public async getVisits(res: Response, prisonId: string, criteria: FindByCriteria, page: number, size: number) {
+    logger.info(`Get visits for prison ${prisonId} with criteria ${JSON.stringify(criteria)}`)
+
+    return this.officialVisitsApiClient.getVisits(prisonId, criteria, page, size, res.locals.user)
   }
 }

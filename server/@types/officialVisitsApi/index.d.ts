@@ -82,6 +82,29 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/official-visit/prison/{prisonCode}/find-by-criteria': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Endpoint to search fo official visit summaries for given search criteria.
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS_RW
+     */
+    post: operations['findByCriteria']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/migrate/visit': {
     parameters: {
       query?: never
@@ -168,6 +191,28 @@ export interface paths {
      *     * ROLE_OFFICIAL_VISITS__RW
      */
     get: operations['getReferenceDataByGroup']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/reconcile/official-visits/identifiers': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Endpoint to return the all the official visit ids for reconciliation
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    get: operations['getAllOfficialVisits']
     put?: never
     post?: never
     delete?: never
@@ -268,9 +313,7 @@ export interface paths {
     trace?: never
   }
 }
-
 export type webhooks = Record<string, never>
-
 export interface components {
   schemas: {
     RetryDlqResult: {
@@ -401,6 +444,219 @@ export interface components {
       developerMessage?: string
       moreInfo?: string
     }
+    /** @description The request with the official visit summary search details */
+    OfficialVisitSummarySearchRequest: {
+      /**
+       * Format: date
+       * @description The earliest date the official visits will start
+       * @example 2022-12-23
+       */
+      startDate: string
+      /**
+       * Format: date
+       * @description The latest date the official visits will end
+       * @example 2022-12-23
+       */
+      endDate: string
+      /**
+       * @description The visit types to search for
+       * @example IN_PERSON
+       * @example VIDEO
+       */
+      visitTypes?: components['schemas']['VisitType'][]
+      /**
+       * @description The visit statuses to search for
+       * @example SCHEDULED
+       * @example COMPLETED
+       */
+      visitStatuses?: components['schemas']['VisitStatusType'][]
+      /**
+       * @description The prisoner numbers to search for
+       * @example G9190VP
+       * @example G9190VP
+       */
+      prisonerNumbers?: string[]
+      /**
+       * @description The location identifiers to search for
+       * @example aaaa-bbbb-9f9f9f9f-9f9f9f9f
+       */
+      locationIds?: string[]
+    }
+    /** @enum {string} */
+    VisitStatusType: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'EXPIRED'
+    OfficialVisitSummarySearchResponse: {
+      /**
+       * Format: int64
+       * @description The official visit id
+       * @example 1
+       */
+      officialVisitId: number
+      /**
+       * @description The 3 letter code for the prison
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description The official visit prison description
+       * @example Moorland (HMP & YOI)
+       */
+      prisonDescription: string
+      /**
+       * @description The official visit status type
+       * @example SCHEDULED
+       */
+      visitStatus: components['schemas']['VisitStatusType']
+      /**
+       * @description The official visit status description
+       * @example Visit status description
+       */
+      visitStatusDescription: string
+      /**
+       * @description The official visit type code
+       * @example IN_PERSON
+       */
+      visitTypeCode: components['schemas']['VisitType']
+      /** @description The official visit type description */
+      visitTypeDescription: string
+      /**
+       * Format: date
+       * @description The date the official visit takes place
+       * @example 2022-12-23
+       */
+      visitDate: string
+      /**
+       * @description The start time of the official visit
+       * @example 10:00
+       */
+      startTime: string
+      /**
+       * @description The end time of the official visit
+       * @example 11:00
+       */
+      endTime: string
+      /**
+       * Format: uuid
+       * @description The DPS location ID where the official visit takes place
+       * @example aaaa-bbbb-9f9f9f9f-9f9f9f9f
+       */
+      dpsLocationId: string
+      /**
+       * @description The official visit location description
+       * @example Legal visits ward
+       */
+      locationDescription: string
+      /**
+       * Format: int64
+       * @description The prison visit slot identifier for the official visit slot
+       * @example 1
+       */
+      visitSlotId: number
+      /**
+       * @description Notes for staff that will not be shared on movement slips
+       * @example Legal representation details
+       */
+      staffNotes?: string
+      /**
+       * @description Notes for prisoners that may be shared on movement slips
+       * @example Please arrive 10 minutes early
+       */
+      prisonerNotes?: string
+      visitorConcernNotes?: string
+      /**
+       * Format: int32
+       * @description The number of visitors attending the official visit
+       * @example 2
+       */
+      numberOfVisitors: number
+      /**
+       * @description The official visit completion type
+       * @example VISITOR_CANCELLED
+       */
+      completionCode?: components['schemas']['VisitCompletionType']
+      /** @description The official visit completion description */
+      completionDescription?: string
+      /**
+       * @description The name of the user who created the official visit
+       * @example Fred Bloggs
+       */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The date and time the official visit was created
+       * @example 2025-12-02 14:45
+       */
+      createdTime: string
+      /**
+       * @description The name of the last user who updated the official visit
+       * @example Jane Bloggs
+       */
+      updatedBy?: string
+      /**
+       * Format: date-time
+       * @description The date and time the official visit was last updated
+       * @example 22025-12-04 09:50
+       */
+      updatedTime?: string
+      /** @description The details of the prisoner being visited */
+      prisoner: components['schemas']['PrisonerVisitedDetails']
+    }
+    PageMetadata: {
+      /** Format: int64 */
+      size?: number
+      /** Format: int64 */
+      number?: number
+      /** Format: int64 */
+      totalElements?: number
+      /** Format: int64 */
+      totalPages?: number
+    }
+    PagedModelOfficialVisitSummarySearchResponse: {
+      content?: components['schemas']['OfficialVisitSummarySearchResponse'][]
+      page?: components['schemas']['PageMetadata']
+    }
+    PrisonerVisitedDetails: {
+      /**
+       * @description The official visitor - prisoner number
+       * @example 1
+       */
+      prisonerNumber: string
+      /** @description The official visitor Prisoner code */
+      prisonCode: string
+      /** @description The official visitor - Prisoner first name */
+      firstName?: string
+      /** @description The official visitor prisoner last name */
+      lastName?: string
+      /**
+       * Format: date
+       * @description The official visitor - Prisoner date of birth
+       */
+      dateOfBirth?: string
+      /** @description Prisoner Cell location */
+      cellLocation?: string
+      /** @description Prisoner middle name */
+      middleNames?: string
+      /**
+       * Format: int64
+       * @description Prisoner offender booking id
+       */
+      offenderBookId?: number
+      /** @description Prisoner attendance code */
+      attendanceCode?: string
+      /** @description Prisoner attendance code description */
+      attendanceCodeDescription?: string
+    }
+    /** @enum {string} */
+    VisitCompletionType:
+      | 'NORMAL'
+      | 'STAFF_CANCELLED'
+      | 'VISITOR_CANCELLED'
+      | 'VISITOR_DENIED'
+      | 'PRISONER_EARLY'
+      | 'VISITOR_EARLY'
+      | 'PRISONER_REFUSED'
+      | 'STAFF_EARLY'
+      | 'PRISONER_CANCELLED'
+      | 'VISITOR_NO_SHOW'
     /** @enum {string} */
     AttendanceType: 'ATTENDED' | 'ABSENT'
     MigrateVisitRequest: {
@@ -609,20 +865,6 @@ export interface components {
     }
     /** @enum {string} */
     RelationshipType: 'OFFICIAL' | 'SOCIAL'
-    /** @enum {string} */
-    VisitCompletionType:
-      | 'NORMAL'
-      | 'STAFF_CANCELLED'
-      | 'VISITOR_CANCELLED'
-      | 'VISITOR_DENIED'
-      | 'PRISONER_EARLY'
-      | 'VISITOR_EARLY'
-      | 'PRISONER_REFUSED'
-      | 'STAFF_EARLY'
-      | 'PRISONER_CANCELLED'
-      | 'VISITOR_NO_SHOW'
-    /** @enum {string} */
-    VisitStatusType: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'EXPIRED'
     IdPair: {
       /**
        * @description The category of information returned
@@ -882,6 +1124,15 @@ export interface components {
        */
       enabled: boolean
     }
+    /** @description Response object for sync reconciliation */
+    SyncOfficialVisitId: {
+      /**
+       * Format: int64
+       * @description The ID for an Official visits
+       * @example 111111
+       */
+      officialVisitId: number
+    }
     DlqMessage: {
       body: {
         [key: string]: unknown
@@ -1007,9 +1258,15 @@ export interface components {
        * @example 1
        */
       officialVisitId: number
-      /** @description The prisoner code */
+      /**
+       * @description The prison code
+       * @example MDI
+       */
       prisonCode: string
-      /** @description The Official visit prison description */
+      /**
+       * @description The official visit prison description
+       * @example Moorland (HMP & YOI)
+       */
       prisonDescription?: string
       /** @description The Official visit status type */
       visitStatus: components['schemas']['VisitStatusType']
@@ -1104,6 +1361,8 @@ export interface components {
       relationshipTypeDescription?: string
       /** @description The Official visitor relationship code */
       relationshipCode?: string
+      /** @description The Official visitor relationship description */
+      relationshipDescription?: string
       /** @description The Official visitor - is lead visitor */
       leadVisitor: boolean
       /** @description The Official visitor - is assisted visit */
@@ -1133,34 +1392,6 @@ export interface components {
        * @description The Official visitor offender visit visitor id
        */
       offenderVisitVisitorId?: number
-    }
-    PrisonerVisitedDetails: {
-      /**
-       * @description The official visitor - prisoner number
-       * @example 1
-       */
-      prisonerNumber: string
-      /** @description The official visitor Prisoner code */
-      prisonCode: string
-      /** @description The official visitor - Prisoner first name */
-      firstName?: string
-      /** @description The official visitor prisoner last name */
-      lastName?: string
-      /**
-       * Format: date
-       * @description The official visitor - Prisoner date of birth
-       */
-      dateOfBirth?: string
-      /** @description Prisoner Cell location */
-      cellLocation?: string
-      /** @description Prisoner middle name */
-      middleNames?: string
-      /** @description Prisoner offender boo id */
-      offenderBookId?: string
-      /** @description Prisoner attendance code */
-      attendanceCode?: string
-      /** @description Prisoner attendance code */
-      attendanceCodeDescription?: string
     }
     AvailableSlot: {
       /**
@@ -1233,9 +1464,7 @@ export interface components {
   headers: never
   pathItems: never
 }
-
 export type $defs = Record<string, never>
-
 export interface operations {
   retryDlq: {
     parameters: {
@@ -1327,6 +1556,59 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['CreateOfficialVisitResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  findByCriteria: {
+    parameters: {
+      query?: {
+        /** @description Zero-based page index (0..N) */
+        page?: number
+        /** @description The size of the page to be returned */
+        size?: number
+      }
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['OfficialVisitSummarySearchRequest']
+      }
+    }
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PagedModelOfficialVisitSummarySearchResponse']
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */
@@ -1520,6 +1802,52 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ReferenceDataItem'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getAllOfficialVisits: {
+    parameters: {
+      query?: {
+        currentTerm?: boolean
+        /** @description Zero-based page index (0..N) */
+        page?: number
+        /** @description The size of the page to be returned */
+        size?: number
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        sort?: string[]
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description List of  paged list of DPS visit IDs for the current term */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncOfficialVisitId'][]
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */
