@@ -54,31 +54,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
 
     const visits = res.locals['validationErrors']
       ? { content: [], page: { totalElements: 0, totalPages: 0, number: 0, size: 0 } }
-      : await this.officialVisitsService.getVisits(res, prisonCode, findByCriteria, filterParams.page, 10)
-
-    // TODO: Get the prisoner number from the visit & enrich info
-    /*
-    import { parse, parseISO } from 'date-fns'
-
-    const { prisonerNumber, prisonCode } = visit
-
-    const [prisoner, prison] = await Promise.all([
-      this.prisonerService.getPrisonerByPrisonerNumber(prisonerNumber, user),
-      this.prisonService.getPrisonByCode(prisonCode, user),
-    ])
-
-    const date = parseISO(visit.visitDate)
-    const time = parse(visit.startTime, 'HH:mm', new Date(0))
-
-    // TODO: Is amendable if the visit start time is not in the past
-    const isAmendable = this.officialVisitsService.visitIsAmendable(date, time, booking.statusCode)
-
-    // Pass these through to the view
-      prisoner,
-      visit,
-      isAmendable,
-      isCancelled: visit.statusCode === 'CANCELLED',
-     */
+      : await this.officialVisitsService.getVisits(res, prisonCode, findByCriteria, filterParams.page - 1, 10)
 
     const queryParams = new URLSearchParams({ ...filterParams, page: '{page}' })
 
@@ -86,6 +62,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
       visits: visits.content,
       pagination: {
         ...visits.page,
+        page: visits.page.number + 1,
         hrefTemplate: `${req.originalUrl.split('?')[0]!}?${queryParams.toString()}`,
       },
       statuses: statusOpts.map(o => ({ value: o.code, text: o.description })),

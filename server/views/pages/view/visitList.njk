@@ -4,6 +4,9 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+{%- from "moj/components/filter/macro.njk" import mojFilter -%}
+{%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 
 {% extends "partials/layout.njk" %}
 
@@ -11,14 +14,12 @@
 {% set hideBackLink = true %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      Page awaiting build
-      <pre id="results">{{ pagination | dump(2) }}</pre>
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
     </div>
   </div>
 
-  <hr class="govuk-section-break govuk-section-break--m">
   <form method="post" class="govuk-grid-row govuk-!-margin-bottom-7 govuk-!-padding-6 search-form">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
     <h2 class="govuk-heading-m">Filter by</h2>
@@ -110,16 +111,16 @@
         html: visitRecord.numberOfVisitors or '-'
       },
       {
-        html: '<a class="govuk-link govuk-link--no-visited-state" href="/view' + visitRecord.officialVisitId + '">View</a>'
+        html: '<a class="govuk-link govuk-link--no-visited-state" href="/view/' + visitRecord.officialVisitId + '">View</a>'
       }
     ]), rows) %}
   {% endfor %}
 
   {% if pagination.totalElements > 0 %}
 
-  {{ simplePagination(pagination)  }}
+    {{ simplePagination(pagination)  }}
 
-  {{ govukTable({
+    {{ govukTable({
       firstCellIsHeader: false,
       classes: 'table-vertical-align-middle govuk-!-margin-top-6',
       head: [
@@ -136,10 +137,10 @@
       rows: rows
     }) }}
 
-  {{ simplePagination(pagination)  }}
+    {{ simplePagination(pagination)  }}
 
-  {% else %}
-    <p class="govuk-body">No visits found matching the current filters.</p>
-  {% endif %}
+    {% else %}
+      <p class="govuk-body">No visits found matching the current filters.</p>
+    {% endif %}
 
-{% endblock %}
+  {% endblock %}
