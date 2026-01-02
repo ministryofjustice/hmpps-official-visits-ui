@@ -56,6 +56,16 @@
       }) }}
 
       {{ govukSelect({
+        id: "location",
+        name: "location",
+        classes: "min-width-one-quarter",
+        label: {
+          text: "Location"
+        },
+        items: locations | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.location or filter.location or '')
+      }) }}
+
+      {{ govukSelect({
         id: "type",
         name: "type",
         classes: "min-width-one-quarter",
@@ -139,8 +149,8 @@
 
     {{ simplePagination(pagination)  }}
 
-    {% else %}
-      <p class="govuk-body">No visits found matching the current filters.</p>
-    {% endif %}
+  {% else %}
+    <p class="govuk-body">No visits found matching the current filters.</p>
+  {% endif %}
 
-  {% endblock %}
+{% endblock %}
