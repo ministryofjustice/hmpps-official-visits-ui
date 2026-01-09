@@ -19,7 +19,7 @@ export default function Index({ auditService, prisonerService, officialVisitsSer
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
-  route('/list', new ViewOfficialVisitListHandler(officialVisitsService, prisonerService))
+  route('/list', new ViewOfficialVisitListHandler(officialVisitsService))
   route('/:officialVisitId', new ViewOfficialVisitHandler(officialVisitsService, prisonerService))
 
   return router

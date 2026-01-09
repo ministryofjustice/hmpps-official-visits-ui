@@ -60,6 +60,9 @@ export function validateOnGET(schema: z.ZodTypeAny | SchemaFactory, ...queryProp
 
         return res.validationFailed()
       }
+      req.body = result.data
+    } else {
+      req.body = {}
     }
     return next()
   }
