@@ -47,6 +47,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
 
     return res.render('pages/view/visitList', {
       visits: visits.content,
+      backUrl: `/`,
       pagination: {
         ...visits.page,
         page: visits.page.number + 1,

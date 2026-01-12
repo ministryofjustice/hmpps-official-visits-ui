@@ -59,6 +59,7 @@ describe('Search for an official visit', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
+          expect($('.govuk-back-link').attr('href')).toEqual('/')
           expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
           expect(getPageHeader($)).toEqual('Search for an official visit')
 
