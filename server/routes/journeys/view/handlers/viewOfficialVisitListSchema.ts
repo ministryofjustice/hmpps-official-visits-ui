@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createSchema } from '../../../../middleware/validationMiddleware'
-import { getMinDateChecker, validateDateBase } from '../../../validators/validateDate'
+import { getMinDateChecker, validateDateOptional } from '../../../validators/validateDate'
 
 const toDateString = (date: Date) =>
   date
@@ -12,8 +12,8 @@ const toDateString = (date: Date) =>
 
 export const schema = createSchema(
   {
-    startDate: validateDateBase('Enter a date', 'From date must be a real date'),
-    endDate: validateDateBase('Enter a date', 'To date must be a real date'),
+    startDate: validateDateOptional('From date must be a real date'),
+    endDate: validateDateOptional('To date must be a real date'),
   },
   false,
 ).transform((data, ctx) => {
@@ -26,8 +26,8 @@ export const schema = createSchema(
   }
   return {
     ...data,
-    startDate: toDateString(data.startDate),
-    endDate: toDateString(data.endDate),
+    startDate: data.startDate ? toDateString(data.startDate) : undefined,
+    endDate: data.endDate ? toDateString(data.endDate) : undefined,
   }
 })
 type SchemaType = z.infer<typeof schema>

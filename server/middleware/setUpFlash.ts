@@ -25,13 +25,10 @@ export default function setUpFlash(): Router {
       validationErrors.push({ fieldId: field, href: `#${field || ''}`, text: message })
     }
 
-    res.validationFailed = (message?: string, field?: string): void => {
-      if (message) {
-        res.addValidationError(message, field)
-      }
+    res.validationFailed = (redirectUrl?: string): void => {
       req.flash('validationErrors', JSON.stringify(validationErrors))
       req.flash('formResponses', JSON.stringify(req.rawBody))
-      res.redirect(req.get('Referrer') || '/')
+      res.redirect(redirectUrl || req.get('Referrer') || '/')
     }
 
     res.addSuccessMessage = (heading: string, message?: string) => {

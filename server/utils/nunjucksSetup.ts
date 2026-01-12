@@ -14,6 +14,7 @@ import {
   getTimeDiff,
   initialiseName,
   isDateAndInThePast,
+  lastNameCommaFirstName,
   parseDate,
   timeStringTo12HourPretty,
   toDuration,
@@ -100,5 +101,6 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('addSelectValue', (items: any[], value: string, text: string) =>
     items.concat([{ value, text, selected: false }]),
   )
-  njkEnv.addFilter('mojDate', (date: string) => date.split('-').reverse().join('/'))
+  njkEnv.addFilter('mojDate', (date: string) => date?.split('-').reverse().join('/'))
+  njkEnv.addFilter('lastNameCommaFirstName', lastNameCommaFirstName)
 }
