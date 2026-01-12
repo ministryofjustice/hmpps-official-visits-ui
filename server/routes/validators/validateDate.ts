@@ -3,6 +3,35 @@ import { isValid, parseISO, startOfDay, isBefore } from 'date-fns'
 
 /**
  * Validator for dates from the mojDatePicker component (or similar that outputs in a DD-MM-YYYY string)
+ * @param invalidDateErrorMsg Error message to display if the date is not a parsable date
+ * @returns The date formatted as YYYY-MM-DD
+ */
+export const validateDateOptional = (invalidDateErrorMsg: string) => {
+  return z.optional(
+    z
+      .string()
+      .transform(transformDate)
+      .check(ctx => checkValidDate(ctx, invalidDateErrorMsg)),
+  )
+}
+
+const transformDate = (value: string) => {
+  const reversed = value.split(/[-/]/).reverse()
+  // Prefix month and date with a 0 if needed
+  const year = reversed[0]?.length === 4 ? reversed[0] : reversed[2]
+  const month = reversed[1].padStart(2, '0')
+  const date = reversed[0]?.length === 4 ? reversed[2] : reversed[0].padStart(2, '0')
+  return parseISO(`${year}-${month}-${date}T00:00:00Z`) // We put a full timestamp on it so it gets parsed as UTC time and the date doesn't get changed due to locale
+}
+
+const checkValidDate = (ctx: z.core.ParsePayload<Date>, invalidDateErrorMsg: string) => {
+  if (!isValid(ctx.value)) {
+    ctx.issues.push({ code: 'custom', message: invalidDateErrorMsg, input: ctx.value })
+  }
+}
+
+/**
+ * Validator for dates from the mojDatePicker component (or similar that outputs in a DD-MM-YYYY string)
  * @param missingDateErrorMsg Error message to display if the date is missing
  * @param invalidDateErrorMsg Error message to display if the date is not a parsable date
  * @returns The date formatted as YYYY-MM-DD
@@ -11,20 +40,8 @@ export const validateDateBase = (missingDateErrorMsg: string, invalidDateErrorMs
   return z
     .string({ message: missingDateErrorMsg })
     .min(1, { message: missingDateErrorMsg })
-    .transform(value => value.split(/[-/]/).reverse())
-    .transform(value => {
-      // Prefix month and date with a 0 if needed
-      const year = value[0]?.length === 4 ? value[0] : value[2]
-      const month = value[1].padStart(2, '0')
-      const date = value[0]?.length === 4 ? value[2] : value[0].padStart(2, '0')
-      return `${year}-${month}-${date}T00:00:00Z` // We put a full timestamp on it so it gets parsed as UTC time and the date doesn't get changed due to locale
-    })
-    .transform(date => parseISO(date))
-    .check(ctx => {
-      if (!isValid(ctx.value)) {
-        ctx.issues.push({ code: 'custom', message: invalidDateErrorMsg, input: ctx.value })
-      }
-    })
+    .transform(transformDate)
+    .check(ctx => checkValidDate(ctx, invalidDateErrorMsg))
 }
 
 type DateChecker = (date: Date) => boolean

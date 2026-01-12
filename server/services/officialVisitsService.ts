@@ -90,9 +90,8 @@ export default class OfficialVisitsService {
     return this.officialVisitsApiClient.getSchedule(prisonId, date, res.locals.user)
   }
 
-  public async getVisits(res: Response, prisonId: string, criteria: FindByCriteria, page: number, size: number) {
+  public async getVisits(prisonId: string, criteria: FindByCriteria, page: number, size: number, user: HmppsUser) {
     logger.info(`Get visits for prison ${prisonId} with criteria ${JSON.stringify(criteria)}`)
-
-    return this.officialVisitsApiClient.getVisits(prisonId, criteria, page, size, res.locals.user)
+    return this.officialVisitsApiClient.getVisits(prisonId, criteria, page, size, user)
   }
 }

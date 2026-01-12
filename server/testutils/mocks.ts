@@ -1,4 +1,10 @@
-import { ApprovedContact, RestrictionSummary, AvailableSlot } from '../@types/officialVisitsApi/types'
+import {
+  ApprovedContact,
+  RestrictionSummary,
+  AvailableSlot,
+  FindByCriteriaResults,
+  FindByCriteriaVisit,
+} from '../@types/officialVisitsApi/types'
 import { PrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
 import { PrisonerScheduledEvents, ScheduledEvent } from '../@types/activitiesApi/types'
 
@@ -283,3 +289,48 @@ export const mockPrisonerRestrictions = [
     createdTime: '2017-10-17 10:00',
   },
 ] as PrisonerRestrictionDetails[]
+
+export const mockVisit = {
+  officialVisitId: 1,
+  prisonCode: 'MDI',
+  prisonDescription: 'Moorland (HMP & YOI)',
+  visitStatus: 'SCHEDULED',
+  visitStatusDescription: 'Completed',
+  visitTypeCode: 'TELEPHONE',
+  visitTypeDescription: 'Telephone',
+  visitDate: '2022-12-23',
+  startTime: '10:00',
+  endTime: '11:00',
+  dpsLocationId: 'aaaa-bbbb-9f9f9f9f-9f9f9f9f',
+  locationDescription: 'Legal visits ward',
+  visitSlotId: 1,
+  staffNotes: 'Legal representation details',
+  prisonerNotes: 'Please arrive 10 minutes early',
+  visitorConcernNotes: 'string',
+  numberOfVisitors: 3,
+  completionCode: 'VISITOR_CANCELLED',
+  completionDescription: 'string',
+  createdBy: 'Fred Bloggs',
+  createdTime: '2025-12-02 14:45',
+  updatedBy: 'Jane Bloggs',
+  updatedTime: '22025-12-04 09:50',
+  prisoner: {
+    ...prisoner,
+    dateOfBirth: '2025-12-19',
+    cellLocation: 'string',
+    middleNames: 'string',
+    offenderBookId: 0,
+    attendanceCode: 'string',
+    attendanceCodeDescription: 'string',
+  },
+} as FindByCriteriaVisit
+
+export const mockFindByCriteriaResults = {
+  content: [mockVisit],
+  page: {
+    totalElements: 1,
+    totalPages: 1,
+    number: 0,
+    size: 10,
+  },
+} as FindByCriteriaResults

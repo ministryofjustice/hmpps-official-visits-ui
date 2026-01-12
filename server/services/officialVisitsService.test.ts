@@ -2,6 +2,7 @@ import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import OfficialVisitsService from './officialVisitsService'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { ApprovedContact, OfficialVisit } from '../@types/officialVisitsApi/types'
+import { mockFindByCriteriaResults } from '../testutils/mocks'
 
 jest.mock('../data/officialVisitsApiClient')
 
@@ -126,5 +127,20 @@ describe('OfficialVisitsService', () => {
 
     expect(officialVisitsApiClient.getApprovedSocialContacts).toHaveBeenCalledTimes(1)
     expect(result).toEqual(expected)
+  })
+
+  it('should get visits for a prison', async () => {
+    officialVisitsApiClient.getVisits.mockResolvedValue(mockFindByCriteriaResults)
+
+    const result = await officialVisitsService.getVisits(
+      'MDI',
+      { startDate: '2022-12-23', endDate: '2022-12-23' },
+      0,
+      10,
+      user,
+    )
+
+    expect(officialVisitsApiClient.getVisits).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(mockFindByCriteriaResults)
   })
 })

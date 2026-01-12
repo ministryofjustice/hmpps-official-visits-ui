@@ -34,6 +34,10 @@ const properCaseName = (name: string): string => (isBlank(name) ? '' : name.spli
 export const convertToTitleCase = (sentence: string): string =>
   isBlank(sentence) ? '' : sentence.split(' ').map(properCaseName).join(' ')
 
+export const lastNameCommaFirstName = (person: { firstName: string; lastName: string }): string => {
+  return `${properCaseName(person.lastName)}, ${properCaseName(person.firstName)}`.replace(/(^, )|(, $)/, '')
+}
+
 export const initialiseName = (fullName?: string): string | null => {
   // this check is for the authError page
   if (!fullName) return null
@@ -173,14 +177,14 @@ export const refDataRadiosMapper = (referenceData: components['schemas']['Refere
  * @param time String representing the time component of a date
  * @returns A formatted string representing the time in 12 hour format
  */
-export const timeStringTo12HourPretty = (time: string) => {
+export const timeStringTo12HourPretty = (time: string, alwaysShowMinutes = false) => {
   const [hours, minutes] = time.split(':')
   // Convert to 12 hour time
   const twelveHours = Number(hours) % 12 || 12
   const amPm = Number(hours) >= 12 ? 'pm' : 'am'
 
   // If minutes are 0 only return hours
-  if (minutes === '00') {
+  if (minutes === '00' && !alwaysShowMinutes) {
     return twelveHours + amPm
   }
 

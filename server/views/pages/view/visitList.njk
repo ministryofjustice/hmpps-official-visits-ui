@@ -10,86 +10,66 @@
 
 {% extends "partials/layout.njk" %}
 
-{% set pageTitle = "View a list of official visits" %}
-{% set hideBackLink = true %}
+{% set pageTitle = "Search for an official visit" %}
 
 {% block content %}
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Manage existing official visits</span>
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
     </div>
   </div>
 
-  <form method="post" class="govuk-grid-row govuk-!-margin-bottom-7 govuk-!-padding-6 search-form">
+  <form method="post" class="govuk-grid-row govuk-!-padding-6 govuk-!-margin-bottom-7 search-form">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
-    <h2 class="govuk-heading-m">Filter by</h2>
-    <div class="date-search-form">
-      {{ mojDatePicker({
-          id: "startDate",
-          name: "startDate",
-          label: {
-            text: "From"
-          },
-          errorMessage: validationErrors | findError('startDate'),
-          value: (formResponses.startDate or filter.startDate) | mojDate
-      }) }}
-
-      {{ mojDatePicker({
-          id: "endDate",
-          name: "endDate",
-          label: {
-            text: "To"
-          },
-          errorMessage: validationErrors | findError('endDate'),
-          value: (formResponses.endDate or filter.endDate) | mojDate
-      }) }}
-    </div>
-    <div class="horizontal-form">
+    <div class="govuk-grid-row govuk-body">
       {{ govukInput({
-        id: "queryPrisonerNumber",
-        name: "queryPrisonerNumber",
-        value: formResponses.queryPrisonerNumber or filter.queryPrisonerNumber,
-        classes: "min-width-one-quarter",
+        id: "prisoner",
+        name: "prisoner",
+        value: formResponses.prisoner or filter.prisoner,
+        classes: "max-width-two-thirds",
         label: {
-          text: 'Prisoner number'
+          text: 'Search by prisoner name or prisoner ID'
         }
       }) }}
+    </div>
 
-      {{ govukSelect({
-        id: "location",
-        name: "location",
-        classes: "min-width-one-quarter",
-        label: {
-          text: "Location"
-        },
-        items: locations | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.location or filter.location or '')
-      }) }}
+    <div class="govuk-grid-row govuk-body">
+      <p class="govuk-body" style="width: 100%">Search by date range</p>
+    </div>
 
-      {{ govukSelect({
-        id: "type",
-        name: "type",
-        classes: "min-width-one-quarter",
-        label: {
-          text: "Visit type"
-        },
-        items: types | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.type or filter.type or '')
-      }) }}
+    <div class="govuk-grid-row govuk-body">
+      <div class="govuk-form-group">
+        <div class="date-search-form">
+          {{ mojDatePicker({
+            id: "startDate",
+            name: "startDate",
+            label: {
+              text: "From"
+            },
+            errorMessage: validationErrors | findError('startDate'),
+            value: (formResponses.startDate or filter.startDate) | mojDate
+          }) }}
 
-      {{ govukSelect({
-        id: "status",
-        name: "status",
-        classes: "min-width-one-quarter",
-        label: {
-          text: "Visit status"
-        },
-        items: statuses | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.status or filter.status or '')
-      }) }}
+          {{ mojDatePicker({
+            id: "endDate",
+            name: "endDate",
+            label: {
+              text: "To"
+            },
+            errorMessage: validationErrors | findError('endDate'),
+            value: (formResponses.endDate or filter.endDate) | mojDate
+          }) }}
+        </div>
+      </div>
+    </div>
 
+    <div class="govuk-grid-row govuk-body govuk-!-margin-bottom-0">
       {{ govukButton({
-        text: "Apply filters",
+        text: "Search",
+        classes: "govuk-!-margin-bottom-0",
         preventDoubleClick: true
       }) }}
-      <a class="govuk-link govuk-link--no-visited-state govuk-body no-label-form-clear-link" href="?clear=true">Clear</a>
     </div>
   </form>
 
@@ -97,31 +77,22 @@
   {% for visitRecord in visits %}
     {% set rows = (rows.push([
       {
-        html: visitRecord.visitDate | formatDate
-      },
-      {
-        html: '<a class="govuk-link--no-visited-state" href="' + prisonerProfileUrl + '/prisoner/' + visitRecord.prisoner.prisonerNumber + '">' + (visitRecord.prisoner.firstName + ' ' + visitRecord.prisoner.lastName) | convertToTitleCase + "</a><br/>" + visitRecord.prisoner.prisonerNumber
+        html: (visitRecord.startTime | timeStringTo12HourPretty(true)) + ' to ' + (visitRecord.endTime | timeStringTo12HourPretty(true)) + '</b><br />' + visitRecord.visitDate | formatDate
       },
       {
         html: visitRecord.locationDescription or '-'
       },
       {
-        text: visitRecord.startTime
-      },
-      {
-        html: visitRecord.endTime
-      },
-      {
         html: visitRecord.visitTypeDescription or '-'
+      },
+      {
+        html: '<a class="govuk-link--no-visited-state" href="' + prisonerProfileUrl + '/prisoner/' + visitRecord.prisoner.prisonerNumber + '">' + visitRecord.prisoner | lastNameCommaFirstName + "</a><br/>" + visitRecord.prisoner.prisonerNumber
       },
       {
         html: visitRecord.visitStatusDescription or '-'
       },
       {
-        html: visitRecord.numberOfVisitors or '-'
-      },
-      {
-        html: '<a class="govuk-link govuk-link--no-visited-state" href="/view/' + visitRecord.officialVisitId + '">View</a>'
+        html: '<a class="govuk-link govuk-link--no-visited-state" href="/view/' + visitRecord.officialVisitId + '">Select</a>'
       }
     ]), rows) %}
   {% endfor %}
@@ -134,15 +105,12 @@
       firstCellIsHeader: false,
       classes: 'table-vertical-align-middle govuk-!-margin-top-6',
       head: [
-        { text: 'Visit Date', attributes: { "aria-sort": "none" } },
-        { text: "Prisoner", attributes: { "aria-sort": "none" } },
+        { text: 'Time and date', attributes: { "aria-sort": "none" } },
         { text: "Location", attributes: { "aria-sort": "none" } },
-        { text: "Start", attributes: { "aria-sort": "none" } },
-        { text: "End", attributes: { "aria-sort": "none" } },
-        { text: "Type", attributes: { "aria-sort": "none" } } ,
+        { text: "Visit type", attributes: { "aria-sort": "none" } },
+        { text: "Prisoner", attributes: { "aria-sort": "none" } },
         { text: "Status", attributes: { "aria-sort": "none" } },
-        { text: 'Visitors', attributes: { "aria-sort": "none" } },
-        { text: '', attributes: { "aria-sort": "none" } }
+        { text: "Action", attributes: { "aria-sort": "none" } }
       ],
       rows: rows
     }) }}

@@ -17,6 +17,7 @@ import {
   isDateAndInThePast,
   formatAddressLines,
   getTimeDiff,
+  lastNameCommaFirstName,
 } from './utils'
 
 describe('convert to title case', () => {
@@ -312,5 +313,15 @@ describe('getTimeDiff', () => {
     [NaN, '13:00', ''],
   ])('returns %s for %s and %s', (expected, start, end) => {
     expect(getTimeDiff(start, end)).toBe(expected)
+  })
+})
+
+describe('lastNameCommaFirstName', () => {
+  it.each([
+    [{ firstName: 'John', lastName: 'Smith' }, 'Smith, John'],
+    [{ firstName: 'jOhn', lastName: 'SmiTh' }, 'Smith, John'],
+    [{ firstName: 'Robert-John', lastName: 'Smith-jOnes-WilSoN' }, 'Smith-Jones-Wilson, Robert-John'],
+  ])('%s lastNameCommaFirstName(%s, %s)', (input, expected) => {
+    expect(lastNameCommaFirstName(input)).toEqual(expected)
   })
 })
