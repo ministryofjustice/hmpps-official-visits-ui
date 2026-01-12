@@ -1,8 +1,8 @@
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import OfficialVisitsService from './officialVisitsService'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { ApprovedContact, FindByCriteriaResults, OfficialVisit } from '../@types/officialVisitsApi/types'
-import { mockFindByCriteriaResults, mockVisit } from '../testutils/mocks'
+import { ApprovedContact, OfficialVisit } from '../@types/officialVisitsApi/types'
+import { mockFindByCriteriaResults } from '../testutils/mocks'
 
 jest.mock('../data/officialVisitsApiClient')
 
