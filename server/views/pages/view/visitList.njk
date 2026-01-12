@@ -43,24 +43,24 @@
       <div class="govuk-form-group">
         <div class="date-search-form">
           {{ mojDatePicker({
-          id: "startDate",
-          name: "startDate",
-          label: {
-            text: "From"
-          },
-          errorMessage: validationErrors | findError('startDate'),
-          value: (formResponses.startDate or filter.startDate) | mojDate
-      }) }}
+            id: "startDate",
+            name: "startDate",
+            label: {
+              text: "From"
+            },
+            errorMessage: validationErrors | findError('startDate'),
+            value: (formResponses.startDate or filter.startDate) | mojDate
+          }) }}
 
           {{ mojDatePicker({
-          id: "endDate",
-          name: "endDate",
-          label: {
-            text: "To"
-          },
-          errorMessage: validationErrors | findError('endDate'),
-          value: (formResponses.endDate or filter.endDate) | mojDate
-      }) }}
+            id: "endDate",
+            name: "endDate",
+            label: {
+              text: "To"
+            },
+            errorMessage: validationErrors | findError('endDate'),
+            value: (formResponses.endDate or filter.endDate) | mojDate
+          }) }}
         </div>
       </div>
     </div>
