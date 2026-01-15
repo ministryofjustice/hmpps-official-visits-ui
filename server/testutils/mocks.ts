@@ -29,6 +29,7 @@ export const mockTimeslots = [
     availableVideoSessions: 1,
     availableGroups: 1,
     availableAdults: 1,
+    locationDescription: 'Mock Location',
   } as AvailableSlot,
 ]
 

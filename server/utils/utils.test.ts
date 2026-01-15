@@ -18,6 +18,7 @@ import {
   formatAddressLines,
   getTimeDiff,
   lastNameCommaFirstName,
+  addRemoveLinks,
 } from './utils'
 
 describe('convert to title case', () => {
@@ -323,5 +324,44 @@ describe('lastNameCommaFirstName', () => {
     [{ firstName: 'Robert-John', lastName: 'Smith-jOnes-WilSoN' }, 'Smith-Jones-Wilson, Robert-John'],
   ])('%s lastNameCommaFirstName(%s, %s)', (input, expected) => {
     expect(lastNameCommaFirstName(input)).toEqual(expected)
+  })
+})
+
+describe('addRemoveLinks', () => {
+  const filters = { arrayMultiple: ['a', 'b'], arraySingle: ['a'], singular: 'a' }
+
+  it('should calculate page query without "singular"', () => {
+    const srcItems = [{ text: 'TypeA', value: 'a' }]
+    const key = 'singular'
+    const expected = [{ href: '?arrayMultiple=a%2Cb&arraySingle=a', text: 'TypeA', value: 'a' }]
+    expect(addRemoveLinks(srcItems, filters, key)).toEqual(expected)
+  })
+
+  it('should calculate page query without "arraySingle"', () => {
+    const srcItems = [{ text: 'TypeA', value: 'a' }]
+    const key = 'arraySingle'
+    const expected = [{ href: '?arrayMultiple=a%2Cb&singular=a', text: 'TypeA', value: 'a' }]
+    expect(addRemoveLinks(srcItems, filters, key)).toEqual(expected)
+  })
+
+  it('should calculate page query with an item removed from "arrayMultiple"', () => {
+    const srcItems = [{ text: 'TypeA', value: 'a' }]
+    const key = 'arrayMultiple'
+    const expected = [{ href: '?arraySingle=a&singular=a&arrayMultiple=b', text: 'TypeA', value: 'a' }]
+    expect(addRemoveLinks(srcItems, filters, key)).toEqual(expected)
+  })
+
+  it('should calculate page query leaving filters untouched when a key is given that doesnt exist in filters', () => {
+    const srcItems = [{ text: 'TypeA', value: 'a' }]
+    const key = 'invalidKey'
+    const expected = [{ href: '?arrayMultiple=a%2Cb&arraySingle=a&singular=a', text: 'TypeA', value: 'a' }]
+    expect(addRemoveLinks(srcItems, filters, key)).toEqual(expected)
+  })
+
+  it('should calculate page query leaving filters untouched when the source item doesnt exist in the filter', () => {
+    const srcItems = [{ text: 'TypeC', value: 'c' }]
+    const key = 'arrayMultiple'
+    const expected = [{ href: '?arraySingle=a&singular=a&arrayMultiple=a%2Cb', text: 'TypeC', value: 'c' }]
+    expect(addRemoveLinks(srcItems, filters, key)).toEqual(expected)
   })
 })

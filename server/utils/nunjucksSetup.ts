@@ -6,6 +6,7 @@ import express from 'express'
 import fs from 'fs'
 import { flatten, groupBy, map } from 'lodash'
 import {
+  addRemoveLinks,
   convertToTitleCase,
   dateAtTime,
   formatAddressLines,
@@ -23,6 +24,7 @@ import restrictionTagColour from './restrictionTagColour'
 import { FieldValidationError } from '../middleware/setUpFlash'
 import config from '../config'
 import logger from '../../logger'
+import { ReferenceDataItem } from '../@types/officialVisitsApi/types'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
@@ -95,12 +97,20 @@ export default function nunjucksSetup(app: express.Express): void {
   )
   njkEnv.addFilter('min', (a: number, b: number) => Math.min(a, b))
   njkEnv.addFilter('max', (a: number, b: number) => Math.max(a, b))
-  njkEnv.addFilter('setSelected', (items: any[], selected: string) =>
-    items.map(o => ({ ...o, selected: o.value === selected })),
+  njkEnv.addFilter('setSelected', (items: any[], selected: string | string[]) =>
+    items.map(o => ({ ...o, selected: o.value === selected[0] })),
   )
   njkEnv.addFilter('addSelectValue', (items: any[], value: string, text: string) =>
     items.concat([{ value, text, selected: false }]),
   )
   njkEnv.addFilter('mojDate', (date: string) => date?.split('-').reverse().join('/'))
   njkEnv.addFilter('lastNameCommaFirstName', lastNameCommaFirstName)
+  njkEnv.addFilter(
+    'getOptsText',
+    (items: { text: string; value: string }[], value: string) => items.find(o => o.value === value)?.text,
+  )
+  njkEnv.addFilter('filterCategoryItems', (items: { text: string; value: string }[], values: string[]) =>
+    items.filter(o => values.includes(o.value)),
+  )
+  njkEnv.addFilter('addRemoveLinks', addRemoveLinks)
 }

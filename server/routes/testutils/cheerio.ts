@@ -66,3 +66,13 @@ export const getProgressTrackerCompleted = ($: Root) => {
 export const getArrayItemPropById = ($: Root, id: string, index: number, property: string) => {
   return $(`#${id}\\[${index}\\]\\[${property}\\]`)
 }
+
+export const getGovukTableCell = ($: Root, rowIndex: number, columnIndex: number) => {
+  return $(
+    `.govuk-table__body > .govuk-table__row:nth-child(${rowIndex}) > .govuk-table__cell:nth-child(${columnIndex})`,
+  )
+}
+
+export const getByIdFor = ($: Root, forId: string) => {
+  return $(`[for=${forId}]`)
+}
