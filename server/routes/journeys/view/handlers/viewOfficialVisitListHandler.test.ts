@@ -210,7 +210,7 @@ describe('Search for an official visit', () => {
 
     it('should error if prisoner query is 1 character', () => {
       return request(app)
-        .get(`${URL}?prisoner=n`)
+        .get(`${URL}?startDate=2022-10-10&endDate=2022-10-11&prisoner=n`)
         .send({})
         .expect(() =>
           expectErrorMessages(
