@@ -219,3 +219,17 @@ export const socialVisitorsPageEnabled = (req: Request) => {
     .split(',')
     .includes(req.session.journey.officialVisit.prisonCode)
 }
+
+export const addRemoveLinks = (
+  items: { text: string; value: string }[],
+  filters: Record<string, string | string[]>,
+  key: string,
+) =>
+  items.map(o => {
+    const newValue = Array.isArray(filters[key]) ? filters[key].filter(v => v !== o.value) : []
+    const { [key]: _omit, ...rest } = filters
+    return {
+      ...o,
+      href: `?${new URLSearchParams({ ...rest, ...(newValue.length ? { [key]: newValue } : {}) }).toString()}`,
+    }
+  })

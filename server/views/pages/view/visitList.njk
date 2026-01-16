@@ -7,6 +7,8 @@
 {%- from "moj/components/filter/macro.njk" import mojFilter -%}
 {%- from "moj/components/button-menu/macro.njk" import mojButtonMenu -%}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% extends "partials/layout.njk" %}
 
@@ -20,105 +22,228 @@
     </div>
   </div>
 
-  <form method="post" class="govuk-grid-row govuk-!-padding-6 govuk-!-margin-bottom-7 search-form">
-    <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
-    <div class="govuk-grid-row govuk-body">
-      {{ govukInput({
-        id: "prisoner",
-        name: "prisoner",
-        value: formResponses.prisoner or filter.prisoner,
-        classes: "max-width-two-thirds",
-        label: {
-          text: 'Search by prisoner name or prisoner ID'
-        }
-      }) }}
-    </div>
+  <form method="post">
+    <div class="govuk-grid-row govuk-!-padding-6 govuk-!-margin-bottom-7 search-form">
+      <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+      <div class="govuk-grid-row govuk-body">
+        {{ govukInput({
+          id: "prisoner",
+          name: "prisoner",
+          value: formResponses.prisoner or filter.prisoner,
+          errorMessage: validationErrors | findError('prisoner'),
+          classes: "max-width-two-thirds",
+          label: {
+            text: 'Search by prisoner name or prisoner ID'
+          }
+        }) }}
+      </div>
 
-    <div class="govuk-grid-row govuk-body">
-      <p class="govuk-body" style="width: 100%">Search by date range</p>
-    </div>
+      <div class="govuk-grid-row govuk-body">
+        <p class="govuk-body" style="width: 100%">Search by date range</p>
+      </div>
 
-    <div class="govuk-grid-row govuk-body">
-      <div class="govuk-form-group">
-        <div class="date-search-form">
-          {{ mojDatePicker({
-            id: "startDate",
-            name: "startDate",
-            label: {
-              text: "From"
-            },
-            errorMessage: validationErrors | findError('startDate'),
-            value: (formResponses.startDate or filter.startDate) | mojDate
-          }) }}
+      <div class="govuk-grid-row govuk-body">
+        <div class="govuk-form-group">
+          <div class="date-search-form">
+            {{ mojDatePicker({
+              id: "startDate",
+              name: "startDate",
+              label: {
+                text: "From"
+              },
+              errorMessage: validationErrors | findError('startDate'),
+              value: (formResponses.startDate or filter.startDate) | mojDate
+            }) }}
 
-          {{ mojDatePicker({
-            id: "endDate",
-            name: "endDate",
-            label: {
-              text: "To"
-            },
-            errorMessage: validationErrors | findError('endDate'),
-            value: (formResponses.endDate or filter.endDate) | mojDate
-          }) }}
+            {{ mojDatePicker({
+              id: "endDate",
+              name: "endDate",
+              label: {
+                text: "To"
+              },
+              errorMessage: validationErrors | findError('endDate'),
+              value: (formResponses.endDate or filter.endDate) | mojDate
+            }) }}
+          </div>
         </div>
+      </div>
+
+      <div class="govuk-grid-row govuk-body govuk-!-margin-bottom-0">
+        {{ govukButton({
+          text: "Search",
+          classes: "govuk-!-margin-bottom-0",
+          preventDoubleClick: true
+        }) }}
       </div>
     </div>
 
-    <div class="govuk-grid-row govuk-body govuk-!-margin-bottom-0">
-      {{ govukButton({
-        text: "Search",
-        classes: "govuk-!-margin-bottom-0",
-        preventDoubleClick: true
+    {%- set filterOptionsHtml %}
+
+    {{ govukSelect({
+        id: "location",
+        name: "location",
+        classes: "min-width-one-quarter",
+        label: {
+          text: "Location",
+          classes: "govuk-fieldset__legend--s"
+        },
+        items: locations | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.location or filter.location or '')
       }) }}
+
+    {{ govukSelect({
+        id: "type",
+        name: "type",
+        classes: "min-width-one-quarter",
+        label: {
+          text: "Visit type",
+          classes: "govuk-fieldset__legend--s"
+        },
+        items: types | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.type or filter.type or '')
+      }) }}
+
+    {{ govukSelect({
+        id: "status",
+        name: "status",
+        classes: "min-width-one-quarter",
+        label: {
+          text: "Visit status",
+          classes: "govuk-fieldset__legend--s"
+        },
+        items: statuses | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.status or filter.status or '')
+      }) }}
+
+    {% endset -%}
+
+    <div class="govuk-grid-row govuk-body">
+      <div class="govuk-grid-column-one-quarter" id="filters-column">
+        {{ mojFilter({
+          heading: {
+            text: "Filter"
+          },
+          submit: {
+            attributes: {
+                "data-test-id": "submit-button"
+            }
+          },
+          selectedFilters: {
+            heading: {
+              text: "Selected filters"
+            },
+            clearLink: {
+              text: "Clear filters",
+              href: '?' + clearLink
+            },
+            categories: [
+              {
+                heading: {
+                  text: "Location"
+                },
+                items: locations | filterCategoryItems(filter.location) | addRemoveLinks(filter, 'location')
+              } if filter.location,
+              {
+                heading: {
+                  text: "Visit type"
+                },
+                items: types | filterCategoryItems(filter.type) | addRemoveLinks(filter, 'type')
+              } if filter.type,
+              {
+                heading: {
+                  text: "Visit status"
+                },
+                items: statuses | filterCategoryItems(filter.status) | addRemoveLinks(filter, 'status')
+              } if filter.status
+            ]
+          },
+          optionsHtml: filterOptionsHtml
+        }) }}
+      </div>
+
+      {% set rows = [] %}
+      {% for visitRecord in visits %}
+        {% set rows = (rows.push([
+          {
+            html: (visitRecord.startTime | timeStringTo12HourPretty(true)) + ' to ' + (visitRecord.endTime | timeStringTo12HourPretty(true)) + '</b><br />' + visitRecord.visitDate | formatDate
+          },
+          {
+            html: visitRecord.locationDescription or '-'
+          },
+          {
+            html: visitRecord.visitTypeDescription or '-'
+          },
+          {
+            html: '<a class="govuk-link--no-visited-state" href="' + prisonerProfileUrl + '/prisoner/' + visitRecord.prisoner.prisonerNumber + '">' + visitRecord.prisoner | lastNameCommaFirstName + "</a><br/>" + visitRecord.prisoner.prisonerNumber
+          },
+          {
+            html: visitRecord.visitStatusDescription or '-'
+          },
+          {
+            html: '<a class="govuk-link govuk-link--no-visited-state" href="/view/' + visitRecord.officialVisitId + '">Select</a>'
+          }
+        ]), rows) %}
+      {% endfor %}
+
+      <div class="govuk-grid-column-three-quarters" id="table-column">
+        <div class="moj-action-bar moj-action-bar-indent">
+          <div class="moj-action-bar__filter"></div>
+        </div>
+        {% if pagination.totalElements > 0 %}
+
+          {{ simplePagination(pagination)  }}
+
+          {{ govukTable({
+            firstCellIsHeader: false,
+            classes: 'table-vertical-align-middle govuk-!-margin-top-6',
+            head: [
+              { text: 'Time and date', attributes: { "aria-sort": "none" } },
+              { text: "Location", attributes: { "aria-sort": "none" } },
+              { text: "Visit type", attributes: { "aria-sort": "none" } },
+              { text: "Prisoner", attributes: { "aria-sort": "none" } },
+              { text: "Status", attributes: { "aria-sort": "none" } },
+              { text: "Action", attributes: { "aria-sort": "none" } }
+            ],
+            rows: rows
+          }) }}
+
+          {{ simplePagination(pagination)  }}
+
+        {% else %}
+          <p class="govuk-body">No visits found matching the current filters.</p>
+        {% endif %}
+      </div>
     </div>
   </form>
+{% endblock %}
 
-  {% set rows = [] %}
-  {% for visitRecord in visits %}
-    {% set rows = (rows.push([
-      {
-        html: (visitRecord.startTime | timeStringTo12HourPretty(true)) + ' to ' + (visitRecord.endTime | timeStringTo12HourPretty(true)) + '</b><br />' + visitRecord.visitDate | formatDate
-      },
-      {
-        html: visitRecord.locationDescription or '-'
-      },
-      {
-        html: visitRecord.visitTypeDescription or '-'
-      },
-      {
-        html: '<a class="govuk-link--no-visited-state" href="' + prisonerProfileUrl + '/prisoner/' + visitRecord.prisoner.prisonerNumber + '">' + visitRecord.prisoner | lastNameCommaFirstName + "</a><br/>" + visitRecord.prisoner.prisonerNumber
-      },
-      {
-        html: visitRecord.visitStatusDescription or '-'
-      },
-      {
-        html: '<a class="govuk-link govuk-link--no-visited-state" href="/view/' + visitRecord.officialVisitId + '">Select</a>'
-      }
-    ]), rows) %}
-  {% endfor %}
-
-  {% if pagination.totalElements > 0 %}
-
-    {{ simplePagination(pagination)  }}
-
-    {{ govukTable({
-      firstCellIsHeader: false,
-      classes: 'table-vertical-align-middle govuk-!-margin-top-6',
-      head: [
-        { text: 'Time and date', attributes: { "aria-sort": "none" } },
-        { text: "Location", attributes: { "aria-sort": "none" } },
-        { text: "Visit type", attributes: { "aria-sort": "none" } },
-        { text: "Prisoner", attributes: { "aria-sort": "none" } },
-        { text: "Status", attributes: { "aria-sort": "none" } },
-        { text: "Action", attributes: { "aria-sort": "none" } }
-      ],
-      rows: rows
-    }) }}
-
-    {{ simplePagination(pagination)  }}
-
-  {% else %}
-    <p class="govuk-body">No visits found matching the current filters.</p>
-  {% endif %}
-
+{% block pageScripts %}
+  <script nonce="{{ cspNonce }}">
+    window.onload = function () {
+      const filter = document.querySelector('[data-module="moj-filter"]')
+      filter && window.MojFrontend && new window
+        .MojFrontend
+        .FilterToggleButton(filter, {
+          bigModeMediaQuery: '(min-width: 48.063em)',
+          startHidden: {{ not showFilter }},
+          toggleButton: {
+            showText: 'Show filter',
+            hideText: 'Hide filter',
+            classes: 'govuk-button--secondary'
+          },
+          toggleButtonContainer: {
+            selector: '.moj-action-bar__filter'
+          },
+          closeButton: {
+            text: 'Close'
+          },
+          closeButtonContainer: {
+            selector: '.moj-filter__header-action'
+          }
+        })
+      const showHideButton = document.querySelector('.moj-action-bar__filter > button')
+      const tableColumn = document.querySelector('#table-column')
+      tableColumn.style.width = showHideButton.getAttribute('aria-expanded') === 'true' ? '75%' : '100%'
+      showHideButton.addEventListener('click', function (event) {
+        tableColumn.style.width = showHideButton.getAttribute('aria-expanded') === 'true' ? '75%' : '100%'
+      })
+    }
+  </script>
 {% endblock %}

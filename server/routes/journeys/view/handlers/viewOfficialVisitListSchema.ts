@@ -12,15 +12,23 @@ const toDateString = (date: Date) =>
 
 export const schema = createSchema(
   {
+    prisoner: z.string().optional(),
     startDate: validateDateOptional('From date must be a real date'),
     endDate: validateDateOptional('To date must be a real date'),
   },
   false,
 ).transform((data, ctx) => {
+  if (data.prisoner && data.prisoner.length < 2) {
+    ctx.addIssue({
+      code: 'custom',
+      message: 'Prisoner name or ID must be at least 2 characters',
+      path: ['prisoner'],
+    })
+  }
   if (!getMinDateChecker(data.startDate)(data.endDate)) {
     ctx.addIssue({
       code: 'custom',
-      message: 'To date must be after the from date',
+      message: 'To date must be the same or after the from date',
       path: ['endDate'],
     })
   }

@@ -1,4 +1,5 @@
-{% from "partials/mojPagination.njk" import mojPagination %}
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+    {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% macro simplePagination(params) %}
   {% if params.totalPages > 1 %}
