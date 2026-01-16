@@ -24,7 +24,6 @@ import restrictionTagColour from './restrictionTagColour'
 import { FieldValidationError } from '../middleware/setUpFlash'
 import config from '../config'
 import logger from '../../logger'
-import { ReferenceDataItem } from '../@types/officialVisitsApi/types'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
@@ -105,11 +104,7 @@ export default function nunjucksSetup(app: express.Express): void {
   )
   njkEnv.addFilter('mojDate', (date: string) => date?.split('-').reverse().join('/'))
   njkEnv.addFilter('lastNameCommaFirstName', lastNameCommaFirstName)
-  njkEnv.addFilter(
-    'getOptsText',
-    (items: { text: string; value: string }[], value: string) => items.find(o => o.value === value)?.text,
-  )
-  njkEnv.addFilter('filterCategoryItems', (items: { text: string; value: string }[], values: string[]) =>
+  njkEnv.addFilter('filterCategoryItems', (items: { value: string }[], values: string[]) =>
     items.filter(o => values.includes(o.value)),
   )
   njkEnv.addFilter('addRemoveLinks', addRemoveLinks)

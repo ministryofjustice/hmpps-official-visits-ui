@@ -3,12 +3,7 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { schema } from './viewOfficialVisitListSchema'
-import {
-  FindByCriteria,
-  ReferenceDataItem,
-  VisitStatusType,
-  VisitType,
-} from '../../../../@types/officialVisitsApi/types'
+import { ReferenceDataItem, VisitStatusType, VisitType } from '../../../../@types/officialVisitsApi/types'
 
 export default class ViewOfficialVisitListHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_LIST_PAGE
