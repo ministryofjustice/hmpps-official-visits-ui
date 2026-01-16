@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { addYears } from 'date-fns'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
@@ -24,7 +25,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
       res,
       prisonCode,
       toDateString(new Date()),
-      toDateString(new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)),
+      toDateString(addYears(new Date(), 1)),
     )
 
     // Find unique locations
