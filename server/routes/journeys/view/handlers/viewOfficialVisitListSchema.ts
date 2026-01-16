@@ -28,7 +28,7 @@ export const schema = createSchema(
   if (!getMinDateChecker(data.startDate)(data.endDate)) {
     ctx.addIssue({
       code: 'custom',
-      message: 'To date must be after the from date',
+      message: 'To date must be the same or after the from date',
       path: ['endDate'],
     })
   }

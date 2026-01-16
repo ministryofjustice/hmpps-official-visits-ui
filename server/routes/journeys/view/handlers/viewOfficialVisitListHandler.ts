@@ -4,6 +4,7 @@ import { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { schema } from './viewOfficialVisitListSchema'
 import { ReferenceDataItem, VisitStatusType, VisitType } from '../../../../@types/officialVisitsApi/types'
+import { toDateString } from '../../../../utils/utils'
 
 export default class ViewOfficialVisitListHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_LIST_PAGE
@@ -22,8 +23,8 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
     const slots = await this.officialVisitsService.getAvailableSlots(
       res,
       prisonCode,
-      new Date().toISOString().substring(0, 10),
-      new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString().substring(0, 10),
+      toDateString(new Date()),
+      toDateString(new Date(Date.now() + 1000 * 60 * 60 * 24 * 365)),
     )
 
     // Find unique locations
