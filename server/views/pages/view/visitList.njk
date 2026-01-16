@@ -30,6 +30,7 @@
           id: "prisoner",
           name: "prisoner",
           value: formResponses.prisoner or filter.prisoner,
+          errorMessage: validationErrors | findError('prisoner'),
           classes: "max-width-two-thirds",
           label: {
             text: 'Search by prisoner name or prisoner ID'

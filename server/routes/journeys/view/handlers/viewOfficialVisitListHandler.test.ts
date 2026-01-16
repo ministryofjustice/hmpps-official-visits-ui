@@ -193,13 +193,28 @@ describe('Search for an official visit', () => {
         )
     })
 
-    it('should error if endDate is before startDate', () => {
+    it('should error if an invalid date is entered', () => {
       return request(app)
-        .get(`${URL}?startDate=2023-01-01&endDate=2022-01-01`)
+        .get(`${URL}?startDate=2022-13-32&endDate=2022-13-32`)
         .send({})
         .expect(() =>
           expectErrorMessages(
-            [{ fieldId: 'endDate', href: '#endDate', text: 'To date must be after the from date' }],
+            [
+              { fieldId: 'startDate', href: '#startDate', text: 'From date must be a real date' },
+              { fieldId: 'endDate', href: '#endDate', text: 'To date must be a real date' },
+            ],
+            4,
+          ),
+        )
+    })
+
+    it('should error if prisoner query is 1 character', () => {
+      return request(app)
+        .get(`${URL}?prisoner=n`)
+        .send({})
+        .expect(() =>
+          expectErrorMessages(
+            [{ fieldId: 'prisoner', href: '#prisoner', text: 'Prisoner name or ID must be at least 2 characters' }],
             4,
           ),
         )
