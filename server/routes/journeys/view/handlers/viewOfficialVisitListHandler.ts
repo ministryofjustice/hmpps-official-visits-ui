@@ -59,7 +59,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
     const findByCriteria = {
       startDate: filterParams.startDate,
       endDate: filterParams.endDate,
-      ...(filterParams.prisoner ? { prisonerNumbers: [filterParams.prisoner] } : {}),
+      ...(filterParams.prisoner ? { searchTerm: filterParams.prisoner } : {}),
       ...(filterParams.status ? { visitStatuses: filterParams.status } : {}),
       ...(filterParams.type ? { visitTypes: filterParams.type } : {}),
       ...(filterParams.location ? { locationIds: filterParams.location } : {}),

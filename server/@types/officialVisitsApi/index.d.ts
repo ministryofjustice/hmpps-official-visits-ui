@@ -92,7 +92,7 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Endpoint to search fo official visit summaries for given search criteria.
+     * Endpoint to search for official visit summaries for given search criteria.
      * @description Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
      *     * ROLE_OFFICIAL_VISITS__R
@@ -199,6 +199,28 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/reconcile/prisoner/{prisonerNumber}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Endpoint to return all official visits for a prisoner between the specified  visit dates and  current term
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    get: operations['getAllOfficialVisitForPrisoner']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/reconcile/official-visits/identifiers': {
     parameters: {
       query?: never
@@ -207,12 +229,34 @@ export interface paths {
       cookie?: never
     }
     /**
-     * Endpoint to return the all the official visit ids for reconciliation
+     * Endpoint to return a paged list of all official visit IDs
      * @description Requires one of the following roles:
      *     * OFFICIAL_VISITS_MIGRATION
      *     * OFFICIAL_VISITS_ADMIN
      */
-    get: operations['getAllOfficialVisits']
+    get: operations['getAllOfficialVisitIds']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/reconcile/official-visit/id/{officialVisitId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Endpoint to return one official visit by ID for reconciliation
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    get: operations['getOfficialVisitById']
     put?: never
     post?: never
     delete?: never
@@ -280,7 +324,7 @@ export interface paths {
      *     * ROLE_OFFICIAL_VISITS__R
      *     * ROLE_OFFICIAL_VISITS_RW
      */
-    get: operations['getOfficialVisits']
+    get: operations['getOfficialVisitByPrisonCodeAndId']
     put?: never
     post?: never
     delete?: never
@@ -447,6 +491,11 @@ export interface components {
     /** @description The request with the official visit summary search details */
     OfficialVisitSummarySearchRequest: {
       /**
+       * @description The search term can be a prisoner number, name or partial name.  Must be a minimum of 2 characters or not provided.
+       * @example Smith
+       */
+      searchTerm?: string
+      /**
        * Format: date
        * @description The earliest date the official visits will start
        * @example 2022-12-23
@@ -462,12 +511,16 @@ export interface components {
        * @description The visit types to search for
        * @example IN_PERSON
        * @example VIDEO
+       * @example TELEPHONE
+       * @example UNKNOWN
        */
       visitTypes?: components['schemas']['VisitType'][]
       /**
        * @description The visit statuses to search for
        * @example SCHEDULED
        * @example COMPLETED
+       * @example CANCELLED
+       * @example EXPIRED
        */
       visitStatuses?: components['schemas']['VisitStatusType'][]
       /**
@@ -1123,6 +1176,119 @@ export interface components {
        * @example true
        */
       enabled: boolean
+    }
+    SyncOfficialVisit: {
+      /**
+       * Format: int64
+       * @description The internal official visit ID
+       * @example 1
+       */
+      officialVisitId: number
+      /**
+       * Format: date
+       * @description The visit date
+       * @example 2020-01-02
+       */
+      visitDate: string
+      /**
+       * @description The visit start time
+       * @example 09:15
+       */
+      startTime: string
+      /**
+       * @description The visit end time
+       * @example 10:15
+       */
+      endTime: string
+      /**
+       * Format: int64
+       * @description The visit slot ID
+       * @example 12345
+       */
+      prisonVisitSlotId: number
+      /**
+       * Format: uuid
+       * @description The DPS location ID where the visit is taking place
+       * @example aaa-ddd-bbb-123455632323
+       */
+      dpsLocationId: string
+      /**
+       * @description The prison establishment code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description The prisoner number
+       * @example A1111AA
+       */
+      prisonerNumber: string
+      /**
+       * @description The visit status code
+       * @example SCHEDULED
+       */
+      statusCode: components['schemas']['VisitStatusType']
+      /**
+       * @description The visit completion code
+       * @example NORMAL
+       */
+      completionCode?: components['schemas']['VisitCompletionType']
+      /**
+       * Format: int64
+       * @description The offender booking ID in NOMIS
+       * @example 12345
+       */
+      offenderBookId?: number
+      /**
+       * Format: int64
+       * @description The offender visit ID in NOMIS (only present for migrated bookings)
+       * @example 12345
+       */
+      offenderVisitId?: number
+      /** @description The offender visitor details */
+      visitors: components['schemas']['SyncOfficialVisitor'][]
+    }
+    SyncOfficialVisitor: {
+      /**
+       * Format: int64
+       * @description The internal official visitor ID
+       * @example 1
+       */
+      officialVisitorId: number
+      /**
+       * Format: int64
+       * @description The contact ID of the person visiting
+       * @example 123
+       */
+      contactId?: number
+      /**
+       * @description The visitor first Name
+       * @example John
+       */
+      firstName?: string
+      /**
+       * @description The visitor last Name
+       * @example Smith
+       */
+      lastName?: string
+      /**
+       * @description The relationship type for this visitor (OFFICIAL or SOCIAL)
+       * @example OFFICIAL
+       */
+      relationshipType?: components['schemas']['RelationshipType']
+      /**
+       * @description The visitor relationship code
+       * @example POM
+       */
+      relationshipCode?: string
+      /**
+       * @description The visitor attendance code, either ABSENT, ATTENDED or null if not recorded.
+       * @example ABSENT
+       */
+      attendanceCode?: components['schemas']['AttendanceType']
+    }
+    PagedModelSyncOfficialVisitId: {
+      content?: components['schemas']['SyncOfficialVisitId'][]
+      page?: components['schemas']['PageMetadata']
     }
     /** @description Response object for sync reconciliation */
     SyncOfficialVisitId: {
@@ -1824,10 +1990,58 @@ export interface operations {
       }
     }
   }
-  getAllOfficialVisits: {
+  getAllOfficialVisitForPrisoner: {
     parameters: {
       query?: {
-        currentTerm?: boolean
+        /** @description Is current term only? */
+        currentTermOnly?: boolean
+        /** @description The from date in ISO format (YYYY-MM-DD). */
+        fromDate?: string
+        /** @description The to date in ISO format (YYYY-MM-DD). */
+        toDate?: string
+      }
+      header?: never
+      path: {
+        /** @description The prisoner Number */
+        prisonerNumber: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description List of all Official visit details */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncOfficialVisit'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getAllOfficialVisitIds: {
+    parameters: {
+      query?: {
+        currentTermOnly?: boolean
         /** @description Zero-based page index (0..N) */
         page?: number
         /** @description The size of the page to be returned */
@@ -1841,13 +2055,53 @@ export interface operations {
     }
     requestBody?: never
     responses: {
-      /** @description List of  paged list of DPS visit IDs for the current term */
+      /** @description A paginated list of all official visit IDs */
       200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['SyncOfficialVisitId'][]
+          'application/json': components['schemas']['PagedModelSyncOfficialVisitId']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getOfficialVisitById: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        officialVisitId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Official visit details */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncOfficialVisit']
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */
@@ -1946,7 +2200,7 @@ export interface operations {
       }
     }
   }
-  getOfficialVisits: {
+  getOfficialVisitByPrisonCodeAndId: {
     parameters: {
       query?: never
       header?: never
@@ -1957,7 +2211,7 @@ export interface operations {
          */
         prisonCode: string
         /**
-         * @description The id of the Official visit
+         * @description The official visit ID
          * @example 123456
          */
         officialVisitId: number
@@ -1993,7 +2247,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description No Official visit found */
+      /** @description No official visit found */
       404: {
         headers: {
           [name: string]: unknown

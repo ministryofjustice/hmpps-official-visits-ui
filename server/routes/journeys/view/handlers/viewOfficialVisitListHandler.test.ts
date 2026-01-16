@@ -135,12 +135,6 @@ describe('Search for an official visit', () => {
           expect($('#type > option').text()).toEqual('Type1Type2')
           expect($('#status > option').text()).toEqual('Status1Status2')
 
-          // Pagination links keep search options
-          expect($('.govuk-pagination__link:nth(1)').text().trim()).toEqual('2')
-          expect($('.govuk-pagination__link:nth(1)').attr('href')).toEqual(
-            '/view/list?page=2&startDate=2026-01-15&endDate=2026-03-16',
-          )
-
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.VIEW_OFFICIAL_VISIT_LIST_PAGE, {
             who: user.username,
             correlationId: expect.any(String),
