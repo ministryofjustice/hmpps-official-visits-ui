@@ -14,7 +14,7 @@ import {
 } from '../../../../testutils/cheerio'
 import { Journey } from '../../../../../@types/express'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { mockSocialVisitors, mockPrisonerRestrictions, prisoner } from '../../../../../testutils/mocks'
+import { mockSocialVisitors, mockPrisonerRestrictions, mockPrisoner } from '../../../../../testutils/mocks'
 import { expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
 
@@ -32,7 +32,7 @@ const appSetup = (
   journeySession = {
     officialVisit: {
       prisoner: {
-        ...prisoner,
+        ...mockPrisoner,
         restrictions: mockPrisonerRestrictions,
       },
       availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
@@ -81,11 +81,12 @@ describe('Select social visitors', () => {
 
           // Check the prisoner mini-profile is present with correct prisoner details
           expect(getByDataQa($, 'mini-profile-person-profile-link').text().trim()).toEqual(
-            convertToTitleCase(`${prisoner.lastName}, ${prisoner.firstName}`),
+            convertToTitleCase(`${mockPrisoner.lastName}, ${mockPrisoner.firstName}`),
           )
-          expect(getByDataQa($, 'mini-profile-prisoner-number').text().trim()).toEqual(prisoner.prisonerNumber)
-          expect(getByDataQa($, 'mini-profile-dob').text().trim()).toBeFalsy()
-          expect(getByDataQa($, 'mini-profile-cell-location').text().trim()).toBeFalsy()
+          expect(getByDataQa($, 'mini-profile-prisoner-number').text().trim()).toEqual(mockPrisoner.prisonerNumber)
+          expect(getByDataQa($, 'mini-profile-dob').text().trim()).toEqual('1 June 1989')
+          expect(getByDataQa($, 'mini-profile-cell-location').text().trim()).toEqual(mockPrisoner.cellLocation)
+          expect(getByDataQa($, 'mini-profile-prison-name').text().trim()).toEqual(mockPrisoner.prisonName)
 
           // Check page header
           const heading = getPageHeader($)
@@ -142,8 +143,8 @@ describe('Select social visitors', () => {
 
           // Calls expected
           expect(officialVisitsService.getApprovedSocialContacts).toHaveBeenCalledWith(
-            prisoner.prisonCode,
-            prisoner.prisonerNumber,
+            mockPrisoner.prisonCode,
+            mockPrisoner.prisonerNumber,
             user,
           )
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_SOCIAL_VISITORS_PAGE, {

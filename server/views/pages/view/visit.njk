@@ -1,12 +1,133 @@
 {% extends "partials/layout.njk" %}
 
-{% set pageTitle = "View an official visit" %}
-{% set hideBackLink = true %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/miniProfile/macro.njk" import miniProfile %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageTitle = "Official visit with " + visit.prisonerVisited | firstNameSpaceLastName %}
 
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      Page awaiting build
-    </div>
+
+    <span class="govuk-hint">Manage existing official visits</span>
+    <h1 class="govuk-heading-l">Official visit</h1>
+
+    {{ miniProfile(prisoner) }}
+
+    {{ govukButton ({
+      text: "Print movement slip (TODO)",
+      href: "#TODO",
+      classes: "govuk-button blue-button"
+    }) }}
+
+    {{ govukSummaryList({
+      card: {
+        classes: "govuk-!-margin-bottom-7",
+        title: {
+          text: "Visit details"
+        },
+        actions: {
+          items: [
+            {
+              href: "/view/visit/" + visit.officialVisitId + "/cancel",
+              html: "Cancel visit"
+            },
+            {
+              href: "/view/visit/" + visit.officialVisitId + "/complete",
+              html: "Complete visit"
+            }
+          ]
+        }
+      },
+      rows: [
+        {
+          key: { text: "Date" },
+          value: { text: visit.visitDate | formatDate("iiii, d MMMM yyyy") }
+        },
+        {
+          key: { text: "Time" },
+          value: { text: (visit.startTime | timeStringTo12HourPretty(true)) + ' to ' + (visit.endTime | timeStringTo12HourPretty(true)) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' }
+        },
+        {
+          key: { text: "Visit status" },
+          value: { text: visit.visitStatusDescription }
+        },
+        {
+          key: { text: "Visit reference number" },
+          value: { text: visit.officialVisitId }
+        },
+        {
+          key: { text: "Location" },
+          value: { text: visit.locationDescription }
+        },
+        {
+          key: { text: "Visit type" },
+          value: { text: visit.visitTypeDescription }
+        },
+        {
+          key: { text: "Notes" },
+          value: { text: visit.prisonerNotes or 'None' }
+        },
+        {
+          key: { text: "Created by" },
+          value: { text: visit.createdBy + ' (' + visit.createdTime | formatDate("iiii, d MMMM yyyy") + ')' }
+        },
+        {
+          key: { text: "Last modified" },
+          value: { text: (visit.updatedBy or visit.createdBy) + ' (' + (visit.updatedTime or visit.createdTime) | formatDate("iiii, d MMMM yyyy") + ')' } 
+        }
+      ]
+    }) }}
+
+    <h2 class="govuk-heading-m">Visitor details</h2>
+
+    {% for contact in visit.officialVisitors %}
+      {{ govukSummaryList({
+      card: {
+        classes: "govuk-!-margin-bottom-7",
+        title: {
+          html: '<a href="' + prisonerContactsUrl + '/prisoner/G4793VF/contacts/manage/' + contact.contactId + '/relationship/' + contact.prisonerContactId + '">' + contact | firstNameSpaceLastName + '</a> (' + contact.relationshipDescription + ')'
+        }
+      },
+      rows: [
+        {
+          key: { text: "Contact type" },
+          value: { text: contact.relationshipTypeDescription }
+        },
+        {
+          key: { text: "Does this visitor need assistance" },
+          value: { text: "Yes" if contact.assistedVisit else "No" }
+        },
+        {
+          key: { text: "Assistance details" },
+          value: { text: contact.visitorNotes or "None" }
+        } if contact.assistedVisit,
+        {
+          key: { text: "Equipment" },
+          value: { text: 'TODO' }
+        },
+        {
+          key: { text: "Visitor concerns" },
+          value: { text: contact.visitorNotes }
+        },
+        {
+          key: { text: "Email" },
+          value: { text: 'TODO' }
+        },
+        {
+          key: { text: "Telephone number" },
+          value: { text: 'TODO' }
+        }
+      ]
+    }) }}
+    {% endfor %}
+
+    {{ govukButton ({
+      text: "Print attendance list (TODO)",
+      href: "#TODO",
+      classes: "govuk-button blue-button"
+    }) }}
+
   </div>
 {% endblock %}

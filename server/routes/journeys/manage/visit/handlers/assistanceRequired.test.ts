@@ -7,7 +7,7 @@ import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { getArrayItemPropById, getPageHeader } from '../../../../testutils/cheerio'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { mockSchedule, mockTimeslots, prisoner } from '../../../../../testutils/mocks'
+import { mockSchedule, mockTimeslots, mockPrisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
@@ -25,7 +25,7 @@ const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<Off
 let app: Express
 const defaultJourneySession = () => ({
   officialVisit: {
-    prisoner,
+    prisoner: mockPrisoner,
     visitType: 'IN_PERSON',
     prisonCode: 'MDI',
     officialVisitors: [

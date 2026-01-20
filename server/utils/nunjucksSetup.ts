@@ -9,6 +9,7 @@ import {
   addRemoveLinks,
   convertToTitleCase,
   dateAtTime,
+  firstNameSpaceLastName,
   formatAddressLines,
   formatDate,
   formatOverEighteen,
@@ -38,6 +39,7 @@ export default function nunjucksSetup(app: express.Express): void {
 
   app.use((_req, res, next) => {
     res.locals.digitalPrisonServicesUrl = config.serviceUrls.digitalPrison
+    res.locals.prisonerContactsUrl = config.serviceUrls.prisonerContacts
     return next()
   })
 
@@ -104,6 +106,7 @@ export default function nunjucksSetup(app: express.Express): void {
   )
   njkEnv.addFilter('mojDate', (date: string) => date?.split('-').reverse().join('/'))
   njkEnv.addFilter('lastNameCommaFirstName', lastNameCommaFirstName)
+  njkEnv.addFilter('firstNameSpaceLastName', firstNameSpaceLastName)
   njkEnv.addFilter('filterCategoryItems', (items: { value: string }[], values: string[]) =>
     items.filter(o => values.includes(o.value)),
   )

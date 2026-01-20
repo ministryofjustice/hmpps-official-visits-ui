@@ -14,7 +14,7 @@ import {
 } from '../../../../testutils/cheerio'
 import { Journey } from '../../../../../@types/express'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { mockOfficialVisitors, mockPrisonerRestrictions, prisoner } from '../../../../../testutils/mocks'
+import { mockOfficialVisitors, mockPrisonerRestrictions, mockPrisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
 import config from '../../../../../config'
@@ -33,7 +33,7 @@ const appSetup = (
   journeySession = {
     officialVisit: {
       prisoner: {
-        ...prisoner,
+        ...mockPrisoner,
         restrictions: mockPrisonerRestrictions,
       },
       prisonCode: 'MDI',
@@ -84,11 +84,12 @@ describe('Select official visitors', () => {
 
           // Check the prisoner mini-profile is present with correct prisoner details
           expect(getByDataQa($, 'mini-profile-person-profile-link').text().trim()).toEqual(
-            convertToTitleCase(`${prisoner.lastName}, ${prisoner.firstName}`),
+            convertToTitleCase(`${mockPrisoner.lastName}, ${mockPrisoner.firstName}`),
           )
-          expect(getByDataQa($, 'mini-profile-prisoner-number').text().trim()).toEqual(prisoner.prisonerNumber)
-          expect(getByDataQa($, 'mini-profile-dob').text().trim()).toBeFalsy()
-          expect(getByDataQa($, 'mini-profile-cell-location').text().trim()).toBeFalsy()
+          expect(getByDataQa($, 'mini-profile-prisoner-number').text().trim()).toEqual(mockPrisoner.prisonerNumber)
+          expect(getByDataQa($, 'mini-profile-dob').text().trim()).toEqual('1 June 1989')
+          expect(getByDataQa($, 'mini-profile-cell-location').text().trim()).toEqual(mockPrisoner.cellLocation)
+          expect(getByDataQa($, 'mini-profile-prison-name').text().trim()).toEqual(mockPrisoner.prisonName)
 
           // Check page header
           const heading = getPageHeader($)
@@ -153,8 +154,8 @@ describe('Select official visitors', () => {
 
           // Calls expected
           expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
-            prisoner.prisonCode,
-            prisoner.prisonerNumber,
+            mockPrisoner.prisonCode,
+            mockPrisoner.prisonerNumber,
             user,
           )
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_OFFICIAL_VISITORS_PAGE, {
@@ -169,7 +170,7 @@ describe('Select official visitors', () => {
       appSetup({
         officialVisit: {
           prisoner: {
-            ...prisoner,
+            ...mockPrisoner,
             restrictions: [],
           },
           prisonCode: 'MDI',
@@ -202,8 +203,8 @@ describe('Select official visitors', () => {
 
           // Calls expected
           expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
-            prisoner.prisonCode,
-            prisoner.prisonerNumber,
+            mockPrisoner.prisonCode,
+            mockPrisoner.prisonerNumber,
             user,
           )
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_OFFICIAL_VISITORS_PAGE, {

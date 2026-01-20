@@ -3,6 +3,7 @@ import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import PrisonerService from '../../../../services/prisonerService'
+import PersonalRelationshipsService from '../../../../services/personalRelationshipsService'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_PAGE
@@ -10,6 +11,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
   constructor(
     private readonly officialVisitsService: OfficialVisitsService,
     private readonly prisonerService: PrisonerService,
+    private readonly personalRelationshipsService: PersonalRelationshipsService,
   ) {}
 
   GET = async (req: Request, res: Response) => {
@@ -17,32 +19,28 @@ export default class ViewOfficialVisitHandler implements PageHandler {
     const { user } = res.locals
 
     const prisonCode = req.session.activeCaseLoadId
-    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, +officialVisitId, user)
+    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(officialVisitId), user)
 
-    // TODO: Get the prisoner number from the visit & enrich info
-    /*
-    import { parse, parseISO } from 'date-fns'
-
-    const { prisonerNumber, prisonCode } = visit
-
-    const [prisoner, prison] = await Promise.all([
-      this.prisonerService.getPrisonerByPrisonerNumber(prisonerNumber, user),
-      this.prisonService.getPrisonByCode(prisonCode, user),
+    const [restrictions, prisoner] = await Promise.all([
+      this.personalRelationshipsService.getPrisonerRestrictions(
+        visit.prisonerVisited.prisonerNumber,
+        0,
+        10,
+        user,
+        true,
+        false,
+      ),
+      this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerVisited.prisonerNumber, user),
     ])
 
-    const date = parseISO(visit.visitDate)
-    const time = parse(visit.startTime, 'HH:mm', new Date(0))
-
-    // TODO: Is amendable if the visit start time is not in the past
-    const isAmendable = this.officialVisitsService.visitIsAmendable(date, time, booking.statusCode)
-
-    // Pass these through to the view
-      prisoner,
+    return res.render('pages/view/visit', {
       visit,
-      isAmendable,
-      isCancelled: visit.statusCode === 'CANCELLED',
-     */
-
-    return res.render('pages/view/visit', { visit })
+      prisoner: {
+        ...prisoner,
+        restrictions: restrictions?.content || [],
+        alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
+        restrictionsCount: restrictions?.content?.length ?? 0,
+      },
+    })
   }
 }

@@ -28,3 +28,11 @@
 .moj-filter__options > button {
   width: 100%
 }
+
+.blue-button {
+  background-color: $govuk-link-colour;
+}
+
+.blue-button:hover {
+  background-color: $govuk-link-hover-colour;
+}

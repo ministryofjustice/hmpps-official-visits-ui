@@ -7,7 +7,7 @@ import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { getPageHeader, getTextById } from '../../../../testutils/cheerio'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { prisoner } from '../../../../../testutils/mocks'
+import { mockPrisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
@@ -23,7 +23,7 @@ const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<Off
 let app: Express
 const defaultJourneySession = () => ({
   officialVisit: {
-    prisoner,
+    prisoner: mockPrisoner,
     prisonerNotes: 'Some previously entered notes',
   } as Partial<OfficialVisitJourney>,
 })

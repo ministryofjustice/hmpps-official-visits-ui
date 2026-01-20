@@ -6,7 +6,12 @@ import ViewOfficialVisitListHandler from './handlers/viewOfficialVisitListHandle
 import ViewOfficialVisitHandler from './handlers/viewOfficialVisitHandler'
 import logPageViewMiddleware from '../../../middleware/logPageViewMiddleware'
 
-export default function Index({ auditService, prisonerService, officialVisitsService }: Services): Router {
+export default function Index({
+  auditService,
+  prisonerService,
+  officialVisitsService,
+  personalRelationshipsService,
+}: Services): Router {
   const router = Router({ mergeParams: true })
 
   const route = (path: string | string[], handler: PageHandler) =>
@@ -20,7 +25,10 @@ export default function Index({ auditService, prisonerService, officialVisitsSer
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
   route('/list', new ViewOfficialVisitListHandler(officialVisitsService))
-  route('/:officialVisitId', new ViewOfficialVisitHandler(officialVisitsService, prisonerService))
+  route(
+    '/visit/:officialVisitId',
+    new ViewOfficialVisitHandler(officialVisitsService, prisonerService, personalRelationshipsService),
+  )
 
   return router
 }

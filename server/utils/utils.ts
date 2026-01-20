@@ -38,6 +38,10 @@ export const lastNameCommaFirstName = (person: { firstName: string; lastName: st
   return `${properCaseName(person.lastName)}, ${properCaseName(person.firstName)}`.replace(/(^, )|(, $)/, '')
 }
 
+export const firstNameSpaceLastName = (person: { firstName: string; lastName: string }): string => {
+  return `${properCaseName(person.firstName)} ${properCaseName(person.lastName)}`.replace(/(^, )|(, $)/, '')
+}
+
 export const initialiseName = (fullName?: string): string | null => {
   // this check is for the authError page
   if (!fullName) return null
