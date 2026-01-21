@@ -66,8 +66,9 @@ describe('Search for an official visit', () => {
             '3restrictionsand0alerts',
           )
 
-          expect($('.govuk-link').eq(0).text()).toContain('Cancel visit')
-          expect($('.govuk-link').eq(1).text()).toContain('Complete visit')
+          expect($('.govuk-link').eq(0).text()).toContain('Amend this visit')
+          expect($('.govuk-link').eq(1).text()).toContain('Cancel visit')
+          expect($('.govuk-link').eq(2).text()).toContain('Complete visit')
 
           expect(getValueByKey($, 'Date')).toEqual('Tuesday, 20 January 2026')
           expect(getValueByKey($, 'Time')).toEqual('1:30pm to 4:00pm (2 hours 30 minutes)')

@@ -9,10 +9,9 @@
 
 {% block content %}
   <div class="govuk-grid-row">
-
     <span class="govuk-hint">Manage existing official visits</span>
+    <a href="/view/visit/{{visit.officialVisitId}}/amend" class="govuk-link float-right"> Amend this visit</a>
     <h1 class="govuk-heading-l">Official visit</h1>
-
     {{ miniProfile(prisoner) }}
 
     {{ govukButton ({
@@ -87,7 +86,7 @@
       card: {
         classes: "govuk-!-margin-bottom-7",
         title: {
-          html: '<a href="' + prisonerContactsUrl + '/prisoner/G4793VF/contacts/manage/' + contact.contactId + '/relationship/' + contact.prisonerContactId + '">' + contact | firstNameSpaceLastName + '</a> (' + contact.relationshipDescription + ')'
+          html: '<a target="_blank" href="' + prisonerContactsUrl + '/prisoner/G4793VF/contacts/manage/' + contact.contactId + '/relationship/' + contact.prisonerContactId + '">' + contact | firstNameSpaceLastName + '</a> (' + contact.relationshipDescription + ')'
         }
       },
       rows: [
