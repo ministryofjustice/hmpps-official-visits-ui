@@ -4,8 +4,7 @@ import * as cheerio from 'cheerio'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import PrisonerService from '../../../../services/prisonerService'
 import { appWithAllRoutes, user } from '../../../testutils/appSetup'
-import { mockTimeslots, mockVisit, prisoner } from '../../../../testutils/mocks'
-import { Journey } from '../../../../@types/express'
+import { mockTimeslots, mockFindByCriteriaVisit } from '../../../../testutils/mocks'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
 import AuditService, { Page } from '../../../../services/auditService'
 import { getByIdFor, getGovukTableCell, getPageHeader, getTextById } from '../../../testutils/cheerio'
@@ -21,28 +20,17 @@ const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<Off
 
 let app: Express
 
-const appSetup = (
-  journeySession = {
-    officialVisit: {
-      prisoner: {
-        ...prisoner,
-      },
-      prisonCode: 'MDI',
-      availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
-    },
-  },
-) => {
+const appSetup = () => {
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService },
     userSupplier: () => user,
-    journeySessionSupplier: () => journeySession as Journey,
   })
 }
 
 beforeEach(() => {
   appSetup()
   officialVisitsService.getVisits.mockResolvedValue({
-    content: Array.from({ length: 20 }, () => mockVisit),
+    content: Array.from({ length: 20 }, () => mockFindByCriteriaVisit),
     page: {
       totalElements: 20,
       totalPages: 2,
@@ -122,7 +110,7 @@ describe('Search for an official visit', () => {
           expect(getGovukTableCell($, 1, 4).find('a').attr('href')).toEqual('http://localhost:3001/prisoner/A1337AA')
           expect(getGovukTableCell($, 1, 5).text()).toEqual('Completed')
           expect(getGovukTableCell($, 1, 6).text()).toEqual('Select')
-          expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual('/view/1')
+          expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual('/view/visit/1')
 
           // Filters
           expect(getByIdFor($, 'location').text().trim()).toEqual('Location')

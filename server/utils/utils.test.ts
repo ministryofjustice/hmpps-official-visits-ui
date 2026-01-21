@@ -19,6 +19,7 @@ import {
   getTimeDiff,
   lastNameCommaFirstName,
   addRemoveLinks,
+  firstNameSpaceLastName,
 } from './utils'
 
 describe('convert to title case', () => {
@@ -324,6 +325,16 @@ describe('lastNameCommaFirstName', () => {
     [{ firstName: 'Robert-John', lastName: 'Smith-jOnes-WilSoN' }, 'Smith-Jones-Wilson, Robert-John'],
   ])('%s lastNameCommaFirstName(%s, %s)', (input, expected) => {
     expect(lastNameCommaFirstName(input)).toEqual(expected)
+  })
+})
+
+describe('firstNameSpaceLastName', () => {
+  it.each([
+    [{ firstName: 'John', lastName: 'Smith' }, 'John Smith'],
+    [{ firstName: 'jOhn', lastName: 'SmiTh' }, 'John Smith'],
+    [{ firstName: 'Robert-John', lastName: 'Smith-jOnes-WilSoN' }, 'Robert-John Smith-Jones-Wilson'],
+  ])('%s firstNameSpaceLastName(%s, %s)', (input, expected) => {
+    expect(firstNameSpaceLastName(input)).toEqual(expected)
   })
 })
 

@@ -4,15 +4,19 @@ import {
   AvailableSlot,
   FindByCriteriaResults,
   FindByCriteriaVisit,
+  OfficialVisit,
 } from '../@types/officialVisitsApi/types'
 import { PrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
 import { PrisonerScheduledEvents, ScheduledEvent } from '../@types/activitiesApi/types'
 
-export const prisoner = {
+export const mockPrisoner = {
   firstName: 'John',
   lastName: 'Smith',
   prisonerNumber: 'A1337AA',
   prisonCode: 'MDI',
+  dateOfBirth: '1989-06-01',
+  cellLocation: '1-1-001',
+  prisonName: 'Example Prison (EXP)',
 }
 
 export const mockTimeslots = [
@@ -291,7 +295,7 @@ export const mockPrisonerRestrictions = [
   },
 ] as PrisonerRestrictionDetails[]
 
-export const mockVisit = {
+export const mockFindByCriteriaVisit = {
   officialVisitId: 1,
   prisonCode: 'MDI',
   prisonDescription: 'Moorland (HMP & YOI)',
@@ -316,7 +320,7 @@ export const mockVisit = {
   updatedBy: 'Jane Bloggs',
   updatedTime: '22025-12-04 09:50',
   prisoner: {
-    ...prisoner,
+    ...mockPrisoner,
     dateOfBirth: '2025-12-19',
     cellLocation: 'string',
     middleNames: 'string',
@@ -327,7 +331,7 @@ export const mockVisit = {
 } as FindByCriteriaVisit
 
 export const mockFindByCriteriaResults = {
-  content: [mockVisit],
+  content: [mockFindByCriteriaVisit],
   page: {
     totalElements: 1,
     totalPages: 1,
@@ -335,3 +339,53 @@ export const mockFindByCriteriaResults = {
     size: 10,
   },
 } as FindByCriteriaResults
+
+export const mockVisitByIdVisit: OfficialVisit = {
+  officialVisitId: 1,
+  prisonCode: 'MDI',
+  prisonDescription: 'Moorland (HMP & YOI)',
+  visitStatus: 'SCHEDULED',
+  visitStatusDescription: 'Scheduled',
+  visitTypeCode: 'TELEPHONE',
+  visitTypeDescription: 'Telephone',
+  visitDate: '2026-01-20',
+  startTime: '13:30:00',
+  endTime: '16:00:00',
+  dpsLocationId: 'bef2bbbe-a144-420b-bd23-c10847e61c15',
+  locationDescription: 'Example Location',
+  visitSlotId: 4136,
+  prisonerNotes: 'Extra information',
+  visitorConcernNotes: '',
+  searchTypeCode: 'FULL',
+  searchTypeDescription: 'Full search',
+  createdTime: '2026-01-19T11:20:48.89632',
+  createdBy: 'USERNAME_GEN',
+  officialVisitors: [
+    {
+      visitorTypeCode: 'CONTACT',
+      visitorTypeDescription: 'Contact',
+      firstName: 'Peter',
+      lastName: 'Malicious',
+      contactId: 20085647,
+      prisonerContactId: 7332364,
+      relationshipTypeCode: 'OFFICIAL',
+      relationshipTypeDescription: 'Official',
+      relationshipCode: 'SOL',
+      relationshipDescription: 'Solicitor',
+      leadVisitor: false,
+      assistedVisit: true,
+      visitorNotes: 'Assistance details',
+      createdBy: 'USERNAME_GEN',
+      createdTime: '2026-01-19T11:20:48.89633',
+    },
+  ],
+  prisonerVisited: {
+    prisonerNumber: 'G4793VF',
+    prisonCode: 'MDI',
+    firstName: 'TIM',
+    lastName: 'HARRISON',
+    dateOfBirth: '1986-06-27',
+    cellLocation: '2-1-007',
+    middleNames: 'JETHRONE MASON',
+  },
+}

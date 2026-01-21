@@ -8,7 +8,7 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import ActivitiesService from '../../../../../services/activitiesService'
 import { getPageHeader, getTextById } from '../../../../testutils/cheerio'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { mockTimeslots, sortedMockScheduleEvents, prisoner } from '../../../../../testutils/mocks'
+import { mockTimeslots, sortedMockScheduleEvents, mockPrisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
 
@@ -25,7 +25,7 @@ const activitiesService = new ActivitiesService(null) as jest.Mocked<ActivitiesS
 let app: Express
 
 const appSetup = (
-  journeySession = { officialVisit: { prisoner, availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }] } },
+  journeySession = { officialVisit: { prisoner: mockPrisoner, availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }] } },
 ) => {
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService, activitiesService },
