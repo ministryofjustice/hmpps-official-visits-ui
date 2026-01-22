@@ -87,7 +87,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
         page: visits.page.number + 1,
         hrefTemplate: `${req.originalUrl.split('?')[0]!}?${queryParams.toString()}`,
       },
-      filter: filterParams,
+      filter: { ...filterParams, page: '1' },
       statuses: statusOpts.map(o => ({ value: o.code, text: o.description })),
       types: typeOpts.map(o => ({ value: o.code, text: o.description })),
       locations: locations.map(o => ({ value: o.code, text: o.text })),
