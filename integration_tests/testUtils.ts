@@ -57,3 +57,10 @@ export function simpleApiMock<T>(urlPattern: string, response: RecursivePartial<
 export function simplePostApiMock<T>(urlPattern: string, response: RecursivePartial<T>): SuperAgentRequest {
   return apiMock('POST', urlPattern, response)
 }
+
+export const summaryValue = (page: Page, key: string) =>
+  page
+    .locator('.govuk-summary-list__row', {
+      has: page.locator('.govuk-summary-list__key', { hasText: key }),
+    })
+    .locator('.govuk-summary-list__value')
