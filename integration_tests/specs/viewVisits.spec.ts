@@ -302,7 +302,7 @@ const generateMockData = (): FindByCriteriaVisit[] => {
   )
 
   return Array.from({ length: combos.length }, (_, i) => {
-    const { loc, status, type, name, date } = combos[i % combos.length] // repeats if count > combos
+    const { loc, status, type, name, date } = combos[i % combos.length]
 
     return {
       ...mockVisit,
