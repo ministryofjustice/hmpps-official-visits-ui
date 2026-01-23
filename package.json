@@ -126,6 +126,9 @@
     },
     "nunjucks": {
       "chokidar": "$chokidar"
+    },
+    "mocha": {
+      "diff": "8.0.3"
     }
   }
 }
