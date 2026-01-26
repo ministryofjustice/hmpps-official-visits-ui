@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+  '/sync/time-slot/{prisonTimeSlotId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Returns the data for a prison time slot by ID
+     * @description Requires role: OFFICIAL_VISITS_MIGRATION.
+     *           Used to get the details for one prison time slot.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     */
+    get: operations['syncGetTimeSlotById']
+    /**
+     * Updates a prison time slot with new or altered details
+     * @description Requires role: OFFICIAL_VISITS_MIGRATION.
+     *           Used to update a a prison time slot for official visits.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     */
+    put: operations['syncUpdateTimeSlot']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/queue-admin/retry-dlq/{dlqName}': {
     parameters: {
       query?: never
@@ -54,6 +88,31 @@ export interface paths {
      */
     put: operations['purgeQueue']
     post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/sync/time-slot': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Creates a new prison time slot for official visits
+     * @description Requires role: OFFICIAL_VISITS_MIGRATION.
+     *           Used to create a new prison time slot for official visits.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     */
+    post: operations['syncCreateTimeSlot']
     delete?: never
     options?: never
     head?: never
@@ -360,6 +419,117 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** @enum {string} */
+    DayType: 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN'
+    /** @description Request to update a prison time slot for official visits */
+    SyncUpdateTimeSlotRequest: {
+      /**
+       * @description Prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description Day code MON-SUN
+       * @example MON
+       */
+      dayCode: components['schemas']['DayType']
+      /**
+       * @description Start time
+       * @example 09:00
+       */
+      startTime: string
+      /**
+       * @description End time
+       * @example 11:00
+       */
+      endTime: string
+      /**
+       * Format: date
+       * @description Effective date. The date from which this time slot will be active
+       * @example 2026-01-21
+       */
+      effectiveDate: string
+      /**
+       * Format: date
+       * @description Expiry date. The date from which this time slot will no longer be considered active
+       * @example 2027-01-21
+       */
+      expiryDate?: string
+      /**
+       * @description User who updated the entry
+       * @example admin
+       */
+      updatedBy: string
+      /**
+       * Format: date-time
+       * @description The timestamp of when this slot was updated
+       * @example 2024-01-01T00:00:00Z
+       */
+      updatedTime: string
+    }
+    /** @description Sync response for a prison time slot */
+    SyncTimeSlot: {
+      /**
+       * Format: int64
+       * @description Time slot ID
+       * @example 18767
+       */
+      prisonTimeSlotId: number
+      /**
+       * @description Prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description Day code MON-SUN
+       * @example MON
+       */
+      dayCode: components['schemas']['DayType']
+      /**
+       * @description Start time
+       * @example 09:00
+       */
+      startTime: string
+      /**
+       * @description End time
+       * @example 11:00
+       */
+      endTime: string
+      /**
+       * Format: date
+       * @description Effective date. The date from which this time slot is active
+       * @example 2026-01-21
+       */
+      effectiveDate: string
+      /**
+       * Format: date
+       * @description Expiry date. The date from which this time is no longer be considered active
+       * @example 2027-01-21
+       */
+      expiryDate?: string
+      /**
+       * @description User who created the entry
+       * @example admin
+       */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The timestamp of when this slot was created
+       * @example 2024-01-01T00:00:00Z
+       */
+      createdTime: string
+      /**
+       * @description User who last updated the entry
+       * @example admin
+       */
+      updatedBy?: string
+      /**
+       * Format: date-time
+       * @description The timestamp of when this slot was last updated
+       * @example 2024-01-01T00:00:00Z
+       */
+      updatedTime?: string
+    }
     RetryDlqResult: {
       /** Format: int32 */
       messagesFoundCount: number
@@ -367,6 +537,60 @@ export interface components {
     PurgeQueueResult: {
       /** Format: int32 */
       messagesFoundCount: number
+    }
+    /** @description Request to create a new prison time slot for official visits */
+    SyncCreateTimeSlotRequest: {
+      /**
+       * @description Prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description Day code MON-SUN
+       * @example MON
+       */
+      dayCode: components['schemas']['DayType']
+      /**
+       * @description Start time
+       * @example 09:00
+       */
+      startTime: string
+      /**
+       * @description End time
+       * @example 11:00
+       */
+      endTime: string
+      /**
+       * Format: date
+       * @description Effective date. The date from which this time slot will be active
+       * @example 2026-01-21
+       */
+      effectiveDate: string
+      /**
+       * Format: date
+       * @description Expiry date. The date from which this time slot will no longer be considered active
+       * @example 2027-01-21
+       */
+      expiryDate?: string
+      /**
+       * @description User who created the entry
+       * @example admin
+       */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The timestamp of when this slot was created
+       * @example 2024-01-01T00:00:00Z
+       */
+      createdTime: string
+    }
+    ErrorResponse: {
+      /** Format: int32 */
+      status: number
+      errorCode?: string
+      userMessage?: string
+      developerMessage?: string
+      moreInfo?: string
     }
     /** @description The request with the official visit details */
     CreateOfficialVisitRequest: {
@@ -461,12 +685,13 @@ export interface components {
       assistedNotes?: string
       /** @description Details of any equipment the visitor will bring to the visit. */
       visitorEquipment?: components['schemas']['VisitorEquipment']
+      phoneNumber?: string
+      emailAddress?: string
     }
     /** @enum {string} */
     SearchLevelType: 'FULL' | 'PAT' | 'RUB' | 'RUB_A' | 'RUB_B' | 'STR'
     /** @enum {string} */
     VisitType: 'IN_PERSON' | 'TELEPHONE' | 'VIDEO' | 'UNKNOWN'
-    /** @description Represents details of any equipment the visitor will bring to the visit. */
     VisitorEquipment: {
       /**
        * @description A description of the equipment the visitor will bring
@@ -479,14 +704,6 @@ export interface components {
     CreateOfficialVisitResponse: {
       /** Format: int64 */
       officialVisitId: number
-    }
-    ErrorResponse: {
-      /** Format: int32 */
-      status: number
-      errorCode?: string
-      userMessage?: string
-      developerMessage?: string
-      moreInfo?: string
     }
     /** @description The request with the official visit summary search details */
     OfficialVisitSummarySearchRequest: {
@@ -1558,6 +1775,15 @@ export interface components {
        * @description The Official visitor offender visit visitor id
        */
       offenderVisitVisitorId?: number
+      /** @description Equipment the visitor may bring */
+      visitorEquipment?: components['schemas']['VisitorEquipment']
+      /**
+       * @description Notes on whether the visitor requires any assistance
+       * @example Wheelchair access required
+       */
+      assistanceNotes?: string
+      phoneNumber?: string
+      emailAddress?: string
     }
     AvailableSlot: {
       /**
@@ -1632,6 +1858,83 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  syncGetTimeSlotById: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description The internal ID for a prison time slot */
+        prisonTimeSlotId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The prison time slot matching the ID provided in the request */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncTimeSlot']
+        }
+      }
+      /** @description No prison time slot with this ID was found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncTimeSlot']
+        }
+      }
+    }
+  }
+  syncUpdateTimeSlot: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description The internal ID for the prison time slot */
+        prisonTimeSlotId: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SyncUpdateTimeSlotRequest']
+      }
+    }
+    responses: {
+      /** @description Successfully updated a prison time slot */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncTimeSlot']
+        }
+      }
+      /** @description Invalid data supplied in the request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncTimeSlot']
+        }
+      }
+      /** @description The prison time slot ID was not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncTimeSlot']
+        }
+      }
+    }
+  }
   retryDlq: {
     parameters: {
       query?: never
@@ -1692,6 +1995,39 @@ export interface operations {
         }
         content: {
           '*/*': components['schemas']['PurgeQueueResult']
+        }
+      }
+    }
+  }
+  syncCreateTimeSlot: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SyncCreateTimeSlotRequest']
+      }
+    }
+    responses: {
+      /** @description Successfully created a prison time slot for official visits */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncTimeSlot']
+        }
+      }
+      /** @description The request was invalid or had missing fields */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }

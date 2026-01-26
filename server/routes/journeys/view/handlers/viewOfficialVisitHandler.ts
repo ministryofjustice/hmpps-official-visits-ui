@@ -15,11 +15,11 @@ export default class ViewOfficialVisitHandler implements PageHandler {
   ) {}
 
   GET = async (req: Request, res: Response) => {
-    const { officialVisitId } = req.params
+    const { ovId } = req.params
     const { user } = res.locals
 
     const prisonCode = req.session.activeCaseLoadId
-    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(officialVisitId), user)
+    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), user)
 
     const [restrictions, prisoner] = await Promise.all([
       this.personalRelationshipsService.getPrisonerRestrictions(
@@ -33,8 +33,10 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerVisited.prisonerNumber, user),
     ])
 
+    const updateVerb = req.flash('updateVerb')[0]
     return res.render('pages/view/visit', {
       visit,
+      updateVerb,
       prisoner: {
         ...prisoner,
         restrictions: restrictions?.content || [],

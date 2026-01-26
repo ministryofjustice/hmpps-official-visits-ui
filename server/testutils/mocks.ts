@@ -377,6 +377,11 @@ export const mockVisitByIdVisit: OfficialVisit = {
       visitorNotes: 'Assistance details',
       createdBy: 'USERNAME_GEN',
       createdTime: '2026-01-19T11:20:48.89633',
+      visitorEquipment: {
+        description: 'Laptop',
+      },
+      phoneNumber: '0123456789',
+      emailAddress: 'test@test.com',
     },
   ],
   prisonerVisited: {
