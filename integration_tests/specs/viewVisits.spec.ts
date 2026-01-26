@@ -228,13 +228,13 @@ test.describe('View official visits', () => {
 
     await expect(summaryValue(page, 'Assistance details')).toHaveText('Assistance details')
 
-    await expect(summaryValue(page, 'Equipment')).toHaveText('TODO')
+    await expect(summaryValue(page, 'Equipment')).toHaveText('Laptop')
 
     await expect(summaryValue(page, 'Visitor concerns')).toHaveText('Assistance details')
 
-    await expect(summaryValue(page, 'Email')).toHaveText('TODO')
+    await expect(summaryValue(page, 'Email')).toHaveText('test@test.com')
 
-    await expect(summaryValue(page, 'Telephone number')).toHaveText('TODO')
+    await expect(summaryValue(page, 'Telephone number')).toHaveText('0123456789')
 
     const cardLink = page.locator('.govuk-summary-card__title > a')
     await expect(cardLink).toHaveText('Peter Malicious')

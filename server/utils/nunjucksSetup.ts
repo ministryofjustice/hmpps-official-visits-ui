@@ -25,6 +25,7 @@ import restrictionTagColour from './restrictionTagColour'
 import { FieldValidationError } from '../middleware/setUpFlash'
 import config from '../config'
 import logger from '../../logger'
+import { hasPermissionFilter } from '../middleware/requirePermissions'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
@@ -111,4 +112,10 @@ export default function nunjucksSetup(app: express.Express): void {
     items.filter(o => values.includes(o.value)),
   )
   njkEnv.addFilter('addRemoveLinks', addRemoveLinks)
+  njkEnv.addFilter('hasPermission', hasPermissionFilter)
+  njkEnv.addFilter(
+    'showChangeLinksIf',
+    (items: { key: unknown; value: unknown; actions: unknown }[], condition: boolean) =>
+      condition ? items : items.map(({ actions, ...item }) => item),
+  )
 }

@@ -1,0 +1,20 @@
+{% extends "../partials/layout.njk" %}
+{% set mainClasses = "app-container govuk-body" %}
+{% set pageTitle = "Not authorised" %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">
+    You do not have permission to access this page
+  </h1>
+  <p>
+    Check you:
+    <ul class="govuk-list govuk-list--bullet">
+      <li>have the correct permissions to use the {{ serviceName }} service</li>
+      <li>used the right web address, for example if you copied and pasted it from an email or used a bookmark</li>
+    </ul>
+  </p>
+  <h2 class="govuk-heading-m">Contact the helpdesk</h2>
+  <p>Call 0800 917 5148 or #6598 from an establishment.</p>
+
+  <a href={{digitalPrisonServicesUrl}}>Go to digital services home page</a>
+{% endblock %}

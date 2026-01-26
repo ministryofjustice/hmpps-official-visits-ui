@@ -57,4 +57,14 @@ export interface AzureADUser extends BaseUser {
   authSource: 'azuread'
 }
 
-export type HmppsUser = PrisonUser | ProbationUser | ExternalUser | AzureADUser
+export type HmppsUser = (PrisonUser | ProbationUser | ExternalUser | AzureADUser) & {
+  permissions: {
+    OV: UserPermissionLevel
+  }
+}
+
+export enum UserPermissionLevel {
+  DEFAULT = 0,
+  VIEW_ONLY = 1,
+  MANAGE = 2,
+}

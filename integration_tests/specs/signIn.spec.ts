@@ -5,6 +5,8 @@ import exampleApi from '../mockApis/exampleApi'
 import { login, resetStubs } from '../testUtils'
 import HomePage from '../pages/homePage'
 import componentsApi from '../mockApis/componentsApi'
+import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
+import { NotAuthorisedPage } from '../pages/notAuthorisedPage'
 
 test.describe('SignIn', () => {
   test.beforeEach(async () => {
@@ -31,7 +33,7 @@ test.describe('SignIn', () => {
   })
 
   test('Authenticated user sees the home page', async ({ page }) => {
-    await login(page, { name: 'A TestUser' })
+    await login(page)
 
     await HomePage.verifyOnPage(page)
   })
@@ -59,5 +61,16 @@ test.describe('SignIn', () => {
     await login(page, { name: 'Some OtherTestUser', active: true })
 
     await HomePage.verifyOnPage(page)
+  })
+
+  test('Users without any official visits roles are redirected to the not authorised page', async ({ page }) => {
+    await login(page, {
+      name: 'A TestUser',
+      roles: ['ROLE_SOME_REQUIRED_ROLE', 'ROLE_PRISON'],
+      active: true,
+      authSource: 'nomis',
+    })
+
+    await NotAuthorisedPage.verifyOnPage(page)
   })
 })
