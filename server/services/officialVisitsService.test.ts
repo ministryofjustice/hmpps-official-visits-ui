@@ -65,6 +65,9 @@ describe('OfficialVisitsService', () => {
           updatedBy: null,
           updatedTime: null,
           offenderVisitVisitorId: null,
+          visitorEquipment: {
+            description: 'Laptop',
+          },
         },
       ],
       prisonerVisited: {

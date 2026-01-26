@@ -1,6 +1,6 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { simpleApiMock } from '../testUtils'
+import { simpleApiMock, simplePostApiMock } from '../testUtils'
 import {
   ApprovedContact,
   AvailableSlot,
@@ -45,4 +45,6 @@ export default {
   },
   stubGetOfficialVisitById: (response: OfficialVisit) =>
     simpleApiMock(`/official-visits-api/official-visit/prison/LEI/id/.+`, response),
+  stubCreateVisit: (response: OfficialVisit) =>
+    simplePostApiMock(`/official-visits-api/official-visit/prison/LEI`, response),
 }

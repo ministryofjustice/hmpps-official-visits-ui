@@ -26,6 +26,6 @@ export default class ConfirmationHandler implements PageHandler {
     req.session.journey.journeyCompleted = true
     req.session.journey.officialVisit = undefined
 
-    res.render('pages/manage/confirmVisit', { visit, prisoner })
+    res.render('pages/manage/confirmVisit', { visit, prisoner, officialVisitId: req.params.officialVisitId })
   }
 }

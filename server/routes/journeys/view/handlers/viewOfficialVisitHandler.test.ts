@@ -83,10 +83,10 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Contact type')).toEqual('Official')
           expect(getValueByKey($, 'Does this visitor need assistance')).toEqual('Yes')
           expect(getValueByKey($, 'Assistance details')).toEqual('Assistance details')
-          expect(getValueByKey($, 'Equipment')).toEqual('TODO')
+          expect(getValueByKey($, 'Equipment')).toEqual('Laptop')
           expect(getValueByKey($, 'Visitor concerns')).toEqual('Assistance details')
-          expect(getValueByKey($, 'Email')).toEqual('TODO')
-          expect(getValueByKey($, 'Telephone number')).toEqual('TODO')
+          expect(getValueByKey($, 'Email')).toEqual('test@test.com')
+          expect(getValueByKey($, 'Telephone number')).toEqual('0123456789')
 
           expect($('.govuk-summary-card__title > a').text()).toEqual('Peter Malicious')
           expect($('.govuk-summary-card__title > a').attr('href')).toEqual(
