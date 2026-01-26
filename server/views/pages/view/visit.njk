@@ -4,15 +4,27 @@
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set pageTitle = "Official visit with " + visit.prisonerVisited | firstNameSpaceLastName %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <span class="govuk-hint">Manage existing official visits</span>
-    <a href="/view/visit/{{visit.officialVisitId}}/amend" class="govuk-link float-right"> Amend this visit</a>
+    <a href="/view/visit/{{visit.officialVisitId}}/amend" class="govuk-link float-right govuk-link--no-visited-state"> Amend this visit</a>
     <h1 class="govuk-heading-l">Official visit</h1>
     {{ miniProfile(prisoner) }}
+
+    {% if updateVerb %}
+      {{ mojAlert({
+        variant: "success",
+        title: "Visit marked as " + updateVerb,
+        showTitleAsHeading: true,
+        dismissible: false,
+        html: "You have " + updateVerb + "this visit. <a href='/view/list'>Return to search list</a>"
+      }) }}
+      
+    {% endif %}
 
     {{ govukButton ({
       text: "Print movement slip (TODO)",
@@ -30,11 +42,13 @@
           items: [
             {
               href: "/view/visit/" + visit.officialVisitId + "/cancel",
-              html: "Cancel visit"
+              html: "Cancel visit",
+              classes: 'govuk-link--no-visited-state'
             },
             {
               href: "/view/visit/" + visit.officialVisitId + "/complete",
-              html: "Complete visit"
+              html: "Complete visit",
+              classes: 'govuk-link--no-visited-state'
             }
           ]
         }
@@ -104,7 +118,7 @@
         } if contact.assistedVisit,
         {
           key: { text: "Equipment" },
-          value: { text: 'TODO' }
+          value: { text: contact.visitorEquipment.description if contact.visitorEquipment else '-' }
         },
         {
           key: { text: "Visitor concerns" },
@@ -112,11 +126,11 @@
         },
         {
           key: { text: "Email" },
-          value: { text: 'TODO' }
+          value: { text: contact.emailAddress or '-' }
         },
         {
           key: { text: "Telephone number" },
-          value: { text: 'TODO' }
+          value: { text: contact.phoneNumber or '-' }
         }
       ]
     }) }}

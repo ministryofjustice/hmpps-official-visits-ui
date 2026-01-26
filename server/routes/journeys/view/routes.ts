@@ -26,7 +26,7 @@ export default function Index({
 
   route('/list', new ViewOfficialVisitListHandler(officialVisitsService))
   route(
-    '/visit/:officialVisitId',
+    '/visit/:ovId',
     new ViewOfficialVisitHandler(officialVisitsService, prisonerService, personalRelationshipsService),
   )
 

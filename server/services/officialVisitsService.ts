@@ -51,7 +51,7 @@ export default class OfficialVisitsService {
         assistedVisit: o.assistedVisit,
         assistedNotes: o.assistanceNotes,
         visitorEquipment: {
-          description: o.assistanceNotes,
+          description: o.equipmentNotes,
         } as VisitorEquipment,
       })) as OfficialVisitor[],
     } as CreateOfficialVisitRequest
