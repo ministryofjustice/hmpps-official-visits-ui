@@ -11,8 +11,13 @@ import officialVisitsApi from '../mockApis/officialVisitsApi'
 import activitiesApi from '../mockApis/activitiesApi'
 import VisitTypePage from '../pages/visitTypePage'
 import TimeSlotPage from '../pages/timeSlotPage'
-import { AvailableSlot } from '../../server/@types/officialVisitsApi/types'
-import { mockOfficialVisitors, mockSocialVisitors, mockScheduleTimeSlots } from '../../server/testutils/mocks'
+import { AvailableSlot, OfficialVisit } from '../../server/@types/officialVisitsApi/types'
+import {
+  mockOfficialVisitors,
+  mockSocialVisitors,
+  mockScheduleTimeSlots,
+  mockVisitByIdVisit,
+} from '../../server/testutils/mocks'
 import SelectOfficialContactPage from '../pages/selectOfficialContactPage'
 import SelectSocialContactPage from '../pages/selectSocialContactPage'
 import AssistanceRequiredPage from '../pages/assistanceRequiredPage'
@@ -21,6 +26,7 @@ import CommentsPage from '../pages/commentsPage'
 import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
 import prisonApi from '../mockApis/prisonApi'
 import CheckYourAnswersPage from '../pages/checkYourAnswersPage'
+import ConfirmationPage from '../pages/confirmationPage'
 
 const mockPrisoner = {
   prisonerNumber: 'A1111AA',
@@ -69,6 +75,8 @@ test.describe('Create an official visit', () => {
     ])
     await officialVisitsApi.stubOfficialContacts(mockOfficialVisitors)
     await officialVisitsApi.stubSocialContacts(mockSocialVisitors)
+    await officialVisitsApi.stubCreateVisit({ officialVisitId: 1 } as OfficialVisit)
+    await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
   })
 
   test.afterEach(async () => {
@@ -162,8 +170,19 @@ test.describe('Create an official visit', () => {
     await commentsPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/check-your-answers/)
-    await CheckYourAnswersPage.verifyOnPage(page)
+    const cyaPage = await CheckYourAnswersPage.verifyOnPage(page)
 
-    // TODO: POST and check confirmation page
+    await cyaPage.continueButton.click()
+
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/confirmation\/1/)
+    const confirmationPage = await ConfirmationPage.verifyOnPage(page)
+
+    expect(await confirmationPage.caption.innerText()).toEqual('Prisoner: John Doe (A1111AA)')
+    expect(await confirmationPage.page.getByText('You have successfully').innerText()).toEqual(
+      'You have successfully scheduled an official visit with:',
+    )
+    expect(await confirmationPage.page.locator('#visit-details').innerText()).toEqual(
+      'The visit will take place on Thursday, 1 January 2026 from 10am to 11am (1 hour) in First Location.',
+    )
   })
 })
