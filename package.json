@@ -111,7 +111,6 @@
     "jest-junit": "^16.0.0",
     "jsonwebtoken": "^9.0.2",
     "lint-staged": "^16.2.6",
-    "mocha-junit-reporter": "^2.2.1",
     "nock": "^14.0.10",
     "playwright-ctrf-json-reporter": "^0.0.25",
     "prettier": "^3.6.2",
