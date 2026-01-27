@@ -29,20 +29,7 @@
             text: "Select a reason from the list",
             classes: "govuk-fieldset__legend--s"
           },
-          items: [
-            {
-              value: "",
-              text: "Select a reason"
-            },
-            {
-              value: "NORMAL",
-              text: "Normal"
-            },
-            {
-              value: "EXPIRED",
-              text: "Expired"
-            }
-          ]
+          items: completionCodes | refDataToOptions | addSelectValue('', 'Select a reason') | sort(false, false, 'value')
           })
         }}
 
@@ -58,7 +45,7 @@
               html: govukSelect({
                 id: "attendance[" + loop.index0 + "][searchType]",
                 name: "attendance[" + loop.index0 + "][searchType]",
-                items: searchType | setSelected("FULL"),
+                items: searchType | refDataToOptions | setSelected("FULL"),
                 errorMessage: validationErrors | findError("attendance[" + loop.index0 + "][searchType]")
               })
             }

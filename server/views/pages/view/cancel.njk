@@ -30,20 +30,7 @@
               classes: "govuk-fieldset__legend--m"
             }
           },
-          items: [
-            {
-              value: "STAFF_CANCELLED",
-              text: "Cancelled by prison staff"
-            },
-            {
-              value: "VISITOR_CANCELLED",
-              text: "Cancelled by the visitor(s)"
-            },
-            {
-              value: "PRISONER_CANCELLED",
-              text: "Cancelled by the prisoner"
-            }
-          ]
+          items: completionCodes | refDataToOptions
         }) }}
 
         <div class="govuk-button-group">
