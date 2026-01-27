@@ -1782,7 +1782,9 @@ export interface components {
        * @example Wheelchair access required
        */
       assistanceNotes?: string
+      /** @description The visitors phone number if present */
       phoneNumber?: string
+      /** @description The visitors email address if present */
       emailAddress?: string
     }
     AvailableSlot: {
