@@ -5,6 +5,8 @@ import validationMiddleware, { validateOnGET } from '../../../middleware/validat
 import ViewOfficialVisitListHandler from './handlers/viewOfficialVisitListHandler'
 import ViewOfficialVisitHandler from './handlers/viewOfficialVisitHandler'
 import logPageViewMiddleware from '../../../middleware/logPageViewMiddleware'
+import CompleteOfficialVisitHandler from './handlers/completeVisitHandler'
+import CancelOfficialVisitHandler from './handlers/cancelVisitHandler'
 
 export default function Index({
   auditService,
@@ -29,6 +31,8 @@ export default function Index({
     '/visit/:ovId',
     new ViewOfficialVisitHandler(officialVisitsService, prisonerService, personalRelationshipsService),
   )
+  route('/visit/:ovId/complete', new CompleteOfficialVisitHandler(officialVisitsService))
+  route('/visit/:ovId/cancel', new CancelOfficialVisitHandler(officialVisitsService))
 
   return router
 }

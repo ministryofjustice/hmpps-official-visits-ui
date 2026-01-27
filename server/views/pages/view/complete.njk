@@ -1,0 +1,78 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "partials/miniProfile/macro.njk" import miniProfile %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+{% set pageTitle = "Select complete reason" %}
+
+{% block content %}
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Complete an official visit</span>
+      <h1 class="govuk-heading-l">Select complete reason and mark attendance for visit</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <form method='POST'>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+
+        {{govukSelect({
+          id: "reason",
+          name: "reason",
+          label: {
+            text: "Select a reason from the list",
+            classes: "govuk-fieldset__legend--s"
+          },
+          items: completionCodes | refDataToOptions | addSelectValue('', 'Select a reason') | sort(false, false, 'value')
+          })
+        }}
+
+        {% set contactItems = [] %}
+        {% for contact in contacts %}
+          {% set contactItems = (contactItems.push({
+            name: "attendance[" + loop.index0 + "][id]",
+            id: "attendance[" + loop.index0 + "][id]",
+            value: contact.prisonerContactId,
+            text: (contact.firstName + " " + contact.lastName) | convertToTitleCase + " (" + contact.relationshipDescription + ")",
+            checked: true,
+            conditional: {
+              html: govukSelect({
+                id: "attendance[" + loop.index0 + "][searchType]",
+                name: "attendance[" + loop.index0 + "][searchType]",
+                items: searchType | refDataToOptions | setSelected("FULL"),
+                errorMessage: validationErrors | findError("attendance[" + loop.index0 + "][searchType]")
+              })
+            }
+          }), contactItems) %}
+        {% endfor %}
+
+        {{govukCheckboxes({
+          idPrefix: "attendance",
+          name: "attendance",
+          fieldset: {
+            legend: {
+              text: "Mark attendance of visit:",
+              isPageHeading: false,
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: contactItems
+         }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+               text: "Continue",
+               preventDoubleClick: true
+          }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ back }}">Cancel and return to visit summary</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
