@@ -78,6 +78,8 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
         )
 
     const queryParams = new URLSearchParams({ ...filterParams, page: '{page}' })
+    const backToParams = new URLSearchParams({ ...filterParams, page: filterParams.page.toString() }).toString()
+    const backTo = encodeURIComponent(btoa(`/view/list?${backToParams}`))
 
     return res.render('pages/view/visitList', {
       visits: visits.content,
@@ -88,6 +90,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
         hrefTemplate: `${req.originalUrl.split('?')[0]!}?${queryParams.toString()}`,
       },
       filter: { ...filterParams, page: '1' },
+      backTo,
       statuses: statusOpts.map(o => ({ value: o.code, text: o.description })),
       types: typeOpts.map(o => ({ value: o.code, text: o.description })),
       locations: locations.map(o => ({ value: o.code, text: o.text })),

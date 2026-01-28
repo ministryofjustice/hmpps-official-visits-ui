@@ -17,6 +17,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
   GET = async (req: Request, res: Response) => {
     const { ovId } = req.params
     const { user } = res.locals
+    const b64BackTo = req.query.backTo as string
 
     const prisonCode = req.session.activeCaseLoadId
     const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), user)
@@ -33,10 +34,20 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerVisited.prisonerNumber, user),
     ])
 
+    const tryDecodeB64 = (b64: string) => {
+      try {
+        return b64 ? decodeURIComponent(atob(b64)) : null
+      } catch (e) {
+        return null
+      }
+    }
+
     const updateVerb = req.flash('updateVerb')[0]
     return res.render('pages/view/visit', {
       visit,
       updateVerb,
+      b64BackTo: b64BackTo || '',
+      backTo: tryDecodeB64(b64BackTo) || '/view/list',
       prisoner: {
         ...prisoner,
         restrictions: restrictions?.content || [],

@@ -9,11 +9,10 @@
 {% set pageTitle = "Select complete reason" %}
 
 {% block content %}
-
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Complete an official visit</span>
-      <h1 class="govuk-heading-l">Select complete reason and mark attendance for visit</h1>
+      <h1 class="govuk-heading-l"> Provide the visit outcome and attendance details</h1>
     </div>
   </div>
 
@@ -26,38 +25,64 @@
           id: "reason",
           name: "reason",
           label: {
-            text: "Select a reason from the list",
-            classes: "govuk-fieldset__legend--s"
+            text: "Select a completion reason from the list",
+            classes: "govuk-fieldset__legend--m"
           },
+          value: formResponses.reason if formResponses,
           items: completionCodes | refDataToOptions | addSelectValue('', 'Select a reason') | sort(false, false, 'value')
           })
         }}
 
+        <h2 class="govuk-heading-m">Mark attendance</h2>
+
         {% set contactItems = [] %}
         {% for contact in contacts %}
           {% set contactItems = (contactItems.push({
-            name: "attendance[" + loop.index0 + "][id]",
-            id: "attendance[" + loop.index0 + "][id]",
+            name: "attendance[" + loop.index0 + "]",
+            id: "attendance[" + loop.index0 + "]",
             value: contact.prisonerContactId,
             text: (contact.firstName + " " + contact.lastName) | convertToTitleCase + " (" + contact.relationshipDescription + ")",
-            checked: true,
-            conditional: {
-              html: govukSelect({
-                id: "attendance[" + loop.index0 + "][searchType]",
-                name: "attendance[" + loop.index0 + "][searchType]",
-                items: searchType | refDataToOptions | setSelected("FULL"),
-                errorMessage: validationErrors | findError("attendance[" + loop.index0 + "][searchType]")
-              })
-            }
+            checked: ((formResponses.attendance | includes(contact.prisonerContactId)) if formResponses.attendance) if formResponses else true
           }), contactItems) %}
         {% endfor %}
 
-        {{govukCheckboxes({
+        {{ govukCheckboxes({
+          idPrefix: "prisoner",
+          name: "prisoner",
+          fieldset: {
+            legend: {
+              text: "Prisoner",
+              isPageHeading: false,
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: [
+            {
+              value: prisoner.prisonerNumber,
+              text: (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase + " (prisoner)",
+              checked: true if not formResponses or formResponses.prisoner else false,
+              conditional: {
+                html: govukSelect({
+                  id: "searchType",
+                  name: "searchType",
+                  label: {
+                    text: "Search type"
+                  },
+                  value: formResponses.searchType or "FULL",
+                  items: searchTypes | refDataToOptions | sort(false, false, 'text'),
+                  errorMessage: validationErrors | findError("searchType")
+                })
+              }
+            }
+          ]
+         }) }}
+
+        {{ govukCheckboxes({
           idPrefix: "attendance",
           name: "attendance",
           fieldset: {
             legend: {
-              text: "Mark attendance of visit:",
+              text: "Visitor" + ("s" if contactItems | length > 1),
               isPageHeading: false,
               classes: "govuk-fieldset__legend--s"
             }

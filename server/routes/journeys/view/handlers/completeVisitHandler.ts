@@ -16,17 +16,20 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
     const { ovId } = req.params
     const { user } = res.locals
     const prisonCode = req.session.activeCaseLoadId
+    const b64BackTo = req.query.backTo as string
 
     const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), user)
     const completionCodes = await this.officialVisitsService.getReferenceData(res, 'VIS_COMPLETION')
-    const searchType = await this.officialVisitsService.getReferenceData(res, 'SEARCH_LEVEL')
+    const searchTypes = await this.officialVisitsService.getReferenceData(res, 'SEARCH_LEVEL')
+    const prisoner = visit.prisonerVisited
 
     return res.render('pages/view/complete', {
       completionCodes: completionCodes.filter(o => !o.code.endsWith('_CANCELLED')),
+      prisoner,
       visit,
       contacts: visit.officialVisitors,
-      searchType,
-      back: `/view/visit/${ovId}`,
+      searchTypes,
+      back: `/view/visit/${ovId}?backTo=${b64BackTo}`,
     })
   }
 
@@ -34,17 +37,9 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
 
   POST = async (req: Request, res: Response) => {
     const { ovId } = req.params
+    const b64BackTo = req.query.backTo as string
     // TODO: Send this off to API
-    // Example: {
-    //  reason: "NORMAL",
-    //  attendance: [
-    //   {
-    //     id: "7331618",
-    //     searchType: "FULL",
-    //   },
-    // ],
-    // }
     req.flash('updateVerb', 'completed')
-    return res.redirect(`/view/visit/${ovId}`)
+    return res.redirect(`/view/visit/${ovId}?backTo=${b64BackTo}`)
   }
 }
