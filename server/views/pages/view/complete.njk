@@ -12,7 +12,7 @@
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Complete an official visit</span>
-      <h1 class="govuk-heading-l"> Provide the visit outcome and attendance details</h1>
+      <h1 class="govuk-heading-l">Provide the visit outcome and attendance details</h1>
     </div>
   </div>
 
@@ -40,9 +40,9 @@
           {% set contactItems = (contactItems.push({
             name: "attendance[" + loop.index0 + "]",
             id: "attendance[" + loop.index0 + "]",
-            value: contact.prisonerContactId,
+            value: contact.officialVisitorId,
             text: (contact.firstName + " " + contact.lastName) | convertToTitleCase + " (" + contact.relationshipDescription + ")",
-            checked: ((formResponses.attendance | includes(contact.prisonerContactId)) if formResponses.attendance) if formResponses else true
+            checked: ((formResponses.attendance | includes(contact.officialVisitorId)) if formResponses.attendance) if formResponses else true
           }), contactItems) %}
         {% endfor %}
 
@@ -59,7 +59,7 @@
           items: [
             {
               value: prisoner.prisonerNumber,
-              text: (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase + " (prisoner)",
+              text: (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase + " (Prisoner)",
               checked: true if not formResponses or formResponses.prisoner else false,
               conditional: {
                 html: govukSelect({

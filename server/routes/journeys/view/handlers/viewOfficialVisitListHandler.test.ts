@@ -67,6 +67,8 @@ afterEach(() => {
 })
 
 const URL = `/view/list`
+const startDate = new Date().toISOString().substring(0, 10)
+const endDate = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
 
 describe('Search for an official visit', () => {
   describe('GET', () => {
@@ -111,7 +113,7 @@ describe('Search for an official visit', () => {
           expect(getGovukTableCell($, 1, 5).text()).toEqual('Completed')
           expect(getGovukTableCell($, 1, 6).text()).toEqual('Select')
           // Including encoded base64 backTo param to preserve filters
-          const encB64Url = encodeURIComponent(btoa('/view/list?page=1&startDate=2026-01-28&endDate=2026-03-29'))
+          const encB64Url = encodeURIComponent(btoa(`/view/list?page=1&startDate=${startDate}&endDate=${endDate}`))
           expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual(`/view/visit/1?backTo=${encB64Url}`)
 
           // Filters

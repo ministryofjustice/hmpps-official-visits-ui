@@ -23,7 +23,7 @@
         title: "Visit marked as " + updateVerb,
         showTitleAsHeading: true,
         dismissible: false,
-        html: "You have " + updateVerb + "this visit. <a href='" + (backTo or '/view/list') + "'>Return to search list</a>"
+        html: "You have " + updateVerb + " this visit. <a href='" + (backTo or '/view/list') + "'>Return to search list</a>"
       }) }}
 
     {% endif %}
@@ -41,7 +41,7 @@
           text: "Visit details"
         },
         actions: {
-          items: [
+          items: [] if visit.completionCode else [
             {
               href: "/view/visit/" + visit.officialVisitId + "/cancel" + paramBackTo,
               html: "Cancel visit",
@@ -52,7 +52,7 @@
               html: "Complete visit",
               classes: 'govuk-link--no-visited-state'
             }
-          ]
+          ] 
         }
       },
       rows: [

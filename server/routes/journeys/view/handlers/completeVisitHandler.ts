@@ -2,8 +2,9 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
-import { schemaFactory } from './completeVisitHandlerSchema'
+import { schemaFactory, SchemaType } from './completeVisitHandlerSchema'
 import { SchemaFactory } from '../../../../middleware/validationMiddleware'
+import { CompleteVisitRequest, SearchLevelType, VisitCompletionType } from '../../../../@types/officialVisitsApi/types'
 
 export default class CompleteOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.COMPLETE_OFFICIAL_VISIT_PAGE
@@ -29,17 +30,32 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
       visit,
       contacts: visit.officialVisitors,
       searchTypes,
-      back: `/view/visit/${ovId}?backTo=${b64BackTo}`,
+      back: `/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`,
     })
   }
 
   BODY: SchemaFactory
 
   POST = async (req: Request, res: Response) => {
-    const { ovId } = req.params
     const b64BackTo = req.query.backTo as string
-    // TODO: Send this off to API
+    const prisonCode = req.session.activeCaseLoadId
+    const { ovId } = req.params
+    const reqBody = req.body as SchemaType
+
+    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), res.locals.user)
+
+    const body: CompleteVisitRequest = {
+      completionReason: req.body.reason as VisitCompletionType,
+      prisonerAttendance: req.body.prisoner ? 'ATTENDED' : 'ABSENT',
+      visitorAttendance: visit.officialVisitors.map(o => ({
+        officialVisitorId: o.officialVisitorId,
+        visitorAttendance: reqBody.attendance.includes(String(o.officialVisitorId)) ? 'ATTENDED' : 'ABSENT',
+      })),
+      prisonerSearchType: reqBody.searchType as SearchLevelType,
+    }
+
+    await this.officialVisitsService.completeVisit(prisonCode, ovId, body, res.locals.user)
     req.flash('updateVerb', 'completed')
-    return res.redirect(`/view/visit/${ovId}?backTo=${b64BackTo}`)
+    return res.redirect(`/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`)
   }
 }

@@ -2,6 +2,7 @@ import { Response } from 'express'
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import {
+  CompleteVisitRequest,
   CreateOfficialVisitRequest,
   CreateOfficialVisitResponse,
   FindByCriteria,
@@ -93,5 +94,10 @@ export default class OfficialVisitsService {
   public async getVisits(prisonId: string, criteria: FindByCriteria, page: number, size: number, user: HmppsUser) {
     logger.info(`Get visits for prison ${prisonId} with criteria ${JSON.stringify(criteria)}`)
     return this.officialVisitsApiClient.getVisits(prisonId, criteria, page, size, user)
+  }
+
+  public async completeVisit(prisonId: string, visitId: string, body: CompleteVisitRequest, user: HmppsUser) {
+    logger.info(`Complete visit for prison ${prisonId} with visit id ${visitId} and body ${JSON.stringify(body)}`)
+    return this.officialVisitsApiClient.completeVisit(prisonId, visitId, body, user)
   }
 }

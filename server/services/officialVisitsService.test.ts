@@ -1,7 +1,7 @@
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import OfficialVisitsService from './officialVisitsService'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { ApprovedContact, OfficialVisit } from '../@types/officialVisitsApi/types'
+import { ApprovedContact, CompleteVisitRequest, OfficialVisit } from '../@types/officialVisitsApi/types'
 import { mockFindByCriteriaResults } from '../testutils/mocks'
 
 jest.mock('../data/officialVisitsApiClient')
@@ -145,5 +145,20 @@ describe('OfficialVisitsService', () => {
 
     expect(officialVisitsApiClient.getVisits).toHaveBeenCalledTimes(1)
     expect(result).toEqual(mockFindByCriteriaResults)
+  })
+
+  it('should complete visit', async () => {
+    const body: CompleteVisitRequest = {
+      completionReason: 'NORMAL',
+      prisonerAttendance: 'ATTENDED',
+      visitorAttendance: [{ officialVisitorId: 1, visitorAttendance: 'ATTENDED' }],
+      prisonerSearchType: 'FULL',
+    }
+    officialVisitsApiClient.completeVisit.mockResolvedValue(body)
+
+    const result = await officialVisitsService.completeVisit('MDI', '1', body, user)
+
+    expect(officialVisitsApiClient.completeVisit).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(body)
   })
 })
