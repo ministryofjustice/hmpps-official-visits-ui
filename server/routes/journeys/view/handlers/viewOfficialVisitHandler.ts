@@ -37,7 +37,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
     const tryDecodeB64 = (b64: string) => {
       try {
         return b64 ? decodeURIComponent(atob(b64)) : null
-      } catch (_e) {
+      } catch {
         return null
       }
     }

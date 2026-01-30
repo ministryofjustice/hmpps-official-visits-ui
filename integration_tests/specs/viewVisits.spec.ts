@@ -148,9 +148,6 @@ test.describe('View official visits', () => {
   })
 
   test('Happy path', async ({ page }) => {
-    const startDate = new Date().toISOString().substring(0, 10)
-    const endDate = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
-
     await login(page)
     await page.goto(`/view/list`)
     const visitListPage = await ListVisitsPage.verifyOnPage(page)
