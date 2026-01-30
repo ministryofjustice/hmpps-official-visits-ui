@@ -5,6 +5,7 @@ import * as cheerio from 'cheerio'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { appWithAllRoutes, user } from '../../../testutils/appSetup'
 import { mockVisitByIdVisit } from '../../../../testutils/mocks'
+import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
 
 jest.mock('../../../../services/officialVisitsService')
 
@@ -123,6 +124,47 @@ describe('CompleteOfficialVisitHandler', () => {
   })
 
   describe('POST', () => {
+    it('should error when no data are provided', async () => {
+      await request(app)
+        .post(`${URL}`)
+        .type('form')
+        .send({})
+        .expect(302)
+        .expect(() =>
+          expectErrorMessages([
+            { fieldId: 'reason', href: '#reason', text: 'Select a completion reason' },
+            { fieldId: 'searchType', href: '#searchType', text: 'Select a search type' },
+          ]),
+        )
+    })
+
+    it('should error when reason is not provided', async () => {
+      await request(app)
+        .post(`${URL}`)
+        .type('form')
+        .send({
+          prisoner: mockVisitByIdVisit.prisonerVisited.prisonerNumber,
+          attendance: [mockVisitByIdVisit.officialVisitors[0].officialVisitorId],
+          searchType: 'RUB_DOWN',
+        })
+        .expect(302)
+        .expect(() => expectErrorMessages([{ fieldId: 'reason', href: '#reason', text: 'Select a completion reason' }]))
+    })
+
+    it('should error when searchType is not provided', async () => {
+      await request(app)
+        .post(`${URL}`)
+        .type('form')
+        .send({
+          reason: 'COMPLETE',
+          prisoner: mockVisitByIdVisit.prisonerVisited.prisonerNumber,
+          attendance: [],
+        })
+        .expect(302)
+        .expect(() =>
+          expectErrorMessages([{ fieldId: 'searchType', href: '#searchType', text: 'Select a search type' }]),
+        )
+    })
     it('should call completeVisit with the expected body and redirect back to the visit summary', async () => {
       const b64 = encodeURIComponent(btoa('/view/list?page=1&startDate=2026-01-28&endDate=2026-03-29'))
       await request(app)

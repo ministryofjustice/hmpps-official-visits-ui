@@ -10,6 +10,9 @@ import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
 import prisonApi from '../mockApis/prisonApi'
 import ListVisitsPage from '../pages/listVisitsPage'
 import { mockPrisonerRestrictions, mockVisitByIdVisit } from '../../server/testutils/mocks'
+import ViewVisitPage from '../pages/viewVisitPage'
+import CancelVisitPage from '../pages/cancelVisitPage'
+import CompleteVisitPage from '../pages/completeVisitPage'
 
 const mockPrisoner = {
   prisonerNumber: 'A1111AA',
@@ -113,6 +116,8 @@ test.describe('View official visits', () => {
     })
     await officialVisitsApi.stubRefData('VIS_TYPE', types)
     await officialVisitsApi.stubRefData('VIS_STATUS', statuses)
+    await officialVisitsApi.stubRefData('VIS_COMPLETION', completionCodes)
+    await officialVisitsApi.stubRefData('SEARCH_LEVEL', searchLevels)
     await officialVisitsApi.stubAvailableSlots(
       locations.map(o => {
         return {
@@ -135,6 +140,7 @@ test.describe('View official visits', () => {
 
     await setupFindByCriteriaStubs()
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
+    await officialVisitsApi.stubCompleteVisit({})
   })
 
   test.afterEach(async () => {
@@ -142,6 +148,9 @@ test.describe('View official visits', () => {
   })
 
   test('Happy path', async ({ page }) => {
+    const startDate = new Date().toISOString().substring(0, 10)
+    const endDate = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+
     await login(page)
     await page.goto(`/view/list`)
     const visitListPage = await ListVisitsPage.verifyOnPage(page)
@@ -188,7 +197,10 @@ test.describe('View official visits', () => {
     expect(await page.getByText('total results').first().innerText()).toBe('8 total results')
 
     await visitListPage.page.getByRole('link', { name: 'Select' }).first().click()
-    expect(page.url()).toBe('http://localhost:3007/view/visit/1')
+    const b64 = encodeURIComponent(btoa(`/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02`))
+    expect(page.url()).toBe(`http://localhost:3007/view/visit/1?backTo=${b64}`)
+
+    ViewVisitPage.verifyOnPage(page)
 
     await expect(page.locator('[data-qa="mini-profile-person-profile-link"]')).toHaveText('Doe, John')
 
@@ -243,6 +255,78 @@ test.describe('View official visits', () => {
       'href',
       'http://localhost:9091/prisoner/G4793VF/contacts/manage/20085647/relationship/7332364',
     )
+
+    await page.getByRole('link', { name: 'Cancel visit' }).click()
+
+    await CancelVisitPage.verifyOnPage(page)
+
+    expect(page.url()).toContain('http://localhost:3007/view/visit/1/cancel')
+    await page.getByRole('button', { name: 'Continue' }).click()
+
+    await page.getByRole('link', { name: 'Select a cancellation reason' }).click()
+    await page.getByRole('radio', { name: 'Cancelled by visitor' }).click()
+
+    await page.getByRole('button', { name: 'Continue' }).click()
+
+    expect(page.url()).toContain('http://localhost:3007/view/visit/1?backTo=')
+    expect(page.getByRole('region', { name: 'success: Visit marked as' })).toBeVisible()
+
+    await page.getByRole('link', { name: 'Return to search list' }).click()
+
+    expect(page.url()).toBe(
+      'http://localhost:3007/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02',
+    )
+
+    await page.goBack()
+
+    await page.getByRole('link', { name: 'Complete visit' }).click()
+    await CompleteVisitPage.verifyOnPage(page)
+
+    // Label text
+    await expect(page.locator('label[for="reason"]')).toHaveText('Select a completion reason from the list')
+
+    // Reason <select> option values
+    const optionValues = await page
+      .locator('select[name="reason"] option')
+      .evaluateAll(options => options.map(o => (o as HTMLOptionElement).value))
+
+    expect(optionValues).toContain('')
+    expect(optionValues).toContain('NORMAL')
+    expect(optionValues).not.toContain('SOMETHING_CANCELLED')
+
+    await expect(page.locator('#prisoner')).toHaveAttribute('value', 'G4793VF')
+    await expect(page.locator('.govuk-checkboxes__label[for="prisoner"]')).toHaveText('Tim Harrison (Prisoner)')
+    await expect(page.locator('#prisoner')).toBeChecked()
+
+    const searchTypeOptionValues = await page
+      .locator('select[name="searchType"] option')
+      .evaluateAll(options => options.map(o => (o as HTMLOptionElement).value).filter(Boolean))
+    expect(searchTypeOptionValues).toContain('FULL')
+    expect(searchTypeOptionValues).toContain('RUB_DOWN')
+
+    await expect(page.locator('.govuk-checkboxes__label[for="attendance\\[0\\]"]')).toHaveText(
+      'Peter Malicious (Solicitor)',
+    )
+    await expect(page.locator('#attendance\\[0\\]')).toBeChecked()
+
+    const cancelLink = page.locator('a.govuk-link.govuk-link--no-visited-state')
+    await expect(cancelLink).toHaveText('Cancel and return to visit summary')
+    await expect(cancelLink).toHaveAttribute(
+      'href',
+      `/view/visit/1?backTo=L3ZpZXcvbGlzdD9wYWdlPTEmcHJpc29uZXI9Sm9obiZzdGFydERhdGU9MjAyNi0wMS0wMSZlbmREYXRlPTIwMjYtMDEtMDI=`,
+    )
+
+    await page.locator('select[name="reason"]').selectOption('NORMAL')
+    await page.getByRole('button', { name: 'Continue' }).click()
+
+    expect(page.url()).toContain('http://localhost:3007/view/visit/1?backTo=')
+    expect(page.getByRole('region', { name: 'success: Visit marked as' })).toBeVisible()
+
+    await page.getByRole('link', { name: 'Return to search list' }).click()
+
+    expect(page.url()).toBe(
+      'http://localhost:3007/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02',
+    )
   })
 })
 
@@ -265,6 +349,16 @@ const statuses = [
 const types = [
   { code: 'VIDEO', description: 'Video' },
   { code: 'NOTVIDEO', description: 'Not video' },
+]
+
+const completionCodes = [
+  { code: 'NORMAL', description: 'Normal' },
+  { code: 'VISITOR_CANCELLED', description: 'Cancelled by visitor' },
+]
+
+const searchLevels = [
+  { code: 'FULL', description: 'Full' },
+  { code: 'RUB_DOWN', description: 'Rub down' },
 ]
 
 // Create mock data with one visit at each location, status, type and date for two people (32 visits)
