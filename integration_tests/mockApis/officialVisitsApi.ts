@@ -1,9 +1,10 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { simpleApiMock, simplePostApiMock } from '../testUtils'
+import { RecursivePartial, simpleApiMock, simplePostApiMock } from '../testUtils'
 import {
   ApprovedContact,
   AvailableSlot,
+  CompleteVisitRequest,
   FindByCriteriaResults,
   OfficialVisit,
   ReferenceDataItem,
@@ -47,4 +48,6 @@ export default {
     simpleApiMock(`/official-visits-api/official-visit/prison/LEI/id/.+`, response),
   stubCreateVisit: (response: OfficialVisit) =>
     simplePostApiMock(`/official-visits-api/official-visit/prison/LEI`, response),
+  stubCompleteVisit: (response: RecursivePartial<CompleteVisitRequest>) =>
+    simplePostApiMock(`/official-visits-api/official-visit/prison/LEI/id/\\d+/complete`, response),
 }

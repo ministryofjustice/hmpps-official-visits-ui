@@ -10,26 +10,9 @@ export const schemaFactory = (officialVisitsService: OfficialVisitsService) => a
   const searchTypes = await officialVisitsService.getReferenceData(res, 'SEARCH_LEVEL')
   return createSchema({
     reason: z.string({ message: REASON_MSG }).refine(val => val && val.trim().length > 0, REASON_MSG),
-    attendance: z.array(
-      z.object({
-        id: z.string().optional(),
-        searchType: z.string({ message: SEARCH_MSG }).transform(fromRefData(searchTypes, SEARCH_MSG)),
-      }),
-    ),
-  }).superRefine(({ attendance }, ctx) => {
-    attendance.forEach((contact, index) => {
-      if (!contact.id) {
-        return // No validation needed if the visitor has not been selected
-      }
-
-      if (!contact.searchType || !searchTypes.find(o => o.code === contact.searchType)) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['attendance', index, 'searchType'],
-          message: SEARCH_MSG,
-        })
-      }
-    })
+    searchType: z.string({ message: SEARCH_MSG }).transform(fromRefData(searchTypes, SEARCH_MSG)),
+    prisoner: z.string().optional(),
+    attendance: z.union([z.string().transform(val => [val]), z.array(z.string()).optional()]),
   })
 }
 

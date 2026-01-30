@@ -67,6 +67,8 @@ afterEach(() => {
 })
 
 const URL = `/view/list`
+const startDate = new Date().toISOString().substring(0, 10)
+const endDate = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
 
 describe('Search for an official visit', () => {
   describe('GET', () => {
@@ -110,7 +112,9 @@ describe('Search for an official visit', () => {
           expect(getGovukTableCell($, 1, 4).find('a').attr('href')).toEqual('http://localhost:3001/prisoner/A1337AA')
           expect(getGovukTableCell($, 1, 5).text()).toEqual('Completed')
           expect(getGovukTableCell($, 1, 6).text()).toEqual('Select')
-          expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual('/view/visit/1')
+          // Including encoded base64 backTo param to preserve filters
+          const encB64Url = encodeURIComponent(btoa(`/view/list?page=1&startDate=${startDate}&endDate=${endDate}`))
+          expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual(`/view/visit/1?backTo=${encB64Url}`)
 
           // Filters
           expect(getByIdFor($, 'location').text().trim()).toEqual('Location')
@@ -163,6 +167,12 @@ describe('Search for an official visit', () => {
           expect($('.govuk-pagination__link:nth(1)').attr('href')).toEqual(
             '/view/list?page=2&startDate=2022-12-23&endDate=2022-12-24&type=TYPE1&location=1',
           )
+
+          // Filters are preserved in the backTo param
+          const encB64Url = encodeURIComponent(
+            btoa('/view/list?page=1&startDate=2022-12-23&endDate=2022-12-24&type=TYPE1&location=1'),
+          )
+          expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual(`/view/visit/1?backTo=${encB64Url}`)
         })
     })
 

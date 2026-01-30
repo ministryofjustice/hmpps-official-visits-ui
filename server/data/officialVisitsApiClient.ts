@@ -6,6 +6,7 @@ import { HmppsUser } from '../interfaces/hmppsUser'
 import {
   ApprovedContact,
   AvailableSlot,
+  CompleteVisitRequest,
   CreateOfficialVisitRequest,
   CreateOfficialVisitResponse,
   FindByCriteria,
@@ -166,6 +167,13 @@ export default class OfficialVisitsApiClient extends RestClient {
   ): Promise<FindByCriteriaResults> {
     return this.post<FindByCriteriaResults>(
       { path: `/official-visit/prison/${prisonId}/find-by-criteria?page=${page}&size=${size}`, data: criteria },
+      asSystem(user.username),
+    )
+  }
+
+  async completeVisit(prisonCode: string, visitId: string, body: CompleteVisitRequest, user: HmppsUser) {
+    return this.post<CompleteVisitRequest>(
+      { path: `/official-visit/prison/${prisonCode}/id/${visitId}/complete`, data: body },
       asSystem(user.username),
     )
   }

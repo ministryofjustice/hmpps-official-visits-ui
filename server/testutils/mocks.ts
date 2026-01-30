@@ -362,6 +362,7 @@ export const mockVisitByIdVisit: OfficialVisit = {
   createdBy: 'USERNAME_GEN',
   officialVisitors: [
     {
+      officialVisitorId: 1,
       visitorTypeCode: 'CONTACT',
       visitorTypeDescription: 'Contact',
       firstName: 'Peter',

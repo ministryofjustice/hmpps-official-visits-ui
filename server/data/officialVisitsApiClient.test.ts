@@ -74,4 +74,32 @@ describe('OfficialVisitsApiClient', () => {
       expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('completeVisit', () => {
+    it('should complete an official visit', async () => {
+      const prisonCode = 'AAA'
+      const visitId = '1'
+      const expected = { data: 'data' }
+
+      nock(config.apis.officialVisitsApi.url)
+        .post(`/official-visit/prison/${prisonCode}/id/${visitId}/complete`)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, expected)
+
+      const response = await officialVisitsApiClient.completeVisit(
+        prisonCode,
+        visitId,
+        {
+          completionReason: 'NORMAL',
+          prisonerAttendance: 'ATTENDED',
+          visitorAttendance: [{ officialVisitorId: 1, visitorAttendance: 'ATTENDED' }],
+          prisonerSearchType: 'FULL',
+        },
+        user,
+      )
+
+      expect(response).toEqual(expected)
+      expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
+    })
+  })
 })

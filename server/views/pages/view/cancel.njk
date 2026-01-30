@@ -9,25 +9,18 @@
 
 {% block content %}
 
-  <div class="govuk-grid-row govuk-body">
-    <div class="govuk-grid-column-three-quarters">
-      <span class="govuk-hint">Cancel an official visit</span>
-      <h1 class="govuk-heading-l">Select cancellation reason for this visit</h1>
-    </div>
-  </div>
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
-
+        <span class="govuk-hint">Cancel an official visit</span>
         {{govukRadios({
           name: "reason",
           fieldset: {
             legend: {
-              text: "Select reason from the list",
-              isPageHeading: false,
-              classes: "govuk-fieldset__legend--m"
+              text: "Select cancellation reason for this visit",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l"
             }
           },
           items: completionCodes | refDataToOptions
