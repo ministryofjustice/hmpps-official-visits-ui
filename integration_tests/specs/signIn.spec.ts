@@ -31,7 +31,7 @@ test.describe('SignIn', () => {
   })
 
   test('Authenticated user sees the home page', async ({ page }) => {
-    await login(page, { name: 'A TestUser' })
+    await login(page)
 
     await HomePage.verifyOnPage(page)
   })

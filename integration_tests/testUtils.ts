@@ -3,10 +3,11 @@ import { SuperAgentRequest } from 'superagent'
 import tokenVerification from './mockApis/tokenVerification'
 import hmppsAuth, { type UserToken } from './mockApis/hmppsAuth'
 import { resetStubs, stubFor } from './mockApis/wiremock'
+import { AuthorisedRoles } from '../server/middleware/populateUserPermissions'
 
 export { resetStubs }
 
-const DEFAULT_ROLES = ['ROLE_SOME_REQUIRED_ROLE', 'ROLE_PRISON']
+const DEFAULT_ROLES = ['ROLE_SOME_REQUIRED_ROLE', 'ROLE_PRISON', `ROLE_${AuthorisedRoles.MANAGE}`]
 
 export type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]

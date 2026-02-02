@@ -7,7 +7,7 @@ import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
 import type { Services } from '../../services'
 import AuditService from '../../services/auditService'
-import { HmppsUser } from '../../interfaces/hmppsUser'
+import { HmppsUser, BitPermission } from '../../interfaces/hmppsUser'
 import setUpWebSession from '../../middleware/setUpWebSession'
 import setUpFlash from '../../middleware/setUpFlash'
 import { Breadcrumbs } from '../../middleware/breadcrumbs'
@@ -15,6 +15,14 @@ import OfficialVisitsService from '../../services/officialVisitsService'
 import PrisonerService from '../../services/prisonerService'
 import LocationsService from '../../services/locationsService'
 import { testUtilRoutes } from './testUtilRoute'
+
+export type RecursivePartial<T> = {
+  [P in keyof T]?: T[P] extends (infer U)[]
+    ? RecursivePartial<U>[]
+    : T[P] extends object | undefined
+      ? RecursivePartial<T[P]>
+      : T[P]
+}
 
 jest.mock('../../services/auditService')
 jest.mock('../../services/prisonerService')
@@ -32,6 +40,7 @@ export const user: HmppsUser = {
   authSource: 'nomis',
   staffId: 1234,
   userRoles: ['ROLE_PRISON'],
+  permissions: { OV: BitPermission.DEFAULT },
 }
 
 export const flashProvider = jest.fn()
