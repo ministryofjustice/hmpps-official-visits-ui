@@ -107,7 +107,7 @@ const appSetup = (journeySession = defaultJourneySession()) => {
 
 beforeEach(() => {
   appSetup()
-  officialVisitsService.createVisit.mockResolvedValue({ officialVisitId: 1 })
+  officialVisitsService.createVisit.mockResolvedValue({ officialVisitId: 1, officialVisitorIds: [] })
 })
 
 afterEach(() => {

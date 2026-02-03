@@ -6,6 +6,7 @@ import { HmppsUser } from '../interfaces/hmppsUser'
 import {
   ApprovedContact,
   AvailableSlot,
+  CancelTypeRequest,
   CompleteVisitRequest,
   CreateOfficialVisitRequest,
   CreateOfficialVisitResponse,
@@ -174,6 +175,13 @@ export default class OfficialVisitsApiClient extends RestClient {
   async completeVisit(prisonCode: string, visitId: string, body: CompleteVisitRequest, user: HmppsUser) {
     return this.post<CompleteVisitRequest>(
       { path: `/official-visit/prison/${prisonCode}/id/${visitId}/complete`, data: body },
+      asSystem(user.username),
+    )
+  }
+
+  async cancelVisit(prisonCode: string, visitId: string, body: CancelTypeRequest, user: HmppsUser) {
+    return this.post<CancelTypeRequest>(
+      { path: `/official-visit/prison/${prisonCode}/id/${visitId}/cancel`, data: body },
       asSystem(user.username),
     )
   }

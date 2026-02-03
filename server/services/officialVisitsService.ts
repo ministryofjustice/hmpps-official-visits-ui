@@ -2,6 +2,7 @@ import { Response } from 'express'
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import {
+  CancelTypeRequest,
   CompleteVisitRequest,
   CreateOfficialVisitRequest,
   CreateOfficialVisitResponse,
@@ -99,5 +100,10 @@ export default class OfficialVisitsService {
   public async completeVisit(prisonId: string, visitId: string, body: CompleteVisitRequest, user: HmppsUser) {
     logger.info(`Complete visit for prison ${prisonId} with visit id ${visitId} and body ${JSON.stringify(body)}`)
     return this.officialVisitsApiClient.completeVisit(prisonId, visitId, body, user)
+  }
+
+  public async cancelVisit(prisonId: string, visitId: string, body: CancelTypeRequest, user: HmppsUser) {
+    logger.info(`Cancel visit for prison ${prisonId} with visit id ${visitId} and body ${JSON.stringify(body)}`)
+    return this.officialVisitsApiClient.cancelVisit(prisonId, visitId, body, user)
   }
 }

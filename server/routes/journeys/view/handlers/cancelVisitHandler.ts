@@ -3,7 +3,7 @@ import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { schema } from './cancelVisitHandlerSchema'
-import { CompleteVisitRequest, VisitCompletionType } from '../../../../@types/officialVisitsApi/types'
+import { CancelTypeRequest, VisitCompletionType } from '../../../../@types/officialVisitsApi/types'
 
 export default class CancelOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.CANCEL_OFFICIAL_VISIT_PAGE
@@ -29,19 +29,11 @@ export default class CancelOfficialVisitHandler implements PageHandler {
     const prisonCode = req.session.activeCaseLoadId
     const { ovId } = req.params
 
-    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), res.locals.user)
-
-    const body: CompleteVisitRequest = {
-      completionReason: req.body.reason as VisitCompletionType,
-      prisonerAttendance: 'ABSENT',
-      visitorAttendance: visit.officialVisitors.map(o => ({
-        officialVisitorId: o.officialVisitorId,
-        visitorAttendance: 'ABSENT',
-      })),
-      prisonerSearchType: 'PAT',
+    const body: CancelTypeRequest = {
+      cancellationReason: req.body.reason as VisitCompletionType,
     }
 
-    await this.officialVisitsService.completeVisit(prisonCode, ovId, body, res.locals.user)
+    await this.officialVisitsService.cancelVisit(prisonCode, ovId, body, res.locals.user)
     req.flash('updateVerb', 'cancelled')
     return res.redirect(`/view/visit/${req.params.ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`)
   }
