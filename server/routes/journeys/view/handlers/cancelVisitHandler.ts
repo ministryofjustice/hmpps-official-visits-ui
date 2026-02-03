@@ -3,11 +3,7 @@ import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { schema } from './cancelVisitHandlerSchema'
-import {
-  CancelTypeRequest,
-  CompleteVisitRequest,
-  VisitCompletionType,
-} from '../../../../@types/officialVisitsApi/types'
+import { CancelTypeRequest, VisitCompletionType } from '../../../../@types/officialVisitsApi/types'
 
 export default class CancelOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.CANCEL_OFFICIAL_VISIT_PAGE
