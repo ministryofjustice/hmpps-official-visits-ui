@@ -15,7 +15,7 @@ export default function routes(_services: Services): Router {
   const router = Router()
   router.use((req, res, next) => (config.maintenanceMode ? res.render('pages/maintenanceMode') : next()))
   router.use(populateUserPermissions)
-  // Demonstrate locking routes behind permissions - in reality this does nothing with UserPermissionLevel.DEFAULT
+  // Demonstrate using requirePermissions middleware - lock all routes off of / to DEFAULT permission
   router.use('/', requirePermissions('OV', Permission.DEFAULT), home(_services))
   router.use(preventNavigationToExpiredJourneys([/confirmation(\/[0-9a-zA-Z-]+)$/]))
   router.use(redirectCheckAnswersMiddleware([/check-your-answers$/]))

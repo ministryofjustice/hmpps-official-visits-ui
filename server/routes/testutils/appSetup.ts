@@ -16,14 +16,6 @@ import PrisonerService from '../../services/prisonerService'
 import LocationsService from '../../services/locationsService'
 import { testUtilRoutes } from './testUtilRoute'
 
-export type RecursivePartial<T> = {
-  [P in keyof T]?: T[P] extends (infer U)[]
-    ? RecursivePartial<U>[]
-    : T[P] extends object | undefined
-      ? RecursivePartial<T[P]>
-      : T[P]
-}
-
 jest.mock('../../services/auditService')
 jest.mock('../../services/prisonerService')
 jest.mock('../../services/locationsService')
