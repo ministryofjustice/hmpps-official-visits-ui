@@ -141,6 +141,7 @@ test.describe('View official visits', () => {
     await setupFindByCriteriaStubs()
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
     await officialVisitsApi.stubCompleteVisit({})
+    await officialVisitsApi.stubCancelVisit({})
   })
 
   test.afterEach(async () => {
