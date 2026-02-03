@@ -15,7 +15,7 @@ describe('hasPerm', () => {
   })
 
   it('supports multi-bit requirements', () => {
-    const required = BitPermission.MANAGE | BitPermission.MANAGE
+    const required = BitPermission.MANAGE | BitPermission.ADMIN
     const maskMissing = BitPermission.DEFAULT | BitPermission.ADMIN
     const maskPresent = BitPermission.DEFAULT | BitPermission.MANAGE | BitPermission.ADMIN
 
