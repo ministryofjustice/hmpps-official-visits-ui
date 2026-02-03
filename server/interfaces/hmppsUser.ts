@@ -59,11 +59,11 @@ export interface AzureADUser extends BaseUser {
 
 export type HmppsUser = (PrisonUser | ProbationUser | ExternalUser | AzureADUser) & {
   permissions: {
-    OV: BitPermission
+    OV: Permission
   }
 }
 
-export enum BitPermission {
+export enum Permission {
   DEFAULT = 1 << 0,
   VIEW = 1 << 1,
   MANAGE = 1 << 2,

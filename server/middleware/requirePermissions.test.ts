@@ -1,23 +1,23 @@
 import type { Request, Response, NextFunction } from 'express'
 import { requirePermissions, hasPerm, hasPermissionFilter } from './requirePermissions'
-import { BitPermission } from '../interfaces/hmppsUser'
+import { Permission } from '../interfaces/hmppsUser'
 import type { HmppsUser } from '../interfaces/hmppsUser'
 
 describe('hasPerm', () => {
   it('returns true when all required bits are present', () => {
-    const mask = BitPermission.DEFAULT | BitPermission.VIEW
-    expect(hasPerm(mask, BitPermission.VIEW)).toBe(true)
+    const mask = Permission.DEFAULT | Permission.VIEW
+    expect(hasPerm(mask, Permission.VIEW)).toBe(true)
   })
 
   it('returns false when any required bit is missing', () => {
-    const mask = BitPermission.DEFAULT
-    expect(hasPerm(mask, BitPermission.MANAGE)).toBe(false)
+    const mask = Permission.DEFAULT
+    expect(hasPerm(mask, Permission.MANAGE)).toBe(false)
   })
 
   it('supports multi-bit requirements', () => {
-    const required = BitPermission.MANAGE | BitPermission.ADMIN
-    const maskMissing = BitPermission.DEFAULT | BitPermission.ADMIN
-    const maskPresent = BitPermission.DEFAULT | BitPermission.MANAGE | BitPermission.ADMIN
+    const required = Permission.MANAGE | Permission.ADMIN
+    const maskMissing = Permission.DEFAULT | Permission.ADMIN
+    const maskPresent = Permission.DEFAULT | Permission.MANAGE | Permission.ADMIN
 
     expect(hasPerm(maskMissing, required)).toBe(false)
     expect(hasPerm(maskPresent, required)).toBe(true)
@@ -45,18 +45,18 @@ describe('requirePermissions middleware', () => {
   })
 
   it('calls next() when user has required permission', () => {
-    res.locals.user.permissions.OV = BitPermission.DEFAULT | BitPermission.VIEW
+    res.locals.user.permissions.OV = Permission.DEFAULT | Permission.VIEW
 
-    requirePermissions('OV', BitPermission.VIEW)(req as Request, res as Response, next)
+    requirePermissions('OV', Permission.VIEW)(req as Request, res as Response, next)
 
     expect(next).toHaveBeenCalledTimes(1)
     expect(res.render).not.toHaveBeenCalled()
   })
 
   it('renders not-authorised when user lacks required permission', () => {
-    res.locals.user.permissions.OV = BitPermission.DEFAULT
+    res.locals.user.permissions.OV = Permission.DEFAULT
 
-    requirePermissions('OV', BitPermission.VIEW)(req as Request, res as Response, next)
+    requirePermissions('OV', Permission.VIEW)(req as Request, res as Response, next)
 
     expect(next).not.toHaveBeenCalled()
     expect(res.render).toHaveBeenCalledTimes(1)
@@ -67,9 +67,9 @@ describe('requirePermissions middleware', () => {
 
   it('works with multi-bit requirements', () => {
     // user has VIEW but not MANAGE
-    res.locals.user.permissions.OV = BitPermission.DEFAULT | BitPermission.VIEW
+    res.locals.user.permissions.OV = Permission.DEFAULT | Permission.VIEW
 
-    const required = BitPermission.VIEW | BitPermission.MANAGE
+    const required = Permission.VIEW | Permission.MANAGE
     requirePermissions('OV', required)(req as Request, res as Response, next)
 
     expect(next).not.toHaveBeenCalled()
@@ -79,9 +79,9 @@ describe('requirePermissions middleware', () => {
   })
 
   it('calls next() when multi-bit requirements are satisfied', () => {
-    res.locals.user.permissions.OV = BitPermission.DEFAULT | BitPermission.VIEW | BitPermission.MANAGE
+    res.locals.user.permissions.OV = Permission.DEFAULT | Permission.VIEW | Permission.MANAGE
 
-    const required = BitPermission.VIEW | BitPermission.MANAGE
+    const required = Permission.VIEW | Permission.MANAGE
     requirePermissions('OV', required)(req as Request, res as Response, next)
 
     expect(next).toHaveBeenCalledTimes(1)
@@ -89,9 +89,9 @@ describe('requirePermissions middleware', () => {
   })
 
   it('passes correct serviceName for the requested service (OV)', () => {
-    res.locals.user.permissions.OV = BitPermission.DEFAULT
+    res.locals.user.permissions.OV = Permission.DEFAULT
 
-    requirePermissions('OV', BitPermission.ADMIN)(req as Request, res as Response, next)
+    requirePermissions('OV', Permission.ADMIN)(req as Request, res as Response, next)
 
     expect(res.render).toHaveBeenCalledWith('pages/not-authorised', {
       serviceName: 'official visits',
@@ -99,9 +99,9 @@ describe('requirePermissions middleware', () => {
   })
 
   it('does not call res.render when authorised', () => {
-    res.locals.user.permissions.OV = BitPermission.DEFAULT | BitPermission.ADMIN
+    res.locals.user.permissions.OV = Permission.DEFAULT | Permission.ADMIN
 
-    requirePermissions('OV', BitPermission.ADMIN)(req as Request, res as Response, next)
+    requirePermissions('OV', Permission.ADMIN)(req as Request, res as Response, next)
 
     expect(res.render).not.toHaveBeenCalled()
     expect(next).toHaveBeenCalled()
@@ -111,21 +111,21 @@ describe('requirePermissions middleware', () => {
 describe('hasPermissionFilter', () => {
   it('supports single bit requirements', () => {
     const user = {
-      permissions: { OV: BitPermission.DEFAULT | BitPermission.VIEW },
+      permissions: { OV: Permission.DEFAULT | Permission.VIEW },
     } as unknown as HmppsUser
 
-    expect(hasPermissionFilter(user, BitPermission.VIEW)).toBe(true)
-    expect(hasPermissionFilter(user, BitPermission.VIEW, 'OV')).toBe(true)
-    expect(hasPermissionFilter(user, BitPermission.MANAGE)).toBe(false)
-    expect(hasPermissionFilter(user, BitPermission.MANAGE, 'OV')).toBe(false)
+    expect(hasPermissionFilter(user, Permission.VIEW)).toBe(true)
+    expect(hasPermissionFilter(user, Permission.VIEW, 'OV')).toBe(true)
+    expect(hasPermissionFilter(user, Permission.MANAGE)).toBe(false)
+    expect(hasPermissionFilter(user, Permission.MANAGE, 'OV')).toBe(false)
   })
 
   it('supports multi-bit requirements', () => {
     const user = {
-      permissions: { OV: BitPermission.DEFAULT | BitPermission.VIEW | BitPermission.MANAGE },
+      permissions: { OV: Permission.DEFAULT | Permission.VIEW | Permission.MANAGE },
     } as unknown as HmppsUser
 
-    expect(hasPermissionFilter(user, BitPermission.VIEW | BitPermission.MANAGE)).toBe(true)
-    expect(hasPermissionFilter(user, BitPermission.VIEW | BitPermission.ADMIN)).toBe(false)
+    expect(hasPermissionFilter(user, Permission.VIEW | Permission.MANAGE)).toBe(true)
+    expect(hasPermissionFilter(user, Permission.VIEW | Permission.ADMIN)).toBe(false)
   })
 })

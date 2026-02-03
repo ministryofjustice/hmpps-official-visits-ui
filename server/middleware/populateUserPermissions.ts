@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import { BitPermission } from '../interfaces/hmppsUser'
+import { Permission } from '../interfaces/hmppsUser'
 
 export enum AuthorisedRoles {
   DEFAULT = 'PRISON',
@@ -8,22 +8,22 @@ export enum AuthorisedRoles {
   ADMIN = 'OFFVIS_ADMIN_USER',
 }
 
-const roleMap: Record<string, BitPermission> = {
-  [AuthorisedRoles.DEFAULT]: BitPermission.DEFAULT,
-  [AuthorisedRoles.VIEW]: BitPermission.VIEW,
-  [AuthorisedRoles.MANAGE]: BitPermission.MANAGE,
-  [AuthorisedRoles.ADMIN]: BitPermission.ADMIN,
+const roleMap: Record<string, Permission> = {
+  [AuthorisedRoles.DEFAULT]: Permission.DEFAULT,
+  [AuthorisedRoles.VIEW]: Permission.VIEW,
+  [AuthorisedRoles.MANAGE]: Permission.MANAGE,
+  [AuthorisedRoles.ADMIN]: Permission.ADMIN,
 }
 
 /** Everyone has DEFAULT permission already but ensure that MANAGE also has VIEW */
 function normaliseOV(mask: number): number {
-  return mask & BitPermission.MANAGE ? mask | BitPermission.VIEW : mask
+  return mask & Permission.MANAGE ? mask | Permission.VIEW : mask
 }
 
 export const populateUserPermissions: RequestHandler = (_req, res, next) => {
   const roles: string[] = res.locals.user.userRoles ?? []
 
-  let mask = BitPermission.DEFAULT
+  let mask = Permission.DEFAULT
   for (const r of roles) mask |= roleMap[r] ?? 0
 
   res.locals.user.permissions = { OV: normaliseOV(mask) }

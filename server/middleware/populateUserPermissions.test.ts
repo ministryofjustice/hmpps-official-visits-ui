@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express'
 import { populateUserPermissions, AuthorisedRoles } from './populateUserPermissions'
-import { BitPermission } from '../interfaces/hmppsUser'
+import { Permission } from '../interfaces/hmppsUser'
 
 describe('populateUserPermissions middleware', () => {
   let req: Partial<Request>
@@ -9,7 +9,7 @@ describe('populateUserPermissions middleware', () => {
 
   beforeEach(() => {
     req = {}
-    res = { locals: { user: { userRoles: [], permissions: { OV: BitPermission.DEFAULT } } } } as unknown as Response
+    res = { locals: { user: { userRoles: [], permissions: { OV: Permission.DEFAULT } } } } as unknown as Response
     next = jest.fn()
   })
 
@@ -18,7 +18,7 @@ describe('populateUserPermissions middleware', () => {
 
     populateUserPermissions(req as Request, res as Response, next)
 
-    expect(res.locals.user.permissions.OV).toBe(BitPermission.DEFAULT)
+    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT)
     expect(next).toHaveBeenCalledTimes(1)
   })
 
@@ -27,7 +27,7 @@ describe('populateUserPermissions middleware', () => {
 
     populateUserPermissions(req as Request, res as Response, next)
 
-    expect(res.locals.user.permissions.OV).toBe(BitPermission.DEFAULT)
+    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT)
     expect(next).toHaveBeenCalledTimes(1)
   })
 
@@ -36,7 +36,7 @@ describe('populateUserPermissions middleware', () => {
 
     populateUserPermissions(req as Request, res as Response, next)
 
-    expect(res.locals.user.permissions.OV).toBe(BitPermission.DEFAULT | BitPermission.VIEW)
+    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT | Permission.VIEW)
     expect(next).toHaveBeenCalledTimes(1)
   })
 
@@ -46,7 +46,7 @@ describe('populateUserPermissions middleware', () => {
     populateUserPermissions(req as Request, res as Response, next)
 
     // DEFAULT always present + MANAGE + implied VIEW
-    expect(res.locals.user.permissions.OV).toBe(BitPermission.DEFAULT | BitPermission.MANAGE | BitPermission.VIEW)
+    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT | Permission.MANAGE | Permission.VIEW)
     expect(next).toHaveBeenCalledTimes(1)
   })
 
@@ -55,7 +55,7 @@ describe('populateUserPermissions middleware', () => {
 
     populateUserPermissions(req as Request, res as Response, next)
 
-    expect(res.locals.user.permissions.OV).toBe(BitPermission.DEFAULT | BitPermission.MANAGE | BitPermission.VIEW)
+    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT | Permission.MANAGE | Permission.VIEW)
     expect(next).toHaveBeenCalledTimes(1)
   })
 
@@ -64,7 +64,7 @@ describe('populateUserPermissions middleware', () => {
 
     populateUserPermissions(req as Request, res as Response, next)
 
-    expect(res.locals.user.permissions.OV).toBe(BitPermission.DEFAULT | BitPermission.ADMIN)
+    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT | Permission.ADMIN)
     expect(next).toHaveBeenCalledTimes(1)
   })
 
@@ -73,7 +73,7 @@ describe('populateUserPermissions middleware', () => {
 
     populateUserPermissions(req as Request, res as Response, next)
 
-    expect(res.locals.user.permissions.OV).toBe(BitPermission.DEFAULT)
+    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT)
     expect(next).toHaveBeenCalledTimes(1)
   })
 
@@ -82,7 +82,7 @@ describe('populateUserPermissions middleware', () => {
 
     populateUserPermissions(req as Request, res as Response, next)
 
-    expect(res.locals.user.permissions.OV).toBe(BitPermission.DEFAULT | BitPermission.VIEW | BitPermission.ADMIN)
+    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT | Permission.VIEW | Permission.ADMIN)
     expect(next).toHaveBeenCalledTimes(1)
   })
 })
