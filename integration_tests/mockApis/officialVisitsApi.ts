@@ -4,6 +4,7 @@ import { RecursivePartial, simpleApiMock, simplePostApiMock } from '../testUtils
 import {
   ApprovedContact,
   AvailableSlot,
+  CancelTypeRequest,
   CompleteVisitRequest,
   FindByCriteriaResults,
   OfficialVisit,
@@ -50,4 +51,6 @@ export default {
     simplePostApiMock(`/official-visits-api/official-visit/prison/LEI`, response),
   stubCompleteVisit: (response: RecursivePartial<CompleteVisitRequest>) =>
     simplePostApiMock(`/official-visits-api/official-visit/prison/LEI/id/\\d+/complete`, response),
+  stubCancelVisit: (response: RecursivePartial<CancelTypeRequest>) =>
+    simplePostApiMock(`/official-visits-api/official-visit/prison/LEI/id/\\d+/cancel`, response),
 }

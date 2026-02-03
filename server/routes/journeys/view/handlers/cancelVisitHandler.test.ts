@@ -28,11 +28,12 @@ beforeEach(() => {
     return [
       { code: 'COMPLETE', description: 'Completed' },
       { code: 'NO_SHOW', description: 'No show' },
-      { code: 'SOMETHING_CANCELLED', description: 'Should be filtered out' },
+      { code: 'SOMETHING_CANCELLED', description: 'Should be visible' },
     ]
   })
 
   officialVisitsService.completeVisit.mockResolvedValue(undefined)
+  officialVisitsService.cancelVisit.mockResolvedValue(undefined)
 })
 
 afterEach(() => {
@@ -62,7 +63,6 @@ describe('cancelVisitHandler', () => {
           expect(optionValues).not.toContain('COMPLETE')
           expect(optionValues).not.toContain('NO_SHOW')
 
-          // Does not include cancelled codes
           expect(optionValues).toContain('SOMETHING_CANCELLED')
 
           const cancelLink = $('a.govuk-link.govuk-link--no-visited-state')
@@ -92,26 +92,14 @@ describe('cancelVisitHandler', () => {
       await request(app)
         .post(`${URL}?backTo=${b64}`)
         .type('form')
-        .send({
-          reason: 'SOMETHING_CANCELLED',
-          prisoner: mockVisitByIdVisit.prisonerVisited.prisonerNumber,
-          attendance: [mockVisitByIdVisit.officialVisitors[0].officialVisitorId],
-          searchType: 'RUB_DOWN',
-        })
+        .send({ reason: 'SOMETHING_CANCELLED' })
         .expect(302)
         .expect('Location', `/view/visit/${ovId}?backTo=${b64}`)
 
-      expect(officialVisitsService.getOfficialVisitById).toHaveBeenCalledWith(undefined, ovId, user)
-
-      expect(officialVisitsService.completeVisit).toHaveBeenCalledWith(
+      expect(officialVisitsService.cancelVisit).toHaveBeenCalledWith(
         undefined,
         String(ovId),
-        {
-          completionReason: 'SOMETHING_CANCELLED',
-          prisonerAttendance: 'ABSENT',
-          visitorAttendance: [{ officialVisitorId: 1, visitorAttendance: 'ABSENT' }],
-          prisonerSearchType: 'PAT',
-        },
+        { cancellationReason: 'SOMETHING_CANCELLED' },
         user,
       )
     })
