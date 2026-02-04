@@ -31,7 +31,7 @@ export const user: HmppsUser = {
   displayName: 'First Last',
   authSource: 'nomis',
   staffId: 1234,
-  userRoles: ['ROLE_PRISON'],
+  userRoles: ['PRISON'],
   permissions: { OV: Permission.DEFAULT },
 }
 

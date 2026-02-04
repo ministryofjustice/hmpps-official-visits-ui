@@ -9,26 +9,30 @@ describe('populateUserPermissions middleware', () => {
 
   beforeEach(() => {
     req = {}
-    res = { locals: { user: { userRoles: [], permissions: { OV: Permission.DEFAULT } } } } as unknown as Response
+    res = { locals: { user: { userRoles: [], permissions: { OV: 0 } } } } as unknown as Response
     next = jest.fn()
   })
 
-  it('sets DEFAULT when no roles are present (userRoles undefined)', () => {
-    res.locals.user.userRoles = undefined
-
-    populateUserPermissions(req as Request, res as Response, next)
-
-    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT)
-    expect(next).toHaveBeenCalledTimes(1)
-  })
-
-  it('sets DEFAULT when roles array is empty', () => {
+  it('grants DEFAULT only when PRISON role is present or the user has other OFFVIS roles', () => {
     res.locals.user.userRoles = []
-
     populateUserPermissions(req as Request, res as Response, next)
+    expect(res.locals.user.permissions.OV & Permission.DEFAULT).toBe(0)
 
-    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT)
-    expect(next).toHaveBeenCalledTimes(1)
+    res.locals.user.userRoles = ['PRISON']
+    populateUserPermissions(req as Request, res as Response, next)
+    expect(res.locals.user.permissions.OV & Permission.DEFAULT).toBe(Permission.DEFAULT)
+
+    res.locals.user.userRoles = [AuthorisedRoles.MANAGE]
+    populateUserPermissions(req as Request, res as Response, next)
+    expect(res.locals.user.permissions.OV & Permission.DEFAULT).toBe(Permission.DEFAULT)
+
+    res.locals.user.userRoles = [AuthorisedRoles.VIEW]
+    populateUserPermissions(req as Request, res as Response, next)
+    expect(res.locals.user.permissions.OV & Permission.DEFAULT).toBe(Permission.DEFAULT)
+
+    res.locals.user.userRoles = [AuthorisedRoles.ADMIN]
+    populateUserPermissions(req as Request, res as Response, next)
+    expect(res.locals.user.permissions.OV & Permission.DEFAULT).toBe(Permission.DEFAULT)
   })
 
   it('ORs VIEW into the permission mask when VIEW role is present', () => {
@@ -73,7 +77,7 @@ describe('populateUserPermissions middleware', () => {
 
     populateUserPermissions(req as Request, res as Response, next)
 
-    expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT)
+    expect(res.locals.user.permissions.OV).toBe(0)
     expect(next).toHaveBeenCalledTimes(1)
   })
 

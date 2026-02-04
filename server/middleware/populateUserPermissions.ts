@@ -17,13 +17,15 @@ const roleMap: Record<string, Permission> = {
 
 /** Everyone has DEFAULT permission already but ensure that MANAGE also has VIEW */
 function normaliseOV(mask: number): number {
-  return mask & Permission.MANAGE ? mask | Permission.VIEW : mask
+  const hasAnyOV = (mask & (Permission.VIEW | Permission.MANAGE | Permission.ADMIN)) !== 0
+  const withDefault = hasAnyOV ? mask | Permission.DEFAULT : mask
+  return withDefault & Permission.MANAGE ? withDefault | Permission.VIEW : withDefault
 }
 
 export const populateUserPermissions: RequestHandler = (_req, res, next) => {
   const roles: string[] = res.locals.user.userRoles ?? []
 
-  let mask = Permission.DEFAULT
+  let mask = 0
   for (const r of roles) mask |= roleMap[r] ?? 0
 
   res.locals.user.permissions = { OV: normaliseOV(mask) }

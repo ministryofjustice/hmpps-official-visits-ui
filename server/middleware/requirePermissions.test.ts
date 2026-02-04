@@ -4,17 +4,17 @@ import { Permission } from '../interfaces/hmppsUser'
 import type { HmppsUser } from '../interfaces/hmppsUser'
 
 describe('hasPerm', () => {
-  it('returns true when all required bits are present', () => {
-    const mask = Permission.DEFAULT | Permission.VIEW
-    expect(hasPerm(mask, Permission.VIEW)).toBe(true)
+  it('returns true when user has the requested permission', () => {
+    const permissions = Permission.DEFAULT | Permission.VIEW
+    expect(hasPerm(permissions, Permission.VIEW)).toBe(true)
   })
 
-  it('returns false when any required bit is missing', () => {
-    const mask = Permission.DEFAULT
-    expect(hasPerm(mask, Permission.MANAGE)).toBe(false)
+  it('returns false when the user does not have the requested permission', () => {
+    const permissions = Permission.DEFAULT
+    expect(hasPerm(permissions, Permission.MANAGE)).toBe(false)
   })
 
-  it('supports multi-bit requirements', () => {
+  it('supports requiring multiple permissions', () => {
     const required = Permission.MANAGE | Permission.ADMIN
     const maskMissing = Permission.DEFAULT | Permission.ADMIN
     const maskPresent = Permission.DEFAULT | Permission.MANAGE | Permission.ADMIN
