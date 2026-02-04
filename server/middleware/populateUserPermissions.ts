@@ -15,7 +15,7 @@ const roleMap: Record<string, Permission> = {
   [AuthorisedRoles.ADMIN]: Permission.ADMIN,
 }
 
-/** Everyone has DEFAULT permission already but ensure that MANAGE also has VIEW */
+/** Ensure any OFFVIS roles result in DEFAULT being added. And users with MANAGE also get VIEW */
 function normaliseOV(mask: number): number {
   const hasAnyOV = (mask & (Permission.VIEW | Permission.MANAGE | Permission.ADMIN)) !== 0
   const withDefault = hasAnyOV ? mask | Permission.DEFAULT : mask
