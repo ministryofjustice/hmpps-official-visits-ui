@@ -7,7 +7,7 @@ import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
 import type { Services } from '../../services'
 import AuditService from '../../services/auditService'
-import { HmppsUser } from '../../interfaces/hmppsUser'
+import { HmppsUser, Permission } from '../../interfaces/hmppsUser'
 import setUpWebSession from '../../middleware/setUpWebSession'
 import setUpFlash from '../../middleware/setUpFlash'
 import { Breadcrumbs } from '../../middleware/breadcrumbs'
@@ -31,7 +31,8 @@ export const user: HmppsUser = {
   displayName: 'First Last',
   authSource: 'nomis',
   staffId: 1234,
-  userRoles: ['ROLE_PRISON'],
+  userRoles: ['PRISON'],
+  permissions: { OV: Permission.DEFAULT },
 }
 
 export const flashProvider = jest.fn()

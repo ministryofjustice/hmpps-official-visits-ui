@@ -26,6 +26,7 @@ import { FieldValidationError } from '../middleware/setUpFlash'
 import config from '../config'
 import logger from '../../logger'
 import { ReferenceDataItem } from '../@types/officialVisitsApi/types'
+import { hasPermissionFilter } from '../middleware/requirePermissions'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
@@ -116,4 +117,5 @@ export default function nunjucksSetup(app: express.Express): void {
     items.map((item: ReferenceDataItem) => ({ value: item.code, text: item.description })),
   )
   njkEnv.addFilter('includes', (arr: string[], item: string) => arr.includes(item.toString()))
+  njkEnv.addFilter('hasPermission', hasPermissionFilter)
 }
