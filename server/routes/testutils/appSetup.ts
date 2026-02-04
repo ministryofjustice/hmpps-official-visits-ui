@@ -15,6 +15,7 @@ import OfficialVisitsService from '../../services/officialVisitsService'
 import PrisonerService from '../../services/prisonerService'
 import LocationsService from '../../services/locationsService'
 import { testUtilRoutes } from './testUtilRoute'
+import { AuthorisedRoles } from '../../middleware/populateUserPermissions'
 
 jest.mock('../../services/auditService')
 jest.mock('../../services/prisonerService')
@@ -31,8 +32,8 @@ export const user: HmppsUser = {
   displayName: 'First Last',
   authSource: 'nomis',
   staffId: 1234,
-  userRoles: ['PRISON'],
-  permissions: { OV: Permission.DEFAULT },
+  userRoles: [AuthorisedRoles.MANAGE],
+  permissions: { OV: Permission.DEFAULT | Permission.VIEW | Permission.MANAGE },
 }
 
 export const flashProvider = jest.fn()

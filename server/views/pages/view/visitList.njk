@@ -178,8 +178,8 @@
           },
           {
             html: '<a class="govuk-link govuk-link--no-visited-state" href="/view/visit/' + visitRecord.officialVisitId + '?backTo=' + backTo + '">Select</a>'
-          }
-        ]), rows) %}
+          } if user | hasPermission(PERMISSION.VIEW)
+        ] | filterNonFalsy), rows) %}
       {% endfor %}
 
       <div class="govuk-grid-column-three-quarters" id="table-column">
@@ -199,8 +199,8 @@
               { text: "Visit type", attributes: { "aria-sort": "none" } },
               { text: "Prisoner", attributes: { "aria-sort": "none" } },
               { text: "Status", attributes: { "aria-sort": "none" } },
-              { text: "Action", attributes: { "aria-sort": "none" } }
-            ],
+              { text: "Action", attributes: { "aria-sort": "none" } } if user | hasPermission(PERMISSION.VIEW)
+            ] | filterNonFalsy,
             rows: rows
           }) }}
 

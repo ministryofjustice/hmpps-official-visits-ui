@@ -27,6 +27,8 @@ import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
 import prisonApi from '../mockApis/prisonApi'
 import CheckYourAnswersPage from '../pages/checkYourAnswersPage'
 import ConfirmationPage from '../pages/confirmationPage'
+import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
+import { NotAuthorisedPage } from '../pages/notAuthorisedPage'
 
 const mockPrisoner = {
   prisonerNumber: 'A1111AA',
@@ -38,6 +40,52 @@ const mockPrisoner = {
   croNumber: '123456/12A',
   prisonId: 'LEI',
 }
+
+// All routes under Create are guarded, however we only need to test the journey initialiser page since that sets up data needed for the rest of the journey.
+// Confirmation is the only exception here because it doesn't rely on journey data and fetches data itself.
+test.describe('RBAC: Create an official visit', async () => {
+  test.beforeEach(async () => {
+    await hmppsAuth.stubSignInPage()
+    await componentsApi.stubComponents()
+    await prisonApi.stubGetPrisonerImage()
+  })
+  test('should deny access to users with only DEFAULT role', async ({ page }) => {
+    await login(page, { name: 'AUser', roles: [`ROLE_${AuthorisedRoles.DEFAULT}`], active: true, authSource: 'nomis' })
+    await page.goto(`/manage/create/search`)
+    await NotAuthorisedPage.verifyOnPage(page)
+
+    await page.goto(`/manage/create/${uuidV4()}/confirmation/1`)
+    await NotAuthorisedPage.verifyOnPage(page)
+  })
+
+  test('should deny access to users with only VIEW role', async ({ page }) => {
+    await login(page, {
+      name: 'AUser',
+      roles: [`ROLE_${AuthorisedRoles.DEFAULT}`, `ROLE_${AuthorisedRoles.VIEW}`],
+      active: true,
+      authSource: 'nomis',
+    })
+    await page.goto(`/manage/create/search`)
+    await NotAuthorisedPage.verifyOnPage(page)
+
+    await page.goto(`/manage/create/${uuidV4()}/confirmation/1`)
+    await NotAuthorisedPage.verifyOnPage(page)
+  })
+
+  test('should deny access to users with only ADMIN role', async ({ page }) => {
+    await login(page, {
+      name: 'AUser',
+      roles: [`ROLE_${AuthorisedRoles.DEFAULT}`, `ROLE_${AuthorisedRoles.ADMIN}`],
+      active: true,
+      authSource: 'nomis',
+    })
+    await page.goto(`/manage/create/search`)
+    await NotAuthorisedPage.verifyOnPage(page)
+
+    await page.goto(`/manage/create/${uuidV4()}/confirmation/1`)
+    await NotAuthorisedPage.verifyOnPage(page)
+  })
+})
 
 test.describe('Create an official visit', () => {
   const uuid = uuidV4()

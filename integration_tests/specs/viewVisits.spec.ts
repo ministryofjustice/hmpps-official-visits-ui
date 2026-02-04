@@ -13,6 +13,8 @@ import { mockPrisonerRestrictions, mockVisitByIdVisit } from '../../server/testu
 import ViewVisitPage from '../pages/viewVisitPage'
 import CancelVisitPage from '../pages/cancelVisitPage'
 import CompleteVisitPage from '../pages/completeVisitPage'
+import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
+import { NotAuthorisedPage } from '../pages/notAuthorisedPage'
 
 const mockPrisoner = {
   prisonerNumber: 'A1111AA',
@@ -146,6 +148,58 @@ test.describe('View official visits', () => {
 
   test.afterEach(async () => {
     await resetStubs()
+  })
+
+  test('should allow access as far as search page for DEFAULT role', async ({ page }) => {
+    await login(page, { name: 'AUser', roles: [`ROLE_${AuthorisedRoles.DEFAULT}`], active: true, authSource: 'nomis' })
+    await page.goto(`/view/list`)
+    const visitListPage = await ListVisitsPage.verifyOnPage(page)
+
+    // Basic interaction test
+    await visitListPage.getSearchBox().fill('John')
+    await visitListPage.getFromDateInput().fill('01/01/2026')
+    await visitListPage.getToDateInput().fill('02/01/2026')
+    await visitListPage.getSearchButton().click()
+
+    // TODO: Flesh this test out when we have designs on what limited view entails
+    expect(visitListPage.page.getByRole('link', { name: 'Select' })).toHaveCount(0)
+  })
+
+  test('should allow access as far as visit summary for VIEW role', async ({ page }) => {
+    await login(page, {
+      name: 'AUser',
+      roles: [`ROLE_${AuthorisedRoles.DEFAULT}`, `ROLE_${AuthorisedRoles.VIEW}`],
+      active: true,
+      authSource: 'nomis',
+    })
+    await page.goto(`/view/list`)
+    const visitListPage = await ListVisitsPage.verifyOnPage(page)
+
+    // Basic interaction test
+    await visitListPage.getSearchBox().fill('John')
+    await visitListPage.getFromDateInput().fill('01/01/2026')
+    await visitListPage.getToDateInput().fill('02/01/2026')
+    await visitListPage.getSearchButton().click()
+
+    await visitListPage.page.getByRole('link', { name: 'Select' }).first().click()
+    // Should be no links to Amend, Cancel or Complete
+    await expect(page.locator('.govuk-summary-card__actions')).toHaveCount(0)
+    await expect(page.locator('a[href*="/amend"]')).toHaveCount(0)
+  })
+
+  test('should allow access as far as search / filter page for ADMIN role', async ({ page }) => {
+    await login(page, { name: 'AUser', roles: [`ROLE_${AuthorisedRoles.DEFAULT}`], active: true, authSource: 'nomis' })
+    await page.goto(`/view/list`)
+    const visitListPage = await ListVisitsPage.verifyOnPage(page)
+
+    // Basic interaction test
+    await visitListPage.getSearchBox().fill('John')
+    await visitListPage.getFromDateInput().fill('01/01/2026')
+    await visitListPage.getToDateInput().fill('02/01/2026')
+    await visitListPage.getSearchButton().click()
+
+    // TODO: Flesh this test out when we have designs on what limited view entails
+    expect(visitListPage.page.getByRole('link', { name: 'Select' })).toHaveCount(0)
   })
 
   test('Happy path', async ({ page }) => {
