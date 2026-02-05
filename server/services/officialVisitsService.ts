@@ -84,8 +84,14 @@ export default class OfficialVisitsService {
     return this.officialVisitsApiClient.getApprovedSocialContacts(prisonId, prisonerNumber, user)
   }
 
-  public async getAvailableSlots(res: Response, prisonId: string, startDate: string, endDate: string) {
-    return this.officialVisitsApiClient.getAvailableTimeSlots(prisonId, startDate, endDate, res.locals.user)
+  public async getAvailableSlots(
+    res: Response,
+    prisonId: string,
+    startDate: string,
+    endDate: string,
+    videoOnly: boolean,
+  ) {
+    return this.officialVisitsApiClient.getAvailableTimeSlots(prisonId, startDate, endDate, videoOnly, res.locals.user)
   }
 
   public async getSchedule(res: Response, prisonId: string, date: string) {

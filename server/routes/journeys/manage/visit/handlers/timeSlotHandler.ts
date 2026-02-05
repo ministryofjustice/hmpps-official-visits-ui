@@ -31,6 +31,7 @@ export default class TimeSlotHandler implements PageHandler {
       prisonCode,
       selectedDate,
       selectedDate,
+      officialVisit.visitType === 'VIDEO',
     )
 
     // Stored here and used in the schema check on the POST

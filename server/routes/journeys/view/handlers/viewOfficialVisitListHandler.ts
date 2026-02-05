@@ -26,6 +26,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
       prisonCode,
       toDateString(new Date()),
       toDateString(addYears(new Date(), 1)),
+      false,
     )
 
     // Find unique locations

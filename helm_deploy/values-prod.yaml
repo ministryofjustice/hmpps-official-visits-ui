@@ -22,5 +22,5 @@ generic-service:
     AUDIT_ENABLED: "false"
 
 generic-prometheus-alerts:
-  alertSeverity: hmpps-alerts-api-non-prod # TODO: Change to prod once we're live
+  alertSeverity: move-and-improve-alerts-non-prod # TODO: Change to prod once we're live
   businessHoursOnly: true

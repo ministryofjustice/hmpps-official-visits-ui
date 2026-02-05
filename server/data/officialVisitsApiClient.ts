@@ -92,10 +92,11 @@ export default class OfficialVisitsApiClient extends RestClient {
     prisonId: string,
     startDate: string,
     endDate: string,
+    videoOnly: boolean,
     user: HmppsUser,
   ): Promise<AvailableSlot[]> {
     return this.get<AvailableSlot[]>(
-      { path: `/available-slots/${prisonId}?fromDate=${startDate}&toDate=${endDate}&videoOnly=false` },
+      { path: `/available-slots/${prisonId}?fromDate=${startDate}&toDate=${endDate}&videoOnly=${videoOnly}` },
       asSystem(user.username),
     )
   }
