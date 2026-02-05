@@ -25,5 +25,5 @@ generic-service:
     AUDIT_ENABLED: "false"
 
 generic-prometheus-alerts:
-  alertSeverity: hmpps-alerts-api-non-prod
+  alertSeverity: move-and-improve-alerts-non-prod
   businessHoursOnly: true
