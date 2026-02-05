@@ -5,6 +5,7 @@ import { appWithAllRoutes, user } from '../../../testutils/appSetup'
 import { getByDataQa, getPageHeader } from '../../../testutils/cheerio'
 import AuditService, { Page } from '../../../../services/auditService'
 import config from '../../../../config'
+import { AuthorisedRoles } from '../../../../middleware/populateUserPermissions'
 
 jest.mock('../../../../services/auditService')
 
@@ -25,8 +26,17 @@ afterEach(() => {
 })
 
 describe('GET /home', () => {
-  it('should render home page', () => {
+  it.each([
+    [AuthorisedRoles.DEFAULT, ['view-list']],
+    [AuthorisedRoles.VIEW, ['view-list']],
+    [AuthorisedRoles.MANAGE, ['view-list', 'create']],
+    [AuthorisedRoles.ADMIN, ['view-list', 'admin']],
+  ])(`should render home page - %s (%s) view`, (role, visibleCards) => {
     auditService.logPageView.mockResolvedValue(null)
+    app = appWithAllRoutes({
+      services: { auditService },
+      userSupplier: () => ({ ...user, userRoles: [role] }),
+    })
     return request(app)
       .get('/')
       .expect('Content-Type', /html/)
@@ -36,20 +46,30 @@ describe('GET /home', () => {
         const heading = getPageHeader($)
         expect(heading).toContain('Official Visits')
 
-        // Check card contents individually
         const bookVisitCard = getByDataQa($, 'book-official-visit-card')
-        expect(bookVisitCard.find('.card__link').text()).toContain('Book an official visit')
-
-        const viewSlotsCard = getByDataQa($, 'view-official-visit-slots-card')
-        expect(viewSlotsCard.find('.card__link').text()).toContain('View available slots for official visits')
-
         const viewOrCancelVisitCard = getByDataQa($, 'view-or-cancel-official-visits-card')
-        expect(viewOrCancelVisitCard.find('.card__link').text()).toContain('View or cancel existing official visits')
-
         const manageTimeSlotsCard = getByDataQa($, 'manage-time-slots-card')
-        expect(manageTimeSlotsCard.find('.card__link').text()).toContain(
-          'Administer days, slots and locations for official visits',
-        )
+
+        // Check card contents individually
+        if (visibleCards.includes('create')) {
+          expect(bookVisitCard.find('.card__link').text()).toContain('Book an official visit')
+        } else {
+          expect(bookVisitCard.find('.card__link').text()).toBe('')
+        }
+
+        if (visibleCards.includes('view-list')) {
+          expect(viewOrCancelVisitCard.find('.card__link').text()).toContain('View or cancel existing official visits')
+        } else {
+          expect(viewOrCancelVisitCard.find('.card__link').text()).toBe('')
+        }
+
+        if (visibleCards.includes('admin')) {
+          expect(manageTimeSlotsCard.find('.card__link').text()).toContain(
+            'Administer days, slots and locations for official visits',
+          )
+        } else {
+          expect(manageTimeSlotsCard.find('.card__link').text()).toBe('')
+        }
 
         expect(auditService.logPageView).toHaveBeenCalledWith(Page.HOME_PAGE, {
           who: user.username,

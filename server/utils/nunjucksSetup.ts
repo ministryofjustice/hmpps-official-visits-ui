@@ -27,6 +27,7 @@ import config from '../config'
 import logger from '../../logger'
 import { ReferenceDataItem } from '../@types/officialVisitsApi/types'
 import { hasPermissionFilter } from '../middleware/requirePermissions'
+import { Permission } from '../interfaces/hmppsUser'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
@@ -38,6 +39,7 @@ export default function nunjucksSetup(app: express.Express): void {
   app.locals.digitalPrisonServicesUrl = config.serviceUrls.digitalPrison
   app.locals.prisonerProfileUrl = config.serviceUrls.prisonerProfile
   app.locals.authUrl = config.apis.hmppsAuth.externalUrl
+  app.locals.PERMISSION = Permission
 
   app.use((_req, res, next) => {
     res.locals.digitalPrisonServicesUrl = config.serviceUrls.digitalPrison
@@ -118,4 +120,5 @@ export default function nunjucksSetup(app: express.Express): void {
   )
   njkEnv.addFilter('includes', (arr: string[], item: string) => arr.includes(item.toString()))
   njkEnv.addFilter('hasPermission', hasPermissionFilter)
+  njkEnv.addFilter('filterNonFalsy', (items: any[]) => items.filter(item => item))
 }

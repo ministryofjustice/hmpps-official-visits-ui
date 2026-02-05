@@ -13,7 +13,10 @@
   <div class="govuk-grid-row">
     <span class="govuk-hint">Manage existing official visits</span>
     
-    <a href="/view/visit/{{visit.officialVisitId}}/amend{{paramBackTo}}" class="govuk-link float-right govuk-link--no-visited-state"> Amend this visit</a>
+    {% if user | hasPermission(PERMISSION.MANAGE) %}
+      <a href="/view/visit/{{visit.officialVisitId}}/amend{{paramBackTo}}" class="govuk-link float-right govuk-link--no-visited-state"> Amend this visit</a>
+    {% endif %}
+
     <h1 class="govuk-heading-l">Official visit</h1>
     {{ miniProfile(prisoner) }}
 
@@ -53,7 +56,7 @@
               classes: 'govuk-link--no-visited-state'
             }
           ] 
-        }
+        } if user | hasPermission(PERMISSION.MANAGE)
       },
       rows: [
         {
