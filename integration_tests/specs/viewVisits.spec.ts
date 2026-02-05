@@ -14,7 +14,6 @@ import ViewVisitPage from '../pages/viewVisitPage'
 import CancelVisitPage from '../pages/cancelVisitPage'
 import CompleteVisitPage from '../pages/completeVisitPage'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
-import { NotAuthorisedPage } from '../pages/notAuthorisedPage'
 
 const mockPrisoner = {
   prisonerNumber: 'A1111AA',
