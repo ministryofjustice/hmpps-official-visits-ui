@@ -84,8 +84,12 @@
           value: { text: visit.visitTypeDescription }
         },
         {
-          key: { text: "Notes" },
+          key: { text: "Prisoner notes" },
           value: { text: visit.prisonerNotes or 'None' }
+        },
+        {
+          key: { text: "Staff notes" },
+          value: { text: visit.staffNotes or 'None' }
         },
         {
           key: { text: "Created by" },

@@ -89,7 +89,8 @@ const mockOfficialVisitJourney = {
   socialVisitors: [],
   assistancePageCompleted: true,
   equipmentPageCompleted: true,
-  prisonerNotes: 'Extra information',
+  prisonerNotes: 'prisoner notes',
+  staffNotes: 'staff notes',
   commentsPageCompleted: true,
 } as Partial<OfficialVisitJourney>
 
@@ -134,7 +135,8 @@ describe('check your answers handler', () => {
           expect(getValueByKey($, 'Date')).toEqual('Monday, 26 January 2026')
           expect(getValueByKey($, 'Time')).toEqual('1:30pm to 4pm (2 hours 30 minutes)')
           expect(getValueByKey($, 'Location')).toEqual('Official Visits')
-          expect(getValueByKey($, 'Notes')).toEqual('Extra information')
+          expect(getValueByKey($, 'Prisoner notes')).toEqual('prisoner notes')
+          expect(getValueByKey($, 'Staff notes')).toEqual('staff notes')
 
           expect($('h4').text()).toEqual('Peter Malicious (Solicitor)')
 

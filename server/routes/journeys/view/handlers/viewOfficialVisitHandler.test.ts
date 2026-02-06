@@ -80,7 +80,8 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Visit reference number')).toEqual('1')
           expect(getValueByKey($, 'Location')).toEqual('First Location')
           expect(getValueByKey($, 'Visit type')).toEqual('Video')
-          expect(getValueByKey($, 'Notes')).toEqual('Extra information')
+          expect(getValueByKey($, 'Prisoner notes')).toEqual('prisoner notes')
+          expect(getValueByKey($, 'Staff notes')).toEqual('staff notes')
           expect(getValueByKey($, 'Created by')).toEqual('USERNAME_GEN (Monday, 19 January 2026)')
           expect(getValueByKey($, 'Last modified')).toEqual('USERNAME_GEN (Monday, 19 January 2026)')
 

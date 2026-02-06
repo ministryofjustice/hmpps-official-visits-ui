@@ -58,7 +58,7 @@ export default function CreateRoutes({
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService))
   route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
   route('/equipment', new EquipmentHandler(officialVisitsService))
-  route('/comments', new CommentsHandler(officialVisitsService))
+  route('/comments', new CommentsHandler())
   route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService))
 
   return router
