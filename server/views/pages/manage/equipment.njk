@@ -36,7 +36,7 @@
             checked: formResponses.equipment[loop.index0].id if formResponses.equipment else contact.equipment,
             conditional: {
               html: govukCharacterCount({
-                maxlength: 400,
+                maxlength: 240,
                 rows: 5,
                 id: "equipment[" + loop.index0 + "][notes]",
                 name: "equipment[" + loop.index0 + "][notes]",

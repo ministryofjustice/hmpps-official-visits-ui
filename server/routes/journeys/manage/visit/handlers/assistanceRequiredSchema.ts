@@ -4,7 +4,7 @@ import { createSchema } from '../../../../../middleware/validationMiddleware'
 import { ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
 
 const ERROR_MIN = 'Enter information about assistance for this visitor'
-const ERROR_MAX = 'Information about assistance must be 400 characters or less'
+const ERROR_MAX = 'Information about assistance must be 240 characters or less'
 
 export const schema = async (req: Request) => {
   return createSchema({
@@ -21,7 +21,7 @@ export const schema = async (req: Request) => {
           return // No validation needed if the visitor has not been selected
         }
 
-        if (contact.notes?.length > 400) {
+        if (contact.notes?.length > 240) {
           ctx.addIssue({
             code: 'custom',
             path: ['assistanceRequired', index, 'notes'],
