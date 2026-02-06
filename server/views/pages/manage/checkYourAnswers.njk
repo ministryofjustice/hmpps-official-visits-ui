@@ -107,20 +107,34 @@
             }
           },
           {
-            key: { text: "Notes" },
+            key: { text: "Prisoner notes" },
             value: { text: visit.prisonerNotes or 'None' },
             actions: {
               items: [
                 {
-                  href: "comments",
+                  href: "prisonerNotes",
                   text: "Change",
-                  visuallyHiddenText: "extra information about the visit",
+                  visuallyHiddenText: "prisoner notes",
                   classes: "govuk-link--no-visited-state"
                 }
               ]
             }
-        }
-      ]
+          },
+          {
+            key: { text: "Staff notes" },
+            value: { text: visit.staffNotes or 'None' },
+            actions: {
+              items: [
+                {
+                  href: "staffNotes",
+                  text: "Change",
+                  visuallyHiddenText: "staff notes",
+                  classes: "govuk-link--no-visited-state"
+                }
+              ]
+            }
+          }
+        ]
     }) }}
     </div>
   </div>

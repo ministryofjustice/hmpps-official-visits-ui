@@ -25,6 +25,7 @@ const defaultJourneySession = () => ({
   officialVisit: {
     prisoner: mockPrisoner,
     prisonerNotes: 'Some previously entered notes',
+    staffNotes: 'Some previously entered staff notes',
   } as Partial<OfficialVisitJourney>,
 })
 
@@ -57,7 +58,8 @@ describe('comments handler', () => {
           const heading = getPageHeader($)
 
           expect(heading).toEqual('Add extra information (optional)')
-          expect(getTextById($, 'comments')).toEqual('Some previously entered notes')
+          expect(getTextById($, 'prisonerNotes')).toEqual('Some previously entered notes')
+          expect(getTextById($, 'staffNotes')).toEqual('Some previously entered staff notes')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.COMMENTS_PAGE, {
             who: user.username,
@@ -77,16 +79,31 @@ describe('comments handler', () => {
         .expect(() => expectNoErrorMessages())
     })
 
-    it('should disallow comments over 400 characters', () => {
+    it('should disallow prisonerNotes over 400 characters', () => {
       return request(app)
         .post(URL)
-        .send({ comments: 'a'.repeat(401) })
+        .send({ prisonerNotes: 'a'.repeat(401) })
         .expect(() =>
           expectErrorMessages([
             {
-              fieldId: 'comments',
-              href: '#comments',
-              text: 'Extra information must be 400 characters or less',
+              fieldId: 'prisonerNotes',
+              href: '#prisonerNotes',
+              text: 'Prisoner notes must be 400 characters or less',
+            },
+          ]),
+        )
+    })
+
+    it('should disallow staffNotes over 400 characters', () => {
+      return request(app)
+        .post(URL)
+        .send({ staffNotes: 'a'.repeat(401) })
+        .expect(() =>
+          expectErrorMessages([
+            {
+              fieldId: 'staffNotes',
+              href: '#staffNotes',
+              text: 'Staff notes must be 400 characters or less',
             },
           ]),
         )
@@ -95,13 +112,14 @@ describe('comments handler', () => {
     it('should accept a form submission', async () => {
       await request(app)
         .post(URL)
-        .send({ comments: 'comment' })
+        .send({ prisonerNotes: 'prisoner', staffNotes: 'staff' })
         .expect(302)
         .expect('location', 'check-your-answers')
         .expect(() => expectNoErrorMessages())
 
       const journeySession = await getJourneySession(app, 'officialVisit')
-      expect(journeySession.prisonerNotes).toEqual('comment')
+      expect(journeySession.prisonerNotes).toEqual('prisoner')
+      expect(journeySession.staffNotes).toEqual('staff')
     })
   })
 })

@@ -254,49 +254,32 @@ test.describe('View official visits', () => {
     ViewVisitPage.verifyOnPage(page)
 
     await expect(page.locator('[data-qa="mini-profile-person-profile-link"]')).toHaveText('Doe, John')
-
     await expect(page.locator('[data-qa="mini-profile-prisoner-number"]')).toHaveText(mockPrisoner.prisonerNumber)
-
     await expect(page.locator('[data-qa="mini-profile-dob"]')).toHaveText('1 June 1989')
-
     await expect(page.locator('[data-qa="mini-profile-cell-location"]')).toHaveText(mockPrisoner.cellLocation)
-
     await expect(page.locator('[data-qa="mini-profile-prison-name"]')).toHaveText(mockPrisoner.prisonName)
-
     await expect(page.locator('[data-qa="contact-A1111AA-alerts-restrictions"]')).toHaveText(
       /3\s*restrictions\s*and\s*0\s*alerts/,
     )
 
     await expect(summaryValue(page, 'Date')).toHaveText('Thursday, 1 January 2026')
-
     await expect(summaryValue(page, 'Time')).toHaveText('10:00am to 11:00am (1 hour)')
-
     await expect(summaryValue(page, 'Visit status')).toHaveText('Scheduled')
-
     await expect(summaryValue(page, 'Visit reference number')).toHaveText('1')
-
     await expect(summaryValue(page, 'Location')).toHaveText('First Location')
-
     await expect(summaryValue(page, 'Visit type')).toHaveText('Video')
-
-    await expect(summaryValue(page, 'Notes')).toHaveText('Extra information')
-
+    await expect(summaryValue(page, 'Prisoner notes')).toHaveText('prisoner notes')
+    await expect(summaryValue(page, 'Staff notes')).toHaveText('staff notes')
     await expect(summaryValue(page, 'Created by')).toHaveText('USERNAME_GEN (Monday, 19 January 2026)')
-
     await expect(summaryValue(page, 'Last modified')).toHaveText('USERNAME_GEN (Monday, 19 January 2026)')
 
     await expect(summaryValue(page, 'Contact type')).toHaveText('Official')
 
     await expect(summaryValue(page, 'Does this visitor need assistance')).toHaveText('Yes')
-
     await expect(summaryValue(page, 'Assistance details')).toHaveText('Assistance details')
-
     await expect(summaryValue(page, 'Equipment')).toHaveText('Laptop')
-
     await expect(summaryValue(page, 'Visitor concerns')).toHaveText('Assistance details')
-
     await expect(summaryValue(page, 'Email')).toHaveText('test@test.com')
-
     await expect(summaryValue(page, 'Telephone number')).toHaveText('0123456789')
 
     const cardLink = page.locator('.govuk-summary-card__title > a')

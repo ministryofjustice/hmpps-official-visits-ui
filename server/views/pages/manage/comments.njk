@@ -21,20 +21,45 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Schedule an official visit</span>
-      <h1 class="govuk-heading-l" for="comments">{{ pageTitle }} (optional)</h1>
+      <h1 class="govuk-heading-l">{{ pageTitle }} (optional)</h1>
 
       <p>Add any important information about how to prepare for the official visit. It will be printed on the movement slip.</p>
       <p>Wing staff will be notified there is extra information on the printed unlock list, but for confidentiality the full text will only be visible when you view the details of the official visit in this service.</p>
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
-
+    
         {{ govukCharacterCount({
-          name: "comments",
-          id: "comments",
+          classes: 'govuk-!-margin-top-4',
+          name: "staffNotes",
+          id: "staffNotes",
+          label: {
+            text: 'Staff notes',
+            classes: 'govuk-label--m'
+          },
+          hint: {
+            text: "Add any additional information or observations about the visit for staff"
+          },
           maxlength: 400,
           rows: 5,
-          value: comments,
-          errorMessage: validationErrors | findError("comments")
+          value: staffNotes,
+          errorMessage: validationErrors | findError("staffNotes")
+        })}}
+
+        {{ govukCharacterCount({
+          classes: 'govuk-!-margin-top-4',
+          name: "prisonerNotes",
+          id: "prisonerNotes",
+          maxlength: 400,
+          rows: 5,
+          label: {
+            text: 'Prisoner notes',
+            classes: 'govuk-label--m'
+          },
+          hint: {
+            text: "Add any additional information or observations about the visit for the prisoner"
+          },
+          value: prisonerNotes,
+          errorMessage: validationErrors | findError("prisonerNotes")
         })}}
 
         {{ continueCancel({}) }}
