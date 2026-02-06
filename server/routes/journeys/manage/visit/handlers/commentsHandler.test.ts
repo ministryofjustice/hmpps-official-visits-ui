@@ -79,31 +79,31 @@ describe('comments handler', () => {
         .expect(() => expectNoErrorMessages())
     })
 
-    it('should disallow prisonerNotes over 400 characters', () => {
+    it('should disallow prisonerNotes over 240 characters', () => {
       return request(app)
         .post(URL)
-        .send({ prisonerNotes: 'a'.repeat(401) })
+        .send({ prisonerNotes: 'a'.repeat(241) })
         .expect(() =>
           expectErrorMessages([
             {
               fieldId: 'prisonerNotes',
               href: '#prisonerNotes',
-              text: 'Prisoner notes must be 400 characters or less',
+              text: 'Prisoner notes must be 240 characters or less',
             },
           ]),
         )
     })
 
-    it('should disallow staffNotes over 400 characters', () => {
+    it('should disallow staffNotes over 240 characters', () => {
       return request(app)
         .post(URL)
-        .send({ staffNotes: 'a'.repeat(401) })
+        .send({ staffNotes: 'a'.repeat(241) })
         .expect(() =>
           expectErrorMessages([
             {
               fieldId: 'staffNotes',
               href: '#staffNotes',
-              text: 'Staff notes must be 400 characters or less',
+              text: 'Staff notes must be 240 characters or less',
             },
           ]),
         )
