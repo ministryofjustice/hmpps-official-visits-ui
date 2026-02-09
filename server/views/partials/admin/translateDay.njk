@@ -1,0 +1,17 @@
+{% macro translateDay(dayCode) %}
+  {% if (dayCode == 'MON') %}
+    Monday
+    {% elif (dayCode == 'TUE') %}
+    Tuesday
+    {% elif (dayCode == 'WED') %}
+    Wednesday
+    {% elif (dayCode == 'THU') %}
+    Thursday
+    {% elif (dayCode == 'FRI') %}
+    Friday
+    {% elif (dayCode == 'SAT') %}
+    Saturday
+    {% elif (dayCode == 'SUN') %}
+    Sunday
+  {% endif %}
+{% endmacro %}

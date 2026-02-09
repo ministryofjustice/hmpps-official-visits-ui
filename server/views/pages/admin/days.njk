@@ -1,0 +1,129 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "partials/admin/translateDay.njk" import translateDay %}
+
+{% set pageTitle = "Times for official visits" %}
+{% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <span class="govuk-hint">The times when official visits can take place in this prison</span>
+    <h1 class="govuk-heading-l">Times available for official visits</h1>
+
+    {# Setup the HTML content of the tabbed pane for each day of the week #}
+    {% set monTimeSlotsHtml = dayVisitTimes(monSlots) %}
+    {% set tueTimeSlotsHtml = dayVisitTimes(tueSlots) %}
+    {% set wedTimeSlotsHtml = dayVisitTimes(wedSlots) %}
+    {% set thuTimeSlotsHtml = dayVisitTimes(thuSlots) %}
+    {% set friTimeSlotsHtml = dayVisitTimes(friSlots) %}
+    {% set satTimeSlotsHtml = dayVisitTimes(satSlots) %}
+    {% set sunTimeSlotsHtml = dayVisitTimes(sunSlots) %}
+
+    {# Present a tabbed pane of times in the week that official visits are supported at the prison #}
+    {{ govukTabs({
+      items: [
+        {
+          label: "Monday",
+          id: "monday",
+          panel: {
+            html: monTimeSlotsHtml
+          }
+        },
+        {
+          label: "Tuesday",
+          id: "tuesday",
+          panel: {
+            html: tueTimeSlotsHtml
+          }
+        },
+        {
+          label: "Wednesday",
+          id: "wednesday",
+          panel: {
+            html: wedTimeSlotsHtml
+          }
+        },
+        {
+          label: "Thursday",
+          id: "thursday",
+          panel: {
+            html: thuTimeSlotsHtml
+          }
+        },
+        {
+          label: "Friday",
+          id: "friday",
+          panel: {
+            html: friTimeSlotsHtml
+          }
+        },
+        {
+          label: "Saturday",
+          id: "saturday",
+          panel: {
+            html: satTimeSlotsHtml
+          }
+        },
+        {
+          label: "Sunday",
+          id: "sunday",
+          panel: {
+            html: sunTimeSlotsHtml
+          }
+        }
+      ]
+    }) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({
+        text: "Add a new time",
+        preventDoubleClick: true,
+        classes: "govuk-button",
+        href: "#TODO"
+      }) }}
+
+      <a href="/"
+         class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">
+        Back to the home page
+      </a>
+    </div>
+
+  </div>
+{% endblock %}
+
+{% macro dayVisitTimes(slots) %}
+  {% set rows = [] %}
+  {% if slots.length > 0 %}
+    {% for slot in slots %}
+      {% set rows = (rows.push([
+        { text: slot.timeSlot.startTime },
+        { text: slot.timeSlot.endTime },
+        { text: slot.timeSlot.effectiveDate | formatDate },
+        { text: slot.timeSlot.expiryDate | formatDate },
+        { html: '<a href="/admin/locations/time-slot/' + slot.timeSlot.prisonTimeSlotId + '">Manage locations</a>' }
+      ]), rows) %}
+    {% endfor %}
+  {% else %}
+    {% set rows = (rows.push([
+      { text: 'No visit times' },
+      { text: '' },
+      { text: '' },
+      { text: '' },
+      { text: '' }
+    ]), rows) %}
+  {% endif %}
+
+  {{ govukTable({
+    head: [
+      { text: 'Start time' },
+      { text: 'End time' },
+      { text: 'Effective from' },
+      { text: 'Valid until' },
+      { text: 'Locations' }
+    ],
+    rows: rows
+  }) }}
+{% endmacro %}
