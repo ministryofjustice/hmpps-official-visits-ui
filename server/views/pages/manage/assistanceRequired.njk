@@ -37,7 +37,7 @@
               checked: formResponses.assistanceRequired[loop.index0].id if formResponses.assistanceRequired else contact.assistedVisit,
               conditional: {
                 html: govukCharacterCount({
-                    maxlength: 400,
+                    maxlength: 240,
                     rows: 5,
                     id: "assistanceRequired[" + loop.index0 + "][notes]",
                     name: "assistanceRequired[" + loop.index0 + "][notes]",
