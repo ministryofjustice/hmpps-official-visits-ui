@@ -84,12 +84,13 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Staff notes')).toEqual('staff notes')
           expect(getValueByKey($, 'Created by')).toEqual('USERNAME_GEN (Monday, 19 January 2026)')
           expect(getValueByKey($, 'Last modified')).toEqual('USERNAME_GEN (Monday, 19 January 2026)')
+          expect(getValueByKey($, 'Visitor concerns', 0)).toEqual('visit level visitor concern notes')
 
           expect(getValueByKey($, 'Contact type')).toEqual('Official')
           expect(getValueByKey($, 'Does this visitor need assistance')).toEqual('Yes')
           expect(getValueByKey($, 'Assistance details')).toEqual('Assistance details')
           expect(getValueByKey($, 'Equipment')).toEqual('Laptop')
-          expect(getValueByKey($, 'Visitor concerns')).toEqual('Assistance details')
+          expect(getValueByKey($, 'Visitor concerns', 1)).toEqual('visitor notes')
           expect(getValueByKey($, 'Email')).toEqual('test@test.com')
           expect(getValueByKey($, 'Telephone number')).toEqual('0123456789')
 
@@ -97,6 +98,59 @@ describe('Search for an official visit', () => {
           expect($('.govuk-summary-card__title > a').attr('href')).toEqual(
             'http://localhost:3001/prisoner/G4793VF/contacts/manage/20085647/relationship/7332364',
           )
+
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.VIEW_OFFICIAL_VISIT_PAGE, {
+            who: user.username,
+            correlationId: expect.any(String),
+          })
+        })
+    })
+
+    it('should render the correct view page with None fields where data is not present', () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        prisonerNotes: null,
+        staffNotes: null,
+        visitorConcernNotes: null,
+        officialVisitors: [
+          {
+            ...mockVisitByIdVisit.officialVisitors[0],
+            assistanceNotes: null,
+            visitorNotes: null,
+            visitorEquipment: null,
+            emailAddress: null,
+            phoneNumber: null,
+          },
+        ],
+      })
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect(getPageHeader($)).toEqual('Official visit')
+
+          expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
+          expect(getValueByKey($, 'Time')).toEqual('10:00am to 11:00am (1 hour)')
+          expect(getValueByKey($, 'Visit status')).toEqual('Scheduled')
+          expect(getValueByKey($, 'Visit reference number')).toEqual('1')
+          expect(getValueByKey($, 'Location')).toEqual('First Location')
+          expect(getValueByKey($, 'Visit type')).toEqual('Video')
+          expect(getValueByKey($, 'Prisoner notes')).toEqual('None')
+          expect(getValueByKey($, 'Staff notes')).toEqual('None')
+          expect(getValueByKey($, 'Created by')).toEqual('USERNAME_GEN (Monday, 19 January 2026)')
+          expect(getValueByKey($, 'Last modified')).toEqual('USERNAME_GEN (Monday, 19 January 2026)')
+          // Visitor concerns is the only field that shouldn't show when there is no data
+          expect(getValueByKey($, 'Visitor concerns')).toBeFalsy()
+
+          expect(getValueByKey($, 'Contact type')).toEqual('Official')
+          expect(getValueByKey($, 'Does this visitor need assistance')).toEqual('Yes')
+          expect(getValueByKey($, 'Assistance details')).toEqual('None')
+          expect(getValueByKey($, 'Equipment')).toEqual('None')
+          expect(getValueByKey($, 'Email')).toEqual('None')
+          expect(getValueByKey($, 'Telephone number')).toEqual('None')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.VIEW_OFFICIAL_VISIT_PAGE, {
             who: user.username,

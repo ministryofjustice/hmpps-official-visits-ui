@@ -272,13 +272,14 @@ test.describe('View official visits', () => {
     await expect(summaryValue(page, 'Staff notes')).toHaveText('staff notes')
     await expect(summaryValue(page, 'Created by')).toHaveText('USERNAME_GEN (Monday, 19 January 2026)')
     await expect(summaryValue(page, 'Last modified')).toHaveText('USERNAME_GEN (Monday, 19 January 2026)')
+    await expect(summaryValue(page, 'Visitor concerns', 'visit level visitor concern notes')).toBeTruthy()
 
     await expect(summaryValue(page, 'Contact type')).toHaveText('Official')
 
     await expect(summaryValue(page, 'Does this visitor need assistance')).toHaveText('Yes')
     await expect(summaryValue(page, 'Assistance details')).toHaveText('Assistance details')
     await expect(summaryValue(page, 'Equipment')).toHaveText('Laptop')
-    await expect(summaryValue(page, 'Visitor concerns')).toHaveText('Assistance details')
+    await expect(summaryValue(page, 'Visitor concerns', 'visitor notes')).toBeTruthy()
     await expect(summaryValue(page, 'Email')).toHaveText('test@test.com')
     await expect(summaryValue(page, 'Telephone number')).toHaveText('0123456789')
 

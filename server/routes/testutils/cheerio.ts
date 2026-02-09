@@ -14,11 +14,12 @@ export const getByLabel = ($: Root, label: string) => {
 }
 export const existsByLabel = ($: Root, label: string) => getByLabel($, label).length > 0
 
-export const getValueByKey = ($: Root, key: string) => {
+export const getValueByKey = ($: Root, key: string, index: number = 0) => {
   return (
     $('.govuk-summary-list .govuk-summary-list__row')
       .filter((_, e) => $(e).find('.govuk-summary-list__key').text().trim() === key)
       .find('.govuk-summary-list__value')
+      .eq(index)
       .text()
       .trim() || null
   )

@@ -98,8 +98,12 @@
         {
           key: { text: "Last modified" },
           value: { text: (visit.updatedBy or visit.createdBy) + ' (' + (visit.updatedTime or visit.createdTime) | formatDate("iiii, d MMMM yyyy") + ')' } 
-        }
-      ]
+        }, 
+        {
+          key: { text: "Visitor concerns" },
+          value: { text: visit.visitorConcernNotes }
+        } if visit.visitorConcernNotes
+      ] | filterNonFalsy
     }) }}
 
     <h2 class="govuk-heading-m">Visitor details</h2>
@@ -123,25 +127,25 @@
         },
         {
           key: { text: "Assistance details" },
-          value: { text: contact.visitorNotes or "None" }
-        } if contact.assistedVisit,
+          value: { text: contact.assistanceNotes or "None"}
+        },
         {
           key: { text: "Equipment" },
-          value: { text: contact.visitorEquipment.description if contact.visitorEquipment else '-' }
+          value: { text: contact.visitorEquipment.description if contact.visitorEquipment else 'None' }
         },
         {
           key: { text: "Visitor concerns" },
           value: { text: contact.visitorNotes }
-        },
+        } if contact.visitorNotes,
         {
           key: { text: "Email" },
-          value: { text: contact.emailAddress or '-' }
+          value: { text: contact.emailAddress or 'None' }
         },
         {
           key: { text: "Telephone number" },
-          value: { text: contact.phoneNumber or '-' }
+          value: { text: contact.phoneNumber or 'None' }
         }
-      ]
+      ] | filterNonFalsy
     }) }}
     {% endfor %}
 
