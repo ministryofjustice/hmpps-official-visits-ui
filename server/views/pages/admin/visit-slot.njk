@@ -1,0 +1,47 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "partials/admin/translateDay.njk" import translateDay %}
+
+{% set pageTitle = "Edit visit location" %}
+{% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <span class="govuk-hint">View or edit the capacity for one location</span>
+    <h1 class="govuk-heading-l">Official visits on {{ translateDay(timeSlot.dayCode) }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters-from-desktop">
+
+      <form method='POST'>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+        <h2>In location {{ visitSlot.locationDescription }}</h2>
+
+        <h3>Capacity</h3>
+
+        <p>Max adults {{ visitSlot.maxAdults }}</p>
+        <p>Max groups {{ visitSlot.maxGroups }}</p>
+        <p>Max video {{ visitSlot.maxVideo }}</p>
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Save changes",
+            preventDoubleClick: true,
+            type: "submit"
+          }) }}
+
+          <a href="/admin/locations/time-slot/{{ timeSlot.prisonTimeSlotId }}"
+             class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">
+            Cancel changes
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
