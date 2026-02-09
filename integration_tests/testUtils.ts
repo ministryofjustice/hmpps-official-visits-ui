@@ -59,9 +59,9 @@ export function simplePostApiMock<T>(urlPattern: string, response: RecursivePart
   return apiMock('POST', urlPattern, response)
 }
 
-export const summaryValue = (page: Page, key: string) =>
+export const summaryValue = (page: Page, key: string, value?: string) =>
   page
     .locator('.govuk-summary-list__row', {
       has: page.locator('.govuk-summary-list__key', { hasText: key }),
     })
-    .locator('.govuk-summary-list__value')
+    .locator('.govuk-summary-list__value', value ? { hasText: value } : undefined)
