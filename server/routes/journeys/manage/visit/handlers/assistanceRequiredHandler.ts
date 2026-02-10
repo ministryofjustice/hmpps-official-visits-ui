@@ -37,16 +37,12 @@ export default class AssistanceRequiredHandler implements PageHandler {
 }
 
 const getSelected = (contacts: ApprovedContact[], body: ContactRelationship[]) => {
-  return (contacts || [])
-    .map(contact => {
-      const foundContact = body.find(o => o.prisonerContactId === contact.prisonerContactId)
-      return foundContact
-        ? {
-            ...contact,
-            assistanceNotes: foundContact.assistanceNotes,
-            assistedVisit: foundContact.assistedVisit,
-          }
-        : undefined
-    })
-    .filter(o => o)
+  return (contacts || []).map(contact => {
+    const foundContact = body.find(o => o.prisonerContactId === contact.prisonerContactId)
+    return {
+      ...contact,
+      assistanceNotes: foundContact?.assistanceNotes,
+      assistedVisit: foundContact?.assistedVisit || false,
+    }
+  })
 }

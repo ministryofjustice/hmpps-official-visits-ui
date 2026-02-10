@@ -3,14 +3,14 @@ import { Request } from 'express'
 import { createSchema } from '../../../../../middleware/validationMiddleware'
 import { ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
 
-const ERROR_MIN = 'Enter information about assistance for this visitor'
 const ERROR_MAX = 'Information about assistance must be 240 characters or less'
 
 export const schema = async (req: Request) => {
   return createSchema({
     assistanceRequired: z.array(
       z.object({
-        id: z.string().optional(),
+        id: z.string(),
+        selected: z.string().optional(),
         notes: z.string().optional(),
       }),
     ),
@@ -27,12 +27,6 @@ export const schema = async (req: Request) => {
             path: ['assistanceRequired', index, 'notes'],
             message: ERROR_MAX,
           })
-        } else if (!contact.notes) {
-          ctx.addIssue({
-            code: 'custom',
-            path: ['assistanceRequired', index, 'notes'],
-            message: ERROR_MIN,
-          })
         }
       })
     })
@@ -42,14 +36,16 @@ export const schema = async (req: Request) => {
         ...(req.session.journey.officialVisit.officialVisitors || []),
       ]
 
-      return contacts.map(contact => {
-        const formContact = assistanceRequired.find(o => Number(o.id) === contact.prisonerContactId)
-        return {
-          prisonerContactId: contact.prisonerContactId,
-          assistanceNotes: formContact?.notes,
-          assistedVisit: !!formContact,
-        } as ContactRelationship
-      })
+      return contacts
+        .map(contact => {
+          const formContact = assistanceRequired.find(o => Number(o.id) === contact.prisonerContactId)
+          return {
+            prisonerContactId: contact.prisonerContactId,
+            assistanceNotes: formContact?.notes,
+            assistedVisit: !!formContact?.selected,
+          } as ContactRelationship
+        })
+        .filter(o => o.assistedVisit || o.assistanceNotes)
     })
 }
 

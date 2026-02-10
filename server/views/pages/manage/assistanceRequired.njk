@@ -9,7 +9,6 @@
 {% set pageTitle = "Will visitors need assistance during their visit?" %}
 
 {% block content %}
-
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       {{ progressTracker(true, true, true) }}
@@ -26,33 +25,27 @@
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
-        {% set contactItems = [] %}
         {% for contact in contacts %}
-          {% set contactItems = (contactItems.push(
-            {
-              name: "assistanceRequired[" + loop.index0 + "][id]",
-              id: "assistanceRequired[" + loop.index0 + "][id]",
-              value: contact.prisonerContactId,
+          <input type="hidden" id="assistanceRequired[{{loop.index0}}][id]" name="assistanceRequired[{{loop.index0}}][id]" value="{{contact.prisonerContactId}}">
+          {{ govukCheckboxes({
+            items: [{
+              name: "assistanceRequired[" + loop.index0 + "][selected]",
+              id: "assistanceRequired[" + loop.index0 + "][selected]",
+              value: true,
               text: (contact.firstName + " " + contact.lastName) | convertToTitleCase + " (" + contact.relationshipToPrisonerDescription + ")",
-              checked: formResponses.assistanceRequired[loop.index0].id if formResponses.assistanceRequired else contact.assistedVisit,
-              conditional: {
-                html: govukCharacterCount({
-                    maxlength: 240,
-                    rows: 5,
-                    id: "assistanceRequired[" + loop.index0 + "][notes]",
-                    name: "assistanceRequired[" + loop.index0 + "][notes]",
-                    value: formResponses.assistanceRequired[loop.index0].notes or contact.assistanceNotes,
-                    errorMessage: validationErrors | findError("assistanceRequired[" + loop.index0 + "][notes]")
-                  })
-              }
-            }
-          ), contactItems) %}
-        {% endfor %}
+              checked: formResponses.assistanceRequired[loop.index0].selected if formResponses.assistanceRequired else contact.assistedVisit
+            }]
+          }) }}
 
-        {{ govukCheckboxes({
-          name: "assistanceRequired",
-          items: contactItems
-        }) }}
+          {{ govukCharacterCount({
+            maxlength: 240,
+            rows: 5,
+            id: "assistanceRequired[" + loop.index0 + "][notes]",
+            name: "assistanceRequired[" + loop.index0 + "][notes]",
+            value: formResponses.assistanceRequired[loop.index0].notes or contact.assistanceNotes,
+            errorMessage: validationErrors | findError("assistanceRequired[" + loop.index0 + "][notes]")
+          }) }}
+        {% endfor %}
 
         {{ continueCancel({}) }}
       </form>
