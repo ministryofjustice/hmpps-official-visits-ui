@@ -118,7 +118,7 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('refDataToOptions', (items: ReferenceDataItem[]) =>
     items.map((item: ReferenceDataItem) => ({ value: item.code, text: item.description })),
   )
-  njkEnv.addFilter('includes', (arr: string[], item: string) => arr.includes(item.toString()))
+  njkEnv.addFilter('includes', <T>(arr: T[], item: T) => arr.includes(item))
   njkEnv.addFilter('hasPermission', hasPermissionFilter)
   njkEnv.addFilter('filterNonFalsy', (items: any[]) => items.filter(item => item))
 }
