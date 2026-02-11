@@ -31,6 +31,7 @@ export default class CancelOfficialVisitHandler implements PageHandler {
 
     const body: CancelTypeRequest = {
       cancellationReason: req.body.reason as VisitCompletionType,
+      cancellationNotes: req.body.comments,
     }
 
     await this.officialVisitsService.cancelVisit(prisonCode, ovId, body, res.locals.user)

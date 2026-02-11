@@ -72,6 +72,10 @@
           value: { text: visit.visitStatusDescription }
         },
         {
+          key: { text: "Completion notes" if visit.visitStatus == 'COMPLETED' else "Cancellation notes" },
+          value: { text: visit.completionNotes or 'None' }
+        } if visit.visitStatus == 'COMPLETED' or visit.visitStatus == 'CANCELLED',
+        {
           key: { text: "Visit reference number" },
           value: { text: visit.officialVisitId }
         },

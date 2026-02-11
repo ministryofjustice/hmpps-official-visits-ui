@@ -4,6 +4,7 @@ const MSG = 'Select a cancellation reason'
 
 export const schema = z.object({
   reason: z.string({ message: MSG }).refine(val => val && val.trim().length > 0, MSG),
+  comments: z.string().max(240, { message: 'Extra information must be 240 characters or less' }).optional(),
 })
 
 export type SchemaType = z.infer<typeof schema>

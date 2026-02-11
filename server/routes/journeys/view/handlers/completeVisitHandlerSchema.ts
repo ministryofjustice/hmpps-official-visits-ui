@@ -13,6 +13,7 @@ export const schemaFactory = (officialVisitsService: OfficialVisitsService) => a
     searchType: z.string({ message: SEARCH_MSG }).transform(fromRefData(searchTypes, SEARCH_MSG)),
     prisoner: z.string().optional(),
     attendance: z.union([z.string().transform(val => [val]), z.array(z.string()).optional()]),
+    comments: z.string().max(240, { message: 'Extra information must be 240 characters or less' }).optional(),
   })
 }
 

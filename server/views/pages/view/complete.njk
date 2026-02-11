@@ -5,6 +5,7 @@
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 
 {% set pageTitle = "Select complete reason" %}
 
@@ -89,6 +90,19 @@
           },
           items: contactItems
          }) }}
+
+        {{ govukCharacterCount({
+          name: "comments",
+          id: "comments",
+          maxlength: 240,
+          label: {
+            text: "Extra information (optional)",
+            classes: "govuk-label--m"
+          },
+          hint: {
+            text: "Add any additional information related to the completion of this visit."
+          }
+        }) }}
 
         <div class="govuk-button-group">
           {{ govukButton({

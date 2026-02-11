@@ -52,7 +52,10 @@ describe('cancelVisitHandler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text().trim()).toBe('Cancel an official visit')
+          expect($('.govuk-hint').eq(0).text().trim()).toBe('Cancel an official visit')
+          expect($('.govuk-hint').eq(1).text().trim()).toBe(
+            'Add any additional information related to the cancellation of this visit.',
+          )
           expect($('h1').text().trim()).toBe('Select cancellation reason for this visit')
 
           const optionValues = $('input[name="reason"]')
@@ -92,16 +95,27 @@ describe('cancelVisitHandler', () => {
       await request(app)
         .post(`${URL}?backTo=${b64}`)
         .type('form')
-        .send({ reason: 'SOMETHING_CANCELLED' })
+        .send({ reason: 'SOMETHING_CANCELLED', comments: 'some comments' })
         .expect(302)
         .expect('Location', `/view/visit/${ovId}?backTo=${b64}`)
 
       expect(officialVisitsService.cancelVisit).toHaveBeenCalledWith(
         undefined,
         String(ovId),
-        { cancellationReason: 'SOMETHING_CANCELLED' },
+        { cancellationReason: 'SOMETHING_CANCELLED', cancellationNotes: 'some comments' },
         user,
       )
+    })
+
+    it('should disallow POST if the notes is larger than 240 characters', async () => {
+      await request(app)
+        .post(URL)
+        .type('form')
+        .send({ reason: 'SOMETHING_CANCELLED', comments: 'a'.repeat(241) })
+        .expect(302)
+        .expect('Location', `/`)
+
+      expect(officialVisitsService.cancelVisit).not.toHaveBeenCalled()
     })
   })
 })

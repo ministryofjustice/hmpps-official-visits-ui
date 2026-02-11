@@ -178,6 +178,31 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/sync/official-visit': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Creates an official visit via synchronisation from NOMIS
+     * @description Requires role: OFFICIAL_VISITS_MIGRATION.
+     *           Used to create an official visit in DPS as a result of synchronisation from NOMIS.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     */
+    post: operations['syncCreateVisitSlot_1']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/official-visit/prison/{prisonCode}': {
     parameters: {
       query?: never
@@ -354,7 +379,17 @@ export interface paths {
     get: operations['getOfficialVisitById']
     put?: never
     post?: never
-    delete?: never
+    /**
+     * Delete an official visit by ID
+     * @description Delete an official visit including all related information.
+     *           This endpoint is idempotent, so if the visit is not present it will silently succeed.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    delete: operations['syncDeleteOfficialVisit']
     options?: never
     head?: never
     patch?: never
@@ -375,6 +410,31 @@ export interface paths {
      *     * ROLE_OFFICIAL_VISITS__RW
      */
     get: operations['getReferenceDataByGroup']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/reconcile/time-slots/prison/{prisonCode}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Return summary of prison time slot and associated visit slots based on the prison code
+     * @description Requires role: OFFICIAL_VISITS_MIGRATION.
+     *           Used to get the summary of prison time slot and associated visit slots based on the prison code.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     */
+    get: operations['summariseTimeSlotsAndVisitSlots']
     put?: never
     post?: never
     delete?: never
@@ -885,6 +945,325 @@ export interface components {
        */
       createdTime: string
     }
+    /** @enum {string} */
+    SearchLevelType: 'FULL' | 'PAT' | 'RUB' | 'RUB_A' | 'RUB_B' | 'STR'
+    SyncCreateOfficialVisitRequest: {
+      /**
+       * Format: int64
+       * @description The NOMIS offender visit ID
+       * @example 133232
+       */
+      offenderVisitId: number
+      /**
+       * Format: int64
+       * @description The DPS visit slot ID - this provides the location, start time and end time via configuration data
+       * @example 123132
+       */
+      prisonVisitSlotId: number
+      /**
+       * @description The prison code where the visit takes place
+       * @example PVI
+       */
+      prisonCode: string
+      /**
+       * Format: int64
+       * @description The offender book ID to echo back. It will be stored in DPS against the visit.
+       * @example 74748
+       */
+      offenderBookId: number
+      /**
+       * @description The prisoner number (NOMS ID)
+       * @example A1234AA
+       */
+      prisonerNumber: string
+      /**
+       * @description If this visit relates to the current or latest term (booking) in prison true, else false.
+       * @example true
+       */
+      currentTerm: boolean
+      /**
+       * Format: date
+       * @description The date the official visit will take place
+       * @example 2022-12-23
+       */
+      visitDate: string
+      /**
+       * @description The start time for this official visit
+       * @example 09:15
+       */
+      startTime: string
+      /**
+       * @description The end time for this official visit
+       * @example 10:15
+       */
+      endTime: string
+      /**
+       * Format: uuid
+       * @description The DPS location where the visit takes place.
+       * @example aaaa-bbbb-xxxxxxxx-yyyyyyyy
+       */
+      dpsLocationId: string
+      /**
+       * @description The DPS visit status code. The Syscon sync service will map the NOMIS state to a value in this enumerated type.
+       * @example SCHEDULED
+       */
+      visitStatusCode: components['schemas']['VisitStatusType']
+      /**
+       * @description The DPS visit type code. For sync'd NOMIS visits this will default to type UNKNOWN. Other values are IN_PERSON, VIDEO, or TELEPHONE.
+       * @example UNKNOWN
+       */
+      visitTypeCode?: components['schemas']['VisitType']
+      /**
+       * @description The visit comment text
+       * @example This is a comment
+       */
+      commentText?: string
+      /**
+       * @description The prisoner search type code. Maps to the same reference code values in both NOMIS and DPS.
+       * @example RUB_A
+       */
+      searchTypeCode?: components['schemas']['SearchLevelType']
+      /**
+       * @description The DPS visit completion code. Default is null/not set if not provided.
+       * @example NORMAL
+       */
+      visitCompletionCode?: components['schemas']['VisitCompletionType']
+      /**
+       * @description Visit concern text from NOMIS
+       * @example I am concerned
+       */
+      visitorConcernText?: string
+      /**
+       * @description The staff username who authorised an override for a ban for this visit
+       * @example X3243H
+       */
+      overrideBanStaffUsername?: string
+      /**
+       * Format: int64
+       * @description The visit order number (if present) for the official visit
+       * @example 12344
+       */
+      visitOrderNumber?: number
+      /**
+       * Format: date-time
+       * @description The data and time the record was created
+       * @example 2022-10-01T16:45:45
+       */
+      createDateTime: string
+      /**
+       * @description The username who created the visit in NOMIS
+       * @example X999X
+       */
+      createUsername: string
+    }
+    /** @enum {string} */
+    VisitCompletionType:
+      | 'NORMAL'
+      | 'PRISONER_EARLY'
+      | 'PRISONER_REFUSED'
+      | 'STAFF_EARLY'
+      | 'VISITOR_DENIED'
+      | 'VISITOR_EARLY'
+      | 'VISITOR_NO_SHOW'
+      | 'PRISONER_CANCELLED'
+      | 'STAFF_CANCELLED'
+      | 'VISITOR_CANCELLED'
+    /** @enum {string} */
+    VisitStatusType: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'EXPIRED'
+    /** @enum {string} */
+    VisitType: 'IN_PERSON' | 'TELEPHONE' | 'VIDEO' | 'UNKNOWN'
+    /** @enum {string} */
+    AttendanceType: 'ATTENDED' | 'ABSENT'
+    /** @enum {string} */
+    RelationshipType: 'OFFICIAL' | 'SOCIAL'
+    SyncOfficialVisit: {
+      /**
+       * Format: int64
+       * @description The official visit ID
+       * @example 1
+       */
+      officialVisitId: number
+      /**
+       * Format: date
+       * @description The date that the visit takes place
+       * @example 2020-01-02
+       */
+      visitDate: string
+      /**
+       * @description The start time
+       * @example 09:15
+       */
+      startTime: string
+      /**
+       * @description The end time
+       * @example 10:15
+       */
+      endTime: string
+      /**
+       * Format: int64
+       * @description The visit slot ID
+       * @example 12345
+       */
+      prisonVisitSlotId: number
+      /**
+       * Format: uuid
+       * @description The DPS location ID where the visit is taking place
+       * @example aaa-ddd-bbb-123455632323
+       */
+      dpsLocationId: string
+      /**
+       * @description The prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description The prisoner number
+       * @example A1111AA
+       */
+      prisonerNumber: string
+      /**
+       * @description The visit status code
+       * @example SCHEDULED
+       */
+      statusCode: components['schemas']['VisitStatusType']
+      /**
+       * @description The visit completion code
+       * @example NORMAL
+       */
+      completionCode?: components['schemas']['VisitCompletionType']
+      /**
+       * Format: int64
+       * @description The offender booking ID in NOMIS
+       * @example 12345
+       */
+      offenderBookId?: number
+      /**
+       * Format: int64
+       * @description The offender visit ID in NOMIS (only present for migrated bookings)
+       * @example 12345
+       */
+      offenderVisitId?: number
+      /**
+       * @description The type of visit. NOMIS assumes in person, but we may want to indicate others via notes
+       * @example IN_PERSON
+       */
+      visitType: components['schemas']['VisitType']
+      /**
+       * @description Whether the prisoner attended or not
+       * @example ATTENDED
+       */
+      prisonerAttendance?: components['schemas']['AttendanceType']
+      /**
+       * @description The prisoner search type
+       * @example FULL
+       */
+      searchType?: components['schemas']['SearchLevelType']
+      /**
+       * @description Comments provided for the prisoner
+       * @example These are notes for the prisoner
+       */
+      visitComments?: string
+      /**
+       * @description The username of the person who created the visit
+       * @example X8393
+       */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The date and time the visit was created
+       * @example 2024-12-01T03:05:00
+       */
+      createdTime: string
+      /**
+       * @description The username of the person who last updated the visit
+       * @example X8393
+       */
+      updatedBy?: string
+      /**
+       * Format: date-time
+       * @description The date and time the visit was last updated
+       * @example 2024-12-01T03:05:00
+       */
+      updatedTime?: string
+      /** @description The visitor details */
+      visitors: components['schemas']['SyncOfficialVisitor'][]
+    }
+    SyncOfficialVisitor: {
+      /**
+       * Format: int64
+       * @description The official visitor ID
+       * @example 1
+       */
+      officialVisitorId: number
+      /**
+       * Format: int64
+       * @description The contact ID of the person visiting
+       * @example 123
+       */
+      contactId?: number
+      /**
+       * @description The visitor first Name
+       * @example John
+       */
+      firstName?: string
+      /**
+       * @description The visitor last Name
+       * @example Smith
+       */
+      lastName?: string
+      /**
+       * @description The relationship type for this visitor (OFFICIAL or SOCIAL)
+       * @example OFFICIAL
+       */
+      relationshipType?: components['schemas']['RelationshipType']
+      /**
+       * @description The visitor relationship code
+       * @example POM
+       */
+      relationshipCode?: string
+      /**
+       * @description The visitor attendance code, either ABSENT, ATTENDED or null if not recorded.
+       * @example ABSENT
+       */
+      attendanceCode?: components['schemas']['AttendanceType']
+      /**
+       * @description Set to true if this is the lead visitor
+       * @example false
+       */
+      leadVisitor?: boolean
+      /**
+       * @description Set to true if this visitor requires an assisted visit. The equivalent of the AVPU flag in NOMIS
+       * @example false
+       */
+      assistedVisit?: boolean
+      /**
+       * @description Visitor specific notes
+       * @example Wheelchair access required
+       */
+      visitorNotes?: string
+      /**
+       * @description The username of the person who created the visitor
+       * @example X8393
+       */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The date and time the visitor was created
+       * @example 2024-12-01T03:05:00
+       */
+      createdTime: string
+      /**
+       * @description The username of the person who last updated the visitor
+       * @example X8393
+       */
+      updatedBy?: string
+      /**
+       * Format: date-time
+       * @description The date and time the visitor was last updated
+       * @example 2024-12-01T03:05:00
+       */
+      updatedTime?: string
+    }
     /** @description The request with the official visit details */
     CreateOfficialVisitRequest: {
       /** Format: int64 */
@@ -979,10 +1358,6 @@ export interface components {
       /** @description Details of any equipment the visitor will bring to the visit. */
       visitorEquipment?: components['schemas']['VisitorEquipment']
     }
-    /** @enum {string} */
-    SearchLevelType: 'FULL' | 'PAT' | 'RUB' | 'RUB_A' | 'RUB_B' | 'STR'
-    /** @enum {string} */
-    VisitType: 'IN_PERSON' | 'TELEPHONE' | 'VIDEO' | 'UNKNOWN'
     VisitorEquipment: {
       /**
        * @description A description of the equipment the visitor will bring
@@ -997,8 +1372,6 @@ export interface components {
       officialVisitId: number
       officialVisitorIds: number[]
     }
-    /** @enum {string} */
-    AttendanceType: 'ATTENDED' | 'ABSENT'
     /** @description The request with the official visit completion details */
     OfficialVisitCompletionRequest: {
       /**
@@ -1007,6 +1380,11 @@ export interface components {
        * @enum {unknown}
        */
       completionReason: components['schemas']['VisitCompletionType']
+      /**
+       * @description Optional notes containing details of the completion
+       * @example The visitor was late arriving so the the prisoner may need another visit to be arranged.
+       */
+      completionNotes?: string
       prisonerAttendance: components['schemas']['AttendanceType']
       prisonerSearchType: components['schemas']['SearchLevelType']
       visitorAttendance: components['schemas']['OfficialVisitorAttendance'][]
@@ -1016,18 +1394,6 @@ export interface components {
       officialVisitorId: number
       visitorAttendance?: components['schemas']['AttendanceType']
     }
-    /** @enum {string} */
-    VisitCompletionType:
-      | 'NORMAL'
-      | 'PRISONER_EARLY'
-      | 'PRISONER_REFUSED'
-      | 'STAFF_EARLY'
-      | 'VISITOR_DENIED'
-      | 'VISITOR_EARLY'
-      | 'VISITOR_NO_SHOW'
-      | 'PRISONER_CANCELLED'
-      | 'STAFF_CANCELLED'
-      | 'VISITOR_CANCELLED'
     /** @description The request with the official visit cancellation details */
     OfficialVisitCancellationRequest: {
       /**
@@ -1089,8 +1455,6 @@ export interface components {
        */
       locationIds?: string[]
     }
-    /** @enum {string} */
-    VisitStatusType: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'EXPIRED'
     OfficialVisitSummarySearchResponse: {
       /**
        * Format: int64
@@ -1456,8 +1820,6 @@ export interface components {
        */
       modifyUsername?: string
     }
-    /** @enum {string} */
-    RelationshipType: 'OFFICIAL' | 'SOCIAL'
     IdPair: {
       /**
        * @description The category of information returned
@@ -1671,194 +2033,6 @@ export interface components {
       /** Format: uuid */
       dpsLocationId: string
     }
-    SyncOfficialVisit: {
-      /**
-       * Format: int64
-       * @description The official visit ID
-       * @example 1
-       */
-      officialVisitId: number
-      /**
-       * Format: date
-       * @description The date that the visit takes place
-       * @example 2020-01-02
-       */
-      visitDate: string
-      /**
-       * @description The start time
-       * @example 09:15
-       */
-      startTime: string
-      /**
-       * @description The end time
-       * @example 10:15
-       */
-      endTime: string
-      /**
-       * Format: int64
-       * @description The visit slot ID
-       * @example 12345
-       */
-      prisonVisitSlotId: number
-      /**
-       * Format: uuid
-       * @description The DPS location ID where the visit is taking place
-       * @example aaa-ddd-bbb-123455632323
-       */
-      dpsLocationId: string
-      /**
-       * @description The prison code
-       * @example MDI
-       */
-      prisonCode: string
-      /**
-       * @description The prisoner number
-       * @example A1111AA
-       */
-      prisonerNumber: string
-      /**
-       * @description The visit status code
-       * @example SCHEDULED
-       */
-      statusCode: components['schemas']['VisitStatusType']
-      /**
-       * @description The visit completion code
-       * @example NORMAL
-       */
-      completionCode?: components['schemas']['VisitCompletionType']
-      /**
-       * Format: int64
-       * @description The offender booking ID in NOMIS
-       * @example 12345
-       */
-      offenderBookId?: number
-      /**
-       * Format: int64
-       * @description The offender visit ID in NOMIS (only present for migrated bookings)
-       * @example 12345
-       */
-      offenderVisitId?: number
-      /**
-       * @description The type of visit. NOMIS assumes in person, but we may want to indicate others via notes
-       * @example IN_PERSON
-       */
-      visitType: components['schemas']['VisitType']
-      /**
-       * @description Whether the prisoner attended or not
-       * @example ATTENDED
-       */
-      prisonerAttendance?: components['schemas']['AttendanceType']
-      /**
-       * @description The prisoner search type
-       * @example FULL
-       */
-      searchType?: components['schemas']['SearchLevelType']
-      /**
-       * @description Comments provided for the prisoner
-       * @example These are notes for the prisoner
-       */
-      visitComments?: string
-      /**
-       * @description The username of the person who created the visit
-       * @example X8393
-       */
-      createdBy: string
-      /**
-       * Format: date-time
-       * @description The date and time the visit was created
-       * @example 2024-12-01T03:05:00
-       */
-      createdTime: string
-      /**
-       * @description The username of the person who last updated the visit
-       * @example X8393
-       */
-      updatedBy?: string
-      /**
-       * Format: date-time
-       * @description The date and time the visit was last updated
-       * @example 2024-12-01T03:05:00
-       */
-      updatedTime?: string
-      /** @description The visitor details */
-      visitors: components['schemas']['SyncOfficialVisitor'][]
-    }
-    SyncOfficialVisitor: {
-      /**
-       * Format: int64
-       * @description The official visitor ID
-       * @example 1
-       */
-      officialVisitorId: number
-      /**
-       * Format: int64
-       * @description The contact ID of the person visiting
-       * @example 123
-       */
-      contactId?: number
-      /**
-       * @description The visitor first Name
-       * @example John
-       */
-      firstName?: string
-      /**
-       * @description The visitor last Name
-       * @example Smith
-       */
-      lastName?: string
-      /**
-       * @description The relationship type for this visitor (OFFICIAL or SOCIAL)
-       * @example OFFICIAL
-       */
-      relationshipType?: components['schemas']['RelationshipType']
-      /**
-       * @description The visitor relationship code
-       * @example POM
-       */
-      relationshipCode?: string
-      /**
-       * @description The visitor attendance code, either ABSENT, ATTENDED or null if not recorded.
-       * @example ABSENT
-       */
-      attendanceCode?: components['schemas']['AttendanceType']
-      /**
-       * @description Set to true if this is the lead visitor
-       * @example false
-       */
-      leadVisitor?: boolean
-      /**
-       * @description Set to true if this visitor requires an assisted visit. The equivalent of the AVPU flag in NOMIS
-       * @example false
-       */
-      assistedVisit?: boolean
-      /**
-       * @description Visitor specific notes
-       * @example Wheelchair access required
-       */
-      visitorNotes?: string
-      /**
-       * @description The username of the person who created the visitor
-       * @example X8393
-       */
-      createdBy: string
-      /**
-       * Format: date-time
-       * @description The date and time the visitor was created
-       * @example 2024-12-01T03:05:00
-       */
-      createdTime: string
-      /**
-       * @description The username of the person who last updated the visitor
-       * @example X8393
-       */
-      updatedBy?: string
-      /**
-       * Format: date-time
-       * @description The date and time the visitor was last updated
-       * @example 2024-12-01T03:05:00
-       */
-      updatedTime?: string
-    }
     /** @enum {string} */
     ReferenceDataGroup:
       | 'ATTENDANCE'
@@ -1904,6 +2078,22 @@ export interface components {
        * @example true
        */
       enabled: boolean
+    }
+    /** @description Sync response for Summary of time slots and associated visit slots for the prison */
+    SyncTimeSlotSummary: {
+      /**
+       * @description Prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /** @description List of all time slots and associated visit lots for the prison */
+      timeSlots: components['schemas']['SyncTimeSlotSummaryItem'][]
+    }
+    SyncTimeSlotSummaryItem: {
+      /** @description Time Slot */
+      timeSlot: components['schemas']['SyncTimeSlot']
+      /** @description List of visit slots associated with time slot */
+      visitSlots: components['schemas']['SyncVisitSlot'][]
     }
     PagedModelSyncOfficialVisitId: {
       content?: components['schemas']['SyncOfficialVisitId'][]
@@ -2096,6 +2286,8 @@ export interface components {
       visitorConcernNotes?: string
       /** @description The Official visit completion type */
       completionCode?: components['schemas']['VisitCompletionType']
+      /** @description Optional notes captured when a visit is either cancelled or completed */
+      completionNotes?: string
       /** @description The Official visit creation description */
       completionDescription?: string
       /** @description The Official visit Search Level type */
@@ -2552,6 +2744,66 @@ export interface operations {
       }
     }
   }
+  syncCreateVisitSlot_1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SyncCreateOfficialVisitRequest']
+      }
+    }
+    responses: {
+      /** @description Successfully created the official visit */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncOfficialVisit']
+        }
+      }
+      /** @description The request was invalid */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description The prison visit slot did not exist */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   createOfficialVisit: {
     parameters: {
       query?: never
@@ -2959,6 +3211,44 @@ export interface operations {
       }
     }
   }
+  syncDeleteOfficialVisit: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        officialVisitId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Deleted the official visit by ID */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   getReferenceDataByGroup: {
     parameters: {
       query?: {
@@ -2984,6 +3274,49 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ReferenceDataItem'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  summariseTimeSlotsAndVisitSlots: {
+    parameters: {
+      query?: {
+        activeOnly?: boolean
+      }
+      header?: never
+      path: {
+        /** @description The prison code */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Summary of time slot and associated visit slots based on the prison code. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncTimeSlotSummary']
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */

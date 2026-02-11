@@ -61,7 +61,10 @@ describe('CompleteOfficialVisitHandler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text().trim()).toBe('Complete an official visit')
+          expect($('.govuk-hint').eq(0).text().trim()).toBe('Complete an official visit')
+          expect($('.govuk-hint').eq(1).text().trim()).toBe(
+            'Add any additional information related to the completion of this visit.',
+          )
           expect($('h1.govuk-heading-l').text().trim()).toBe('Provide the visit outcome and attendance details')
 
           expect($('label[for="reason"]').text().replace(/\s+/g, ' ').trim()).toBe(
@@ -192,6 +195,23 @@ describe('CompleteOfficialVisitHandler', () => {
         },
         user,
       )
+    })
+
+    it('should disallow POST if the notes is larger than 240 characters', async () => {
+      await request(app)
+        .post(URL)
+        .type('form')
+        .send({
+          reason: 'COMPLETE',
+          prisoner: mockVisitByIdVisit.prisonerVisited.prisonerNumber,
+          attendance: [mockVisitByIdVisit.officialVisitors[0].officialVisitorId],
+          searchType: 'RUB_DOWN',
+          comments: 'a'.repeat(241),
+        })
+        .expect(302)
+        .expect('Location', `/`)
+
+      expect(officialVisitsService.completeVisit).not.toHaveBeenCalled()
     })
   })
 })
