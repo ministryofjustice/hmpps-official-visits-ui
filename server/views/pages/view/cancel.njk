@@ -17,6 +17,7 @@
         <span class="govuk-hint">Cancel an official visit</span>
         {{ govukRadios({
           name: "reason",
+          value: reason,
           fieldset: {
             legend: {
               text: "Select cancellation reason for this visit",
@@ -30,6 +31,7 @@
         {{ govukCharacterCount({
           name: "comments",
           id: "comments",
+          value: comments,
           maxlength: 240,
           label: {
             text: "Extra information (optional)",
