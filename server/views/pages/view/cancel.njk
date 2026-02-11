@@ -4,6 +4,7 @@
 {% from "partials/progress-tracker.njk" import progressTracker %}
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 
 {% set pageTitle = "Select cancellation reason" %}
 
@@ -14,8 +15,9 @@
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
         <span class="govuk-hint">Cancel an official visit</span>
-        {{govukRadios({
+        {{ govukRadios({
           name: "reason",
+          value: reason,
           fieldset: {
             legend: {
               text: "Select cancellation reason for this visit",
@@ -24,6 +26,20 @@
             }
           },
           items: completionCodes | refDataToOptions
+        }) }}
+
+        {{ govukCharacterCount({
+          name: "comments",
+          id: "comments",
+          value: comments,
+          maxlength: 240,
+          label: {
+            text: "Extra information (optional)",
+            classes: "govuk-label--m"
+          },
+          hint: {
+            text: "Add any additional information related to the cancellation of this visit."
+          }
         }) }}
 
         <div class="govuk-button-group">

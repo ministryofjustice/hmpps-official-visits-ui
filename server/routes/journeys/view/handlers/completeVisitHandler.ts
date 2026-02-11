@@ -30,6 +30,7 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
       visit,
       contacts: visit.officialVisitors,
       searchTypes,
+      comments: res.locals.formResponses?.['comments'],
       back: `/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`,
     })
   }
@@ -52,6 +53,7 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
         visitorAttendance: reqBody.attendance.includes(String(o.officialVisitorId)) ? 'ATTENDED' : 'ABSENT',
       })),
       prisonerSearchType: reqBody.searchType as SearchLevelType,
+      completionNotes: reqBody.comments,
     }
 
     await this.officialVisitsService.completeVisit(prisonCode, ovId, body, res.locals.user)

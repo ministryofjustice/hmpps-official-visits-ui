@@ -18,6 +18,8 @@ export default class CancelOfficialVisitHandler implements PageHandler {
 
     return res.render('pages/view/cancel', {
       completionCodes: completionCodes.filter(o => o.code.endsWith('_CANCELLED')),
+      reason: res.locals.formResponses?.['reason'],
+      comments: res.locals.formResponses?.['comments'],
       back: `/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`,
     })
   }
@@ -31,6 +33,7 @@ export default class CancelOfficialVisitHandler implements PageHandler {
 
     const body: CancelTypeRequest = {
       cancellationReason: req.body.reason as VisitCompletionType,
+      cancellationNotes: req.body.comments,
     }
 
     await this.officialVisitsService.cancelVisit(prisonCode, ovId, body, res.locals.user)

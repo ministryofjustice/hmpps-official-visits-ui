@@ -78,6 +78,8 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Time')).toEqual('10:00am to 11:00am (1 hour)')
           expect(getValueByKey($, 'Visit status')).toEqual('Scheduled')
           expect(getValueByKey($, 'Visit reference number')).toEqual('1')
+          expect(getValueByKey($, 'Completion notes')).toBeNull()
+          expect(getValueByKey($, 'Cancellation notes')).toBeNull()
           expect(getValueByKey($, 'Location')).toEqual('First Location')
           expect(getValueByKey($, 'Visit type')).toEqual('Video')
           expect(getValueByKey($, 'Prisoner notes')).toEqual('prisoner notes')
@@ -177,6 +179,50 @@ describe('Search for an official visit', () => {
           expect($('.govuk-link').eq(0).attr('href')).toEqual(`/view/visit/1/amend?backTo=${b64}`)
           expect($('.govuk-link').eq(1).attr('href')).toEqual(`/view/visit/1/cancel?backTo=${b64}`)
           expect($('.govuk-link').eq(2).attr('href')).toEqual(`/view/visit/1/complete?backTo=${b64}`)
+        })
+    })
+
+    it('should render with completion notes when the visit is completed', () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'COMPLETED',
+        visitStatusDescription: 'Completed',
+        completionNotes: 'Visit completed',
+      })
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect(getPageHeader($)).toEqual('Official visit')
+
+          expect(getValueByKey($, 'Visit status')).toEqual('Completed')
+          expect(getValueByKey($, 'Cancellation notes')).toBeNull()
+          expect(getValueByKey($, 'Completion notes')).toEqual('Visit completed')
+        })
+    })
+
+    it('should render with cancellation notes when the visit is cancelled', () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'CANCELLED',
+        visitStatusDescription: 'Cancelled',
+        completionNotes: 'Visit cancelled',
+      })
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect(getPageHeader($)).toEqual('Official visit')
+
+          expect(getValueByKey($, 'Visit status')).toEqual('Cancelled')
+          expect(getValueByKey($, 'Cancellation notes')).toEqual('Visit cancelled')
+          expect(getValueByKey($, 'Completion notes')).toBeNull()
         })
     })
   })
