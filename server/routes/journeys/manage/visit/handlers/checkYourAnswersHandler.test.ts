@@ -143,7 +143,10 @@ describe('check your answers handler', () => {
           expect(getValueByKey($, 'Contact type')).toEqual('Official')
           expect(getValueByKey($, 'Does this visitor need assistance?')).toEqual('Yes')
           expect(getValueByKey($, 'Assistance details')).toEqual('Assistance details')
+          expect(getValueByKey($, 'Does this visitor need equipment?')).toEqual('Yes')
           expect(getValueByKey($, 'Equipment')).toEqual('Equipment details')
+
+          expect($('.govuk-button').text().trim()).toEqual('Create official visit')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.CHECK_YOUR_ANSWERS_PAGE, {
             who: user.username,

@@ -62,13 +62,14 @@ describe('confirmation handler', () => {
           const heading = getPageHeader($)
 
           expect(heading).toEqual('New official visit booked')
-          expect($('.govuk-list--bullet > li').text()).toEqual('Peter Malicious (Contact)')
+          expect($('.govuk-list--bullet > li').text()).toEqual('Peter Malicious (Solicitor)')
           expect($('.govuk-panel__body').text().trim()).toEqual('Prisoner: John Doe (A1111AA)')
           expect(getTextById($, 'visit-details')).toEqual(
             'The visit will take place on Thursday, 1 January 2026 from 10am to 11am (1 hour) in First Location.',
           )
 
           expect($('a[href="/view/visit/1"]').text()).toEqual('View visit')
+          expect($('a[href="/manage/create/search"]').text()).toEqual('Schedule another visit')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.CONFIRM_VISIT_PAGE, {
             who: user.username,

@@ -6,13 +6,13 @@ export default class CheckYourAnswersPage extends AbstractPage {
 
   readonly caption: Locator
 
-  readonly json: Locator
+  readonly continueButton: Locator
 
   private constructor(page: Page) {
     super(page)
     this.header = page.locator('h1', { hasText: `Check and confirm the official visit details` })
     this.caption = page.locator('.govuk-hint', { hasText: 'Schedule an official visit' })
-    this.json = page.locator('#json')
+    this.continueButton = page.getByRole('button', { name: 'Create official visit' })
   }
 
   static async verifyOnPage(superPage: Page): Promise<CheckYourAnswersPage> {
