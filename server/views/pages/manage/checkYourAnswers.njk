@@ -173,6 +173,10 @@
                       value: { text: contact.assistanceNotes or "None" }
                     },
                     {
+                      key: { text: "Does this visitor need equipment?" },
+                      value: { text: "Yes" if contact.equipment else "No" }
+                    } if visit.visitType == 'IN_PERSON',
+                    {
                       key: { text: "Equipment" },
                       value: { text: contact.equipmentNotes or "None" }
                     } if visit.visitType == 'IN_PERSON'
@@ -190,7 +194,7 @@
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
-        {{continueCancel({})}}
+        {{continueCancel({continueText: 'Create official visit'})}}
       </form>
     </div>
   </div>

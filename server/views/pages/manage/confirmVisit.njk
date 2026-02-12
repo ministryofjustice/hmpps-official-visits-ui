@@ -17,7 +17,7 @@
       <p>You have successfully scheduled an official visit with:</p>
       <ul class="govuk-list govuk-list--bullet">
         {% for contact in visit.officialVisitors %}
-          <li>{{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }} ({{ contact.visitorTypeDescription }})</li>
+          <li>{{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }} ({{ contact.relationshipDescription }})</li>
         {% endfor %}
       </ul>
 
@@ -28,13 +28,10 @@
       {# TODO: Add links to the correct pages #}
       <ul class="govuk-list">
         <li class="govuk-!-margin-bottom-2">
-          <a href="" class="govuk-link govuk-link--no-visited-state ">Download confirmation</a>
-        </li>
-        <li class="govuk-!-margin-bottom-2">
           <a href="/view/visit/{{ officialVisitId }}" class="govuk-link govuk-link--no-visited-state">View visit</a>
         </li>
         <li class="govuk-!-margin-bottom-2">
-          <a href="" class="govuk-link govuk-link--no-visited-state">Schedule another visit</a>
+          <a href="/manage/create/search" class="govuk-link govuk-link--no-visited-state">Schedule another visit</a>
         </li>
         <li>
           <a href="" class="govuk-link govuk-link--no-visited-state">Print a movement slip</a>
