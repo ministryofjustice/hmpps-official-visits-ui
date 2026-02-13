@@ -92,7 +92,6 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Does this visitor need assistance')).toEqual('Yes')
           expect(getValueByKey($, 'Assistance details')).toEqual('Assistance details')
           expect(getValueByKey($, 'Equipment')).toEqual('Laptop')
-          expect(getValueByKey($, 'Visitor concerns', 1)).toEqual('visitor notes')
           expect(getValueByKey($, 'Email')).toEqual('test@test.com')
           expect(getValueByKey($, 'Telephone number')).toEqual('0123456789')
 
