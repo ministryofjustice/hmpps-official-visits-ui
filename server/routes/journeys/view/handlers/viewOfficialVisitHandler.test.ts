@@ -89,8 +89,9 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Visitor concerns', 0)).toEqual('visit level visitor concern notes')
 
           expect(getValueByKey($, 'Contact type')).toEqual('Official')
-          expect(getValueByKey($, 'Does this visitor need assistance')).toEqual('Yes')
+          expect(getValueByKey($, 'Does this visitor need assistance?')).toEqual('Yes')
           expect(getValueByKey($, 'Assistance details')).toEqual('Assistance details')
+          expect(getValueByKey($, 'Does this visitor need equipment?')).toEqual('Yes')
           expect(getValueByKey($, 'Equipment')).toEqual('Laptop')
           expect(getValueByKey($, 'Email')).toEqual('test@test.com')
           expect(getValueByKey($, 'Telephone number')).toEqual('0123456789')
@@ -147,8 +148,9 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Visitor concerns')).toBeFalsy()
 
           expect(getValueByKey($, 'Contact type')).toEqual('Official')
-          expect(getValueByKey($, 'Does this visitor need assistance')).toEqual('Yes')
+          expect(getValueByKey($, 'Does this visitor need assistance?')).toEqual('Yes')
           expect(getValueByKey($, 'Assistance details')).toEqual('None')
+          expect(getValueByKey($, 'Does this visitor need equipment?')).toEqual('No')
           expect(getValueByKey($, 'Equipment')).toEqual('None')
           expect(getValueByKey($, 'Email')).toEqual('None')
           expect(getValueByKey($, 'Telephone number')).toEqual('None')

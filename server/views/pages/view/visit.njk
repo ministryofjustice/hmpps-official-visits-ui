@@ -26,15 +26,15 @@
         title: "Visit marked as " + updateVerb,
         showTitleAsHeading: true,
         dismissible: false,
-        html: "You have " + updateVerb + " this visit. <a href='" + (backTo or '/view/list') + "'>Return to search list</a>"
+        html: "You have " + updateVerb + " this visit. <a href='" + (backUrl or '/view/list') + "'>Return to search list</a>"
       }) }}
 
     {% endif %}
 
-    {{ govukButton ({
+    {{ govukButton({
       text: "Print movement slip (TODO)",
-      href: "#TODO",
-      classes: "govuk-button blue-button"
+      href: "movement-slip",
+      classes: 'govuk-button blue-button'
     }) }}
 
     {{ govukSummaryList({
@@ -126,12 +126,16 @@
           value: { text: contact.relationshipTypeDescription }
         },
         {
-          key: { text: "Does this visitor need assistance" },
+          key: { text: "Does this visitor need assistance?" },
           value: { text: "Yes" if contact.assistedVisit else "No" }
         },
         {
           key: { text: "Assistance details" },
           value: { text: contact.assistanceNotes or "None"}
+        },
+        {
+          key: { text: "Does this visitor need equipment?" },
+          value: { text: 'Yes' if contact.visitorEquipment else 'No' }
         },
         {
           key: { text: "Equipment" },
