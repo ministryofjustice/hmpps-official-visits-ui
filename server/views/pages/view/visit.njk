@@ -138,10 +138,6 @@
           value: { text: contact.visitorEquipment.description if contact.visitorEquipment else 'None' }
         },
         {
-          key: { text: "Visitor concerns" },
-          value: { text: contact.visitorNotes }
-        } if contact.visitorNotes,
-        {
           key: { text: "Email" },
           value: { text: contact.emailAddress or 'None' }
         },

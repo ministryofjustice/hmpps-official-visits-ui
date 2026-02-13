@@ -279,7 +279,6 @@ test.describe('View official visits', () => {
     await expect(summaryValue(page, 'Does this visitor need assistance')).toHaveText('Yes')
     await expect(summaryValue(page, 'Assistance details')).toHaveText('Assistance details')
     await expect(summaryValue(page, 'Equipment')).toHaveText('Laptop')
-    await expect(summaryValue(page, 'Visitor concerns', 'visitor notes')).toBeTruthy()
     await expect(summaryValue(page, 'Email')).toHaveText('test@test.com')
     await expect(summaryValue(page, 'Telephone number')).toHaveText('0123456789')
 
