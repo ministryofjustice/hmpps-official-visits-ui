@@ -47,7 +47,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       visit,
       updateVerb,
       b64BackTo: b64BackTo || '',
-      backTo: tryDecodeB64(b64BackTo) || '/view/list',
+      backUrl: tryDecodeB64(b64BackTo) || '/view/list',
       prisoner: {
         ...prisoner,
         restrictions: restrictions?.content || [],
