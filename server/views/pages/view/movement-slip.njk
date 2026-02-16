@@ -1,0 +1,62 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/miniProfile/macro.njk" import miniProfile %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+
+{% set pageTitle = "Movement slip" %}
+
+{% block pageScripts %}
+  <script type="text/javascript" nonce="{{ cspNonce }}">
+    const printOptionsButton = document.getElementById('print-button');
+    if (printOptionsButton) {
+      printOptionsButton.classList.remove('govuk-!-display-none')
+      printOptionsButton.onclick = () => {
+        window.print()
+      }
+    }
+    </script>
+{% endblock %}
+
+{% block content %}
+
+  {{ govukButton({
+      id: "print-button",
+      text: "Print movement slip",
+      href: "#",
+      classes: 'govuk-button blue-button govuk-!-display-none-print'
+  }) }}
+
+  <div class="govuk-grid-row dotted-border govuk-!-padding-6">
+    <h1 class="govuk-body govuk-!-font-size-24">
+      <b>{{ visit.prisonDescription }}</b> Movement authorisation slip</h1>
+    <h2 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ visit.prisonerVisited | firstNameSpaceLastName }}, {{ visit.prisonerVisited.prisonerNumber }}</h2>
+    <span class="govuk-hint">{{ visit.prisonerVisited.prisonCode }}-{{ visit.prisonerVisited.cellLocation }}</span>
+
+    {{ govukSummaryList({
+      classes: 'govuk-!-margin-top-4',
+      rows: [
+        {
+          key: { text: "Official visit" },
+          value: { text: '' }
+        },
+        {
+          key: { text: "Time" },
+          value: { html: (visit.startTime | timeStringTo12HourPretty(true)) + ' to ' + (visit.endTime | timeStringTo12HourPretty(true)) + '<br />' + visit.visitDate | formatDate("iiii, d MMMM yyyy") }
+        },
+        {
+          key: { text: "Visit type" },
+          value: { text: visit.visitTypeDescription }
+        },
+        {
+          key: { text: "Official Visitor" if visit.officialVisitors.length == 1 else "Official Visitors" },
+          value: { html: visit.officialVisitors | toVisitorNameAndRelationship("<br />") }
+        }
+      ] | filterNonFalsy
+    }) }}
+
+    <p class="govuk-hint float-right govuk-!-margin-bottom-0">Printed at {{ now | formatDate("HH:mm") }} on {{ now | formatDate("iiii, d MMMM yyyy") }}</p>
+  </div>
+{% endblock %}

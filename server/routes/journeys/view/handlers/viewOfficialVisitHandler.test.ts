@@ -74,6 +74,8 @@ describe('Search for an official visit', () => {
           expect($('.govuk-link').eq(1).attr('href')).toEqual('/view/visit/1/cancel')
           expect($('.govuk-link').eq(2).attr('href')).toEqual('/view/visit/1/complete')
 
+          expect($('.govuk-button').eq(0).attr('href')).toEqual('/view/visit/1/movement-slip')
+
           expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
           expect(getValueByKey($, 'Time')).toEqual('10:00am to 11:00am (1 hour)')
           expect(getValueByKey($, 'Visit status')).toEqual('Scheduled')

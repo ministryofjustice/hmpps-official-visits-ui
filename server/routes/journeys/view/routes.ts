@@ -9,6 +9,7 @@ import CompleteOfficialVisitHandler from './handlers/completeVisitHandler'
 import CancelOfficialVisitHandler from './handlers/cancelVisitHandler'
 import { requirePermissions } from '../../../middleware/requirePermissions'
 import { Permission } from '../../../interfaces/hmppsUser'
+import OfficialVisitMovementSlipHandler from './handlers/movementSlipHandler'
 
 export default function Index({
   auditService,
@@ -37,6 +38,7 @@ export default function Index({
   )
   route('/visit/:ovId/complete', Permission.MANAGE, new CompleteOfficialVisitHandler(officialVisitsService))
   route('/visit/:ovId/cancel', Permission.MANAGE, new CancelOfficialVisitHandler(officialVisitsService))
+  route('/visit/:ovId/movement-slip', Permission.VIEW, new OfficialVisitMovementSlipHandler(officialVisitsService))
 
   return router
 }
