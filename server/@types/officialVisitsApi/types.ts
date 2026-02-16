@@ -30,5 +30,5 @@ export type FindByCriteria = components['schemas']['OfficialVisitSummarySearchRe
 export type FindByCriteriaResults = components['schemas']['PagedModelOfficialVisitSummarySearchResponse']
 export type FindByCriteriaVisit = components['schemas']['OfficialVisitSummarySearchResponse']
 export type CompleteVisitRequest = components['schemas']['OfficialVisitCompletionRequest']
-export type AttendanceType = components['schemas']['AttendanceType']
 export type CancelTypeRequest = components['schemas']['OfficialVisitCancellationRequest']
+export type TimeSlotSummary = components['schemas']['TimeSlotSummary']
