@@ -28,8 +28,9 @@ export default class PrisonerSelectHandler implements PageHandler {
       this.prisonerService.getPrisonerByPrisonerNumber(prisonerNumber, user),
     ])
     const activeRestrictions =
-      restrictions?.content.filter(restriction => !restriction.expiryDate || new Date(restriction.expiryDate) >= now) ||
-      []
+      restrictions?.content?.filter(
+        restriction => !restriction.expiryDate || new Date(restriction.expiryDate) >= now,
+      ) || []
     req.session.journey.officialVisit.searchPage = searchPage
     savePrisonerSelection(req.session.journey, {
       firstName: prisoner.firstName,
