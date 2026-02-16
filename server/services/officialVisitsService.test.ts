@@ -1,7 +1,12 @@
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import OfficialVisitsService from './officialVisitsService'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { ApprovedContact, CompleteVisitRequest, OfficialVisit } from '../@types/officialVisitsApi/types'
+import {
+  ApprovedContact,
+  CompleteVisitRequest,
+  OfficialVisit,
+  TimeSlotSummary,
+} from '../@types/officialVisitsApi/types'
 import { mockFindByCriteriaResults } from '../testutils/mocks'
 
 jest.mock('../data/officialVisitsApiClient')
@@ -159,6 +164,20 @@ describe('OfficialVisitsService', () => {
     const result = await officialVisitsService.completeVisit('MDI', '1', body, user)
 
     expect(officialVisitsApiClient.completeVisit).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(body)
+  })
+
+  it('should get visit slots', async () => {
+    const body: TimeSlotSummary = {
+      prisonCode: '',
+      prisonName: '',
+      timeSlots: [],
+    }
+    officialVisitsApiClient.getAllTimeSlotsAndVisitSlots.mockResolvedValue(body)
+
+    const result = await officialVisitsService.getVisitSlotsAtPrison('MDI', user)
+
+    expect(officialVisitsApiClient.getAllTimeSlotsAndVisitSlots).toHaveBeenCalledTimes(1)
     expect(result).toEqual(body)
   })
 })
