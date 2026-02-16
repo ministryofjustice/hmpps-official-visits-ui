@@ -38,7 +38,7 @@
 
         {% set rows = (rows.push([
           { html: restrictionTagHtml },
-          { text: pr.commentText },
+          { html: pr.commentText, classes: "long-text-column"},
           { text: pr.effectiveDate | formatDate },
           { text: (pr.expiryDate | formatDate) or "Not entered" }
         ]), rows) %}

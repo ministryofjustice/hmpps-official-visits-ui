@@ -40,3 +40,10 @@
 .float-right {
   float: right;
 }
+
+.govuk-table td.long-text-column {
+  overflow-wrap: anywhere;   /* allow breaking for long unspaced text */
+  word-break: keep-all;      /* keep words intact when spaces exist */
+  white-space: normal;       /* normal wrapping behaviour */
+  width: 20% !important;
+}
