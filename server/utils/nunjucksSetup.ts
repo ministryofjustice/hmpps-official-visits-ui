@@ -25,7 +25,7 @@ import restrictionTagColour from './restrictionTagColour'
 import { FieldValidationError } from '../middleware/setUpFlash'
 import config from '../config'
 import logger from '../../logger'
-import { OfficialVisitor, ReferenceDataItem } from '../@types/officialVisitsApi/types'
+import { ReferenceDataItem } from '../@types/officialVisitsApi/types'
 import { hasPermissionFilter } from '../middleware/requirePermissions'
 import { Permission } from '../interfaces/hmppsUser'
 
