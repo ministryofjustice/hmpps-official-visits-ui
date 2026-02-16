@@ -70,6 +70,7 @@ describe('confirmation handler', () => {
 
           expect($('a[href="/view/visit/1"]').text()).toEqual('View visit')
           expect($('a[href="/manage/create/search"]').text()).toEqual('Schedule another visit')
+          expect($('a[href="/view/visit/1/movement-slip"]').text()).toEqual('Print a movement slip')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.CONFIRM_VISIT_PAGE, {
             who: user.username,

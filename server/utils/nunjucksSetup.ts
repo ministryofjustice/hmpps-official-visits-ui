@@ -121,4 +121,11 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('includes', <T>(arr: T[], item: T) => arr.includes(item))
   njkEnv.addFilter('hasPermission', hasPermissionFilter)
   njkEnv.addFilter('filterNonFalsy', (items: any[]) => items.filter(item => item))
+  njkEnv.addFilter(
+    'toVisitorNameAndRelationship',
+    (visitors: { firstName: string; lastName: string; relationshipDescription: string }[], seperator: string = '\n') =>
+      visitors
+        .map(visitor => `${firstNameSpaceLastName(visitor)} (${visitor.relationshipDescription})`)
+        .join(seperator),
+  )
 }

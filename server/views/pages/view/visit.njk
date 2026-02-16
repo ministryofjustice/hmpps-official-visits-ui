@@ -32,9 +32,12 @@
     {% endif %}
 
     {{ govukButton({
-      text: "Print movement slip (TODO)",
-      href: "movement-slip",
-      classes: 'govuk-button blue-button'
+      text: "Print movement slip",
+      href: "/view/visit/" + visit.officialVisitId + "/movement-slip",
+      classes: 'govuk-button blue-button',
+      attributes: {
+        "target": "_blank"    
+      }
     }) }}
 
     {{ govukSummaryList({
