@@ -1,3 +1,5 @@
+import CaseLoad from '@ministryofjustice/hmpps-connect-dps-components/dist/types/CaseLoad'
+
 export type AuthSource = 'nomis' | 'delius' | 'external' | 'azuread'
 
 /**
@@ -58,6 +60,9 @@ export interface AzureADUser extends BaseUser {
 }
 
 export type HmppsUser = (PrisonUser | ProbationUser | ExternalUser | AzureADUser) & {
+  caseLoads?: CaseLoad[]
+  activeCaseLoad?: CaseLoad
+  activeCaseLoadId?: string
   permissions: {
     OV: Permission
   }

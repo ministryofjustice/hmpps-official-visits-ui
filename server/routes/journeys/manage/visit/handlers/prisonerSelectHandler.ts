@@ -6,6 +6,7 @@ import PersonalRelationshipsService from '../../../../../services/personalRelati
 import { schema } from './prisonerSearchSchema'
 import logger from '../../../../../../logger'
 import { savePrisonerSelection } from '../createJourneyState'
+import TelemetryService from '../../../../../services/telemetryService'
 
 export default class PrisonerSelectHandler implements PageHandler {
   public PAGE_NAME = Page.PRISONER_SELECT_PAGE
@@ -15,6 +16,7 @@ export default class PrisonerSelectHandler implements PageHandler {
   constructor(
     private readonly prisonerService: PrisonerService,
     private readonly personalRelationshipsService: PersonalRelationshipsService,
+    private readonly telemetryService: TelemetryService,
   ) {}
 
   public GET = async (req: Request, res: Response) => {
@@ -31,7 +33,8 @@ export default class PrisonerSelectHandler implements PageHandler {
       restrictions?.content?.filter(
         restriction => !restriction.expiryDate || new Date(restriction.expiryDate) >= now,
       ) || []
-    req.session.journey.officialVisit.searchPage = searchPage
+    const { officialVisit } = req.session.journey
+    officialVisit.searchPage = searchPage
     savePrisonerSelection(req.session.journey, {
       firstName: prisoner.firstName,
       lastName: prisoner.lastName,
@@ -46,8 +49,11 @@ export default class PrisonerSelectHandler implements PageHandler {
       alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
       restrictionsCount: activeRestrictions?.length ?? 0,
     })
-    logger.info(`Session journey officialVisit : ${JSON.stringify(req.session.journey.officialVisit, null, 2)}`)
-
+    logger.info(`Session journey officialVisit : ${JSON.stringify(officialVisit, null, 2)}`)
+    this.telemetryService.trackEvent('OFFICIAL_VISIT_SELECT_PRISONER', user, {
+      officialVisitId: officialVisit.officialVisitId,
+      prisonCode: officialVisit.prisonCode,
+    })
     res.redirect('visit-type')
   }
 }

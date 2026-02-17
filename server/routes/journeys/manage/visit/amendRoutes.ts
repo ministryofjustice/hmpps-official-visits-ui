@@ -13,6 +13,7 @@ export default function AmendRoutes({
   prisonerService,
   officialVisitsService,
   activitiesService,
+  telemetryService,
 }: Services): Router {
   const router = Router({ mergeParams: true })
   const route = (path: string | string[], handler: PageHandler) =>
@@ -20,7 +21,10 @@ export default function AmendRoutes({
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
-  route('/official-visit/confirmation', new ConfirmationHandler(officialVisitsService, prisonerService))
+  route(
+    '/official-visit/confirmation',
+    new ConfirmationHandler(officialVisitsService, prisonerService, telemetryService),
+  )
 
   router.use((req, res, next) => {
     const { officialVisitId, visitDate, startTime, visitStatusCode } = req.session.journey.officialVisit
@@ -33,8 +37,11 @@ export default function AmendRoutes({
   })
 
   // TODO: Fill in the routes for amending an official visit
-  route('/official-visit/choose-time-slot', new TimeSlotHandler(officialVisitsService, activitiesService))
-  route('/official-visit/check-your-answers', new CheckYourAnswersHandler(officialVisitsService))
+  route(
+    '/official-visit/choose-time-slot',
+    new TimeSlotHandler(officialVisitsService, activitiesService, telemetryService),
+  )
+  route('/official-visit/check-your-answers', new CheckYourAnswersHandler(officialVisitsService, telemetryService))
 
   return router
 }

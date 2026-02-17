@@ -18,6 +18,7 @@ import { mockOfficialVisitors, mockPrisonerRestrictions, mockPrisoner } from '..
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
 import config from '../../../../../config'
+import TelemetryService from '../../../../../services/telemetryService'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -26,6 +27,7 @@ jest.mock('../../../../../services/officialVisitsService')
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerService = new PrisonerService(null) as jest.Mocked<PrisonerService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
+const telemetryService = new TelemetryService(null) as jest.Mocked<TelemetryService>
 
 let app: Express
 
@@ -43,7 +45,7 @@ const appSetup = (
 ) => {
   config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
   app = appWithAllRoutes({
-    services: { auditService, prisonerService, officialVisitsService },
+    services: { auditService, prisonerService, officialVisitsService, telemetryService },
     userSupplier: () => user,
     journeySessionSupplier: () => journeySession as Journey,
   })

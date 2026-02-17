@@ -4,22 +4,31 @@ import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { schema, SchemaType } from './equipmentSchema'
 import { ApprovedContact, ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
+import TelemetryService from '../../../../../services/telemetryService'
 
 export default class EquipmentHandler implements PageHandler {
   public PAGE_NAME = Page.EQUIPMENT_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor(
+    private readonly officialVisitsService: OfficialVisitsService,
+    private readonly telemetryService: TelemetryService,
+  ) {}
 
   public GET = async (req: Request, res: Response) => {
-    const contacts = [
-      ...req.session.journey.officialVisit.officialVisitors,
-      ...(req.session.journey.officialVisit.socialVisitors || []),
-    ].filter(o => o.prisonerContactId)
+    const { officialVisit } = req.session.journey
+    const contacts = [...officialVisit.officialVisitors, ...(officialVisit.socialVisitors || [])].filter(
+      o => o.prisonerContactId,
+    )
 
+    const { user } = res.locals
+    this.telemetryService.trackEvent('OFFICIAL_VISIT_VISITOR_EQUIPMENT_VIEWED', user, {
+      officialVisitId: officialVisit.officialVisitId,
+      prisonCode: officialVisit.prisonCode,
+    })
     res.render('pages/manage/equipment', {
       contacts,
       backUrl: `assistance-required`,
-      prisoner: req.session.journey.officialVisit.prisoner,
+      prisoner: officialVisit.prisoner,
     })
   }
 
@@ -31,6 +40,11 @@ export default class EquipmentHandler implements PageHandler {
     officialVisit.socialVisitors = getSelected(officialVisit.socialVisitors, req.body)
 
     req.session.journey.officialVisit.equipmentPageCompleted = true
+    const { user } = res.locals
+    this.telemetryService.trackEvent('OFFICIAL_VISIT_VISITOR_EQUIPMENT_UPDATED', user, {
+      officialVisitId: officialVisit.officialVisitId,
+      prisonCode: officialVisit.prisonCode,
+    })
     return res.redirect(`comments`)
   }
 }

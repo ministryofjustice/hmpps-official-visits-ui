@@ -10,6 +10,7 @@ import { mockPrisoner, mockVisitByIdVisit } from '../../../../../testutils/mocks
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
 import { Prisoner } from '../../../../../@types/prisonerSearchApi/types'
+import TelemetryService from '../../../../../services/telemetryService'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -18,6 +19,7 @@ jest.mock('../../../../../services/officialVisitsService')
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerService = new PrisonerService(null) as jest.Mocked<PrisonerService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
+const telemetryService = new TelemetryService(null) as jest.Mocked<TelemetryService>
 
 let app: Express
 const defaultJourneySession = () => ({
@@ -29,7 +31,7 @@ const defaultJourneySession = () => ({
 
 const appSetup = (journeySession = defaultJourneySession()) => {
   app = appWithAllRoutes({
-    services: { auditService, prisonerService, officialVisitsService },
+    services: { auditService, prisonerService, officialVisitsService, telemetryService },
     userSupplier: () => user,
     journeySessionSupplier: () => journeySession as Journey,
   })

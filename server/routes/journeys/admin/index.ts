@@ -7,7 +7,7 @@ import DayHandler from './handlers/dayHandler'
 import LocationHandler from './handlers/locationHandler'
 import VisitSlotHandler from './handlers/visitSlotHandler'
 
-export default function Index({ auditService, officialVisitsService }: Services): Router {
+export default function Index({ auditService, officialVisitsService, telemetryService }: Services): Router {
   const router = Router({ mergeParams: true })
 
   const route = (path: string | string[], handler: PageHandler) =>
@@ -15,9 +15,12 @@ export default function Index({ auditService, officialVisitsService }: Services)
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
-  route('/days', new DayHandler(officialVisitsService))
-  route('/locations/time-slot/:timeSlotId', new LocationHandler(officialVisitsService))
-  route('/locations/time-slot/:timeSlotId/visit-slot/:visitSlotId', new VisitSlotHandler(officialVisitsService))
+  route('/days', new DayHandler(officialVisitsService, telemetryService))
+  route('/locations/time-slot/:timeSlotId', new LocationHandler(officialVisitsService, telemetryService))
+  route(
+    '/locations/time-slot/:timeSlotId/visit-slot/:visitSlotId',
+    new VisitSlotHandler(officialVisitsService, telemetryService),
+  )
 
   return router
 }
