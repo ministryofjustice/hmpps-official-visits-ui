@@ -21,6 +21,7 @@ generic-service:
     PERSONAL_RELATIONSHIPS_API_URL: 'https://personal-relationships-api-dev.hmpps.service.justice.gov.uk'
     CONTACTS_HOME_PAGE_URL: 'https://contacts-dev.hmpps.service.justice.gov.uk'
     ACTIVITIES_API_URL: 'https://activities-api-dev.prison.service.justice.gov.uk'
+    MANAGE_USERS_API_URL: 'https://manage-users-api-dev.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: DEV
     AUDIT_ENABLED: "false"
 
