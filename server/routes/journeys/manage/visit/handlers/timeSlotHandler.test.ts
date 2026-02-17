@@ -11,6 +11,7 @@ import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockTimeslots, sortedMockScheduleEvents, mockPrisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
+import TelemetryService from '../../../../../services/telemetryService'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -21,6 +22,7 @@ const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerService = new PrisonerService(null) as jest.Mocked<PrisonerService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
 const activitiesService = new ActivitiesService(null) as jest.Mocked<ActivitiesService>
+const telemetryService = new TelemetryService(null) as jest.Mocked<TelemetryService>
 
 let app: Express
 
@@ -28,7 +30,7 @@ const appSetup = (
   journeySession = { officialVisit: { prisoner: mockPrisoner, availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }] } },
 ) => {
   app = appWithAllRoutes({
-    services: { auditService, prisonerService, officialVisitsService, activitiesService },
+    services: { auditService, prisonerService, officialVisitsService, activitiesService, telemetryService },
     userSupplier: () => user,
     journeySessionSupplier: () => journeySession as Journey,
   })

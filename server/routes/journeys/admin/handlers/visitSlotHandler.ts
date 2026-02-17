@@ -2,11 +2,15 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
+import TelemetryService from '../../../../services/telemetryService'
 
 export default class VisitSlotHandler implements PageHandler {
   public PAGE_NAME = Page.ADMIN_VISIT_SLOT_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor(
+    private readonly officialVisitsService: OfficialVisitsService,
+    private readonly telemetryService: TelemetryService,
+  ) {}
 
   public GET = async (req: Request, res: Response) => {
     const { user } = res.locals
@@ -25,6 +29,11 @@ export default class VisitSlotHandler implements PageHandler {
     const matchingVisitSlot = timeSlot.visitSlots.filter(slot => slot.visitSlotId === visitSlotId)
     const visitSlot = matchingVisitSlot[0]
 
+    this.telemetryService.trackEvent('OFFICIAL_VISIT_ADMIN_VIEW_VISIT_SLOTS', user, {
+      timeSlotId,
+      visitSlotId,
+      prisonCode,
+    })
     res.render('pages/admin/visit-slot', {
       timeSlot: timeSlot.timeSlot,
       visitSlot,

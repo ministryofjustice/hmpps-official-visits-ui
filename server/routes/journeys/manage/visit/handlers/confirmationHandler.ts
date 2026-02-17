@@ -3,6 +3,7 @@ import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import TelemetryService from '../../../../../services/telemetryService'
 
 export default class ConfirmationHandler implements PageHandler {
   public PAGE_NAME = Page.CONFIRM_VISIT_PAGE
@@ -10,13 +11,15 @@ export default class ConfirmationHandler implements PageHandler {
   constructor(
     private readonly officialVisitsService: OfficialVisitsService,
     private readonly prisonerService: PrisonerService,
+    private readonly telemetryService: TelemetryService,
   ) {}
 
   public GET = async (req: Request, res: Response) => {
     const prisonCode = req.session.activeCaseLoadId
+    const { officialVisitId } = req.params
     const visit = await this.officialVisitsService.getOfficialVisitById(
       prisonCode,
-      Number(req.params.officialVisitId),
+      Number(officialVisitId),
       res.locals.user,
     )
     const prisoner = await this.prisonerService.getPrisonerByPrisonerNumber(
@@ -26,6 +29,11 @@ export default class ConfirmationHandler implements PageHandler {
     req.session.journey.journeyCompleted = true
     req.session.journey.officialVisit = undefined
 
-    res.render('pages/manage/confirmVisit', { visit, prisoner, officialVisitId: req.params.officialVisitId })
+    const { user } = res.locals
+    this.telemetryService.trackEvent('OFFICIAL_VISIT_CONFIRMATION', user, {
+      officialVisitId,
+      prisonCode,
+    })
+    res.render('pages/manage/confirmVisit', { visit, prisoner, officialVisitId })
   }
 }
