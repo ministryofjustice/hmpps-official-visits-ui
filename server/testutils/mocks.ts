@@ -8,6 +8,7 @@ import {
 } from '../@types/officialVisitsApi/types'
 import { PrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
 import { PrisonerScheduledEvents, ScheduledEvent } from '../@types/activitiesApi/types'
+import { User } from '../@types/manageUsersApi/types'
 
 export const mockPrisoner = {
   firstName: 'John',
@@ -397,3 +398,11 @@ export const mockVisitByIdVisit: OfficialVisit = {
     middleNames: 'JETHRONE MASON',
   },
 }
+
+export const mockUser = {
+  active: true,
+  authSource: 'nomis',
+  name: 'Test User',
+  userId: '',
+  username: 'USERNAME_GEN',
+} as User

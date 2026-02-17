@@ -4,6 +4,7 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import PrisonerService from '../../../../services/prisonerService'
 import PersonalRelationshipsService from '../../../../services/personalRelationshipsService'
+import ManageUserService from '../../../../services/manageUsersService'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_PAGE
@@ -12,6 +13,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
     private readonly officialVisitsService: OfficialVisitsService,
     private readonly prisonerService: PrisonerService,
     private readonly personalRelationshipsService: PersonalRelationshipsService,
+    private readonly manageUsersService: ManageUserService,
   ) {}
 
   GET = async (req: Request, res: Response) => {
@@ -34,6 +36,12 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerVisited.prisonerNumber, user),
     ])
 
+    const createdUser = await this.manageUsersService.getUserByUsername(visit.createdBy, user)
+    const modifiedUser =
+      visit.updatedBy === visit.createdBy
+        ? createdUser
+        : await this.manageUsersService.getUserByUsername(visit.updatedBy, user)
+
     const tryDecodeB64 = (b64: string) => {
       try {
         return b64 ? decodeURIComponent(atob(b64)) : null
@@ -44,7 +52,11 @@ export default class ViewOfficialVisitHandler implements PageHandler {
 
     const updateVerb = req.flash('updateVerb')[0]
     return res.render('pages/view/visit', {
-      visit,
+      visit: {
+        ...visit,
+        createdBy: createdUser.name,
+        updatedBy: modifiedUser.name,
+      },
       updateVerb,
       b64BackTo: b64BackTo || '',
       backUrl: tryDecodeB64(b64BackTo) || '/view/list',

@@ -14,6 +14,7 @@ import ViewVisitPage from '../pages/viewVisitPage'
 import CancelVisitPage from '../pages/cancelVisitPage'
 import CompleteVisitPage from '../pages/completeVisitPage'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
+import manageUsersApi from '../mockApis/manageUsersApi'
 
 const mockPrisoner = {
   prisonerNumber: 'A1111AA',
@@ -104,6 +105,7 @@ const setupFindByCriteriaStubs = async () => {
 test.describe('View official visits', () => {
   test.beforeEach(async () => {
     await hmppsAuth.stubSignInPage()
+    await manageUsersApi.stubGetByUsername()
     await componentsApi.stubComponents()
     await prisonApi.stubGetPrisonerImage()
     await prisonerSearchApi.stubGetByPrisonerNumber(mockPrisoner)
@@ -270,8 +272,8 @@ test.describe('View official visits', () => {
     await expect(summaryValue(page, 'Visit type')).toHaveText('Video')
     await expect(summaryValue(page, 'Prisoner notes')).toHaveText('prisoner notes')
     await expect(summaryValue(page, 'Staff notes')).toHaveText('staff notes')
-    await expect(summaryValue(page, 'Created by')).toHaveText('USERNAME_GEN (Monday, 19 January 2026)')
-    await expect(summaryValue(page, 'Last modified')).toHaveText('USERNAME_GEN (Monday, 19 January 2026)')
+    await expect(summaryValue(page, 'Created by')).toHaveText('Test User (Monday, 19 January 2026)')
+    await expect(summaryValue(page, 'Last modified')).toHaveText('Test User (Monday, 19 January 2026)')
     await expect(summaryValue(page, 'Visitor concerns', 'visit level visitor concern notes')).toBeTruthy()
 
     await expect(summaryValue(page, 'Contact type')).toHaveText('Official')

@@ -16,6 +16,7 @@ export default function Index({
   prisonerService,
   officialVisitsService,
   personalRelationshipsService,
+  manageUsersService,
 }: Services): Router {
   const router = Router({ mergeParams: true })
 
@@ -34,7 +35,12 @@ export default function Index({
   route(
     '/visit/:ovId',
     Permission.VIEW,
-    new ViewOfficialVisitHandler(officialVisitsService, prisonerService, personalRelationshipsService),
+    new ViewOfficialVisitHandler(
+      officialVisitsService,
+      prisonerService,
+      personalRelationshipsService,
+      manageUsersService,
+    ),
   )
   route('/visit/:ovId/complete', Permission.MANAGE, new CompleteOfficialVisitHandler(officialVisitsService))
   route('/visit/:ovId/cancel', Permission.MANAGE, new CancelOfficialVisitHandler(officialVisitsService))

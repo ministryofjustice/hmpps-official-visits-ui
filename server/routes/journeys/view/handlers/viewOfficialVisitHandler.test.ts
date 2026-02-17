@@ -4,28 +4,37 @@ import * as cheerio from 'cheerio'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import PrisonerService from '../../../../services/prisonerService'
 import { appWithAllRoutes, user } from '../../../testutils/appSetup'
-import { mockPrisoner, mockVisitByIdVisit, mockPrisonerRestrictions } from '../../../../testutils/mocks'
+import { mockPrisoner, mockVisitByIdVisit, mockPrisonerRestrictions, mockUser } from '../../../../testutils/mocks'
 import AuditService, { Page } from '../../../../services/auditService'
 import { getByDataQa, getPageHeader, getValueByKey } from '../../../testutils/cheerio'
 import PersonalRelationshipsService from '../../../../services/personalRelationshipsService'
 import { Prisoner } from '../../../../@types/prisonerSearchApi/types'
 import { convertToTitleCase } from '../../../../utils/utils'
+import ManageUserService from '../../../../services/manageUsersService'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/prisonerService')
 jest.mock('../../../../services/officialVisitsService')
 jest.mock('../../../../services/personalRelationshipsService')
+jest.mock('../../../../services/manageUsersService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerService = new PrisonerService(null) as jest.Mocked<PrisonerService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
 const personalRelationshipsService = new PersonalRelationshipsService(null) as jest.Mocked<PersonalRelationshipsService>
+const manageUsersService = new ManageUserService(null) as jest.Mocked<ManageUserService>
 
 let app: Express
 
 const appSetup = () => {
   app = appWithAllRoutes({
-    services: { auditService, prisonerService, officialVisitsService, personalRelationshipsService },
+    services: {
+      auditService,
+      prisonerService,
+      officialVisitsService,
+      personalRelationshipsService,
+      manageUsersService,
+    },
     userSupplier: () => user,
   })
 }
@@ -35,6 +44,7 @@ beforeEach(() => {
   officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
+  manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
 })
 
 afterEach(() => {
@@ -86,8 +96,8 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Visit type')).toEqual('Video')
           expect(getValueByKey($, 'Prisoner notes')).toEqual('prisoner notes')
           expect(getValueByKey($, 'Staff notes')).toEqual('staff notes')
-          expect(getValueByKey($, 'Created by')).toEqual('USERNAME_GEN (Monday, 19 January 2026)')
-          expect(getValueByKey($, 'Last modified')).toEqual('USERNAME_GEN (Monday, 19 January 2026)')
+          expect(getValueByKey($, 'Created by')).toEqual('Test User (Monday, 19 January 2026)')
+          expect(getValueByKey($, 'Last modified')).toEqual('Test User (Monday, 19 January 2026)')
           expect(getValueByKey($, 'Visitor concerns', 0)).toEqual('visit level visitor concern notes')
 
           expect(getValueByKey($, 'Contact type')).toEqual('Official')
@@ -144,8 +154,8 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Visit type')).toEqual('Video')
           expect(getValueByKey($, 'Prisoner notes')).toEqual('None')
           expect(getValueByKey($, 'Staff notes')).toEqual('None')
-          expect(getValueByKey($, 'Created by')).toEqual('USERNAME_GEN (Monday, 19 January 2026)')
-          expect(getValueByKey($, 'Last modified')).toEqual('USERNAME_GEN (Monday, 19 January 2026)')
+          expect(getValueByKey($, 'Created by')).toEqual('Test User (Monday, 19 January 2026)')
+          expect(getValueByKey($, 'Last modified')).toEqual('Test User (Monday, 19 January 2026)')
           // Visitor concerns is the only field that shouldn't show when there is no data
           expect(getValueByKey($, 'Visitor concerns')).toBeFalsy()
 
