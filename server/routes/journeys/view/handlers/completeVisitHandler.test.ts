@@ -6,16 +6,17 @@ import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { appWithAllRoutes, user } from '../../../testutils/appSetup'
 import { mockVisitByIdVisit } from '../../../../testutils/mocks'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
+import TelemetryService from '../../../../services/telemetryService'
 
 jest.mock('../../../../services/officialVisitsService')
 
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
-
+const telemetryService = new TelemetryService(null) as jest.Mocked<TelemetryService>
 let app: Express
 
 const appSetup = () => {
   app = appWithAllRoutes({
-    services: { officialVisitsService },
+    services: { officialVisitsService, telemetryService },
     userSupplier: () => user,
   })
 }

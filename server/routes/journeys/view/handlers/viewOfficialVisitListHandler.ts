@@ -6,11 +6,15 @@ import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { schema } from './viewOfficialVisitListSchema'
 import { ReferenceDataItem, VisitStatusType, VisitType } from '../../../../@types/officialVisitsApi/types'
 import { toDateString } from '../../../../utils/utils'
+import TelemetryService from '../../../../services/telemetryService'
 
 export default class ViewOfficialVisitListHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_LIST_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor(
+    private readonly officialVisitsService: OfficialVisitsService,
+    private readonly telemetryService: TelemetryService,
+  ) {}
 
   QUERY = schema
 
@@ -81,7 +85,10 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
     const queryParams = new URLSearchParams({ ...filterParams, page: '{page}' })
     const backToParams = new URLSearchParams({ ...filterParams, page: filterParams.page.toString() }).toString()
     const backTo = encodeURIComponent(btoa(`/view/list?${backToParams}`))
-
+    const { user } = res.locals
+    this.telemetryService.trackEvent('OFFICIAL_VISIT_VIEW_VISIT_LIST', user, {
+      filterParams: queryParams.toString(),
+    })
     return res.render('pages/view/visitList', {
       visits: visits.content,
       backUrl: `/`,
@@ -122,7 +129,10 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
       ...(req.body.type ? { type: req.body.type } : {}),
       ...(req.body.location ? { location: req.body.location } : {}),
     })
-
+    const { user } = res.locals
+    this.telemetryService.trackEvent('OFFICIAL_VISIT_CONFIRM_VISIT_LIST', user, {
+      searchParam: queryParams.toString(),
+    })
     res.redirect(`${req.originalUrl.split('?')[0]!}?${queryParams.toString()}`)
   }
 }
