@@ -21,6 +21,7 @@ import OfficialVisitsApiClient from './officialVisitsApiClient'
 import PrisonApiClient from './prisonApiClient'
 import PersonalRelationshipsApiClient from './personalRelationshipsApiClient'
 import ActivitiesApiClient from './activitiesApiClient'
+import ManageUsersApiClient from './manageUsersApiClient'
 
 export const dataAccess = () => {
   const hmppsAuthClient = new AuthenticationClient(
@@ -38,6 +39,7 @@ export const dataAccess = () => {
     prisonApiClient: new PrisonApiClient(hmppsAuthClient),
     personalRelationshipsApiClient: new PersonalRelationshipsApiClient(hmppsAuthClient),
     activitiesApiClient: new ActivitiesApiClient(hmppsAuthClient),
+    manageUsersApiClient: new ManageUsersApiClient(hmppsAuthClient),
   }
 }
 
