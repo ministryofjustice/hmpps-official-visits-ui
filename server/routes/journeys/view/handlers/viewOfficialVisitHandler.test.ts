@@ -11,6 +11,7 @@ import PersonalRelationshipsService from '../../../../services/personalRelations
 import { Prisoner } from '../../../../@types/prisonerSearchApi/types'
 import { convertToTitleCase } from '../../../../utils/utils'
 import ManageUserService from '../../../../services/manageUsersService'
+import TelemetryService from '../../../../services/telemetryService'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/prisonerService')
@@ -24,17 +25,12 @@ const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<Off
 const personalRelationshipsService = new PersonalRelationshipsService(null) as jest.Mocked<PersonalRelationshipsService>
 const manageUsersService = new ManageUserService(null) as jest.Mocked<ManageUserService>
 
+const telemetryService = new TelemetryService(null) as jest.Mocked<TelemetryService>
 let app: Express
 
 const appSetup = () => {
   app = appWithAllRoutes({
-    services: {
-      auditService,
-      prisonerService,
-      officialVisitsService,
-      personalRelationshipsService,
-      manageUsersService,
-    },
+    services: { auditService, prisonerService, officialVisitsService, personalRelationshipsService, manageUsersService, telemetryService },
     userSupplier: () => user,
   })
 }
