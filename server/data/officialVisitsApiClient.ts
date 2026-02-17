@@ -14,6 +14,7 @@ import {
   FindByCriteriaResults,
   OfficialVisit,
   ReferenceDataItem,
+  TimeSlotSummary,
 } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
 
@@ -183,6 +184,13 @@ export default class OfficialVisitsApiClient extends RestClient {
   async cancelVisit(prisonCode: string, visitId: string, body: CancelTypeRequest, user: HmppsUser) {
     return this.post<CancelTypeRequest>(
       { path: `/official-visit/prison/${prisonCode}/id/${visitId}/cancel`, data: body },
+      asSystem(user.username),
+    )
+  }
+
+  async getAllTimeSlotsAndVisitSlots(prisonCode: string, user: HmppsUser): Promise<TimeSlotSummary> {
+    return this.get<TimeSlotSummary>(
+      { path: `/admin/time-slots/prison/${prisonCode}?activeOnly=true` },
       asSystem(user.username),
     )
   }

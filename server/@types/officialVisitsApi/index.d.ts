@@ -128,6 +128,74 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/admin/visit-slot/id/{visitSlotId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Update capacities for a visit slot
+     * @description Requires role: ROLE_OFFICIAL_VISIT_ADMIN.
+     *           Only capacities (max groups, adults, and video) may be updated.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISIT_ADMIN
+     */
+    put: operations['updateVisitSlot']
+    post?: never
+    /**
+     * Delete a prison visit slot
+     * @description Requires role: ROLE_OFFICIAL_VISIT_ADMIN.
+     *           Delete a visit slot if there are no official visits associated with it.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISIT_ADMIN
+     */
+    delete: operations['deleteVisitSlot']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/admin/time-slot/{prisonTimeSlotId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Returns the data for a prison time slot by ID
+     * @description Requires role: ROLE_OFFICIAL_VISIT_ADMIN.
+     *           Used to get the details for one prison time slot.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISIT_ADMIN
+     */
+    get: operations['getPrisonTimeSlotById']
+    /**
+     * Updates a prison time slot
+     * @description Requires role: ROLE_OFFICIAL_VISIT_ADMIN.
+     *           Used to update a prison time slot for official visits.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISIT_ADMIN
+     */
+    put: operations['updateTimeSlot']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/sync/visit-slot': {
     parameters: {
       query?: never
@@ -196,7 +264,33 @@ export interface paths {
      *     Requires one of the following roles:
      *     * OFFICIAL_VISITS_MIGRATION
      */
-    post: operations['syncCreateVisitSlot_1']
+    post: operations['syncCreateOfficialVisit']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/sync/official-visit/{officialVisitId}/visitor': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Creates a visitor on an existing official visit
+     * @description Requires role: OFFICIAL_VISITS_MIGRATION.
+     *           Used to add a visitor to an official visit in DPS as part of the synchronisation from NOMIS.
+     *           If the contactId or offenderVisitVisitorId already exists on the visit this request will be rejected.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     */
+    post: operations['syncCreateOfficialVisitor']
     delete?: never
     options?: never
     head?: never
@@ -334,6 +428,56 @@ export interface paths {
      *     * OFFICIAL_VISITS_ADMIN
      */
     post: operations['migrateVisitConfiguration']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/admin/time-slot': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Creates a new prison time slot for official visits
+     * @description Requires role: ROLE_OFFICIAL_VISIT_ADMIN.
+     *           Used to create a new prison time slot for official visits.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISIT_ADMIN
+     */
+    post: operations['createTimeSlot']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/admin/time-slot/{prisonTimeSlotId}/visit-slot': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Create a visit slot in an existing prison time slot
+     * @description Requires role: ROLE_OFFICIAL_VISIT_ADMIN.
+     *           Creates a new visit slot for the given prison time slot.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISIT_ADMIN
+     */
+    post: operations['createVisitSlot']
     delete?: never
     options?: never
     head?: never
@@ -600,6 +744,31 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/admin/time-slots/prison/{prisonCode}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Return summary of prison time slot and associated visit slots based on the prison code
+     * @description Requires role: OFFICIAL_VISITS_ADMIN.
+     *           Used to get the summary of prison time slot and associated visit slots based on the prison code.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    get: operations['getAllTimeSlotsAndVisitSlots']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/sync/visit-slot/{visitSlotId}': {
     parameters: {
       query?: never
@@ -645,6 +814,55 @@ export interface paths {
      *     * OFFICIAL_VISITS_MIGRATION
      */
     delete: operations['syncDeleteTimeSlot']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/sync/official-visit/{officialVisitId}/visitor/{officialVisitorId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /**
+     * Delete an official visitor from a visit
+     * @description Delete an official visitor from a visit.
+     *           This endpoint is idempotent, so if the visit or visitor is not present it will silently succeed.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     */
+    delete: operations['syncDeleteOfficialVisitor']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/admin/time-slot/{timeSlotId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /**
+     * Delete a prison time slot
+     * @description Delete a time slot if there are no visit slots associated with it.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISIT_ADMIN
+     */
+    delete: operations['deleteTimeSlot']
     options?: never
     head?: never
     patch?: never
@@ -856,6 +1074,209 @@ export interface components {
       /** Format: int32 */
       messagesFoundCount: number
     }
+    /** @description Request to update capacities for a prison visit slot */
+    UpdateVisitSlotRequest: {
+      /**
+       * Format: int32
+       * @description Maximum adults allowed in the visit slot
+       */
+      maxAdults?: number
+      /**
+       * Format: int32
+       * @description Maximum groups allowed in the visit slot
+       */
+      maxGroups?: number
+      /**
+       * Format: int32
+       * @description Maximum video sessions allowed in the visit slot
+       */
+      maxVideo?: number
+      /**
+       * Format: uuid
+       * @description The Official visit Location Id
+       */
+      dpsLocationId?: string
+    }
+    /** @description Response for a prison visit slot */
+    VisitSlot: {
+      /**
+       * Format: int64
+       * @description Prison visit slot Id
+       */
+      visitSlotId: number
+      /** @description Prison Code */
+      prisonCode: string
+      /**
+       * Format: int64
+       * @description Prison time slot Id
+       */
+      prisonTimeSlotId: number
+      /**
+       * Format: uuid
+       * @description The DPS location ID where the visit is taking place
+       * @example aaa-ddd-bbb-123455632323
+       */
+      dpsLocationId: string
+      /**
+       * @description The description of the prison location this visit slot is in
+       * @example Legal visits room 8
+       */
+      locationDescription?: string
+      /**
+       * @description The type of the prison location this visit slot is in, e.g. 'VISITS', 'VIDEO_LINK', 'INTERVIEW'
+       * @example VISITS
+       */
+      locationType?: string
+      /**
+       * Format: int32
+       * @description The max capacity of the prison location this visit slot is in, if known
+       * @example 12
+       */
+      locationMaxCapacity?: number
+      /**
+       * Format: int32
+       * @description Maximum video link allowed in the visit slot
+       */
+      maxVideo?: number
+      /**
+       * Format: int32
+       * @description Maximum adults allowed in the visit slot
+       */
+      maxAdults?: number
+      /**
+       * Format: int32
+       * @description Maximum groups allowed in the visit slot
+       */
+      maxGroups?: number
+      /**
+       * @description Username who created the visit slot
+       * @example admin
+       */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The timestamp of when this visit slot was created
+       * @example 2024-01-01T00:00:00Z
+       */
+      createdTime: string
+      /**
+       * @description Username who last updated the visit slot
+       * @example admin
+       */
+      updatedBy?: string
+      /**
+       * Format: date-time
+       * @description The timestamp of when this visit slot was last updated
+       * @example 2024-01-01T00:00:00Z
+       */
+      updatedTime?: string
+    }
+    ErrorResponse: {
+      /** Format: int32 */
+      status: number
+      errorCode?: string
+      userMessage?: string
+      developerMessage?: string
+      moreInfo?: string
+    }
+    /** @description Request to update a new prison visit slot for official visits */
+    UpdateTimeSlotRequest: {
+      /**
+       * @description Prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description Day code MON-SUN
+       * @example MON
+       */
+      dayCode: components['schemas']['DayType']
+      /**
+       * @description Start time
+       * @example 09:00
+       */
+      startTime: string
+      /**
+       * @description End time
+       * @example 11:00
+       */
+      endTime: string
+      /**
+       * Format: date
+       * @description Effective date. The date from which this time slot will be active
+       * @example 2026-01-21
+       */
+      effectiveDate: string
+      /**
+       * Format: date
+       * @description Expiry date. The date from which this time slot will no longer be considered active
+       * @example 2027-01-21
+       */
+      expiryDate?: string
+    }
+    /** @description Response for a prison time slot */
+    TimeSlot: {
+      /**
+       * Format: int64
+       * @description Prison time slot ID
+       * @example 18767
+       */
+      prisonTimeSlotId: number
+      /**
+       * @description Prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description Day code MON-SUN
+       * @example MON
+       */
+      dayCode: components['schemas']['DayType']
+      /**
+       * @description Start time
+       * @example 09:00
+       */
+      startTime: string
+      /**
+       * @description End time
+       * @example 11:00
+       */
+      endTime: string
+      /**
+       * Format: date
+       * @description Effective date. The date from which this time slot is active
+       * @example 2026-01-21
+       */
+      effectiveDate: string
+      /**
+       * Format: date
+       * @description Expiry date. The date from which this time is no longer be considered active
+       * @example 2027-01-21
+       */
+      expiryDate?: string
+      /**
+       * @description User who created the entry
+       * @example admin
+       */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The timestamp of when this slot was created
+       * @example 2024-01-01T00:00:00Z
+       */
+      createdTime: string
+      /**
+       * @description User who last updated the entry
+       * @example admin
+       */
+      updatedBy?: string
+      /**
+       * Format: date-time
+       * @description The timestamp of when this slot was last updated
+       * @example 2024-01-01T00:00:00Z
+       */
+      updatedTime?: string
+    }
     /** @description Request to create a new prison visit slot for official visits */
     SyncCreateVisitSlotRequest: {
       /**
@@ -890,14 +1311,6 @@ export interface components {
        * @example 2024-01-01T00:00:00Z
        */
       createdTime: string
-    }
-    ErrorResponse: {
-      /** Format: int32 */
-      status: number
-      errorCode?: string
-      userMessage?: string
-      developerMessage?: string
-      moreInfo?: string
     }
     /** @description Request to create a new prison time slot for official visits */
     SyncCreateTimeSlotRequest: {
@@ -1187,6 +1600,15 @@ export interface components {
       updatedTime?: string
       /** @description The visitor details */
       visitors: components['schemas']['SyncOfficialVisitor'][]
+      /** @description The visitor concern notes if present */
+      visitorConcernNotes?: string
+      /**
+       * Format: int64
+       * @description The visitor oder number if present
+       */
+      visitOrderNumber?: number
+      /** @description The staff username who authorised an override for a ban for this visit */
+      overrideBanStaffUsername?: string
     }
     SyncOfficialVisitor: {
       /**
@@ -1263,6 +1685,77 @@ export interface components {
        * @example 2024-12-01T03:05:00
        */
       updatedTime?: string
+    }
+    SyncCreateOfficialVisitorRequest: {
+      /**
+       * Format: int64
+       * @description The NOMIS offender visit visitor ID
+       * @example 133232
+       */
+      offenderVisitVisitorId: number
+      /**
+       * Format: int64
+       * @description The NOMIS person ID (same as contactId) for this visitor
+       * @example 13989898
+       */
+      personId: number
+      /**
+       * @description The first name of the visitor
+       * @example Bob
+       */
+      firstName?: string
+      /**
+       * @description The last name of the visitor
+       * @example Harris
+       */
+      lastName?: string
+      /**
+       * Format: date
+       * @description The visitors date of birth
+       * @example 2011-01-03
+       */
+      dateOfBirth?: string
+      /**
+       * @description The relationship type OFFICIAL or SOCIAL. Default is null if not known.
+       * @example OFFICIAL
+       */
+      relationshipTypeCode?: components['schemas']['RelationshipType']
+      /**
+       * @description The relationship code between visitor and prisoner, from NOMIS reference data. A null value will indicate no relationship.
+       * @example POL
+       */
+      relationshipToPrisoner?: string
+      /**
+       * @description Set to true if this person is the lead visitor. Defaults to false if not supplied.
+       * @example true
+       */
+      groupLeaderFlag?: boolean
+      /**
+       * @description Set to true if this person requires assistance at the visit. Defaults to false if not supplied.
+       * @example true
+       */
+      assistedVisitFlag?: boolean
+      /**
+       * @description The visitor comment text from NOMIS
+       * @example Some comments
+       */
+      commentText?: string
+      /**
+       * @description The visitor attendance code (ATTENDED or ABSENT). A null indicates no attendance was added.
+       * @example ATTENDED
+       */
+      attendanceCode?: components['schemas']['AttendanceType']
+      /**
+       * Format: date-time
+       * @description The data and time the record was created
+       * @example 2022-10-01T16:45:45
+       */
+      createDateTime: string
+      /**
+       * @description The username who created the row
+       * @example X999X
+       */
+      createUsername: string
     }
     /** @description The request with the official visit details */
     CreateOfficialVisitRequest: {
@@ -1546,6 +2039,11 @@ export interface components {
       completionCode?: components['schemas']['VisitCompletionType']
       /** @description The official visit completion description */
       completionDescription?: string
+      /**
+       * @description Optional notes captured when a visit is either cancelled or completed
+       * @example Cancelled due to prisoner in hospital
+       */
+      completionNotes?: string
       /**
        * @description The name of the user who created the official visit
        * @example Fred Bloggs
@@ -2006,6 +2504,65 @@ export interface components {
       /** @description List of NOMIS and DPS IDs for the visit slots created */
       visitSlots: components['schemas']['IdPair'][]
     }
+    /** @description Request to create a new prison time slot for official visits */
+    CreateTimeSlotRequest: {
+      /**
+       * @description Prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description Day code MON-SUN
+       * @example MON
+       */
+      dayCode: components['schemas']['DayType']
+      /**
+       * @description Start time
+       * @example 09:00
+       */
+      startTime: string
+      /**
+       * @description End time
+       * @example 11:00
+       */
+      endTime: string
+      /**
+       * Format: date
+       * @description Effective date. The date from which this time slot will be active
+       * @example 2026-01-21
+       */
+      effectiveDate: string
+      /**
+       * Format: date
+       * @description Expiry date. The date from which this time slot will no longer be considered active
+       * @example 2027-01-21
+       */
+      expiryDate?: string
+    }
+    /** @description Request to create a new prison visit slot for official visits */
+    CreateVisitSlotRequest: {
+      /**
+       * Format: uuid
+       * @description The DPS location ID where the visit is taking place
+       * @example 123e4567-e89b-12d3-a456-426614174000
+       */
+      dpsLocationId: string
+      /**
+       * Format: int32
+       * @description Maximum adults allowed in the visit slot
+       */
+      maxAdults?: number
+      /**
+       * Format: int32
+       * @description Maximum groups allowed in the visit slot
+       */
+      maxGroups?: number
+      /**
+       * Format: int32
+       * @description Maximum video sessions allowed in the visit slot
+       */
+      maxVideo?: number
+    }
     VisitBookedEntity: {
       /** Format: int64 */
       officialVisitId: number
@@ -2451,6 +3008,28 @@ export interface components {
        */
       locationDescription?: string
     }
+    /** @description Admin response for Summary of time slots and associated visit slots for the prison */
+    TimeSlotSummary: {
+      /**
+       * @description Prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description Prison name
+       * @example Moorland (HMP & YOI)
+       */
+      prisonName: string
+      /** @description List of all time slots and associated visit slots for the prison */
+      timeSlots: components['schemas']['TimeSlotSummaryItem'][]
+    }
+    /** @description Item containing a time slot and its associated visit slots */
+    TimeSlotSummaryItem: {
+      /** @description Time Slot */
+      timeSlot: components['schemas']['TimeSlot']
+      /** @description List of visit slots associated with time slot */
+      visitSlots: components['schemas']['VisitSlot'][]
+    }
   }
   responses: never
   parameters: never
@@ -2678,6 +3257,239 @@ export interface operations {
       }
     }
   }
+  updateVisitSlot: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description The internal ID for the prison visit slot */
+        visitSlotId: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateVisitSlotRequest']
+      }
+    }
+    responses: {
+      /** @description Successfully updated a prison visit slot */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VisitSlot']
+        }
+      }
+      /** @description The request was invalid */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VisitSlot']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description No prison visit slot with this ID was found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VisitSlot']
+        }
+      }
+    }
+  }
+  deleteVisitSlot: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description The internal ID for the prison visit slot */
+        visitSlotId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Deleted the visit slot */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Could not find the visit slot */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description The prison visit slot had visits associated so cannot be deleted */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getPrisonTimeSlotById: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description The internal ID for a prison time slot */
+        prisonTimeSlotId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The prison time slot matching the ID provided in the request */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeSlot']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description No prison time slot with this ID was found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeSlot']
+        }
+      }
+    }
+  }
+  updateTimeSlot: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description The internal ID for the prison time slot */
+        prisonTimeSlotId: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateTimeSlotRequest']
+      }
+    }
+    responses: {
+      /** @description Successfully updated a prison time slot */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeSlot']
+        }
+      }
+      /** @description The request was invalid */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeSlot']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description The prison time slot ID was not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeSlot']
+        }
+      }
+    }
+  }
   syncCreateVisitSlot: {
     parameters: {
       query?: never
@@ -2744,7 +3556,7 @@ export interface operations {
       }
     }
   }
-  syncCreateVisitSlot_1: {
+  syncCreateOfficialVisit: {
     parameters: {
       query?: never
       header?: never
@@ -2795,6 +3607,68 @@ export interface operations {
       }
       /** @description The prison visit slot did not exist */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  syncCreateOfficialVisitor: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        officialVisitId: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SyncCreateOfficialVisitorRequest']
+      }
+    }
+    responses: {
+      /** @description Successfully added the visitor */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncOfficialVisitor']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description The the official visit was not found using the ID presented */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description The visitor with the IDs presented already exists on this visit */
+      409: {
         headers: {
           [name: string]: unknown
         }
@@ -3127,6 +4001,120 @@ export interface operations {
       }
     }
   }
+  createTimeSlot: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateTimeSlotRequest']
+      }
+    }
+    responses: {
+      /** @description Successfully created a prison time slot for official visits */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeSlot']
+        }
+      }
+      /** @description The request was invalid */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  createVisitSlot: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description The internal ID for prison time slot */
+        prisonTimeSlotId: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateVisitSlotRequest']
+      }
+    }
+    responses: {
+      /** @description Successfully created a prison visit slot */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VisitSlot']
+        }
+      }
+      /** @description The request was invalid */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Prison time slot not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VisitSlot']
+        }
+      }
+    }
+  }
   getVisitsBookedForPrison: {
     parameters: {
       query?: never
@@ -3216,6 +4204,7 @@ export interface operations {
       query?: never
       header?: never
       path: {
+        /** @description The official visit ID to remove */
         officialVisitId: number
       }
       cookie?: never
@@ -3658,6 +4647,50 @@ export interface operations {
       }
     }
   }
+  getAllTimeSlotsAndVisitSlots: {
+    parameters: {
+      query?: {
+        /** @description If true, only returns active time slots and visit slots */
+        activeOnly?: boolean
+      }
+      header?: never
+      path: {
+        /** @description The prison code */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The prison time slot and visit slots matching the prison code provided */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeSlotSummary']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   syncDeleteVisitSlot: {
     parameters: {
       query?: never
@@ -3704,6 +4737,105 @@ export interface operations {
           [name: string]: unknown
         }
         content?: never
+      }
+      /** @description The prison time slot had visit slots associated with it and cannot be deleted. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  syncDeleteOfficialVisitor: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description The official visit ID */
+        officialVisitId: number
+        /** @description The official visitor ID to remove */
+        officialVisitorId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Deleted the official visitor */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  deleteTimeSlot: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        timeSlotId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Deleted the time slot */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeSlot']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Could not find the time slot */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
       }
       /** @description The prison time slot had visit slots associated with it and cannot be deleted. */
       409: {

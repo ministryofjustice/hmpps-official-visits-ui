@@ -1,1 +1,2 @@
-npx openapi-typescript https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs > server/@types/prisonerSearchApi/index.d.ts
+npx -y openapi-typescript https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs | sed "s/\"/'/g" | sed "s/;//g" > server/@types/prisonerSearchApi/index.d.ts
+eslint --fix "server/@types/prisonerSearchApi/index.d.ts"
