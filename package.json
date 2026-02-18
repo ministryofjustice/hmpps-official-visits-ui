@@ -129,9 +129,9 @@
     "mocha": {
       "diff": "8.0.3"
     },
-    "ajv": "^8.18.0",
     "@aws-sdk/xml-builder": {
       "fast-xml-parser": "5.3.6"
-    }
+    },
+    "ajv": "^8.18.0"
   }
 }
