@@ -30,7 +30,14 @@ let app: Express
 
 const appSetup = () => {
   app = appWithAllRoutes({
-    services: { auditService, prisonerService, officialVisitsService, personalRelationshipsService, manageUsersService, telemetryService },
+    services: {
+      auditService,
+      prisonerService,
+      officialVisitsService,
+      personalRelationshipsService,
+      manageUsersService,
+      telemetryService,
+    },
     userSupplier: () => user,
   })
 }

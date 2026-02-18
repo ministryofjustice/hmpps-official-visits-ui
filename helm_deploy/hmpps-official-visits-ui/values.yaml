@@ -32,7 +32,6 @@ generic-service:
     TOKEN_VERIFICATION_ENABLED: 'true'
     AUDIT_SQS_REGION: 'eu-west-2'
     AUDIT_SERVICE_NAME: 'DPS131' # Your audit service name
-    APPLICATIONINSIGHTS_CONNECTION_STRING: "$(APPLICATIONINSIGHTS_CONNECTION_STRING)"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
