@@ -1,0 +1,35 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/progress-tracker.njk" import progressTracker %}
+{% from "partials/miniProfile/macro.njk" import miniProfile %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "partials/continueCancel.njk" import continueCancel %}
+{% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
+
+{% set pageTitle = "Are you sure you want to cancel?" %}
+{% set pageHeadingTitle = 'Are you sure you want to cancel and delete this official visit?' %}
+
+{% block content %}
+  {{ createJourneyHeader(prisoner, stepsChecked)}}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Schedule an official visit</span>
+      <h1 class="govuk-heading-l">Are you sure you want to cancel and delete this official visit?</h1>
+      <p class="govuk-body govuk-!-margin-bottom-6">If you choose not to submit this visit, you will lose the information you have entered.</p>
+
+      {{ govukButton({
+        text: "Yes, cancel the visit",
+        classes: "govuk-button--warning",
+        href: "/"
+      }) }}
+
+      {{ govukButton({
+        text: "No, return to creating a visit",
+        classes: "govuk-button--secondary govuk-!-margin-left-4",
+        href: backTo
+      }) }}
+    </div>
+  </div>
+{% endblock %}

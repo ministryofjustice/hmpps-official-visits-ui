@@ -5,18 +5,13 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 {% from "partials/continueCancel.njk" import continueCancel %}
+{% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 
 {% set pageTitle = "Will visitors have equipment with them?" %}
 
 {% block content %}
 
-  <div class="govuk-grid-row govuk-body">
-    <div class="govuk-grid-column-three-quarters">
-      {{ progressTracker(true, true, true) }}
-    </div>
-  </div>
-
-  {{ miniProfile(prisoner) }}
+  {{ createJourneyHeader(prisoner, stepsChecked)}}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
@@ -55,7 +50,7 @@
           items: contactItems
         }) }}
 
-        {{ continueCancel({}) }}
+        {{ continueCancel({stepsChecked: stepsChecked}) }}
       </form>
     </div>
   </div>

@@ -1,15 +1,15 @@
 {% from "moj/components/progress-bar/macro.njk" import mojProgressBar %}
 
-{% macro progressTracker(attendingFlag, timeAndPlaceFlag, visitorFlag, optionalFlag, reviewFlag) %}
+{% macro progressTracker(stepsChecked) %}
 
   <div class="moj-progress-tracker" data-qa="moj-progress-tracker">
     {{ mojProgressBar({
       items: [
-        { id: 1, label: { text: 'Who is attending' }, complete: attendingFlag },
-        { id: 2, label: { text: 'Visit time and place' }, complete: timeAndPlaceFlag },
-        { id: 3, label: { text: 'Visit type and visitors' }, complete: visitorFlag },
-        { id: 4, label: { text: 'Optional information' }, complete: optionalFlag },
-        { id: 5, label: { text: 'Review and confirm' }, complete: reviewFlag }
+        { id: 1, label: { text: 'Who is attending' }, complete: stepsChecked > 0 },
+        { id: 2, label: { text: 'Visit time and place' }, complete: stepsChecked > 1 },
+        { id: 3, label: { text: 'Visit type and visitors' }, complete: stepsChecked > 2 },
+        { id: 4, label: { text: 'Optional information' }, complete: stepsChecked > 3 },
+        { id: 5, label: { text: 'Review and confirm' }, complete: stepsChecked > 4 }
       ]
     }) }}
   </div>

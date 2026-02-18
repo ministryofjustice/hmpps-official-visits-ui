@@ -6,7 +6,7 @@
         text: opts.continueText or "Continue",
         preventDoubleClick: true
     }) }}
-    <a class="govuk-link govuk-link--no-visited-state" href="{{opts.cancelHref or '/'}}">{{opts.cancelText or "Cancel and return to homepage"}}</a>
+    <a class="govuk-link govuk-link--no-visited-state" href="{{opts.cancelHref or 'cancellation-check?stepsChecked=' + opts.stepsChecked}}">{{opts.cancelText or "Cancel and return to homepage"}}</a>
   </div>
 {% endmacro %}
 

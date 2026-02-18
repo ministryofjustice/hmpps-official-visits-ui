@@ -6,18 +6,13 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "partials/continueCancel.njk" import continueCancel %}
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
+{% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 
 {% set pageTitle = "Check and confirm the official visit details" %}
 
 {% block content %}
 
-  <div class="govuk-grid-row govuk-body">
-    <div class="govuk-grid-column-three-quarters">
-      {{ progressTracker(true, true, true, true) }}
-    </div>
-  </div>
-
-  {{ miniProfile(prisoner) }}
+  {{ createJourneyHeader(prisoner, stepsChecked)}}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
@@ -194,7 +189,7 @@
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
-        {{continueCancel({continueText: 'Create official visit'})}}
+        {{continueCancel({continueText: 'Create official visit', stepsChecked: stepsChecked})}}
       </form>
     </div>
   </div>

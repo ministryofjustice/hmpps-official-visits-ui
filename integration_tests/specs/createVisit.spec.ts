@@ -1,5 +1,5 @@
 import { v4 as uuidV4 } from 'uuid'
-import { expect, test } from '@playwright/test'
+import { expect, Page, test } from '@playwright/test'
 import { format } from 'date-fns'
 import hmppsAuth from '../mockApis/hmppsAuth'
 import { login, resetStubs } from '../testUtils'
@@ -29,6 +29,8 @@ import CheckYourAnswersPage from '../pages/checkYourAnswersPage'
 import ConfirmationPage from '../pages/confirmationPage'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
 import { NotAuthorisedPage } from '../pages/notAuthorisedPage'
+import CancellationCheckPage from '../pages/cancellationCheckPage'
+import AbstractPage from '../pages/abstractPage'
 
 const mockPrisoner = {
   prisonerNumber: 'A1111AA',
@@ -135,6 +137,9 @@ test.describe('Create an official visit', () => {
     await login(page)
     await page.goto(`/manage/create/${uuid}/search`)
     const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)
+
+    await checkCancelPage(prisonerSearchPage, PrisonerSearchPage.verifyOnPage, 0)
+
     await prisonerSearchPage.searchBox.fill('John')
     await prisonerSearchPage.searchButton.click()
 
@@ -150,6 +155,7 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/visit-type/)
 
     const visitTypePage = await VisitTypePage.verifyOnPage(page)
+    await checkCancelPage(visitTypePage, VisitTypePage.verifyOnPage, 1)
     await visitTypePage.selectRadioButton('In person')
     await visitTypePage.continueButton.click()
 
@@ -158,6 +164,7 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/time-slot/)
 
     const timeSlotPage = await TimeSlotPage.verifyOnPage(page)
+    await checkCancelPage(timeSlotPage, TimeSlotPage.verifyOnPage, 1)
     await timeSlotPage.selectRadioButton('8am to 5pm Legal Visits Room 2 Groups 1, people 1, video 1')
     await timeSlotPage.continueButton.click()
 
@@ -166,6 +173,7 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
 
     const selectOfficialContactPage = await SelectOfficialContactPage.verifyOnPage(page)
+    await checkCancelPage(selectOfficialContactPage, SelectOfficialContactPage.verifyOnPage, 2)
     await selectOfficialContactPage.checkContact(0)
     await selectOfficialContactPage.continueButton.click()
 
@@ -174,6 +182,7 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-social-visitors/)
 
     const selectSocialContactPage = await SelectSocialContactPage.verifyOnPage(page)
+    await checkCancelPage(selectSocialContactPage, SelectSocialContactPage.verifyOnPage, 2)
     await selectSocialContactPage.checkContact(1)
     await selectSocialContactPage.continueButton.click()
 
@@ -182,6 +191,7 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/assistance-required/)
 
     const assistanceRequiredPage = await AssistanceRequiredPage.verifyOnPage(page)
+    await checkCancelPage(assistanceRequiredPage, AssistanceRequiredPage.verifyOnPage, 3)
     await assistanceRequiredPage.selectCheckbox(
       `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName} (${mockOfficialVisitors[0].relationshipToPrisonerDescription})`,
     )
@@ -198,6 +208,7 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/equipment/)
 
     const equipmentPage = await EquipmentPage.verifyOnPage(page)
+    await checkCancelPage(equipmentPage, EquipmentPage.verifyOnPage, 3)
     await equipmentPage.selectCheckbox(
       `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName} (${mockOfficialVisitors[0].relationshipToPrisonerDescription})`,
     )
@@ -215,10 +226,12 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/comments/)
 
     const commentsPage = await CommentsPage.verifyOnPage(page)
+    await checkCancelPage(commentsPage, CommentsPage.verifyOnPage, 3)
     await commentsPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/check-your-answers/)
     const cyaPage = await CheckYourAnswersPage.verifyOnPage(page)
+    await checkCancelPage(cyaPage, CheckYourAnswersPage.verifyOnPage, 4)
 
     await cyaPage.continueButton.click()
 
@@ -234,3 +247,11 @@ test.describe('Create an official visit', () => {
     )
   })
 })
+
+/** Check that cancel takes us to the cancellation check page with the correct steps checked and that "no" takes us back to the page we came from */
+async function checkCancelPage(srcPage: AbstractPage, verify: (page: Page) => Promise<unknown>, stepsChecked: number) {
+  await srcPage.cancelLink.click()
+  expect(srcPage.page.url()).toMatch(new RegExp(`manage/create/.*/cancellation-check\\?stepsChecked=${stepsChecked}`))
+  await (await CancellationCheckPage.verifyOnPage(srcPage.page)).noButton.click()
+  await verify(srcPage.page)
+}
