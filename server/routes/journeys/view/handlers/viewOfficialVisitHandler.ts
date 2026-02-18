@@ -38,7 +38,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
 
     const createdUser = await this.manageUsersService.getUserByUsername(visit.createdBy, user)
     const modifiedUser =
-      visit.updatedBy === visit.createdBy
+      visit.updatedBy === visit.createdBy || !visit.updatedBy
         ? createdUser
         : await this.manageUsersService.getUserByUsername(visit.updatedBy, user)
 
