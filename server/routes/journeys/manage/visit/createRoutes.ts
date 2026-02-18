@@ -48,7 +48,7 @@ export default function CreateRoutes({
     router.use(journeyStateGuard(guard))
   }
 
-  route('/search', new PrisonerSearchHandler(prisonerService, telemetryService))
+  route('/search', new PrisonerSearchHandler(telemetryService))
   route('/results', new PrisonerSearchResultsHandler(prisonerService, telemetryService))
   route('/prisoner-select', new PrisonerSelectHandler(prisonerService, personalRelationshipsService, telemetryService))
   route(
