@@ -6,18 +6,13 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "partials/continueCancel.njk" import continueCancel %}
+{% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 
 {% set pageTitle = "Select date and time of official visit" %}
 
 {% block content %}
 
-  <div class="govuk-grid-row govuk-body">
-    <div class="govuk-grid-column-three-quarters">
-      {# Who is attending, time and place, visitors, review, booking complete #}
-      {{ progressTracker(true, false, false, false, false) }}
-    </div>
-  </div>
-      {{ miniProfile(prisoner) }}
+  {{ createJourneyHeader(prisoner, stepsChecked)}}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
@@ -129,7 +124,7 @@
           <p> No visit sessions on this day.</p>
         {% endif %}
 
-        {{ continueCancel({})}}
+        {{ continueCancel({stepsChecked: stepsChecked})}}
       </form>
     </div>
   </div>

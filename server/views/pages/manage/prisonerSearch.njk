@@ -3,17 +3,13 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
 {% from "partials/continueCancel.njk" import continueCancel %}
+{% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 
 {% set pageTitle = "Who is the official visit for?" %}
 
 {% block content %}
 
-  <div class="govuk-grid-row govuk-body">
-    <div class="govuk-grid-column-three-quarters">
-      {# Who is attending, time and place, visitors, review and confirm #}
-      {{ progressTracker(false, false, false, false) }}
-    </div>
-  </div>
+  {{ createJourneyHeader(prisoner, stepsChecked)}}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
@@ -41,7 +37,8 @@
         }) }}
 
         {{ continueCancel({
-          continueText: "Search"
+          continueText: "Search",
+          stepsChecked: stepsChecked
         }) }}
       </form>
     </div>

@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Request, Response, NextFunction } from 'express'
 import type { Services } from '../../../../services'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import logPageViewMiddleware from '../../../../middleware/logPageViewMiddleware'
@@ -18,6 +18,11 @@ import EquipmentHandler from './handlers/equipmentHandler'
 import CommentsHandler from './handlers/commentsHandler'
 import journeyStateGuard, { JourneyStateGuard } from '../../../../middleware/journey/journeyStateGuard'
 import { socialVisitorsPageEnabled } from '../../../../utils/utils'
+import CancellationCheckHandler from './handlers/cancellationCheckHandler'
+import { getProgressTrackerState } from './createJourneyState'
+import { Page } from '../../../../services/auditService'
+
+export const routePage: Record<string, Page> = {}
 
 export default function CreateRoutes({
   auditService,
@@ -28,8 +33,13 @@ export default function CreateRoutes({
 }: Services): Router {
   const router = Router({ mergeParams: true })
 
+  const addStepsChecked = (handler: PageHandler) => async (_: Request, res: Response, next: NextFunction) => {
+    res.locals.stepsChecked = getProgressTrackerState(handler.PAGE_NAME)
+    return next()
+  }
+
   const route = (path: string | string[], handler: PageHandler) =>
-    router.get(path, logPageViewMiddleware(auditService, handler), handler.GET) &&
+    router.get(path, logPageViewMiddleware(auditService, handler), addStepsChecked(handler), handler.GET) &&
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
@@ -60,6 +70,7 @@ export default function CreateRoutes({
   route('/equipment', new EquipmentHandler(officialVisitsService))
   route('/comments', new CommentsHandler())
   route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService))
+  route('/cancellation-check', new CancellationCheckHandler())
 
   return router
 }
