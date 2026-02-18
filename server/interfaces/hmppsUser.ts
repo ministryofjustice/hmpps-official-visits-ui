@@ -68,4 +68,5 @@ export enum Permission {
   VIEW = 1 << 1,
   MANAGE = 1 << 2,
   ADMIN = 1 << 3,
+  CONTACT = 1 << 4,
 }
