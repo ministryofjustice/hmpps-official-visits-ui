@@ -1,4 +1,4 @@
-import CaseLoad from '@ministryofjustice/hmpps-connect-dps-components/dist/types/CaseLoad'
+import type CaseLoad from '@ministryofjustice/hmpps-connect-dps-components/dist/types/CaseLoad'
 
 export type AuthSource = 'nomis' | 'delius' | 'external' | 'azuread'
 
