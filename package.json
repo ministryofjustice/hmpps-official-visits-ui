@@ -34,7 +34,7 @@
     "npm": "^11"
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.933.0",
+    "@aws-sdk/client-sqs": "^3.983.0",
     "@axe-core/playwright": "^4.11.0",
     "@ministryofjustice/frontend": "8.0.0",
     "@ministryofjustice/hmpps-auth-clients": "^1.0.0",
@@ -63,7 +63,7 @@
     "openapi-typescript": "^7.10.1",
     "passport": "^0.7.0",
     "passport-oauth2": "^1.8.0",
-    "qs": "6.14.1",
+    "qs": "6.15.0",
     "redis": "^5.9.0",
     "superagent": "^10.2.3",
     "uuid": "^11.1.0",
@@ -128,6 +128,10 @@
     },
     "mocha": {
       "diff": "8.0.3"
+    },
+    "ajv": "^8.18.0",
+    "@aws-sdk/xml-builder": {
+      "fast-xml-parser": "5.3.6"
     }
   }
 }
