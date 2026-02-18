@@ -120,6 +120,27 @@ describe('Search for an official visit', () => {
         })
     })
 
+    it('should handle null visit.updatedBy', () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({ ...mockVisitByIdVisit, updatedBy: null })
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect(getPageHeader($)).toEqual('Official visit')
+
+          expect(getValueByKey($, 'Created by')).toEqual('Test User (Monday, 19 January 2026)')
+          expect(getValueByKey($, 'Last modified')).toEqual('Test User (Monday, 19 January 2026)')
+
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.VIEW_OFFICIAL_VISIT_PAGE, {
+            who: user.username,
+            correlationId: expect.any(String),
+          })
+        })
+    })
+
     it('should render the correct view page with None fields where data is not present', () => {
       officialVisitsService.getOfficialVisitById.mockResolvedValue({
         ...mockVisitByIdVisit,
