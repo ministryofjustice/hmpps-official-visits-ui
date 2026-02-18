@@ -1,6 +1,6 @@
 import { TelemetryClient } from 'applicationinsights'
 import TelemetryService from './telemetryService'
-import { HmppsUser } from '../interfaces/hmppsUser'
+import { HmppsUser, Permission } from '../interfaces/hmppsUser'
 
 jest.mock('applicationinsights')
 
@@ -9,7 +9,7 @@ describe('telemetryService', () => {
   const telemetryService = new TelemetryService(telemetryClient)
   const user: HmppsUser = {
     caseLoads: [],
-    permissions: { OV: undefined },
+    permissions: { OV: Permission.DEFAULT | Permission.VIEW },
     activeCaseLoadId: '',
     name: 'User',
     userId: 'user_id',

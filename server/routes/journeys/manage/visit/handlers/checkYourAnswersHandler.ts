@@ -41,7 +41,7 @@ export default class CheckYourAnswersHandler implements PageHandler {
     if (mode === 'create') {
       const response = await this.officialVisitsService.createVisit(visit, user)
       this.telemetryService.trackEvent('OFFICIAL_VISIT_CREATED', user, {
-        officialVisitId: visit.officialVisitId,
+        officialVisitId: response.officialVisitId,
         prisonCode: visit.prisonCode,
       })
       return res.redirect(`confirmation/${response.officialVisitId}`)

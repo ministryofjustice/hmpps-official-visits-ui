@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
-import PrisonerService from '../../../../../services/prisonerService'
 import { schema } from './prisonerSearchSchema'
 import TelemetryService from '../../../../../services/telemetryService'
 
@@ -10,18 +9,12 @@ export default class PrisonerSearchHandler implements PageHandler {
 
   public BODY = schema
 
-  constructor(
-    private readonly prisonerService: PrisonerService,
-    private readonly telemetryService: TelemetryService,
-  ) {}
+  constructor(private readonly telemetryService: TelemetryService) {}
 
   public GET = async (req: Request, res: Response) => {
     req.session.journey.officialVisit ??= { searchTerm: '' }
-    const { officialVisit } = req.session.journey
     const { user } = res.locals
-    this.telemetryService.trackEvent('OFFICIAL_VISIT_ACCESS_PRISONER_SEARCH', user, {
-      searchTerm: officialVisit.searchTerm,
-    })
+    this.telemetryService.trackEvent('OFFICIAL_VISIT_ACCESS_PRISONER_SEARCH', user, {})
     res.render('pages/manage/prisonerSearch', {
       backUrl: '/',
       searchTerm: req.session.journey.officialVisit.searchTerm,
