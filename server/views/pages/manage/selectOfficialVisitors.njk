@@ -7,18 +7,14 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "partials/continueCancel.njk" import continueCancel %}
+{% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 
 {% set pageTitle = "Select official visitors from the prisoner's approved contact list" %}
 
 {% block content %}
 
-  <div class="govuk-grid-row govuk-body">
-    <div class="govuk-grid-column-three-quarters">
-      {{ progressTracker(true, true, false, false, false) }}
+  {{ createJourneyHeader(prisoner, stepsChecked)}}
 
-    </div>
-  </div>
-      {{ miniProfile(prisoner) }}
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Schedule an official visit</span>
@@ -148,7 +144,7 @@
   {% endif %}
     <div class="govuk-grid-row govuk-body">
       <div class="govuk-grid-column-three-quarters">
-        {{ continueCancel({}) }}
+        {{ continueCancel({stepsChecked: stepsChecked}) }}
     </div>
   </div>
 

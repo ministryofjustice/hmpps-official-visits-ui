@@ -5,16 +5,13 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 {% from "partials/continueCancel.njk" import continueCancel %}
+{% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 
 {% set pageTitle = "Will visitors need assistance during their visit?" %}
 
 {% block content %}
-  <div class="govuk-grid-row govuk-body">
-    <div class="govuk-grid-column-three-quarters">
-      {{ progressTracker(true, true, true) }}
-    </div>
-  </div>
-  {{ miniProfile(prisoner) }}
+
+  {{ createJourneyHeader(prisoner, stepsChecked)}}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
@@ -47,7 +44,7 @@
           }) }}
         {% endfor %}
 
-        {{ continueCancel({}) }}
+        {{ continueCancel({stepsChecked: stepsChecked}) }}
       </form>
     </div>
   </div>

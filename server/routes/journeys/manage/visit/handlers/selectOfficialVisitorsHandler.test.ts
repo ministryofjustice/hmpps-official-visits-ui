@@ -69,7 +69,7 @@ describe('Select official visitors', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          // Check we have completed step 2/6 on the progress tracker
+          // Check we have completed step 2/5 on the progress tracker
           expect(getProgressTrackerCompleted($)).toHaveLength(2)
           expect(getProgressTrackerItems($)).toHaveLength(5)
 

@@ -26,6 +26,23 @@ const pageData: { page: Page; keys: (keyof OfficialVisitJourney)[] }[] = [
   { page: Page.COMMENTS_PAGE, keys: ['prisonerNotes', 'commentsPageCompleted'] },
 ]
 
+const progressTrackerPages: Record<string, number> = {
+  [Page.PRISONER_SEARCH_PAGE]: 0,
+  [Page.PRISONER_SELECT_PAGE]: 0,
+  [Page.VISIT_TYPE_PAGE]: 1,
+  [Page.TIME_SLOT_PAGE]: 1,
+  [Page.SELECT_OFFICIAL_VISITORS_PAGE]: 2,
+  [Page.SELECT_SOCIAL_VISITORS_PAGE]: 2,
+  [Page.ASSISTANCE_REQUIRED_PAGE]: 3,
+  [Page.EQUIPMENT_PAGE]: 3,
+  [Page.COMMENTS_PAGE]: 3,
+  [Page.CHECK_YOUR_ANSWERS_PAGE]: 4,
+}
+
+export function getProgressTrackerState(page: Page) {
+  return progressTrackerPages[page] || 0
+}
+
 export function savePrisonerSelection(journey: Journey, prisoner: JourneyPrisoner) {
   // Reassigning the object deletes anything else that might have been previously saved (restarting the journey)
   journey.officialVisit = {
