@@ -100,7 +100,7 @@ describe('cancelVisitHandler', () => {
         .expect('Location', `/view/visit/${ovId}?backTo=${b64}`)
 
       expect(officialVisitsService.cancelVisit).toHaveBeenCalledWith(
-        undefined,
+        'HEI',
         String(ovId),
         { cancellationReason: 'SOMETHING_CANCELLED', cancellationNotes: 'some comments' },
         user,

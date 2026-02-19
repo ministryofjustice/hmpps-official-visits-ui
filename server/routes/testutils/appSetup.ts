@@ -54,6 +54,7 @@ function appSetup(
   app.use((req, res, next) => {
     req.user = userSupplier() as Express.User
     req.flash = flashProvider
+    req.session.activeCaseLoadId = 'HEI'
     req.session.journey = journeySessionSupplier()
     req.session.journeyData = {}
     req.session.journeyData[journeyId()] = { instanceUnixEpoch: Date.now(), ...journeySessionSupplier() }

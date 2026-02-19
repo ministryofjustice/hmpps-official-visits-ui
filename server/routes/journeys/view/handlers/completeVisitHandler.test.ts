@@ -105,7 +105,7 @@ describe('CompleteOfficialVisitHandler', () => {
           expect(cancelLink.text().trim()).toBe('Cancel and return to visit summary')
           expect(cancelLink.attr('href')).toBe(`/view/visit/${ovId}`)
 
-          expect(officialVisitsService.getOfficialVisitById).toHaveBeenCalledWith(undefined, ovId, user)
+          expect(officialVisitsService.getOfficialVisitById).toHaveBeenCalledWith('HEI', ovId, user)
           expect(officialVisitsService.getReferenceData).toHaveBeenCalledWith(expect.anything(), 'VIS_COMPLETION')
           expect(officialVisitsService.getReferenceData).toHaveBeenCalledWith(expect.anything(), 'SEARCH_LEVEL')
         })
@@ -182,10 +182,10 @@ describe('CompleteOfficialVisitHandler', () => {
         .expect(302)
         .expect('Location', `/view/visit/${ovId}?backTo=${b64}`)
 
-      expect(officialVisitsService.getOfficialVisitById).toHaveBeenCalledWith(undefined, ovId, user)
+      expect(officialVisitsService.getOfficialVisitById).toHaveBeenCalledWith('HEI', ovId, user)
 
       expect(officialVisitsService.completeVisit).toHaveBeenCalledWith(
-        undefined,
+        'HEI',
         String(ovId),
         {
           completionReason: 'COMPLETE',
