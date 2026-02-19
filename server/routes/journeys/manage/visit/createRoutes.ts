@@ -49,7 +49,7 @@ export default function CreateRoutes({
   }
 
   route('/search', new PrisonerSearchHandler(telemetryService))
-  route('/results', new PrisonerSearchResultsHandler(prisonerService, telemetryService))
+  route('/results', new PrisonerSearchResultsHandler(prisonerService))
   route('/prisoner-select', new PrisonerSelectHandler(prisonerService, personalRelationshipsService, telemetryService))
   route(
     `/confirmation/:officialVisitId`,
