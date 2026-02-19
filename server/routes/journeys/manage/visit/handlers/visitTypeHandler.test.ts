@@ -8,7 +8,6 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import { getPageHeader } from '../../../../testutils/cheerio'
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import expectJourneySession from '../../../../testutils/testUtilRoute'
-import TelemetryService from '../../../../../services/telemetryService'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -17,13 +16,12 @@ jest.mock('../../../../../services/officialVisitsService')
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerService = new PrisonerService(null) as jest.Mocked<PrisonerService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
-const telemetryService = new TelemetryService(null) as jest.Mocked<TelemetryService>
 
 let app: Express
 
 const appSetup = (journeySession = { officialVisit: {} }) => {
   app = appWithAllRoutes({
-    services: { auditService, prisonerService, officialVisitsService, telemetryService },
+    services: { auditService, prisonerService, officialVisitsService },
     userSupplier: () => user,
     journeySessionSupplier: () => journeySession,
   })

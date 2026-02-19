@@ -6,18 +6,16 @@ import { getByDataQa, getPageHeader } from '../../../testutils/cheerio'
 import AuditService, { Page } from '../../../../services/auditService'
 import config from '../../../../config'
 import { AuthorisedRoles } from '../../../../middleware/populateUserPermissions'
-import TelemetryService from '../../../../services/telemetryService'
 
 jest.mock('../../../../services/auditService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
-const telemetryService = new TelemetryService(null) as jest.Mocked<TelemetryService>
 
 let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    services: { auditService, telemetryService },
+    services: { auditService },
     userSupplier: () => user,
   })
   config.maintenanceMode = false

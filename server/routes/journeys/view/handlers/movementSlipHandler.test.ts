@@ -7,19 +7,18 @@ import AuditService from '../../../../services/auditService'
 import { appWithAllRoutes, user } from '../../../testutils/appSetup'
 import { mockVisitByIdVisit } from '../../../../testutils/mocks'
 import { getPageHeader, getValueByKey } from '../../../testutils/cheerio'
-import TelemetryService from '../../../../services/telemetryService'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/officialVisitsService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
-const telemetryService = new TelemetryService(null) as jest.Mocked<TelemetryService>
+
 let app: Express
 
 const appSetup = () => {
   app = appWithAllRoutes({
-    services: { auditService, officialVisitsService, telemetryService },
+    services: { auditService, officialVisitsService },
     userSupplier: () => user,
   })
 }
