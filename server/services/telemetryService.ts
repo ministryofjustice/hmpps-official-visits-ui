@@ -14,7 +14,7 @@ export default class TelemetryService {
           properties: {
             ...properties,
             username: user.username,
-            activeCaseLoadId: user.activeCaseLoad?.caseLoadId,
+            activeCaseLoadId: user.activeCaseLoadId,
           },
         })
       } catch (error) {

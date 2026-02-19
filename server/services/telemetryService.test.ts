@@ -8,9 +8,8 @@ describe('telemetryService', () => {
   const telemetryClient = new TelemetryClient() as jest.Mocked<TelemetryClient>
   const telemetryService = new TelemetryService(telemetryClient)
   const user: HmppsUser = {
-    caseLoads: [],
     permissions: { OV: Permission.DEFAULT | Permission.VIEW },
-    activeCaseLoadId: '',
+    activeCaseLoadId: 'BXI',
     name: 'User',
     userId: 'user_id',
     token: 'token',
@@ -19,13 +18,6 @@ describe('telemetryService', () => {
     authSource: 'nomis',
     staffId: 4567,
     userRoles: ['CONTACTS_ADMINISTRATOR'],
-    activeCaseLoad: {
-      caseLoadId: 'BXI',
-      currentlyActive: true,
-      description: '',
-      type: '',
-      caseloadFunction: '',
-    },
   }
 
   it('should send event with all properties', () => {

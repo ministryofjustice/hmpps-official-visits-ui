@@ -15,13 +15,11 @@ export default class PrisonerSearchResultsHandler implements PageHandler {
     private readonly prisonerService: PrisonerService,
     private readonly telemetryService: TelemetryService,
   ) {}
-
   public GET = async (req: Request, res: Response) => {
     const { user } = res.locals
     const prisonCode = req.session.activeCaseLoadId
     const page = Number(req.query.page as unknown) || 0
-    const { officialVisit } = req.session.journey
-    const { searchTerm } = officialVisit
+    const { searchTerm } = req.session.journey.officialVisit
 
     const results = await this.prisonerService.searchInCaseload(searchTerm, prisonCode, user, {
       page,
