@@ -6,7 +6,7 @@ export enum AuthorisedRoles {
   VIEW = 'OFFVIS_VIEW_ONLY',
   MANAGE = 'OFFVIS_MANAGE',
   ADMIN = 'OFFVIS_ADMIN_USER',
-  ROLE_CONTACTS_AUTHORISER = 'CONTACTS_AUTHORISER',
+  CONTACTS_AUTHORISER = 'CONTACTS_AUTHORISER',
 }
 
 const roleMap: Record<string, Permission> = {
@@ -14,7 +14,7 @@ const roleMap: Record<string, Permission> = {
   [AuthorisedRoles.VIEW]: Permission.VIEW,
   [AuthorisedRoles.MANAGE]: Permission.MANAGE,
   [AuthorisedRoles.ADMIN]: Permission.ADMIN,
-  [AuthorisedRoles.ROLE_CONTACTS_AUTHORISER]: Permission.CONTACTS_AUTHORISER,
+  [AuthorisedRoles.CONTACTS_AUTHORISER]: Permission.CONTACTS_AUTHORISER,
 }
 
 /** Ensure any OFFVIS roles result in DEFAULT being added. And users with MANAGE also get VIEW */
