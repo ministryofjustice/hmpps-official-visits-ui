@@ -60,10 +60,10 @@ test.describe('RBAC: Create an official visit', async () => {
     await NotAuthorisedPage.verifyOnPage(page)
   })
 
-  test('should deny access to users with only CONTACTS_AUTHORISER role', async ({ page }) => {
+  test('should deny access to users with only CONTACTS_AUTHORISER  abd DEFAULT role', async ({ page }) => {
     await login(page, {
       name: 'AUser',
-      roles: [`ROLE_${AuthorisedRoles.CONTACTS_AUTHORISER}`],
+      roles: [`ROLE_${AuthorisedRoles.CONTACTS_AUTHORISER}`, `ROLE_${AuthorisedRoles.DEFAULT}`],
       active: true,
       authSource: 'nomis',
     })
@@ -185,6 +185,8 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
     await page.goto(`/manage/create/${uuid}/check-your-answers`)
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
+    // Do not show link to Contacts if the user doesn't have the 'Contacts Authoriser' role
+    await expect(page.getByText('If you cannot find the contact in the list')).not.toBeVisible()
 
     const selectOfficialContactPage = await SelectOfficialContactPage.verifyOnPage(page)
     await checkCancelPage(selectOfficialContactPage, SelectOfficialContactPage.verifyOnPage, 2)
@@ -194,6 +196,8 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-social-visitors/)
     await page.goto(`/manage/create/${uuid}/check-your-answers`)
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-social-visitors/)
+    // Do not show link to Contacts if the user doesn't have the 'Contacts Authoriser' role
+    await expect(page.getByText('If you cannot find the contact in the list')).not.toBeVisible()
 
     const selectSocialContactPage = await SelectSocialContactPage.verifyOnPage(page)
     await checkCancelPage(selectSocialContactPage, SelectSocialContactPage.verifyOnPage, 2)
