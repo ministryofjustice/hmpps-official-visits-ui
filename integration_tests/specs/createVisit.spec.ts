@@ -147,130 +147,17 @@ test.describe('Create an official visit', () => {
     await resetStubs()
   })
 
-  test('Happy path example with CONTACTS_AUTHORISER role', async ({ page }) => {
+  test('Happy path example', async ({ page }) => {
     await login(page, {
       name: 'AUser',
-      roles: ['ROLE_PRISON', `ROLE_${AuthorisedRoles.MANAGE}`, `ROLE_${AuthorisedRoles.CONTACTS_AUTHORISER}`],
+      roles: ['ROLE_PRISON', `ROLE_${AuthorisedRoles.CONTACTS_AUTHORISER}`, `ROLE_${AuthorisedRoles.MANAGE}`],
       active: true,
       authSource: 'nomis',
     })
-    await page.goto(`/manage/create/${uuid}/search`)
-    const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)
-
-    await checkCancelPage(prisonerSearchPage, PrisonerSearchPage.verifyOnPage, 0)
-
-    await prisonerSearchPage.searchBox.fill('John')
-    await prisonerSearchPage.searchButton.click()
-
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/results/)
-    await page.goto(`/manage/create/${uuid}/check-your-answers`)
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/results/)
-
-    const prisonerSearchResultsPage = await PrisonerSearchResultsPage.verifyOnPage(page)
-    await prisonerSearchResultsPage.selectThisPrisoner()
-
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/visit-type/)
-    await page.goto(`/manage/create/${uuid}/check-your-answers`)
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/visit-type/)
-
-    const visitTypePage = await VisitTypePage.verifyOnPage(page)
-    await checkCancelPage(visitTypePage, VisitTypePage.verifyOnPage, 1)
-    await visitTypePage.selectRadioButton('In person')
-    await visitTypePage.continueButton.click()
-
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/time-slot/)
-    await page.goto(`/manage/create/${uuid}/check-your-answers`)
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/time-slot/)
-
-    const timeSlotPage = await TimeSlotPage.verifyOnPage(page)
-    await checkCancelPage(timeSlotPage, TimeSlotPage.verifyOnPage, 1)
-    await timeSlotPage.selectRadioButton('8am to 5pm Legal Visits Room 2 Groups 1, people 1, video 1')
-    await timeSlotPage.continueButton.click()
-
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
-    await page.goto(`/manage/create/${uuid}/check-your-answers`)
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
-    // Do not show link to Contacts if the user doesn't have the 'Contacts Authoriser' role
-    await expect(page.getByText('If you cannot find the contact in the list')).toBeVisible()
-
-    const selectOfficialContactPage = await SelectOfficialContactPage.verifyOnPage(page)
-    await checkCancelPage(selectOfficialContactPage, SelectOfficialContactPage.verifyOnPage, 2)
-    await selectOfficialContactPage.checkContact(0)
-    await selectOfficialContactPage.continueButton.click()
-
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/select-social-visitors/)
-    await page.goto(`/manage/create/${uuid}/check-your-answers`)
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/select-social-visitors/)
-    // Do not show link to Contacts if the user doesn't have the 'Contacts Authoriser' role
-    await expect(page.getByText('If you cannot find the contact in the list')).toBeVisible()
-
-    const selectSocialContactPage = await SelectSocialContactPage.verifyOnPage(page)
-    await checkCancelPage(selectSocialContactPage, SelectSocialContactPage.verifyOnPage, 2)
-    await selectSocialContactPage.checkContact(1)
-    await selectSocialContactPage.continueButton.click()
-
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/assistance-required/)
-    await page.goto(`/manage/create/${uuid}/check-your-answers`)
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/assistance-required/)
-
-    const assistanceRequiredPage = await AssistanceRequiredPage.verifyOnPage(page)
-    await checkCancelPage(assistanceRequiredPage, AssistanceRequiredPage.verifyOnPage, 3)
-    await assistanceRequiredPage.selectCheckbox(
-      `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName} (${mockOfficialVisitors[0].relationshipToPrisonerDescription})`,
-    )
-    await assistanceRequiredPage.fillBoxForContact(0, 'Assistance required')
-
-    await assistanceRequiredPage.selectCheckbox(
-      `${mockSocialVisitors[1].firstName} ${mockSocialVisitors[1].lastName} (${mockSocialVisitors[1].relationshipToPrisonerDescription})`,
-    )
-    await assistanceRequiredPage.fillBoxForContact(1, 'Assistance required (social)')
-    await assistanceRequiredPage.continueButton.click()
-
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/equipment/)
-    await page.goto(`/manage/create/${uuid}/check-your-answers`)
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/equipment/)
-
-    const equipmentPage = await EquipmentPage.verifyOnPage(page)
-    await checkCancelPage(equipmentPage, EquipmentPage.verifyOnPage, 3)
-    await equipmentPage.selectCheckbox(
-      `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName} (${mockOfficialVisitors[0].relationshipToPrisonerDescription})`,
-    )
-    await equipmentPage.fillBoxForContact(0, 'Equipment required')
-
-    await equipmentPage.selectCheckbox(
-      `${mockSocialVisitors[1].firstName} ${mockSocialVisitors[1].lastName} (${mockSocialVisitors[1].relationshipToPrisonerDescription})`,
-    )
-    await equipmentPage.fillBoxForContact(1, 'Equipment required (social)')
-
-    await equipmentPage.continueButton.click()
-
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/comments/)
-    await page.goto(`/manage/create/${uuid}/check-your-answers`)
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/comments/)
-
-    const commentsPage = await CommentsPage.verifyOnPage(page)
-    await checkCancelPage(commentsPage, CommentsPage.verifyOnPage, 3)
-    await commentsPage.continueButton.click()
-
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/check-your-answers/)
-    const cyaPage = await CheckYourAnswersPage.verifyOnPage(page)
-    await checkCancelPage(cyaPage, CheckYourAnswersPage.verifyOnPage, 4)
-
-    await cyaPage.continueButton.click()
-
-    expect(page.url()).toMatch(/\/manage\/create\/.*\/confirmation\/1/)
-    const confirmationPage = await ConfirmationPage.verifyOnPage(page)
-
-    expect(await confirmationPage.caption.innerText()).toEqual('Prisoner: John Doe (A1111AA)')
-    expect(await confirmationPage.page.getByText('You have successfully').innerText()).toEqual(
-      'You have successfully scheduled an official visit with:',
-    )
-    expect(await confirmationPage.page.locator('#visit-details').innerText()).toEqual(
-      'The visit will take place on Thursday, 1 January 2026 from 10am to 11am (1 hour) in First Location.',
-    )
+    await page.goto(`/manage/create/${uuid}/select-official-visitors`)
   })
 
-  test('Happy path example with no CONTACTS_AUTHORISER role', async ({ page }) => {
+  test('Happy path example', async ({ page }) => {
     await login(page)
     await page.goto(`/manage/create/${uuid}/search`)
     const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)

@@ -32,8 +32,8 @@ export const user: HmppsUser = {
   displayName: 'First Last',
   authSource: 'nomis',
   staffId: 1234,
-  userRoles: [AuthorisedRoles.MANAGE],
-  permissions: { OV: Permission.DEFAULT | Permission.VIEW | Permission.MANAGE },
+  userRoles: [AuthorisedRoles.MANAGE, AuthorisedRoles.CONTACTS_AUTHORISER],
+  permissions: { OV: Permission.DEFAULT | Permission.VIEW | Permission.MANAGE | Permission.CONTACTS_AUTHORISER },
 }
 
 export const flashProvider = jest.fn()

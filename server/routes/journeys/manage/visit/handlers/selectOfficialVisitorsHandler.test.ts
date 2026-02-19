@@ -199,6 +199,8 @@ describe('Select official visitors', () => {
           // Prisoner contacts - empty content
           expect(getByDataQa($, 'empty-contacts-title').text().trim()).toEqual('Approved official contacts')
           expect(getByDataQa($, 'empty-contacts-message').text().trim()).toEqual('No approved official contacts')
+          // contact link displayed only for contacts authorizer role
+          expect(getByDataQa($, 'contacts-link').length).toEqual(1)
 
           // Calls expected
           expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
