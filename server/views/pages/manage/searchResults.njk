@@ -26,8 +26,7 @@
                     id: "searchTerm",
                     name: "searchTerm",
                     label: {
-                        text: "Search by prisoner name or prisoner ID",
-                        classes: "govuk-!-font-weight-bold"
+                        text: "Search by prisoner name or prisoner ID"
                     },
                     classes: '',
                     autocomplete: "off",
@@ -51,18 +50,16 @@
               <h3 class="govuk-heading-m">
                   Select the correct result from the list.
               </h3>
+               {% set resultString = 'result' if results.totalElements === 1 else 'results' %}
+               <p class="govuk-body">
+                 Showing {{ results.totalElements }} {{ resultString }}{{ (" (page " + (results.number + 1) + " of " + results.totalPages + ")") if results.totalPages > 1 }}.
+               </p>
           {% endif %}
 
           {% if results.content.length === 1 %}
               <h3 class="govuk-heading-m">
                   There is 1 matching person.
               </h3>
-          {% endif %}
-
-          {% if results.content.length > pageSize %}
-              <p class="govuk-body">
-                  Showing {{ results.totalElements }} results{{ (" (page " + (results.number + 1) + " of " + results.totalPages + ")") if results.totalPages > 1 }}.
-              </p>
           {% endif %}
 
         {% set rows = [] %}
