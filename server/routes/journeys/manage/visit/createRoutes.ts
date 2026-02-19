@@ -48,9 +48,9 @@ export default function CreateRoutes({
     router.use(journeyStateGuard(guard))
   }
 
-  route('/search', new PrisonerSearchHandler(telemetryService))
+  route('/search', new PrisonerSearchHandler())
   route('/results', new PrisonerSearchResultsHandler(prisonerService))
-  route('/prisoner-select', new PrisonerSelectHandler(prisonerService, personalRelationshipsService, telemetryService))
+  route('/prisoner-select', new PrisonerSelectHandler(prisonerService, personalRelationshipsService))
   route(
     `/confirmation/:officialVisitId`,
     new ConfirmationHandler(officialVisitsService, prisonerService, telemetryService),
@@ -65,15 +65,15 @@ export default function CreateRoutes({
   })
 
   // These are the subsequent steps in the journey to create an official visit
-  route(`/visit-type`, new VisitTypeHandler(officialVisitsService, telemetryService))
-  route(`/time-slot`, new TimeSlotHandler(officialVisitsService, activitiesService, telemetryService))
+  route(`/visit-type`, new VisitTypeHandler(officialVisitsService))
+  route(`/time-slot`, new TimeSlotHandler(officialVisitsService, activitiesService))
   route(`/review-scheduled-events`, new ReviewScheduledEventsHandler(officialVisitsService))
-  route(`/select-official-visitors`, new SelectOfficialVisitorsHandler(officialVisitsService, telemetryService))
-  route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService, telemetryService))
-  route('/assistance-required', new AssistanceRequiredHandler(telemetryService))
-  route('/equipment', new EquipmentHandler(officialVisitsService, telemetryService))
-  route('/comments', new CommentsHandler(telemetryService))
-  route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService, telemetryService))
+  route(`/select-official-visitors`, new SelectOfficialVisitorsHandler(officialVisitsService))
+  route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService))
+  route('/assistance-required', new AssistanceRequiredHandler())
+  route('/equipment', new EquipmentHandler())
+  route('/comments', new CommentsHandler())
+  route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService))
   route('/cancellation-check', new CancellationCheckHandler())
 
   return router

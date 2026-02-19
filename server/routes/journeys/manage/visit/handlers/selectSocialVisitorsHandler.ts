@@ -4,20 +4,15 @@ import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
 import { recallContacts, saveVisitors } from '../createJourneyState'
-import TelemetryService from '../../../../../services/telemetryService'
 
 export default class SelectSocialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_SOCIAL_VISITORS_PAGE
 
-  constructor(
-    private readonly officialVisitsService: OfficialVisitsService,
-    private readonly telemetryService: TelemetryService,
-  ) {}
+  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   public GET = async (req: Request, res: Response) => {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
-    const { officialVisit } = req.session.journey
-    const { prisonCode, prisonerNumber } = officialVisit.prisoner
+    const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
 
     // Get the prisoner's list of approved, social contacts
     const [approvedSocialContacts] = await Promise.all([
@@ -26,25 +21,21 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
 
     // Record the approved social contacts who are already selected for this visit in session data
     const selectedContacts =
-      res.locals.formResponses?.selected || officialVisit.socialVisitors?.map(v => v.prisonerContactId) || []
-    const { user } = res.locals
-    this.telemetryService.trackEvent('OFFICIAL_VISIT_VIEW_SOCIAL_VISITORS', user, {
-      officialVisitId: officialVisit.officialVisitId,
-      prisonCode: officialVisit.prisonCode,
-    })
+      res.locals.formResponses?.selected ||
+      req.session.journey.officialVisit.socialVisitors?.map(v => v.prisonerContactId) ||
+      []
     // Show the list and prefill the checkboxes for the selected social visitors
     res.render('pages/manage/selectSocialVisitors', {
       contacts: recallContacts(req.session.journey, 'S', approvedSocialContacts),
       selectedContacts,
       backUrl: `select-official-visitors`,
-      prisoner: officialVisit.prisoner,
+      prisoner: req.session.journey.officialVisit.prisoner,
     })
   }
 
   public POST = async (req: Request, res: Response) => {
     // Use the prison and prisoner details from the session
-    const { officialVisit } = req.session.journey
-    const { prisonCode, prisonerNumber } = officialVisit.prisoner
+    const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
     const selected = Array.isArray(req.body.selected) ? req.body.selected : []
 
     const allApprovedSocialContacts = recallContacts(
@@ -67,12 +58,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
         .filter((o: JourneyVisitor) => o),
     )
 
-    officialVisit.socialVisitorsPageCompleted = true
-    const { user } = res.locals
-    this.telemetryService.trackEvent('OFFICIAL_VISIT_UPDATE_SOCIAL_VISITORS', user, {
-      officialVisitId: officialVisit.officialVisitId,
-      prisonCode: officialVisit.prisonCode,
-    })
+    req.session.journey.officialVisit.socialVisitorsPageCompleted = true
     return res.redirect(`assistance-required`)
   }
 }

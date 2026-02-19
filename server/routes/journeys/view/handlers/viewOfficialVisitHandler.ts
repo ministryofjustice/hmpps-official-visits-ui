@@ -5,7 +5,6 @@ import OfficialVisitsService from '../../../../services/officialVisitsService'
 import PrisonerService from '../../../../services/prisonerService'
 import PersonalRelationshipsService from '../../../../services/personalRelationshipsService'
 import ManageUserService from '../../../../services/manageUsersService'
-import TelemetryService from '../../../../services/telemetryService'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_PAGE
@@ -15,7 +14,6 @@ export default class ViewOfficialVisitHandler implements PageHandler {
     private readonly prisonerService: PrisonerService,
     private readonly personalRelationshipsService: PersonalRelationshipsService,
     private readonly manageUsersService: ManageUserService,
-    private readonly telemetryService: TelemetryService,
   ) {}
 
   GET = async (req: Request, res: Response) => {
@@ -53,11 +51,6 @@ export default class ViewOfficialVisitHandler implements PageHandler {
     }
 
     const updateVerb = req.flash('updateVerb')[0]
-    this.telemetryService.trackEvent('OFFICIAL_VISIT_VIEW_VISIT', user, {
-      officialVisitId: visit.officialVisitId,
-      prisonCode: visit.prisonCode,
-      visitTypeCode: visit.visitTypeCode,
-    })
     return res.render('pages/view/visit', {
       visit: {
         ...visit,

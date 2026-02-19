@@ -6,7 +6,6 @@ import ActivitiesService from '../../../../../services/activitiesService'
 import { getParsedDateFromQueryString, getWeekOfDatesStartingMonday } from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
 import { saveTimeSlot } from '../createJourneyState'
-import TelemetryService from '../../../../../services/telemetryService'
 
 export default class TimeSlotHandler implements PageHandler {
   public PAGE_NAME = Page.TIME_SLOT_PAGE
@@ -14,7 +13,6 @@ export default class TimeSlotHandler implements PageHandler {
   constructor(
     private readonly officialVisitsService: OfficialVisitsService,
     private readonly activitiesService: ActivitiesService,
-    private readonly telemetryService: TelemetryService,
   ) {}
 
   BODY = schema
@@ -46,10 +44,7 @@ export default class TimeSlotHandler implements PageHandler {
       prisonerNumber,
       user,
     )
-    this.telemetryService.trackEvent('OFFICIAL_VISIT_VIEW_TIME_SLOTS', user, {
-      officialVisitId: officialVisit.officialVisitId,
-      prisonCode: officialVisit.prisonCode,
-    })
+
     res.render('pages/manage/timeSlot', {
       today: new Date().toISOString().substring(0, 10),
       selectedDate,
@@ -67,14 +62,8 @@ export default class TimeSlotHandler implements PageHandler {
   }
 
   public POST = async (req: Request, res: Response) => {
-    const { officialVisit } = req.session.journey
-    officialVisit.selectedTimeSlot = req.body
+    req.session.journey.officialVisit.selectedTimeSlot = req.body
     saveTimeSlot(req.session.journey, req.body)
-    const { user } = res.locals
-    this.telemetryService.trackEvent('OFFICIAL_VISIT_UPDATE_TIME_SLOTS', user, {
-      officialVisitId: officialVisit.officialVisitId,
-      prisonCode: officialVisit.prisonCode,
-    })
     return res.redirect(`select-official-visitors`)
   }
 }
