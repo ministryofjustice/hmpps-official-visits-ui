@@ -1,7 +1,6 @@
 {% extends "partials/layout.njk" %}
 
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "partials/continueCancel.njk" import continueCancel %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
@@ -48,7 +47,7 @@
       {% if results.content.length %}
           {% if results.content.length > 1 %}
               <h3 class="govuk-heading-m">
-                  Select the correct result from the list.
+                  Select the correct result from the list
               </h3>
                {% set resultString = 'result' if results.totalElements === 1 else 'results' %}
                <p class="govuk-body">
@@ -58,7 +57,7 @@
 
           {% if results.content.length === 1 %}
               <h3 class="govuk-heading-m">
-                  There is 1 matching person.
+                  There is 1 matching person
               </h3>
           {% endif %}
 

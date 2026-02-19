@@ -69,7 +69,7 @@ describe('Prisoner search results handler', () => {
           const $ = cheerio.load(res.text)
           expect(getPageHeader($)).toEqual('Search results  (Page 1 of 1)')
 
-          expect($('h3.govuk-heading-m').text().trim()).toBe('There is 1 matching person.')
+          expect($('h3.govuk-heading-m').text().trim()).toBe('There is 1 matching person')
           expect(getGovukTableCell($, 1, 1).find('a').text().trim()).toBe('Doe, John')
           expect(getGovukTableCell($, 1, 2).text().trim()).toBe('A1234AA')
           expect(getGovukTableCell($, 1, 3).text().trim()).toBe('1 June 1989')
@@ -160,11 +160,12 @@ describe('Prisoner search results handler', () => {
           expect(getPageHeader($)).toEqual('Search results  (Page 2 of 3)')
 
           // Pagination should be present with correct links
-          expect($('.govuk-pagination__item').length).toBe(3)
+          const $paginationItems = $('.govuk-pagination__item')
+          expect($paginationItems.length).toBe(3)
           expect($('.govuk-pagination__next a').attr('href')).toBe('?page=2')
-          expect($('.govuk-pagination__item').eq(0).find('a').attr('href')).toBe('?page=0')
-          expect($('.govuk-pagination__item').eq(1).find('a').attr('href')).toBe('?page=1')
-          expect($('.govuk-pagination__item').eq(2).find('a').attr('href')).toBe('?page=2')
+          expect($paginationItems.eq(0).find('a').attr('href')).toBe('?page=0')
+          expect($paginationItems.eq(1).find('a').attr('href')).toBe('?page=1')
+          expect($paginationItems.eq(2).find('a').attr('href')).toBe('?page=2')
 
           expect(prisonerService.searchInCaseload).toHaveBeenCalledWith('Smith', 'HEI', user, {
             page: 1,
