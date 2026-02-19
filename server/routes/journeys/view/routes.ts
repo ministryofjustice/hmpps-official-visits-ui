@@ -32,7 +32,7 @@ export default function Index({
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
-  route('/list', Permission.DEFAULT, new ViewOfficialVisitListHandler(officialVisitsService, telemetryService))
+  route('/list', Permission.DEFAULT, new ViewOfficialVisitListHandler(officialVisitsService))
   route(
     '/visit/:ovId',
     Permission.VIEW,
@@ -41,7 +41,6 @@ export default function Index({
       prisonerService,
       personalRelationshipsService,
       manageUsersService,
-      telemetryService,
     ),
   )
   route(
@@ -49,16 +48,8 @@ export default function Index({
     Permission.MANAGE,
     new CompleteOfficialVisitHandler(officialVisitsService, telemetryService),
   )
-  route(
-    '/visit/:ovId/cancel',
-    Permission.MANAGE,
-    new CancelOfficialVisitHandler(officialVisitsService, telemetryService),
-  )
-  route(
-    '/visit/:ovId/movement-slip',
-    Permission.VIEW,
-    new OfficialVisitMovementSlipHandler(officialVisitsService, telemetryService),
-  )
+  route('/visit/:ovId/cancel', Permission.MANAGE, new CancelOfficialVisitHandler(officialVisitsService))
+  route('/visit/:ovId/movement-slip', Permission.VIEW, new OfficialVisitMovementSlipHandler(officialVisitsService))
 
   return router
 }
