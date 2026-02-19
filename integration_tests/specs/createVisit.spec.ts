@@ -60,7 +60,7 @@ test.describe('RBAC: Create an official visit', async () => {
     await NotAuthorisedPage.verifyOnPage(page)
   })
 
-  test('should deny access to users with only CONTACTS_AUTHORISER  abd DEFAULT role', async ({ page }) => {
+  test('should deny access to users with only CONTACTS_AUTHORISER  abd DEFAULT roles', async ({ page }) => {
     await login(page, {
       name: 'AUser',
       roles: [`ROLE_${AuthorisedRoles.CONTACTS_AUTHORISER}`, `ROLE_${AuthorisedRoles.DEFAULT}`],
