@@ -41,6 +41,7 @@ export default function Index({
       prisonerService,
       personalRelationshipsService,
       manageUsersService,
+      telemetryService,
     ),
   )
   route(
