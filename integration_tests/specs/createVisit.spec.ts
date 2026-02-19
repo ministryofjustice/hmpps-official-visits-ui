@@ -148,16 +148,6 @@ test.describe('Create an official visit', () => {
   })
 
   test('Happy path example', async ({ page }) => {
-    await login(page, {
-      name: 'AUser',
-      roles: ['ROLE_PRISON', `ROLE_${AuthorisedRoles.CONTACTS_AUTHORISER}`, `ROLE_${AuthorisedRoles.MANAGE}`],
-      active: true,
-      authSource: 'nomis',
-    })
-    await page.goto(`/manage/create/${uuid}/select-official-visitors`)
-  })
-
-  test('Happy path example', async ({ page }) => {
     await login(page)
     await page.goto(`/manage/create/${uuid}/search`)
     const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)
