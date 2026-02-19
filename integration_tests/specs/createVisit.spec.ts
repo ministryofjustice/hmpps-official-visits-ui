@@ -60,6 +60,20 @@ test.describe('RBAC: Create an official visit', async () => {
     await NotAuthorisedPage.verifyOnPage(page)
   })
 
+  test('should deny access to users with only CONTACTS_AUTHORISER role', async ({ page }) => {
+    await login(page, {
+      name: 'AUser',
+      roles: [`ROLE_${AuthorisedRoles.CONTACTS_AUTHORISER}`],
+      active: true,
+      authSource: 'nomis',
+    })
+    await page.goto(`/manage/create/search`)
+    await NotAuthorisedPage.verifyOnPage(page)
+
+    await page.goto(`/manage/create/${uuidV4()}/confirmation/1`)
+    await NotAuthorisedPage.verifyOnPage(page)
+  })
+
   test('should deny access to users with only VIEW role', async ({ page }) => {
     await login(page, {
       name: 'AUser',
