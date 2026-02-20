@@ -138,7 +138,7 @@ describe('check your answers handler', () => {
           expect(getValueByKey($, 'Prisoner notes')).toEqual('prisoner notes')
           expect(getValueByKey($, 'Staff notes')).toEqual('staff notes')
 
-          expect($('h4').text()).toEqual('Peter Malicious (Solicitor)')
+          expect($('h3').text()).toEqual('Peter Malicious (Solicitor)')
 
           expect(getValueByKey($, 'Contact type')).toEqual('Official')
           expect(getValueByKey($, 'Does this visitor need assistance?')).toEqual('Yes')

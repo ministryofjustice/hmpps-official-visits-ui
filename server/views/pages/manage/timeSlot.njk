@@ -7,6 +7,7 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "partials/continueCancel.njk" import continueCancel %}
 {% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 {% set pageTitle = "Select date and time of official visit" %}
 
@@ -117,11 +118,20 @@
           {{ govukRadios({
             idPrefix: "timeSlot",
             name: "timeSlot",
+            fieldset: {
+              legend: {
+                text: "Select a time slot",
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
             items: items,
             errorMessage: validationErrors | findError('timeSlot')
           })}}
         {% else %}
-          <p> No visit sessions on this day.</p>
+          {{ govukWarningText({
+            text: "No visit sessions on this day.",
+            iconFallbackText: "Warning"
+          }) }}
         {% endif %}
 
         {{ continueCancel({stepsChecked: stepsChecked})}}

@@ -83,6 +83,13 @@ describe('Equipment handler', () => {
           expect(getArrayItemPropById($, 'equipment', 0, 'id').attr('checked')).toBeFalsy()
           expect(getArrayItemPropById($, 'equipment', 1, 'id').attr('checked')).toBeFalsy()
 
+          expect($('.govuk-label[for="equipment\\[0\\]\\[notes\\]"]').text()).toContain(
+            'Add information about their equipment',
+          )
+          expect($('.govuk-label[for="equipment\\[1\\]\\[notes\\]"]').text()).toContain(
+            'Add information about their equipment',
+          )
+
           expect($('.govuk-checkboxes__label').eq(0).text()).toContain('John Dasolicitor (Solicitor)')
           expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Jane Dafriend (Friend)')
 

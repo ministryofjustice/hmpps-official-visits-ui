@@ -88,12 +88,19 @@
 
           {% set rows = (rows.push([
             { html: govukCheckboxes({
-              name: "selected[]",
+              name: "selected[" + loop.index0 + "]",
+              id: "selected[" + loop.index0 + "]",
               classes: "govuk-checkboxes--small",
+              fieldset: {
+                legend: {
+                  text: "Add",
+                  classes: "govuk-visually-hidden"
+                }
+              },
               items: [
                 {
                   value: contact.prisonerContactId,
-                  text: " ",
+                  html: "<span class='govuk-visually-hidden'>" + (contact.firstName + " " + contact.lastName) | convertToTitleCase + "</span>",
                   checked: selectedContacts | includes(contact.prisonerContactId)
                 }
               ]
