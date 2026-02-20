@@ -89,4 +89,13 @@ describe('populateUserPermissions middleware', () => {
     expect(res.locals.user.permissions.OV).toBe(Permission.DEFAULT | Permission.VIEW | Permission.ADMIN)
     expect(next).toHaveBeenCalledTimes(1)
   })
+
+  it('ORs  CONTACTS_AUTHORISER into the permission mask (and should not includes DEFAULT)', () => {
+    res.locals.user.userRoles = [AuthorisedRoles.CONTACTS_AUTHORISER]
+
+    populateUserPermissions(req as Request, res as Response, next)
+
+    expect(res.locals.user.permissions.OV).toBe(Permission.CONTACTS_AUTHORISER)
+    expect(next).toHaveBeenCalledTimes(1)
+  })
 })

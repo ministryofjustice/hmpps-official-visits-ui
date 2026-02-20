@@ -130,6 +130,7 @@
       </div>
     </div>
 
+  {% if user | hasPermission(PERMISSION.CONTACTS_AUTHORISER) %}
     <div class="govuk-grid-row govuk-body">
       <div class="govuk-grid-column-three-quarters">
         If you cannot find the contact in the list, you can
@@ -141,6 +142,7 @@
         </a>
       </div>
     </div>
+ {% endif %}
 
     <div class="govuk-grid-row govuk-body">
       <div class="govuk-grid-column-three-quarters">
