@@ -16,11 +16,13 @@ import PrisonerService from '../../services/prisonerService'
 import LocationsService from '../../services/locationsService'
 import { testUtilRoutes } from './testUtilRoute'
 import { AuthorisedRoles } from '../../middleware/populateUserPermissions'
+import TelemetryService from '../../services/telemetryService'
 
 jest.mock('../../services/auditService')
 jest.mock('../../services/prisonerService')
 jest.mock('../../services/locationsService')
 jest.mock('../../services/officialVisitsService')
+jest.mock('../../services/telemetryService')
 
 export const journeyId = () => '9211b69b-826f-4f48-a43f-8af59dddf39f'
 
@@ -100,6 +102,7 @@ export function appWithAllRoutes({
     prisonerService: new PrisonerService(null) as jest.Mocked<PrisonerService>,
     officialVisitsService: new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>,
     locationsService: new LocationsService(null) as jest.Mocked<LocationsService>,
+    telemetryService: new TelemetryService(null) as jest.Mocked<TelemetryService>,
     ...services,
   } as Services
 
