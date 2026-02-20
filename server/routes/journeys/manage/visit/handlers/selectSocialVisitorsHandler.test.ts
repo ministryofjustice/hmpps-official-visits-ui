@@ -139,6 +139,8 @@ describe('Select social visitors', () => {
           expect(visitorRows.eq(7).text().trim()).toEqual(mockSocialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(8).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(9).text().trim()).toBeDefined() // Restrictions
+          // contact link displayed only for contacts authorizer role
+          expect(getByDataQa($, 'contacts-link').length).toEqual(1)
 
           // Calls expected
           expect(officialVisitsService.getApprovedSocialContacts).toHaveBeenCalledWith(
