@@ -12,6 +12,7 @@ export default class HomePage extends AbstractPage {
   static async verifyOnPage(page: Page): Promise<HomePage> {
     const homePage = new HomePage(page)
     await expect(homePage.header).toBeVisible()
+    await homePage.verifyNoAccessViolationsOnPage()
     return homePage
   }
 }

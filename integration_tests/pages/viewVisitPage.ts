@@ -22,6 +22,8 @@ export default class ViewVisitPage extends AbstractPage {
     await expect(links.nth(1)).toContainText('Cancel visit')
     await expect(links.nth(2)).toContainText('Complete visit')
 
+    await viewVisitPage.verifyNoAccessViolationsOnPage()
+
     return viewVisitPage
   }
 

@@ -19,6 +19,7 @@ export default class CheckYourAnswersPage extends AbstractPage {
     const page = new CheckYourAnswersPage(superPage)
     await expect(page.header).toBeVisible()
     await expect(page.caption).toBeVisible()
+    await page.verifyNoAccessViolationsOnPage()
     return page
   }
 }

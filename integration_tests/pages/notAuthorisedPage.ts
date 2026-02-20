@@ -14,7 +14,7 @@ export class NotAuthorisedPage extends AbstractPage {
     expect(await superPage.title()).toEqual('Not authorised - Official visits - DPS')
     expect(page.header).toHaveText('You do not have permission to access this page')
     expect(superPage.getByText('have the correct permissions to use the official visits service')).toBeVisible()
-
+    await page.verifyNoAccessViolationsOnPage()
     return page
   }
 }

@@ -15,6 +15,7 @@ export default class ConfirmationPage extends AbstractPage {
   static async verifyOnPage(superPage: Page): Promise<ConfirmationPage> {
     const page = new ConfirmationPage(superPage)
     await expect(page.header).toBeVisible()
+    await page.verifyNoAccessViolationsOnPage()
     return page
   }
 }

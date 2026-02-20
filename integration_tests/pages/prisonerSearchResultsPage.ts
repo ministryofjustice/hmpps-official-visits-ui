@@ -16,6 +16,7 @@ export default class PrisonerSearchResultsPage extends AbstractPage {
     const page = new PrisonerSearchResultsPage(superPage)
     await expect(page.header).toBeVisible()
     await expect(page.caption).toBeVisible()
+    await page.verifyNoAccessViolationsOnPage()
     return page
   }
 

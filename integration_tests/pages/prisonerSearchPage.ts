@@ -25,6 +25,7 @@ export default class PrisonerSearchPage extends AbstractPage {
     await expect(page.searchBox).toBeVisible()
     await expect(page.searchButton).toBeVisible()
     await expect(page.cancelLink).toBeVisible()
+    await page.verifyNoAccessViolationsOnPage()
     return page
   }
 }
