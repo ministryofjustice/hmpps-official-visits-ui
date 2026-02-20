@@ -131,6 +131,7 @@
     },
     "@aws-sdk/xml-builder": {
       "fast-xml-parser": "5.3.6"
-    }
+    },
+    "minimatch": "^10.2.1"
   }
 }
