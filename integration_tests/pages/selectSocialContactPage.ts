@@ -24,6 +24,6 @@ export default class SelectSocialContactPage extends AbstractPage {
   }
 
   async checkContact(rowIndex: number) {
-    await this.page.locator(`input[name="selected[]"]`).nth(rowIndex).check()
+    await this.page.locator(`input[name^="selected"]`).nth(rowIndex).check()
   }
 }

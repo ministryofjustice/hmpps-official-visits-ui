@@ -37,6 +37,9 @@
           {{ govukCharacterCount({
             maxlength: 240,
             rows: 5,
+            label: {
+              text: "Add any additional information (optional)"
+            },
             id: "assistanceRequired[" + loop.index0 + "][notes]",
             name: "assistanceRequired[" + loop.index0 + "][notes]",
             value: formResponses.assistanceRequired[loop.index0].notes or contact.assistanceNotes,

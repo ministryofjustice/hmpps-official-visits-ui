@@ -103,6 +103,19 @@ describe('Assistance required handler', () => {
           expect(getArrayItemPropById($, 'assistanceRequired', 2, 'id').attr('checked')).toBeFalsy()
           expect(getArrayItemPropById($, 'assistanceRequired', 3, 'id').attr('checked')).toBeFalsy()
 
+          expect($('.govuk-label[for="assistanceRequired\\[0\\]\\[notes\\]"]').text()).toContain(
+            'Add any additional information (optional)',
+          )
+          expect($('.govuk-label[for="assistanceRequired\\[1\\]\\[notes\\]"]').text()).toContain(
+            'Add any additional information (optional)',
+          )
+          expect($('.govuk-label[for="assistanceRequired\\[2\\]\\[notes\\]"]').text()).toContain(
+            'Add any additional information (optional)',
+          )
+          expect($('.govuk-label[for="assistanceRequired\\[3\\]\\[notes\\]"]').text()).toContain(
+            'Add any additional information (optional)',
+          )
+
           expect($('.govuk-checkboxes__label').eq(0).text()).toContain('John Dasolicitor (Solicitor)')
           expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Johnny Dasolicitor (Solicitor)')
           expect($('.govuk-checkboxes__label').eq(2).text()).toContain('Jon Dasolicitor (Solicitor)')
