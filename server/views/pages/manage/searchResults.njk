@@ -1,5 +1,7 @@
 {% extends "partials/layout.njk" %}
 
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
@@ -15,17 +17,49 @@
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Schedule an official visit</span>
       <h1 class="govuk-heading-l">{{ pageTitle }}  <span class="govuk-visually-hidden">(Page {{ results.number + 1 }} of {{ results.totalPages }})</span></h1>
+
+        <form method='POST'>
+            <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+            <div class="date-search-form">
+                {{ govukInput({
+                    id: "searchTerm",
+                    name: "searchTerm",
+                    label: {
+                        text: "Search by prisoner name or prisoner ID"
+                    },
+                    classes: '',
+                    autocomplete: "off",
+                    errorMessage: validationErrors | findError('searchTerm'),
+                    value: formResponses.searchTerm or searchTerm
+                }) }}
+                {{ govukButton({
+                    text: "Search",
+                    preventDoubleClick: true,
+                    classes: "govuk-button--secondary"
+                }) }}
+            </div>
+        </form>
     </div>
   </div>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-from-desktop">
       {% if results.content.length %}
-        {% set resultString = 'result' if results.totalElements === 1 else 'results' %}
-        <p class="govuk-body">
-          Showing {{ results.totalElements }} {{ resultString }}{{ (" (page " + (results.number + 1) + " of " + results.totalPages + ")") if results.totalPages > 1 }}.
-          <a href="search" class="govuk-link govuk-!-font-size-19">Search again</a>
-        </p>
+          {% if results.content.length > 1 %}
+              <h3 class="govuk-heading-m">
+                  Select the correct result from the list
+              </h3>
+               {% set resultString = 'result' if results.totalElements === 1 else 'results' %}
+               <p class="govuk-body">
+                 Showing {{ results.totalElements }} {{ resultString }}{{ (" (page " + (results.number + 1) + " of " + results.totalPages + ")") if results.totalPages > 1 }}.
+               </p>
+          {% endif %}
+
+          {% if results.content.length === 1 %}
+              <h3 class="govuk-heading-m">
+                  There is 1 matching person
+              </h3>
+          {% endif %}
 
         {% set rows = [] %}
         {% for result in results.content %}
@@ -67,10 +101,9 @@
           rows: rows
         }) }}
       {% else %}
-        <p class="govuk-body">
-          There are no results for this search criteria.
-          <a href="search" class="govuk-link govuk-!-font-size-19">Search again</a>
-        </p>
+          <h3 class="govuk-heading-m">
+              There are no results for this search criteria
+          </h3>
       {% endif %}
 
       {% if results.totalPages > 1 %}
