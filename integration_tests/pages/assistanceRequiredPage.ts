@@ -18,6 +18,8 @@ export default class AssistanceRequiredPage extends AbstractPage {
     await expect(page.caption).toBeVisible()
     await expect(page.continueButton).toBeVisible()
     await expect(page.cancelLink).toBeVisible()
+
+    await page.verifyNoAccessViolationsOnPage()
     return page
   }
 

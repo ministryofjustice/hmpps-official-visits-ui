@@ -16,6 +16,7 @@ export default class CancelVisitPage extends AbstractPage {
     const cancelPage = new CancelVisitPage(page)
     await expect(cancelPage.header).toBeVisible()
     await expect(cancelPage.caption).toBeVisible()
+    await cancelPage.verifyNoAccessViolationsOnPage()
     return cancelPage
   }
 }

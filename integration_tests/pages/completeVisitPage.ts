@@ -16,6 +16,7 @@ export default class CompleteVisitPage extends AbstractPage {
     const completePage = new CompleteVisitPage(page)
     await expect(completePage.header).toBeVisible()
     await expect(completePage.caption).toBeVisible()
+    await completePage.verifyNoAccessViolationsOnPage()
     return completePage
   }
 }

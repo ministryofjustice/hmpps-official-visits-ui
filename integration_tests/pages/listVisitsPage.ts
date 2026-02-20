@@ -9,10 +9,11 @@ export default class ListVisitsPage extends AbstractPage {
     this.header = page.locator('h1', { hasText: 'Search for an official visit' })
   }
 
-  static async verifyOnPage(page: Page): Promise<ListVisitsPage> {
-    const homePage = new ListVisitsPage(page)
-    await expect(homePage.header).toBeVisible()
-    return homePage
+  static async verifyOnPage(superPage: Page): Promise<ListVisitsPage> {
+    const page = new ListVisitsPage(superPage)
+    await expect(page.header).toBeVisible()
+    await page.verifyNoAccessViolationsOnPage()
+    return page
   }
 
   getSearchBox() {

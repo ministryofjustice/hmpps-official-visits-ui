@@ -24,6 +24,7 @@ export default class CancellationCheckPage extends AbstractPage {
     await expect(page.caption).toBeVisible()
     await expect(page.noButton).toBeVisible()
     await expect(page.yesButton).toBeVisible()
+    await page.verifyNoAccessViolationsOnPage()
     return page
   }
 }
