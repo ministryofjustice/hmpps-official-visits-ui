@@ -28,8 +28,9 @@ import logger from '../../logger'
 import { ReferenceDataItem } from '../@types/officialVisitsApi/types'
 import { hasPermissionFilter } from '../middleware/requirePermissions'
 import { Permission } from '../interfaces/hmppsUser'
+import type { ApplicationInfo } from '../applicationInfo'
 
-export default function nunjucksSetup(app: express.Express): void {
+export default function nunjucksSetup(app: express.Express, applicationInfo: ApplicationInfo): void {
   app.set('view engine', 'njk')
 
   app.locals.asset_path = '/assets/'
@@ -39,6 +40,9 @@ export default function nunjucksSetup(app: express.Express): void {
   app.locals.digitalPrisonServicesUrl = config.serviceUrls.digitalPrison
   app.locals.prisonerProfileUrl = config.serviceUrls.prisonerProfile
   app.locals.authUrl = config.apis.hmppsAuth.externalUrl
+  app.locals.applicationInsightsConnectionString = config.applicationInsightsConnectionString
+  app.locals.applicationInsightsApplicationName = applicationInfo.applicationName
+  app.locals.buildNumber = config.buildNumber
   app.locals.PERMISSION = Permission
 
   app.use((_req, res, next) => {

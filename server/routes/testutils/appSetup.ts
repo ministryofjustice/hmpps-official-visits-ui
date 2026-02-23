@@ -17,6 +17,7 @@ import LocationsService from '../../services/locationsService'
 import { testUtilRoutes } from './testUtilRoute'
 import { AuthorisedRoles } from '../../middleware/populateUserPermissions'
 import TelemetryService from '../../services/telemetryService'
+import { ApplicationInfo } from '../../applicationInfo'
 
 jest.mock('../../services/auditService')
 jest.mock('../../services/prisonerService')
@@ -25,6 +26,15 @@ jest.mock('../../services/officialVisitsService')
 jest.mock('../../services/telemetryService')
 
 export const journeyId = () => '9211b69b-826f-4f48-a43f-8af59dddf39f'
+
+const testAppInfo: ApplicationInfo = {
+  applicationName: 'test',
+  buildNumber: '1',
+  gitRef: 'long ref',
+  gitShortHash: 'short ref',
+  productId: '1',
+  branchName: 'main',
+}
 
 export const user: HmppsUser = {
   name: 'FIRST LAST',
@@ -73,7 +83,7 @@ function appSetup(
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
   app.use(setUpFlash())
-  nunjucksSetup(app)
+  nunjucksSetup(app, testAppInfo)
   middlewares.forEach(mw => app.use(mw))
   app.use(routes(services))
   app.use(testUtilRoutes())

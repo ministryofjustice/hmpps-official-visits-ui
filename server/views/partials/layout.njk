@@ -55,4 +55,10 @@
 {% block bodyEnd %}
   <script type="module" src="{{ '/assets/js/index.js' | assetMap }}"></script>
 {% block pageScripts %}{% endblock %}
+  <script type="text/javascript" nonce="{{ cspNonce }}">
+    window.applicationInsightsConnectionString = "{{ applicationInsightsConnectionString }}"
+    window.applicationInsightsApplicationName = "{{ applicationInsightsApplicationName }}"
+    window.buildNumber = "{{ buildNumber }}"
+    window.authenticatedUser = "{{ user.username }}"
+  </script>
 {% endblock %}
