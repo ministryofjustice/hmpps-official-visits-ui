@@ -13,6 +13,7 @@ export default function AmendRoutes({
   prisonerService,
   officialVisitsService,
   activitiesService,
+  telemetryService,
 }: Services): Router {
   const router = Router({ mergeParams: true })
   const route = (path: string | string[], handler: PageHandler) =>
@@ -20,7 +21,10 @@ export default function AmendRoutes({
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
-  route('/official-visit/confirmation', new ConfirmationHandler(officialVisitsService, prisonerService))
+  route(
+    '/official-visit/confirmation',
+    new ConfirmationHandler(officialVisitsService, prisonerService, telemetryService),
+  )
 
   router.use((req, res, next) => {
     const { officialVisitId, visitDate, startTime, visitStatusCode } = req.session.journey.officialVisit

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
-import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { schema, SchemaType } from './assistanceRequiredSchema'
 import { ApprovedContact, ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
 import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
@@ -9,7 +8,7 @@ import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 export default class AssistanceRequiredHandler implements PageHandler {
   public PAGE_NAME = Page.ASSISTANCE_REQUIRED_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor() {}
 
   BODY = schema
 

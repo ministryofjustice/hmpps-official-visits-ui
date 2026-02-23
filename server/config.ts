@@ -158,6 +158,7 @@ export default {
   ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   environmentName: get('ENVIRONMENT_NAME', ''),
   maintenanceMode: get('MAINTENANCE_MODE', 'false') === 'true',
+  applicationInsightsConnectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', '', requiredInProduction),
   featureToggles: {
     allowSocialVisitorsPrisons: get('ALLOW_SOCIAL_VISITORS_PRISONS', ''),
   },

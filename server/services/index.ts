@@ -7,6 +7,7 @@ import PrisonerImageService from './prisonerImageService'
 import PersonalRelationshipsService from './personalRelationshipsService'
 import ActivitiesService from './activitiesService'
 import ManageUserService from './manageUsersService'
+import TelemetryService from './telemetryService'
 
 export const services = () => {
   const {
@@ -19,11 +20,13 @@ export const services = () => {
     personalRelationshipsApiClient,
     activitiesApiClient,
     manageUsersApiClient,
+    applicationInsightsClient,
   } = dataAccess()
 
   return {
     applicationInfo,
     auditService: new AuditService(hmppsAuditClient),
+    telemetryService: new TelemetryService(applicationInsightsClient),
     locationsService: new LocationsService(locationsInPrisonApi),
     prisonerService: new PrisonerService(prisonerSearchApi),
     officialVisitsService: new OfficialVisitsService(officialVisitsApi),

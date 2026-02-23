@@ -17,6 +17,7 @@ export default function Index({
   officialVisitsService,
   personalRelationshipsService,
   manageUsersService,
+  telemetryService,
 }: Services): Router {
   const router = Router({ mergeParams: true })
 
@@ -40,9 +41,14 @@ export default function Index({
       prisonerService,
       personalRelationshipsService,
       manageUsersService,
+      telemetryService,
     ),
   )
-  route('/visit/:ovId/complete', Permission.MANAGE, new CompleteOfficialVisitHandler(officialVisitsService))
+  route(
+    '/visit/:ovId/complete',
+    Permission.MANAGE,
+    new CompleteOfficialVisitHandler(officialVisitsService, telemetryService),
+  )
   route('/visit/:ovId/cancel', Permission.MANAGE, new CancelOfficialVisitHandler(officialVisitsService))
   route('/visit/:ovId/movement-slip', Permission.VIEW, new OfficialVisitMovementSlipHandler(officialVisitsService))
 

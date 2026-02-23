@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
-import PrisonerService from '../../../../../services/prisonerService'
 import { schema } from './prisonerSearchSchema'
 
 export default class PrisonerSearchHandler implements PageHandler {
@@ -9,7 +8,7 @@ export default class PrisonerSearchHandler implements PageHandler {
 
   public BODY = schema
 
-  constructor(private readonly prisonerService: PrisonerService) {}
+  constructor() {}
 
   public GET = async (req: Request, res: Response) => {
     req.session.journey.officialVisit ??= { searchTerm: '' }

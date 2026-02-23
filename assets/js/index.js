@@ -2,6 +2,7 @@ import * as govukFrontend from 'govuk-frontend'
 import * as mojFrontend from '@ministryofjustice/frontend'
 import Card from './card'
 import { nodeListForEach } from './utils'
+import './application-insights-setup'
 
 govukFrontend.initAll()
 mojFrontend.initAll()
