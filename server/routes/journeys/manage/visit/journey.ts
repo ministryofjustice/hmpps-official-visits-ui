@@ -1,6 +1,9 @@
-import { components } from '../../../../@types/officialVisitsApi'
 import { PrisonerRestrictionDetails } from '../../../../@types/personalRelationshipsApi/types'
-import { ApprovedContact, VisitStatusType, VisitType } from '../../../../@types/officialVisitsApi/types'
+import { ApprovedContact, AvailableSlot, VisitStatusType, VisitType } from '../../../../@types/officialVisitsApi/types'
+
+export type AmendVisitJourney = {
+  backTo?: string
+}
 
 export type OfficialVisitJourney = {
   searchTerm?: string
@@ -24,8 +27,8 @@ export type OfficialVisitJourney = {
   prisonerNotes?: string
   officialVisitors?: JourneyVisitor[]
   socialVisitors?: JourneyVisitor[]
-  availableSlots?: components['schemas']['AvailableSlot'][]
-  selectedTimeSlot?: components['schemas']['AvailableSlot']
+  availableSlots?: AvailableSlot[]
+  selectedTimeSlot?: Partial<AvailableSlot>
   // Pages are optional but we need to ensure they are shown at least once
   assistancePageCompleted?: boolean
   equipmentPageCompleted?: boolean

@@ -7,14 +7,14 @@
 {% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set pageTitle = "Official visit with " + visit.prisonerVisited | firstNameSpaceLastName %}
-{% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
+{% set paramBackTo = ("?backTo=" + b64BackTo)if b64BackTo %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <span class="govuk-hint">Manage existing official visits</span>
-    
-    {% if user | hasPermission(PERMISSION.MANAGE) %}
-      <a href="/view/visit/{{visit.officialVisitId}}/amend{{paramBackTo}}" class="govuk-link float-right govuk-link--no-visited-state"> Amend this visit</a>
+
+    {% if user | hasPermission(PERMISSION.MANAGE)and mode != 'AMEND' %}
+      <a href="/manage/amend/{{visit.officialVisitId}}{{paramBackTo}}" class="govuk-link float-right govuk-link--no-visited-state"> Amend this visit</a>
     {% endif %}
 
     <h1 class="govuk-heading-l">Official visit</h1>
@@ -31,14 +31,29 @@
 
     {% endif %}
 
-    {{ govukButton({
-      text: "Print movement slip",
-      href: "/view/visit/" + visit.officialVisitId + "/movement-slip",
-      classes: 'govuk-button blue-button',
-      attributes: {
-        "target": "_blank"    
-      }
-    }) }}
+    {% if mode != 'AMEND' %}
+      {{ govukButton({
+        text: "Print movement slip",
+        href: "/view/visit/" + visit.officialVisitId + "/movement-slip",
+        classes: 'govuk-button blue-button',
+        attributes: {
+          "target": "_blank"    
+        }
+      }) }}
+
+      {% set visitActions = [
+        {
+          href: "/view/visit/" + visit.officialVisitId + "/cancel" + paramBackTo,
+          html: "Cancel visit",
+          classes: 'govuk-link--no-visited-state'
+        },
+        {
+          href: "/view/visit/" + visit.officialVisitId + "/complete" + paramBackTo,
+          html: "Complete visit",
+          classes: 'govuk-link--no-visited-state'
+        }
+      ] %}
+    {% endif %}
 
     {{ govukSummaryList({
       card: {
@@ -47,28 +62,37 @@
           text: "Visit details"
         },
         actions: {
-          items: [] if visit.completionCode else [
-            {
-              href: "/view/visit/" + visit.officialVisitId + "/cancel" + paramBackTo,
-              html: "Cancel visit",
-              classes: 'govuk-link--no-visited-state'
-            },
-            {
-              href: "/view/visit/" + visit.officialVisitId + "/complete" + paramBackTo,
-              html: "Complete visit",
-              classes: 'govuk-link--no-visited-state'
-            }
-          ] 
+          items: [] if visit.completionCode else visitActions
         } if user | hasPermission(PERMISSION.MANAGE)
       },
       rows: [
         {
           key: { text: "Date" },
-          value: { text: visit.visitDate | formatDate("iiii, d MMMM yyyy") }
+          value: { text: visit.visitDate | formatDate("iiii, d MMMM yyyy") },
+          actions: {
+            items: [
+              {
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/time-slot?date=" + visit.visitDate,
+                text: "Change",
+                classes: "govuk-link--no-visited-state",
+                visuallyHiddenText: "date of visit"
+              }
+            ]
+          } if mode == 'AMEND'
         },
         {
           key: { text: "Time" },
-          value: { text: (visit.startTime | timeStringTo12HourPretty(true)) + ' to ' + (visit.endTime | timeStringTo12HourPretty(true)) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' }
+          value: { text: (visit.startTime | timeStringTo12HourPretty(true)) + ' to ' + (visit.endTime | timeStringTo12HourPretty(true)) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' },
+          actions: {
+            items: [
+              {
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/time-slot?date=" + visit.visitDate,
+                text: "Change",
+                classes: "govuk-link--no-visited-state",
+                visuallyHiddenText: "time of visit"
+              }
+            ]
+          } if mode == 'AMEND'
         },
         {
           key: { text: "Visit status" },
@@ -84,19 +108,59 @@
         },
         {
           key: { text: "Location" },
-          value: { text: visit.locationDescription }
+          value: { text: visit.locationDescription },
+          actions: {
+            items: [
+              {
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/time-slot?date=" + visit.visitDate,
+                text: "Change",
+                classes: "govuk-link--no-visited-state",
+                visuallyHiddenText: "location of visit"
+              }
+            ]
+          } if mode == 'AMEND'
         },
         {
           key: { text: "Visit type" },
-          value: { text: visit.visitTypeDescription }
+          value: { text: visit.visitTypeDescription },
+          actions: {
+            items: [
+              {
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/visit-type",
+                text: "Change",
+                classes: "govuk-link--no-visited-state",
+                visuallyHiddenText: "visit type"
+              }
+            ]
+          } if mode == 'AMEND'
         },
         {
           key: { text: "Prisoner notes" },
-          value: { text: visit.prisonerNotes or 'None' }
+          value: { text: visit.prisonerNotes or 'None' },
+          actions: {
+            items: [
+              {
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/comments",
+                text: "Change",
+                classes: "govuk-link--no-visited-state",
+                visuallyHiddenText: "prisoner notes"
+              }
+            ]
+          } if mode == 'AMEND'
         },
         {
           key: { text: "Staff notes" },
-          value: { text: visit.staffNotes or 'None' }
+          value: { text: visit.staffNotes or 'None' },
+          actions: {
+            items: [
+              {
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/comments",
+                text: "Change",
+                classes: "govuk-link--no-visited-state",
+                visuallyHiddenText: "staff notes"
+              }
+            ]
+          } if mode == 'AMEND'
         },
         {
           key: { text: "Created by" },
@@ -113,54 +177,107 @@
       ] | filterNonFalsy
     }) }}
 
-    <h2 class="govuk-heading-m">Visitor details</h2>
+    {% if mode == 'AMEND' %}
+      <a href="select-official-visitors" class="govuk-link govuk-body float-right govuk-link--no-visited-state">Add or remove visitors</a>
+    {% endif %}
+    <p class="govuk-heading-m">Visitor details</p>
 
     {% for contact in visit.officialVisitors %}
-      {{ govukSummaryList({
-      card: {
-        classes: "govuk-!-margin-bottom-7",
-        title: {
-          html: '<a target="_blank" href="' + prisonerContactsUrl + '/prisoner/' + visit.prisonerVisited.prisonerNumber + '/contacts/manage/' + contact.contactId + '/relationship/' + contact.prisonerContactId + '">' + contact | firstNameSpaceLastName + '</a> (' + contact.relationshipDescription + ')'
-        }
-      },
-      rows: [
-        {
-          key: { text: "Contact type" },
-          value: { text: contact.relationshipTypeDescription }
-        },
-        {
-          key: { text: "Does this visitor need assistance?" },
-          value: { text: "Yes" if contact.assistedVisit else "No" }
-        },
-        {
-          key: { text: "Assistance details" },
-          value: { text: contact.assistanceNotes or "None"}
-        },
-        {
-          key: { text: "Does this visitor need equipment?" },
-          value: { text: 'Yes' if contact.visitorEquipment else 'No' }
-        },
-        {
-          key: { text: "Equipment" },
-          value: { text: contact.visitorEquipment.description if contact.visitorEquipment else 'None' }
-        },
-        {
-          key: { text: "Email" },
-          value: { text: contact.emailAddress or 'None' }
-        },
-        {
-          key: { text: "Telephone number" },
-          value: { text: contact.phoneNumber or 'None' }
-        }
-      ] | filterNonFalsy
-    }) }}
+      {# Declaring the card part of the summary list manually as the card title gets copied into Change links and we don't want this #}
+      <div class="govuk-summary-card govulk-!-margin-bottom-7">
+        <div class="govuk-summary-card__title-wrapper">
+          <h2 class="govuk-summary-card__title">
+            <a target="_blank" href="{{prisonerContactsUrl}}/prisoner/{{visit.prisonerVisited.prisonerNumber}}/contacts/manage/{{contact.contactId}}/relationship/{{contact.prisonerContactId}}">{{contact | firstNameSpaceLastName}}</a> ({{contact.relationshipDescription}})
+          </h2>
+        </div>
+        <div class="govuk-summary-card__content">
+          {{ govukSummaryList({
+            rows: [
+              {
+                key: { text: "Contact type" },
+                value: { text: contact.relationshipTypeDescription }
+              },
+              {
+                key: { text: "Does this visitor need assistance?" },
+                value: { text: "Yes" if contact.assistedVisit else "No" },
+                actions: {
+                  items: [
+                    {
+                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/assistance-required",
+                      text: "Change",
+                      classes: "govuk-link--no-visited-state",
+                      visuallyHiddenText: "whether assistance is required"
+                    }
+                  ]
+                } if mode == 'AMEND'
+              },
+              {
+                key: { text: "Assistance details" },
+                value: { text: contact.assistanceNotes or "None"},
+                actions: {
+                  items: [
+                    {
+                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/assistance-required",
+                      text: "Change",
+                      classes: "govuk-link--no-visited-state",
+                      visuallyHiddenText: "notes about the assistance required"
+                    }
+                  ]
+                } if mode == 'AMEND'
+              },
+              {
+                key: { text: "Does this visitor need equipment?" },
+                value: { text: 'Yes' if contact.visitorEquipment else 'No' },
+                actions: {
+                  items: [
+                    {
+                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/equipment",
+                      text: "Change",
+                      classes: "govuk-link--no-visited-state",
+                      visuallyHiddenText: "whether equipment is required"
+                    }
+                  ]
+                } if mode == 'AMEND'
+              },
+              {
+                key: { text: "Equipment" },
+                value: { text: contact.visitorEquipment.description if contact.visitorEquipment else 'None' },
+                actions: {
+                  items: [
+                    {
+                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/equipment",
+                      text: "Change",
+                      classes: "govuk-link--no-visited-state",
+                      visuallyHiddenText: "notes about the equipment required"
+                    }
+                  ]
+                } if mode == 'AMEND'
+              },
+              {
+                key: { text: "Email" },
+                value: { text: contact.emailAddress or 'None' }
+              },
+              {
+                key: { text: "Telephone number" },
+                value: { text: contact.phoneNumber or 'None' }
+              }
+            ] | filterNonFalsy
+          }) }}
+        </div>
+      </div>
     {% endfor %}
 
-    {{ govukButton ({
-      text: "Print attendance list (TODO)",
-      href: "#TODO",
-      classes: "govuk-button blue-button"
-    }) }}
+    {% if mode != 'AMEND' %}
+      {{ govukButton ({
+        text: "Print attendance list (TODO)",
+        href: "#TODO",
+        classes: "govuk-button blue-button"
+      }) }}
+    {% endif %}
+
+    {% if mode == 'AMEND' %}
+      <a href="/view/visit/{{visit.officialVisitId}}{{paramBackTo}}" class="govuk-link govuk-body govuk-link--no-visited-state">Cancel</a>
+    {% endif %}
 
   </div>
 {% endblock %}

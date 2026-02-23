@@ -146,7 +146,7 @@ describe('Time slot handler', () => {
     it('should accept a valid time slot', async () => {
       await request(app)
         .post(URL)
-        .send({ timeSlot: '1-1' })
+        .send({ timeSlot: '1' })
         .expect(302)
         .expect('location', 'select-official-visitors')
         .expect(() => expectNoErrorMessages())

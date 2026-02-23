@@ -26,16 +26,17 @@ export default function Index(services: Services): Router {
   )
 
   router.use(
-    '/amend/:officialVisitId',
+    '/amend/:ovId',
     requirePermissions('OV', Permission.MANAGE),
     insertJourneyModeContext('amend'),
     insertJourneyIdentifier(),
   )
+
   router.use(
-    '/amend/:officialVisitId/:journeyId',
+    '/amend/:ovId/:journeyId',
+    requirePermissions('OV', Permission.MANAGE),
     insertJourneyModeContext('amend'),
-    journeyDataMiddleware('officialVisit'),
-    initialiseJourney(services),
+    journeyDataMiddleware('amendVisit'),
     amendRoutes(services),
   )
 

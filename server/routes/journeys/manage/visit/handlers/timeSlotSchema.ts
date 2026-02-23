@@ -8,10 +8,8 @@ export const schema = async (req: Request) => {
   return createSchema({
     timeSlot: z.string({ message: ERROR_MSG }),
   }).transform((arg, ctx) => {
-    const [visitSlotId, timeSlotId] = arg.timeSlot.split('-')
-    const foundSlot = req.session.journey.officialVisit.availableSlots.find(
-      o => o.timeSlotId === Number(timeSlotId) && o.visitSlotId === Number(visitSlotId),
-    )
+    const availableSlots = req.session.journey.officialVisit?.availableSlots || []
+    const foundSlot = availableSlots.find(o => o.visitSlotId === Number(arg.timeSlot))
     if (foundSlot) {
       return foundSlot
     }

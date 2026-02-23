@@ -1,6 +1,6 @@
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import { Breadcrumbs } from '../../middleware/breadcrumbs'
-import { OfficialVisitJourney } from '../../routes/journeys/manage/visit/journey'
+import { AmendVisitJourney, OfficialVisitJourney } from '../../routes/journeys/manage/visit/journey'
 
 export interface JourneyData extends Journey {
   instanceUnixEpoch: number
@@ -8,6 +8,7 @@ export interface JourneyData extends Journey {
 
 export interface Journey {
   officialVisit?: OfficialVisitJourney
+  amendVisit?: AmendVisitJourney
   journeyCompleted?: boolean
   reachedCheckAnswers?: boolean
 }
@@ -74,6 +75,7 @@ export declare global {
       }
       historyBackUrl?: string
       history?: string[]
+      mode?: 'create' | 'amend'
     }
   }
 }

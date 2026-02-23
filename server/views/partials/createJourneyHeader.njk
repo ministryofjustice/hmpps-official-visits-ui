@@ -1,8 +1,10 @@
 {% from "partials/progress-tracker.njk" import progressTracker %}
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 
-{% macro createJourneyHeader(prisoner, stepsChecked) %}
-  {{ progressTracker(stepsChecked or 0) }}
+{% macro createJourneyHeader(prisoner, stepsChecked, mode) %}
+  {% if mode != 'amend' %}
+    {{ progressTracker(stepsChecked or 0) }}
+  {% endif %}
   
   {% if prisoner %}
     {{ miniProfile(prisoner) }}

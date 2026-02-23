@@ -13,11 +13,11 @@
 
 {% block content %}
 
-  {{ createJourneyHeader(prisoner, stepsChecked)}}
+  {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
-      <span class="govuk-hint">Schedule an official visit</span>
+      <span class="govuk-hint">{{'Schedule' if mode == 'create' else 'Amend'}} an official visit</span>
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
     </div>
   </div>
@@ -107,9 +107,9 @@
 
           {% set items = (items.push(
             {
-              value: slot.visitSlotId + '-' + slot.timeSlotId,
+              value: slot.visitSlotId,
               html: '<b>' + (slot.startTime | timeStringTo12HourPretty) + ' to ' + (slot.endTime | timeStringTo12HourPretty) + '</b><br />' + slotDescription,
-              checked: selectedTimeSlot == (slot.visitSlotId + '-' + slot.timeSlotId)
+              checked: selectedTimeSlot == slot.visitSlotId
             }
           ), items) %}
         {% endfor %}
@@ -134,7 +134,12 @@
           }) }}
         {% endif %}
 
-        {{ continueCancel({stepsChecked: stepsChecked})}}
+        {{ continueCancel({
+          stepsChecked: stepsChecked, 
+          continueText: 'Continue' if mode == 'create' else 'Submit',
+          cancelText: 'Cancel and return to homepage' if mode == 'create' else 'Cancel and return to visit details',
+          cancelHref: '../' if mode == 'amend'
+        })}}
       </form>
     </div>
   </div>

@@ -26,6 +26,8 @@ function normaliseOV(mask: number): number {
 
 export const populateUserPermissions: RequestHandler = (_req, res, next) => {
   const roles: string[] = res.locals.user.userRoles ?? []
+  // roles.push(AuthorisedRoles.ADMIN)
+  // roles.push(AuthorisedRoles.CONTACTS_AUTHORISER)
 
   let mask = 0
   for (const r of roles) mask |= roleMap[r] ?? 0
