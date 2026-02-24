@@ -1,4 +1,4 @@
-import { Router, Request } from 'express'
+import { Router } from 'express'
 import type { Services } from '../../../../services'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import logPageViewMiddleware from '../../../../middleware/logPageViewMiddleware'
@@ -13,7 +13,6 @@ import AssistanceRequiredHandler from './handlers/assistanceRequiredHandler'
 import EquipmentHandler from './handlers/equipmentHandler'
 import CommentsHandler from './handlers/commentsHandler'
 import CancellationCheckHandler from './handlers/cancellationCheckHandler'
-import ViewOfficialVisitHandler from '../../view/handlers/viewOfficialVisitHandler'
 import AmendVisitLandingHandler from './handlers/amendVisitLandingHandler'
 
 export default function AmendRoutes({
