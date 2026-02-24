@@ -59,7 +59,7 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
       prisonerAttendance: req.body.prisoner ? 'ATTENDED' : 'ABSENT',
       visitorAttendance: visit.officialVisitors.map(o => ({
         officialVisitorId: o.officialVisitorId,
-        visitorAttendance: reqBody.attendance.includes(String(o.officialVisitorId)) ? 'ATTENDED' : 'ABSENT',
+        visitorAttendance: reqBody.attendance?.includes(String(o.officialVisitorId)) ? 'ATTENDED' : 'ABSENT',
       })),
       prisonerSearchType: reqBody.searchType as SearchLevelType,
       completionNotes: reqBody.comments,
