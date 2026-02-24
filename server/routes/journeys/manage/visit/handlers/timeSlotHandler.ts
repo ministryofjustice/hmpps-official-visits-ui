@@ -62,7 +62,7 @@ export default class TimeSlotHandler implements PageHandler {
   public POST = async (req: Request, res: Response) => {
     if (res.locals.mode === 'amend') {
       // TODO - Call update endpoint
-      req.flash('updateVerb', 'Amended')
+      req.flash('updateVerb', 'amended')
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }
 

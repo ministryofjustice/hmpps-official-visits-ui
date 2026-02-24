@@ -23,7 +23,7 @@
     {% if updateVerb %}
       {{ mojAlert({
         variant: "success",
-        title: "Visit marked as " + updateVerb,
+        title: "Visit amended" if updateVerb == 'amended' else "Visit marked as " + updateVerb,
         showTitleAsHeading: true,
         dismissible: false,
         html: "You have " + updateVerb + " this visit. <a href='" + (backUrl or '/view/list') + "'>Return to search list</a>"
@@ -187,7 +187,7 @@
       <div class="govuk-summary-card govulk-!-margin-bottom-7">
         <div class="govuk-summary-card__title-wrapper">
           <h2 class="govuk-summary-card__title">
-            <a target="_blank" href="{{prisonerContactsUrl}}/prisoner/{{visit.prisonerVisited.prisonerNumber}}/contacts/manage/{{contact.contactId}}/relationship/{{contact.prisonerContactId}}">{{contact | firstNameSpaceLastName}}</a> ({{contact.relationshipDescription}})
+            <a class="govuk-link--no-visited-state" target="_blank" href="{{prisonerContactsUrl}}/prisoner/{{visit.prisonerVisited.prisonerNumber}}/contacts/manage/{{contact.contactId}}/relationship/{{contact.prisonerContactId}}">{{contact | firstNameSpaceLastName}}</a> ({{contact.relationshipDescription}})
           </h2>
         </div>
         <div class="govuk-summary-card__content">
