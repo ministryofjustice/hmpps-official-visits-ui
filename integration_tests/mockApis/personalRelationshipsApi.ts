@@ -1,6 +1,6 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { simpleApiMock } from '../testUtils'
+import { simplePostApiMock } from '../testHelpers'
 import { PagedModelPrisonerRestrictionDetails } from '../../server/@types/personalRelationshipsApi/types'
 
 export default {
@@ -17,5 +17,5 @@ export default {
       },
     }),
   stubRestrictions: (restrictions: PagedModelPrisonerRestrictionDetails = {}) =>
-    simpleApiMock(`/personal-relationships-api/prisoner-restrictions/.*`, restrictions),
+    simplePostApiMock(`/personal-relationships-api/prisoner-restrictions/.*`, restrictions),
 }
