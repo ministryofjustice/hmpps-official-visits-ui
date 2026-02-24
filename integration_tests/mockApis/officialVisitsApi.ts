@@ -1,6 +1,6 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { RecursivePartial, simpleApiMock, simplePostApiMock } from '../testUtils'
+import { RecursivePartial, simpleApiMock, simplePostApiMock } from '../testHelpers'
 import {
   ApprovedContact,
   AvailableSlot,

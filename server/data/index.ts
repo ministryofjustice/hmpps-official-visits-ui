@@ -9,7 +9,7 @@ import applicationInfoSupplier from '../applicationInfo'
 
 const applicationInfo = applicationInfoSupplier()
 initialiseAppInsights()
-buildAppInsightsClient(applicationInfo)
+const applicationInsightsClient = buildAppInsightsClient(applicationInfo)
 
 import { createRedisClient } from './redisClient'
 import config from '../config'
@@ -40,6 +40,7 @@ export const dataAccess = () => {
     personalRelationshipsApiClient: new PersonalRelationshipsApiClient(hmppsAuthClient),
     activitiesApiClient: new ActivitiesApiClient(hmppsAuthClient),
     manageUsersApiClient: new ManageUsersApiClient(hmppsAuthClient),
+    applicationInsightsClient,
   }
 }
 

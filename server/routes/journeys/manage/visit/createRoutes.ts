@@ -30,6 +30,7 @@ export default function CreateRoutes({
   officialVisitsService,
   personalRelationshipsService,
   activitiesService,
+  telemetryService,
 }: Services): Router {
   const router = Router({ mergeParams: true })
 
@@ -47,10 +48,13 @@ export default function CreateRoutes({
     router.use(journeyStateGuard(guard))
   }
 
-  route('/search', new PrisonerSearchHandler(prisonerService))
-  route('/results', new PrisonerSearchResultsHandler(prisonerService))
+  route('/search', new PrisonerSearchHandler())
+  route('/results', new PrisonerSearchResultsHandler(prisonerService, telemetryService))
   route('/prisoner-select', new PrisonerSelectHandler(prisonerService, personalRelationshipsService))
-  route(`/confirmation/:officialVisitId`, new ConfirmationHandler(officialVisitsService, prisonerService))
+  route(
+    `/confirmation/:officialVisitId`,
+    new ConfirmationHandler(officialVisitsService, prisonerService, telemetryService),
+  )
 
   // Subsequent steps require the official visit journey session data to exist
   router.use((req, res, next) => {
@@ -66,8 +70,8 @@ export default function CreateRoutes({
   route(`/review-scheduled-events`, new ReviewScheduledEventsHandler(officialVisitsService))
   route(`/select-official-visitors`, new SelectOfficialVisitorsHandler(officialVisitsService))
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService))
-  route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
-  route('/equipment', new EquipmentHandler(officialVisitsService))
+  route('/assistance-required', new AssistanceRequiredHandler())
+  route('/equipment', new EquipmentHandler())
   route('/comments', new CommentsHandler())
   route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService))
   route('/cancellation-check', new CancellationCheckHandler())

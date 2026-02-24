@@ -3,16 +3,13 @@ import type { Services } from '../../../../services'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import logPageViewMiddleware from '../../../../middleware/logPageViewMiddleware'
 import validationMiddleware from '../../../../middleware/validationMiddleware'
-import CheckYourAnswersHandler from './handlers/checkYourAnswersHandler'
 import TimeSlotHandler from './handlers/timeSlotHandler'
 import VisitTypeHandler from './handlers/visitTypeHandler'
-import ReviewScheduledEventsHandler from './handlers/reviewScheduledEventsHandler'
 import SelectOfficialVisitorsHandler from './handlers/selectOfficialVisitorsHandler'
 import SelectSocialVisitorsHandler from './handlers/selectSocialVisitorsHandler'
 import AssistanceRequiredHandler from './handlers/assistanceRequiredHandler'
 import EquipmentHandler from './handlers/equipmentHandler'
 import CommentsHandler from './handlers/commentsHandler'
-import CancellationCheckHandler from './handlers/cancellationCheckHandler'
 import AmendVisitLandingHandler from './handlers/amendVisitLandingHandler'
 
 export default function AmendRoutes({
@@ -51,14 +48,11 @@ export default function AmendRoutes({
   // These are the subsequent steps in the journey to create an official visit
   route(`/visit-type`, new VisitTypeHandler(officialVisitsService))
   route(`/time-slot`, new TimeSlotHandler(officialVisitsService, activitiesService))
-  route(`/review-scheduled-events`, new ReviewScheduledEventsHandler(officialVisitsService))
   route(`/select-official-visitors`, new SelectOfficialVisitorsHandler(officialVisitsService))
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService))
-  route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
-  route('/equipment', new EquipmentHandler(officialVisitsService))
+  route('/assistance-required', new AssistanceRequiredHandler())
+  route('/equipment', new EquipmentHandler())
   route('/comments', new CommentsHandler())
-  route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService))
-  route('/cancellation-check', new CancellationCheckHandler())
 
   return router
 }

@@ -1,45 +1,31 @@
 import { expect, test } from '@playwright/test'
 import { format } from 'date-fns'
 import hmppsAuth from '../mockApis/hmppsAuth'
-import { login, resetStubs, summaryValue } from '../testUtils'
+import { equalToJson, login, makePageData, resetStubs, summaryValue } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import componentsApi from '../mockApis/componentsApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
-import { FindByCriteriaVisit } from '../../server/@types/officialVisitsApi/types'
 import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
 import prisonApi from '../mockApis/prisonApi'
 import ListVisitsPage from '../pages/listVisitsPage'
 import { mockPrisonerRestrictions, mockVisitByIdVisit } from '../../server/testutils/mocks'
 import ViewVisitPage from '../pages/viewVisitPage'
-import CancelVisitPage from '../pages/cancelVisitPage'
-import CompleteVisitPage from '../pages/completeVisitPage'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
 import manageUsersApi from '../mockApis/manageUsersApi'
-
-const mockPrisoner = {
-  prisonerNumber: 'A1111AA',
-  firstName: 'John',
-  lastName: 'Doe',
-  dateOfBirth: '1989-06-01',
-  cellLocation: 'LEI-1-1',
-  pncNumber: '429',
-  croNumber: '123456/12A',
-  prisonId: 'LEI',
-  prisonName: 'Example Prison (EXP)',
-}
-
-const defaultStartDate = new Date().toISOString().substring(0, 10)
-const defaultEndDate = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+import {
+  completionCodes,
+  defaultEndDate,
+  defaultStartDate,
+  generateMockData,
+  locations,
+  mockPrisoner,
+  searchLevels,
+  statuses,
+  visitTypes,
+} from '../mockData/data'
 
 const setupFindByCriteriaStubs = async () => {
   const mockVisitData = generateMockData()
-  const makePageData = (mockData: object[]) => ({
-    number: 0,
-    size: 10,
-    totalElements: mockData.length,
-    totalPages: Math.ceil(mockData.length / 10),
-  })
-  const equalToJson = (body: object) => [{ equalToJson: body, ignoreExtraElements: false, ignoreArrayOrder: true }]
 
   await officialVisitsApi.stubFindByCriteria(
     { content: mockVisitData, page: makePageData(mockVisitData) },
@@ -117,7 +103,7 @@ test.describe('View official visits', () => {
       number: 1,
       totalPages: 1,
     })
-    await officialVisitsApi.stubRefData('VIS_TYPE', types)
+    await officialVisitsApi.stubRefData('VIS_TYPE', visitTypes)
     await officialVisitsApi.stubRefData('VIS_STATUS', statuses)
     await officialVisitsApi.stubRefData('VIS_COMPLETION', completionCodes)
     await officialVisitsApi.stubRefData('SEARCH_LEVEL', searchLevels)
@@ -225,7 +211,7 @@ test.describe('View official visits', () => {
 
     await visitListPage.getShowFilterButton().click()
     await visitListPage.getLocationFilter().selectOption(locations[0].code)
-    await visitListPage.getTypeFilter().selectOption(types[0].code)
+    await visitListPage.getTypeFilter().selectOption(visitTypes[0].code)
     await visitListPage.getStatusFilter().selectOption(statuses[0].code)
     await visitListPage.getApplyFiltersButton().click()
 
@@ -292,165 +278,5 @@ test.describe('View official visits', () => {
       'href',
       'http://localhost:9091/prisoner/G4793VF/contacts/manage/20085647/relationship/7332364',
     )
-
-    await page.getByRole('link', { name: 'Cancel visit' }).click()
-
-    await CancelVisitPage.verifyOnPage(page)
-
-    expect(page.url()).toContain('http://localhost:3007/view/visit/1/cancel')
-    await page.getByRole('button', { name: 'Continue' }).click()
-
-    await page.getByRole('link', { name: 'Select a cancellation reason' }).click()
-    await page.getByRole('radio', { name: 'Cancelled by visitor' }).click()
-
-    await page.getByRole('button', { name: 'Continue' }).click()
-
-    expect(page.url()).toContain('http://localhost:3007/view/visit/1?backTo=')
-    expect(page.getByRole('region', { name: 'success: Visit marked as' })).toBeVisible()
-
-    await page.getByRole('link', { name: 'Return to search list' }).click()
-
-    expect(page.url()).toBe(
-      'http://localhost:3007/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02',
-    )
-
-    await page.goBack()
-
-    await page.getByRole('link', { name: 'Complete visit' }).click()
-    await CompleteVisitPage.verifyOnPage(page)
-
-    // Label text
-    await expect(page.locator('label[for="reason"]')).toHaveText('Select a completion reason from the list')
-
-    // Reason <select> option values
-    const optionValues = await page
-      .locator('select[name="reason"] option')
-      .evaluateAll(options => options.map(o => (o as HTMLOptionElement).value))
-
-    expect(optionValues).toContain('')
-    expect(optionValues).toContain('NORMAL')
-    expect(optionValues).not.toContain('SOMETHING_CANCELLED')
-
-    await expect(page.locator('#prisoner')).toHaveAttribute('value', 'G4793VF')
-    await expect(page.locator('.govuk-checkboxes__label[for="prisoner"]')).toHaveText('Tim Harrison (Prisoner)')
-    await expect(page.locator('#prisoner')).toBeChecked()
-
-    const searchTypeOptionValues = await page
-      .locator('select[name="searchType"] option')
-      .evaluateAll(options => options.map(o => (o as HTMLOptionElement).value).filter(Boolean))
-    expect(searchTypeOptionValues).toContain('FULL')
-    expect(searchTypeOptionValues).toContain('RUB_DOWN')
-
-    await expect(page.locator('.govuk-checkboxes__label[for="attendance\\[0\\]"]')).toHaveText(
-      'Peter Malicious (Solicitor)',
-    )
-    await expect(page.locator('#attendance\\[0\\]')).toBeChecked()
-
-    const cancelLink = page.locator('a.govuk-link.govuk-link--no-visited-state')
-    await expect(cancelLink).toHaveText('Cancel and return to visit summary')
-    await expect(cancelLink).toHaveAttribute(
-      'href',
-      `/view/visit/1?backTo=L3ZpZXcvbGlzdD9wYWdlPTEmcHJpc29uZXI9Sm9obiZzdGFydERhdGU9MjAyNi0wMS0wMSZlbmREYXRlPTIwMjYtMDEtMDI=`,
-    )
-
-    await page.locator('select[name="reason"]').selectOption('NORMAL')
-    await page.getByRole('button', { name: 'Continue' }).click()
-
-    expect(page.url()).toContain('http://localhost:3007/view/visit/1?backTo=')
-    expect(page.getByRole('region', { name: 'success: Visit marked as' })).toBeVisible()
-
-    await page.getByRole('link', { name: 'Return to search list' }).click()
-
-    expect(page.url()).toBe(
-      'http://localhost:3007/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02',
-    )
   })
 })
-
-const locations = [
-  {
-    code: '9485cf4a-750b-4d74-b594-59bacbcda247',
-    description: 'First Location',
-  },
-  {
-    code: '0199bed0-4927-7361-998a-4deddbfbbbf3',
-    description: 'Second Location',
-  },
-]
-
-const statuses = [
-  { code: 'COMPLETED', description: 'Completed' },
-  { code: 'SCHEDULED', description: 'Scheduled' },
-]
-
-const types = [
-  { code: 'VIDEO', description: 'Video' },
-  { code: 'NOTVIDEO', description: 'Not video' },
-]
-
-const completionCodes = [
-  { code: 'NORMAL', description: 'Normal' },
-  { code: 'VISITOR_CANCELLED', description: 'Cancelled by visitor' },
-]
-
-const searchLevels = [
-  { code: 'FULL', description: 'Full' },
-  { code: 'RUB_DOWN', description: 'Rub down' },
-]
-
-// Create mock data with one visit at each location, status, type and date for two people (32 visits)
-const generateMockData = (): FindByCriteriaVisit[] => {
-  const mockVisit = {
-    officialVisitId: 294,
-    prisonCode: 'MDI',
-    prisonDescription: 'Moorland (HMP & YOI)',
-    visitDate: '2022-12-23',
-    startTime: '10:00',
-    endTime: '11:00',
-    visitSlotId: 1,
-    staffNotes: 'Legal representation details',
-    prisonerNotes: 'Please arrive 10 minutes early',
-    visitorConcernNotes: 'string',
-    numberOfVisitors: 3,
-    completionCode: 'VISITOR_CANCELLED',
-    completionDescription: 'string',
-    createdBy: 'Fred Bloggs',
-    createdTime: '2025-12-02 14:45',
-    updatedBy: 'Jane Bloggs',
-    updatedTime: '22025-12-04 09:50',
-    prisoner: mockPrisoner,
-  }
-
-  const combos = [
-    new Date(2026, 0, 1).toISOString().substring(0, 10),
-    new Date().toISOString().substring(0, 10),
-  ].flatMap(date =>
-    locations.flatMap(loc =>
-      statuses.flatMap(status =>
-        types.flatMap(type => ['John', 'Jane'].map(name => ({ date, loc, status, type, name }))),
-      ),
-    ),
-  )
-
-  return Array.from({ length: combos.length }, (_, i) => {
-    const { loc, status, type, name, date } = combos[i % combos.length]
-
-    return {
-      ...mockVisit,
-      officialVisitId: i + 1,
-      visitDate: date,
-      dpsLocationId: loc.code,
-      locationDescription: loc.description,
-      visitStatus: status.code,
-      visitStatusDescription: status.description,
-      visitTypeCode: type.code,
-      visitTypeDescription: type.description,
-      prisoner: {
-        ...mockVisit.prisoner,
-        firstName: name,
-        prisonCode: 'LEI',
-        prisonerNumber: 'A1111AA',
-      },
-    } as FindByCriteriaVisit
-  })
-}

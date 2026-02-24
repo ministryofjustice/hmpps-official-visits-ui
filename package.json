@@ -36,6 +36,7 @@
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.983.0",
     "@axe-core/playwright": "^4.11.0",
+    "@microsoft/applicationinsights-web": "3.3.11",
     "@ministryofjustice/frontend": "8.0.0",
     "@ministryofjustice/hmpps-auth-clients": "^1.0.0",
     "@ministryofjustice/hmpps-connect-dps-components": "^5.0.0",

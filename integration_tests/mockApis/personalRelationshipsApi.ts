@@ -1,6 +1,6 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { simpleApiMock } from '../testUtils'
+import { simpleApiMock } from '../testHelpers'
 import { PagedModelPrisonerRestrictionDetails } from '../../server/@types/personalRelationshipsApi/types'
 
 export default {

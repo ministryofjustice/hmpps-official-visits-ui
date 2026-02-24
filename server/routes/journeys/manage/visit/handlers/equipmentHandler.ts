@@ -1,14 +1,13 @@
 import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
-import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { schema, SchemaType } from './equipmentSchema'
 import { ApprovedContact, ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
 
 export default class EquipmentHandler implements PageHandler {
   public PAGE_NAME = Page.EQUIPMENT_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor() {}
 
   public GET = async (req: Request, res: Response) => {
     const contacts = [
