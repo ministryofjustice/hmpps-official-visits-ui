@@ -211,6 +211,7 @@ describe('CompleteOfficialVisitHandler', () => {
           searchType: 'RUB_DOWN',
         })
         .expect(302)
+        // Express decodes percent-encoded query parameters, so the handler will redirect using the decoded value
         .expect('Location', `/view/visit/${ovId}?backTo=${b64}`)
 
       expect(officialVisitsService.completeVisit).toHaveBeenCalledWith(

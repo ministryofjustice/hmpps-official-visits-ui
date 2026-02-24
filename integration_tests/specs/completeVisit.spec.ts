@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { format } from 'date-fns'
 import hmppsAuth from '../mockApis/hmppsAuth'
-import { equalToJson, login, makePageData, resetStubs, summaryValue } from '../testUtils'
+import { login, resetStubs, setupFindByCriteriaStubs, summaryValue } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import componentsApi from '../mockApis/componentsApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
@@ -16,77 +16,12 @@ import {
   completionCodes,
   defaultEndDate,
   defaultStartDate,
-  generateMockData,
   locations,
   mockPrisoner,
   searchLevels,
   statuses,
   visitTypes,
 } from '../mockData/data'
-
-const setupFindByCriteriaStubs = async () => {
-  const mockVisitData = generateMockData()
-
-  await officialVisitsApi.stubFindByCriteria(
-    { content: mockVisitData, page: makePageData(mockVisitData) },
-    equalToJson({ startDate: defaultStartDate, endDate: defaultEndDate }),
-  )
-  await officialVisitsApi.stubFindByCriteria(
-    { content: mockVisitData, page: makePageData(mockVisitData) },
-    equalToJson({ startDate: defaultStartDate, endDate: defaultEndDate }),
-    1,
-  )
-
-  const mockVistDataTermFilter = mockVisitData.filter(
-    o => o.prisoner.firstName === 'John' && o.visitDate === '2026-01-01',
-  )
-  await officialVisitsApi.stubFindByCriteria(
-    { content: mockVistDataTermFilter, page: makePageData(mockVistDataTermFilter) },
-    equalToJson({
-      startDate: '2026-01-01',
-      endDate: '2026-01-02',
-      searchTerm: 'John',
-    }),
-  )
-
-  const mockVisitDataStatusTermFilter = mockVistDataTermFilter.filter(o => o.visitStatus === 'COMPLETED')
-  await officialVisitsApi.stubFindByCriteria(
-    { content: mockVisitDataStatusTermFilter, page: makePageData(mockVisitDataStatusTermFilter) },
-    equalToJson({
-      startDate: '2026-01-01',
-      endDate: '2026-01-02',
-      searchTerm: 'John',
-      visitStatuses: ['COMPLETED'],
-    }),
-  )
-
-  const mockVisitDataTypeStatusTermFilter = mockVisitDataStatusTermFilter.filter(o => o.visitTypeCode === 'VIDEO')
-  await officialVisitsApi.stubFindByCriteria(
-    { content: mockVisitDataTypeStatusTermFilter, page: makePageData(mockVisitDataTypeStatusTermFilter) },
-    equalToJson({
-      startDate: '2026-01-01',
-      endDate: '2026-01-02',
-      searchTerm: 'John',
-      visitStatuses: ['COMPLETED'],
-      visitTypes: ['VIDEO'],
-    }),
-  )
-
-  const mockVisitDataAllFilters = mockVisitDataTypeStatusTermFilter.filter(
-    o => o.dpsLocationId === '9485cf4a-750b-4d74-b594-59bacbcda247',
-  )
-  await officialVisitsApi.stubFindByCriteria(
-    { content: mockVisitDataAllFilters, page: makePageData(mockVisitDataAllFilters) },
-    equalToJson({
-      startDate: '2026-01-01',
-      endDate: '2026-01-02',
-      searchTerm: 'John',
-      visitStatuses: ['COMPLETED'],
-      visitTypes: ['VIDEO'],
-      locationIds: ['9485cf4a-750b-4d74-b594-59bacbcda247'],
-    }),
-  )
-}
 
 test.describe('Complete official visits', () => {
   test.beforeEach(async () => {
