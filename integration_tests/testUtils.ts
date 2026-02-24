@@ -59,6 +59,19 @@ export function simplePostApiMock<T>(urlPattern: string, response: RecursivePart
   return apiMock('POST', urlPattern, response)
 }
 
+export function equalToJson(body: object) {
+  return [{ equalToJson: body, ignoreExtraElements: false, ignoreArrayOrder: true }]
+}
+
+export function makePageData(mockData: object[]) {
+  return {
+    number: 0,
+    size: 10,
+    totalElements: mockData.length,
+    totalPages: Math.ceil(mockData.length / 10),
+  }
+}
+
 export const summaryValue = (page: Page, key: string | RegExp, value?: string) =>
   page
     .locator('.govuk-summary-list__row', {

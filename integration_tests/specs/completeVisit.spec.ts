@@ -10,7 +10,7 @@ import prisonApi from '../mockApis/prisonApi'
 import ListVisitsPage from '../pages/listVisitsPage'
 import { mockPrisonerRestrictions, mockVisitByIdVisit } from '../../server/testutils/mocks'
 import ViewVisitPage from '../pages/viewVisitPage'
-import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
+import CompleteVisitPage from '../pages/completeVisitPage'
 import manageUsersApi from '../mockApis/manageUsersApi'
 import {
   completionCodes,
@@ -88,7 +88,7 @@ const setupFindByCriteriaStubs = async () => {
   )
 }
 
-test.describe('View official visits', () => {
+test.describe('Complete official visits', () => {
   test.beforeEach(async () => {
     await hmppsAuth.stubSignInPage()
     await manageUsersApi.stubGetByUsername()
@@ -137,58 +137,6 @@ test.describe('View official visits', () => {
     await resetStubs()
   })
 
-  test('should allow access as far as search page for DEFAULT role', async ({ page }) => {
-    await login(page, { name: 'AUser', roles: [`ROLE_${AuthorisedRoles.DEFAULT}`], active: true, authSource: 'nomis' })
-    await page.goto(`/view/list`)
-    const visitListPage = await ListVisitsPage.verifyOnPage(page)
-
-    // Basic interaction test
-    await visitListPage.getSearchBox().fill('John')
-    await visitListPage.getFromDateInput().fill('01/01/2026')
-    await visitListPage.getToDateInput().fill('02/01/2026')
-    await visitListPage.getSearchButton().click()
-
-    // TODO: Flesh this test out when we have designs on what limited view entails
-    expect(visitListPage.page.getByRole('link', { name: 'Select' })).toHaveCount(0)
-  })
-
-  test('should allow access as far as visit summary for VIEW role', async ({ page }) => {
-    await login(page, {
-      name: 'AUser',
-      roles: [`ROLE_${AuthorisedRoles.DEFAULT}`, `ROLE_${AuthorisedRoles.VIEW}`],
-      active: true,
-      authSource: 'nomis',
-    })
-    await page.goto(`/view/list`)
-    const visitListPage = await ListVisitsPage.verifyOnPage(page)
-
-    // Basic interaction test
-    await visitListPage.getSearchBox().fill('John')
-    await visitListPage.getFromDateInput().fill('01/01/2026')
-    await visitListPage.getToDateInput().fill('02/01/2026')
-    await visitListPage.getSearchButton().click()
-
-    await visitListPage.page.getByRole('link', { name: 'Select' }).first().click()
-    // Should be no links to Amend, Cancel or Complete
-    await expect(page.locator('.govuk-summary-card__actions')).toHaveCount(0)
-    await expect(page.locator('a[href*="/amend"]')).toHaveCount(0)
-  })
-
-  test('should allow access as far as search / filter page for ADMIN role', async ({ page }) => {
-    await login(page, { name: 'AUser', roles: [`ROLE_${AuthorisedRoles.DEFAULT}`], active: true, authSource: 'nomis' })
-    await page.goto(`/view/list`)
-    const visitListPage = await ListVisitsPage.verifyOnPage(page)
-
-    // Basic interaction test
-    await visitListPage.getSearchBox().fill('John')
-    await visitListPage.getFromDateInput().fill('01/01/2026')
-    await visitListPage.getToDateInput().fill('02/01/2026')
-    await visitListPage.getSearchButton().click()
-
-    // TODO: Flesh this test out when we have designs on what limited view entails
-    expect(visitListPage.page.getByRole('link', { name: 'Select' })).toHaveCount(0)
-  })
-
   test('Happy path', async ({ page }) => {
     await login(page)
     await page.goto(`/view/list`)
@@ -207,32 +155,6 @@ test.describe('View official visits', () => {
 
     await visitListPage.getSearchButton().click()
 
-    expect(await page.getByText('total results').first().innerText()).toBe('8 total results')
-
-    await visitListPage.getShowFilterButton().click()
-    await visitListPage.getLocationFilter().selectOption(locations[0].code)
-    await visitListPage.getTypeFilter().selectOption(visitTypes[0].code)
-    await visitListPage.getStatusFilter().selectOption(statuses[0].code)
-    await visitListPage.getApplyFiltersButton().click()
-
-    expect(await page.getByText('total results').first().innerText()).toBe('1 total results')
-
-    await visitListPage.getRemoveFilter('First').click()
-    expect(page.url()).toBe(
-      'http://localhost:3007/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02&status=COMPLETED&type=VIDEO',
-    )
-    expect(await page.getByText('total results').first().innerText()).toBe('2 total results')
-
-    await visitListPage.getRemoveFilter('Video').click()
-    expect(page.url()).toBe(
-      'http://localhost:3007/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02&status=COMPLETED',
-    )
-    expect(await page.getByText('total results').first().innerText()).toBe('4 total results')
-
-    await visitListPage.getRemoveFilter('Completed').click()
-    expect(page.url()).toBe(
-      'http://localhost:3007/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02',
-    )
     expect(await page.getByText('total results').first().innerText()).toBe('8 total results')
 
     await visitListPage.page.getByRole('link', { name: 'Select' }).first().click()
@@ -277,6 +199,55 @@ test.describe('View official visits', () => {
     await expect(cardLink).toHaveAttribute(
       'href',
       'http://localhost:9091/prisoner/G4793VF/contacts/manage/20085647/relationship/7332364',
+    )
+
+    await page.getByRole('link', { name: 'Complete visit' }).click()
+    await CompleteVisitPage.verifyOnPage(page)
+
+    // Label text
+    await expect(page.locator('label[for="reason"]')).toHaveText('Select a completion reason from the list')
+
+    // Reason <select> option values
+    const optionValues = await page
+      .locator('select[name="reason"] option')
+      .evaluateAll(options => options.map(o => (o as HTMLOptionElement).value))
+
+    expect(optionValues).toContain('')
+    expect(optionValues).toContain('NORMAL')
+    expect(optionValues).not.toContain('SOMETHING_CANCELLED')
+
+    await expect(page.locator('#prisoner')).toHaveAttribute('value', 'G4793VF')
+    await expect(page.locator('.govuk-checkboxes__label[for="prisoner"]')).toHaveText('Tim Harrison (Prisoner)')
+    await expect(page.locator('#prisoner')).toBeChecked()
+
+    const searchTypeOptionValues = await page
+      .locator('select[name="searchType"] option')
+      .evaluateAll(options => options.map(o => (o as HTMLOptionElement).value).filter(Boolean))
+    expect(searchTypeOptionValues).toContain('FULL')
+    expect(searchTypeOptionValues).toContain('RUB_DOWN')
+
+    await expect(page.locator('.govuk-checkboxes__label[for="attendance\\[0\\]"]')).toHaveText(
+      'Peter Malicious (Solicitor)',
+    )
+    await expect(page.locator('#attendance\\[0\\]')).toBeChecked()
+
+    const cancelLink = page.locator('a.govuk-link.govuk-link--no-visited-state')
+    await expect(cancelLink).toHaveText('Cancel and return to visit summary')
+    await expect(cancelLink).toHaveAttribute(
+      'href',
+      `/view/visit/1?backTo=L3ZpZXcvbGlzdD9wYWdlPTEmcHJpc29uZXI9Sm9obiZzdGFydERhdGU9MjAyNi0wMS0wMSZlbmREYXRlPTIwMjYtMDEtMDI=`,
+    )
+
+    await page.locator('select[name="reason"]').selectOption('NORMAL')
+    await page.getByRole('button', { name: 'Continue' }).click()
+
+    expect(page.url()).toContain('http://localhost:3007/view/visit/1?backTo=')
+    expect(page.getByRole('region', { name: 'success: Visit marked as' })).toBeVisible()
+
+    await page.getByRole('link', { name: 'Return to search list' }).click()
+
+    expect(page.url()).toBe(
+      'http://localhost:3007/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02',
     )
   })
 })

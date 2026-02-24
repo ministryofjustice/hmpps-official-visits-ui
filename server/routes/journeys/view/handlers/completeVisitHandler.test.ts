@@ -197,6 +197,72 @@ describe('CompleteOfficialVisitHandler', () => {
       )
     })
 
+    // New test: prisoner not provided -> prisonerAttendance should be ABSENT
+    it('should mark prisoner as ABSENT when prisoner not provided', async () => {
+      const b64 = btoa('/view/list?page=1')
+      const encodedB64 = encodeURIComponent(b64)
+
+      await request(app)
+        .post(`${URL}?backTo=${encodedB64}`)
+        .type('form')
+        .send({
+          reason: 'NO_SHOW',
+          attendance: [mockVisitByIdVisit.officialVisitors[0].officialVisitorId],
+          searchType: 'RUB_DOWN',
+        })
+        .expect(302)
+        .expect('Location', `/view/visit/${ovId}?backTo=${b64}`)
+
+      expect(officialVisitsService.completeVisit).toHaveBeenCalledWith(
+        'HEI',
+        String(ovId),
+        {
+          completionReason: 'NO_SHOW',
+          prisonerAttendance: 'ABSENT',
+          visitorAttendance: [
+            {
+              officialVisitorId: mockVisitByIdVisit.officialVisitors[0].officialVisitorId,
+              visitorAttendance: 'ATTENDED',
+            },
+          ],
+          prisonerSearchType: 'RUB_DOWN',
+        },
+        user,
+      )
+    })
+
+    // New test: visitor not included in attendance -> visitorAttendance should be ABSENT
+    it('should mark visitor as ABSENT when not checked in attendance', async () => {
+      await request(app)
+        .post(URL)
+        .type('form')
+        .send({
+          reason: 'COMPLETE',
+          prisoner: mockVisitByIdVisit.prisonerVisited.prisonerNumber,
+          attendance: [],
+          searchType: 'FULL',
+        })
+        .expect(302)
+        .expect('Location', `/view/visit/${ovId}`)
+
+      expect(officialVisitsService.completeVisit).toHaveBeenCalledWith(
+        'HEI',
+        String(ovId),
+        {
+          completionReason: 'COMPLETE',
+          prisonerAttendance: 'ATTENDED',
+          visitorAttendance: [
+            {
+              officialVisitorId: mockVisitByIdVisit.officialVisitors[0].officialVisitorId,
+              visitorAttendance: 'ABSENT',
+            },
+          ],
+          prisonerSearchType: 'FULL',
+        },
+        user,
+      )
+    })
+
     it('should disallow POST if the notes is larger than 240 characters', async () => {
       await request(app)
         .post(URL)
