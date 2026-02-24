@@ -1,6 +1,6 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { simplePostApiMock } from '../testUtils'
+import { simplePostApiMock } from '../testHelpers'
 import { PrisonerScheduledEvents } from '../../server/@types/activitiesApi/types'
 
 export default {

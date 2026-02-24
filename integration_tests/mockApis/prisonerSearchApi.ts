@@ -1,7 +1,7 @@
 import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import { PagePrisoner, Prisoner } from '../../server/@types/prisonerSearchApi/types'
-import { RecursivePartial, simpleApiMock } from '../testUtils'
+import { RecursivePartial, simpleApiMock } from '../testHelpers'
 
 export default {
   stubPing: (httpStatus = 200): SuperAgentRequest =>

@@ -1,21 +1,14 @@
 import { Page } from '@playwright/test'
-import { SuperAgentRequest } from 'superagent'
 import tokenVerification from './mockApis/tokenVerification'
 import hmppsAuth, { type UserToken } from './mockApis/hmppsAuth'
-import { resetStubs, stubFor } from './mockApis/wiremock'
+import { resetStubs } from './mockApis/wiremock'
 import { AuthorisedRoles } from '../server/middleware/populateUserPermissions'
+import { defaultEndDate, defaultStartDate, generateMockData } from './mockData/data'
+import officialVisitsApi from './mockApis/officialVisitsApi'
 
 export { resetStubs }
 
 const DEFAULT_ROLES = ['ROLE_SOME_REQUIRED_ROLE', 'ROLE_PRISON', `ROLE_${AuthorisedRoles.MANAGE}`]
-
-export type RecursivePartial<T> = {
-  [P in keyof T]?: T[P] extends (infer U)[]
-    ? RecursivePartial<U>[]
-    : T[P] extends object | undefined
-      ? RecursivePartial<T[P]>
-      : T[P]
-}
 
 export const attemptHmppsAuthLogin = async (page: Page) => {
   await page.goto('/')
@@ -38,25 +31,17 @@ export const login = async (
   await attemptHmppsAuthLogin(page)
 }
 
-export function apiMock<T>(method: string, urlPattern: string, response: RecursivePartial<T>): SuperAgentRequest {
-  return stubFor({
-    request: {
-      method,
-      urlPattern,
-    },
-    response: {
-      status: 200,
-      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-      jsonBody: response,
-    },
-  })
+export function equalToJson(body: object) {
+  return [{ equalToJson: body, ignoreExtraElements: false, ignoreArrayOrder: true }]
 }
 
-export function simpleApiMock<T>(urlPattern: string, response: RecursivePartial<T>): SuperAgentRequest {
-  return apiMock('GET', urlPattern, response)
-}
-export function simplePostApiMock<T>(urlPattern: string, response: RecursivePartial<T>): SuperAgentRequest {
-  return apiMock('POST', urlPattern, response)
+export function makePageData(mockData: object[]) {
+  return {
+    number: 0,
+    size: 10,
+    totalElements: mockData.length,
+    totalPages: Math.ceil(mockData.length / 10),
+  }
 }
 
 export const summaryValue = (page: Page, key: string | RegExp, value?: string) =>
@@ -65,3 +50,67 @@ export const summaryValue = (page: Page, key: string | RegExp, value?: string) =
       has: page.locator('.govuk-summary-list__key', { hasText: key }),
     })
     .locator('.govuk-summary-list__value', value ? { hasText: value } : undefined)
+
+export const setupFindByCriteriaStubs = async () => {
+  const mockVisitData = generateMockData()
+
+  await officialVisitsApi.stubFindByCriteria(
+    { content: mockVisitData, page: makePageData(mockVisitData) },
+    equalToJson({ startDate: defaultStartDate, endDate: defaultEndDate }),
+  )
+  await officialVisitsApi.stubFindByCriteria(
+    { content: mockVisitData, page: makePageData(mockVisitData) },
+    equalToJson({ startDate: defaultStartDate, endDate: defaultEndDate }),
+    1,
+  )
+
+  const mockVistDataTermFilter = mockVisitData.filter(
+    o => o.prisoner.firstName === 'John' && o.visitDate === '2026-01-01',
+  )
+  await officialVisitsApi.stubFindByCriteria(
+    { content: mockVistDataTermFilter, page: makePageData(mockVistDataTermFilter) },
+    equalToJson({
+      startDate: '2026-01-01',
+      endDate: '2026-01-02',
+      searchTerm: 'John',
+    }),
+  )
+
+  const mockVisitDataStatusTermFilter = mockVistDataTermFilter.filter(o => o.visitStatus === 'COMPLETED')
+  await officialVisitsApi.stubFindByCriteria(
+    { content: mockVisitDataStatusTermFilter, page: makePageData(mockVisitDataStatusTermFilter) },
+    equalToJson({
+      startDate: '2026-01-01',
+      endDate: '2026-01-02',
+      searchTerm: 'John',
+      visitStatuses: ['COMPLETED'],
+    }),
+  )
+
+  const mockVisitDataTypeStatusTermFilter = mockVisitDataStatusTermFilter.filter(o => o.visitTypeCode === 'VIDEO')
+  await officialVisitsApi.stubFindByCriteria(
+    { content: mockVisitDataTypeStatusTermFilter, page: makePageData(mockVisitDataTypeStatusTermFilter) },
+    equalToJson({
+      startDate: '2026-01-01',
+      endDate: '2026-01-02',
+      searchTerm: 'John',
+      visitStatuses: ['COMPLETED'],
+      visitTypes: ['VIDEO'],
+    }),
+  )
+
+  const mockVisitDataAllFilters = mockVisitDataTypeStatusTermFilter.filter(
+    o => o.dpsLocationId === '9485cf4a-750b-4d74-b594-59bacbcda247',
+  )
+  await officialVisitsApi.stubFindByCriteria(
+    { content: mockVisitDataAllFilters, page: makePageData(mockVisitDataAllFilters) },
+    equalToJson({
+      startDate: '2026-01-01',
+      endDate: '2026-01-02',
+      searchTerm: 'John',
+      visitStatuses: ['COMPLETED'],
+      visitTypes: ['VIDEO'],
+      locationIds: ['9485cf4a-750b-4d74-b594-59bacbcda247'],
+    }),
+  )
+}
