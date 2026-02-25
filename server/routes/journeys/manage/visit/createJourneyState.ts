@@ -75,9 +75,6 @@ export function saveVisitors(journey: Journey, relationshipType: 'O' | 'S', visi
   } else {
     journey.officialVisit.socialVisitors = visitors
   }
-
-  // Re-show assistance/equipment pages
-  resetPages(journey, [Page.ASSISTANCE_REQUIRED_PAGE, Page.EQUIPMENT_PAGE])
 }
 
 /**

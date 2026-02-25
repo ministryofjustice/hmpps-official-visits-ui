@@ -13,11 +13,11 @@
 
 {% block content %}
 
-  {{ createJourneyHeader(prisoner, stepsChecked)}}
+  {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
-      <span class="govuk-hint">Schedule an official visit</span>
+      <span class="govuk-hint">{{'Schedule' if mode == 'create' else 'Amend'}} an official visit</span>
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
     </div>
   </div>
@@ -151,7 +151,11 @@
   {% endif %}
     <div class="govuk-grid-row govuk-body">
       <div class="govuk-grid-column-three-quarters">
-        {{ continueCancel({stepsChecked: stepsChecked}) }}
+        {{ continueCancel({
+          stepsChecked: stepsChecked, 
+          cancelText: 'Cancel and return to homepage' if mode == 'create' else 'Cancel and return to visit details',
+          cancelHref: './' if mode == 'amend'
+        })}}
     </div>
   </div>
 
