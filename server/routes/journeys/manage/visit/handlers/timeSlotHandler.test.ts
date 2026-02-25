@@ -195,12 +195,12 @@ describe('Time slot handler', () => {
     it('should error on an empty submission', () => {
       return request(app)
         .post(URL)
-        .send({ timeSlot: '' })
+        .send({ visitSlot: '' })
         .expect(() =>
           expectErrorMessages([
             {
-              fieldId: 'timeSlot',
-              href: '#timeSlot',
+              fieldId: 'visitSlot',
+              href: '#visitSlot',
               text: 'Select a date and time for the official visit',
             },
           ]),
@@ -210,12 +210,12 @@ describe('Time slot handler', () => {
     it('should error on an invalid time slot', () => {
       return request(app)
         .post(URL)
-        .send({ timeSlot: 'NaN' })
+        .send({ visitSlot: 'NaN' })
         .expect(() =>
           expectErrorMessages([
             {
-              fieldId: 'timeSlot',
-              href: '#timeSlot',
+              fieldId: 'visitSlot',
+              href: '#visitSlot',
               text: 'Select a date and time for the official visit',
             },
           ]),
@@ -225,7 +225,7 @@ describe('Time slot handler', () => {
     it('should accept a valid time slot', async () => {
       await request(app)
         .post(URL)
-        .send({ timeSlot: '1' })
+        .send({ visitSlot: '1' })
         .expect(302)
         .expect('location', 'select-official-visitors')
         .expect(() => expectNoErrorMessages())

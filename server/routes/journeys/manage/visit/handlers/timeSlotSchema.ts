@@ -6,18 +6,18 @@ const ERROR_MSG = 'Select a date and time for the official visit'
 
 export const schema = async (req: Request) => {
   return createSchema({
-    timeSlot: z.string({ message: ERROR_MSG }),
+    visitSlot: z.string({ message: ERROR_MSG }),
   }).transform((arg, ctx) => {
     const availableSlots = req.session.journey.officialVisit?.availableSlots || []
-    const foundSlot = availableSlots.find(o => o.visitSlotId === Number(arg.timeSlot))
+    const foundSlot = availableSlots.find(o => o.visitSlotId === Number(arg.visitSlot))
     if (foundSlot) {
       return foundSlot
     }
     ctx.addIssue({
       code: 'custom',
       message: ERROR_MSG,
-      path: ['timeSlot'],
-      validation: 'timeSlot',
+      path: ['visitSlot'],
+      validation: 'visitSlot',
     })
     return z.NEVER
   })

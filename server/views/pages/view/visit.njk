@@ -13,7 +13,7 @@
   <div class="govuk-grid-row">
     <span class="govuk-hint">Manage existing official visits</span>
 
-    {% if user | hasPermission(PERMISSION.MANAGE)and mode != 'AMEND' %}
+    {% if user | hasPermission(PERMISSION.MANAGE)and mode != 'amend' %}
       <a href="/manage/amend/{{visit.officialVisitId}}{{paramBackTo}}" class="govuk-link float-right govuk-link--no-visited-state"> Amend this visit</a>
     {% endif %}
 
@@ -31,7 +31,7 @@
 
     {% endif %}
 
-    {% if mode != 'AMEND' %}
+    {% if mode != 'amend' %}
       {{ govukButton({
         text: "Print movement slip",
         href: "/view/visit/" + visit.officialVisitId + "/movement-slip",
@@ -78,7 +78,7 @@
                 visuallyHiddenText: "date of visit"
               }
             ]
-          } if mode == 'AMEND'
+          } if mode == 'amend'
         },
         {
           key: { text: "Time" },
@@ -92,7 +92,7 @@
                 visuallyHiddenText: "time of visit"
               }
             ]
-          } if mode == 'AMEND'
+          } if mode == 'amend'
         },
         {
           key: { text: "Visit status" },
@@ -118,7 +118,7 @@
                 visuallyHiddenText: "location of visit"
               }
             ]
-          } if mode == 'AMEND'
+          } if mode == 'amend'
         },
         {
           key: { text: "Visit type" },
@@ -132,7 +132,7 @@
                 visuallyHiddenText: "visit type"
               }
             ]
-          } if mode == 'AMEND'
+          } if mode == 'amend'
         },
         {
           key: { text: "Prisoner notes" },
@@ -146,7 +146,7 @@
                 visuallyHiddenText: "prisoner notes"
               }
             ]
-          } if mode == 'AMEND'
+          } if mode == 'amend'
         },
         {
           key: { text: "Staff notes" },
@@ -160,7 +160,7 @@
                 visuallyHiddenText: "staff notes"
               }
             ]
-          } if mode == 'AMEND'
+          } if mode == 'amend'
         },
         {
           key: { text: "Created by" },
@@ -177,7 +177,7 @@
       ] | filterNonFalsy
     }) }}
 
-    {% if mode == 'AMEND' %}
+    {% if mode == 'amend' %}
       <a href="select-official-visitors" class="govuk-link govuk-body float-right govuk-link--no-visited-state">Add or remove visitors</a>
     {% endif %}
     <p class="govuk-heading-m">Visitor details</p>
@@ -209,7 +209,7 @@
                       visuallyHiddenText: "whether assistance is required"
                     }
                   ]
-                } if mode == 'AMEND'
+                } if mode == 'amend'
               },
               {
                 key: { text: "Assistance details" },
@@ -223,7 +223,7 @@
                       visuallyHiddenText: "notes about the assistance required"
                     }
                   ]
-                } if mode == 'AMEND'
+                } if mode == 'amend'
               },
               {
                 key: { text: "Does this visitor need equipment?" },
@@ -237,7 +237,7 @@
                       visuallyHiddenText: "whether equipment is required"
                     }
                   ]
-                } if mode == 'AMEND'
+                } if mode == 'amend'
               },
               {
                 key: { text: "Equipment" },
@@ -251,7 +251,7 @@
                       visuallyHiddenText: "notes about the equipment required"
                     }
                   ]
-                } if mode == 'AMEND'
+                } if mode == 'amend'
               },
               {
                 key: { text: "Email" },
@@ -267,7 +267,7 @@
       </div>
     {% endfor %}
 
-    {% if mode != 'AMEND' %}
+    {% if mode != 'amend' %}
       {{ govukButton ({
         text: "Print attendance list (TODO)",
         href: "#TODO",
@@ -275,7 +275,7 @@
       }) }}
     {% endif %}
 
-    {% if mode == 'AMEND' %}
+    {% if mode == 'amend' %}
       <a href="/view/visit/{{visit.officialVisitId}}{{paramBackTo}}" class="govuk-link govuk-body govuk-link--no-visited-state">Cancel</a>
     {% endif %}
 

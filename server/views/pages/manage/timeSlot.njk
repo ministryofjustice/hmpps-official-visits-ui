@@ -116,8 +116,8 @@
 
         {% if items | length > 0 %}
           {{ govukRadios({
-            idPrefix: "timeSlot",
-            name: "timeSlot",
+            idPrefix: "visitSlot",
+            name: "visitSlot",
             fieldset: {
               legend: {
                 text: "Select a time slot",
@@ -125,7 +125,7 @@
               }
             },
             items: items,
-            errorMessage: validationErrors | findError('timeSlot')
+            errorMessage: validationErrors | findError('visitSlot')
           })}}
         {% else %}
           {{ govukWarningText({

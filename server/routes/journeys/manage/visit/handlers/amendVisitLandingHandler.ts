@@ -81,7 +81,6 @@ export default class AmendVisitLandingHandler implements PageHandler {
         createdBy: createdUser.name,
         updatedBy: modifiedUser.name,
       },
-      mode: 'AMEND',
       updateVerb,
       b64BackTo: b64BackTo || '',
       journeyId: req.params.journeyId,
