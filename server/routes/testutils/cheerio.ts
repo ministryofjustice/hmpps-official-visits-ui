@@ -25,6 +25,17 @@ export const getValueByKey = ($: Root, key: string, index: number = 0) => {
   )
 }
 
+export const getActionsByKey = ($: Root, key: string, index: number = 0, childIndex: number = 0) => {
+  return (
+    $('.govuk-summary-list .govuk-summary-list__row')
+      .filter((_, e) => $(e).find('.govuk-summary-list__key').text().trim() === key)
+      .find('.govuk-summary-list__actions')
+      .eq(index)
+      .children()
+      .eq(childIndex) || null
+  )
+}
+
 export const existsByKey = ($: Root, key: string) => {
   return (
     $('.govuk-summary-list .govuk-summary-list__row').filter(

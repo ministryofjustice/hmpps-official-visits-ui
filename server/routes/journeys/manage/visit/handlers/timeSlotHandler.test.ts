@@ -25,7 +25,7 @@ const activitiesService = new ActivitiesService(null) as jest.Mocked<ActivitiesS
 let app: Express
 
 const appSetup = (
-  journeySession = { officialVisit: { prisoner: mockPrisoner, availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }] } },
+  journeySession = { officialVisit: { prisoner: mockPrisoner, availableSlots: [{ visitSlotId: 1 }] } },
 ) => {
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService, activitiesService },
@@ -52,10 +52,11 @@ afterEach(() => {
   jest.useRealTimers()
 })
 
-const URL = `/manage/create/${journeyId()}/time-slot`
+const UUID = journeyId()
+const URL = `/manage/create/${UUID}/time-slot`
 
 describe('Time slot handler', () => {
-  describe('GET', () => {
+  describe('GET (create)', () => {
     it('should render the correct view page', () => {
       return request(app)
         .get(URL)
@@ -65,6 +66,7 @@ describe('Time slot handler', () => {
           const heading = getPageHeader($)
           const selectedDate = getTextById($, 'selected-date')
 
+          expect($('.govuk-hint').text()).toEqual('Schedule an official visit')
           expect(heading).toEqual('Select date and time of official visit')
           expect(selectedDate).toEqual('Thursday 25 December 2025')
 
@@ -102,7 +104,84 @@ describe('Time slot handler', () => {
           expect($('.govuk-table__cell').eq(6).eq(0).text().trim()).toEqual('Appointment')
           expect($('.govuk-table__cell').eq(7).eq(0).text().trim()).toEqual('In cell')
 
-          // TODO: Check the available slots?
+          expect($('.govuk-radios__item').length).toEqual(1)
+          expect($('.govuk-radios__item').eq(0).text()).toMatch(
+            /8am to 5pm\s+Mock Location\s+Groups 1, people 1, video 1/,
+          )
+          expect($('.govuk-radios__input').eq(0).attr('value')).toEqual('1')
+
+          expect($('.govuk-button').text()).toContain('Continue')
+          expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
+          expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=1`)
+
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.TIME_SLOT_PAGE, {
+            who: user.username,
+            correlationId: expect.any(String),
+          })
+        })
+    })
+  })
+
+  describe('GET (amend)', () => {
+    it('should render the correct view page', () => {
+      return request(app)
+        .get(`/manage/amend/1/${UUID}/time-slot`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          const heading = getPageHeader($)
+          const selectedDate = getTextById($, 'selected-date')
+
+          expect($('.govuk-hint').text()).toEqual('Amend an official visit')
+          expect(heading).toEqual('Select date and time of official visit')
+          expect(selectedDate).toEqual('Thursday 25 December 2025')
+
+          // There should not be a progress tracker on this page
+          expect($('.moj-progress-bar').length).toBeFalsy()
+
+          // Not clickable dates (in the past or today)
+          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(0).text()).toEqual('22')
+          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(1).text()).toEqual('23')
+          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(2).text()).toEqual('24')
+          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(3).text()).toEqual('25')
+
+          // Clickable dates (in the future)
+          expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(0).text()).toEqual('26')
+          expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(1).text()).toEqual('27')
+          expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(2).text()).toEqual('28')
+
+          // Default page shouldn't show previous week because it'll be in the past
+          expect($('.moj-pagination__item--prev').children().length).toBeFalsy()
+          expect($('.moj-pagination__item--next').children().length).toBeTruthy()
+
+          // Prisoner's schedule
+          expect($('caption').text()).toEqual('John Smith’s schedule')
+
+          // Schedule header
+          expect($('.govuk-table__header').eq(0).text()).toEqual('Time')
+          expect($('.govuk-table__header').eq(1).text()).toEqual('Event name')
+          expect($('.govuk-table__header').eq(2).text()).toEqual('Type')
+          expect($('.govuk-table__header').eq(3).text()).toEqual('Location')
+
+          // Scheduled events
+          expect($('.govuk-table__cell').eq(0).eq(0).text()).toEqual('08:00 to 17:00')
+          expect($('.govuk-table__cell').eq(1).eq(0).text()).toEqual('Summary')
+          expect($('.govuk-table__cell').eq(2).eq(0).text().trim()).toEqual('Appointment')
+          expect($('.govuk-table__cell').eq(3).eq(0).text().trim()).toEqual('In cell')
+          expect($('.govuk-table__cell').eq(4).eq(0).text()).toEqual(' to 17:00')
+          expect($('.govuk-table__cell').eq(5).eq(0).text()).toEqual('Summary')
+          expect($('.govuk-table__cell').eq(6).eq(0).text().trim()).toEqual('Appointment')
+          expect($('.govuk-table__cell').eq(7).eq(0).text().trim()).toEqual('In cell')
+
+          expect($('.govuk-radios__item').length).toEqual(1)
+          expect($('.govuk-radios__item').eq(0).text()).toMatch(
+            /8am to 5pm\s+Mock Location\s+Groups 1, people 1, video 1/,
+          )
+          expect($('.govuk-radios__input').eq(0).attr('value')).toEqual('1')
+
+          expect($('.govuk-button').text()).toContain('Submit')
+          expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
+          expect($('.govuk-link').last().attr('href')).toContain(`../`)
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.TIME_SLOT_PAGE, {
             who: user.username,
@@ -116,12 +195,12 @@ describe('Time slot handler', () => {
     it('should error on an empty submission', () => {
       return request(app)
         .post(URL)
-        .send({ timeSlot: '' })
+        .send({ visitSlot: '' })
         .expect(() =>
           expectErrorMessages([
             {
-              fieldId: 'timeSlot',
-              href: '#timeSlot',
+              fieldId: 'visitSlot',
+              href: '#visitSlot',
               text: 'Select a date and time for the official visit',
             },
           ]),
@@ -131,12 +210,12 @@ describe('Time slot handler', () => {
     it('should error on an invalid time slot', () => {
       return request(app)
         .post(URL)
-        .send({ timeSlot: 'NaN' })
+        .send({ visitSlot: 'NaN' })
         .expect(() =>
           expectErrorMessages([
             {
-              fieldId: 'timeSlot',
-              href: '#timeSlot',
+              fieldId: 'visitSlot',
+              href: '#visitSlot',
               text: 'Select a date and time for the official visit',
             },
           ]),
@@ -146,13 +225,13 @@ describe('Time slot handler', () => {
     it('should accept a valid time slot', async () => {
       await request(app)
         .post(URL)
-        .send({ timeSlot: '1-1' })
+        .send({ visitSlot: '1' })
         .expect(302)
         .expect('location', 'select-official-visitors')
         .expect(() => expectNoErrorMessages())
 
       const journeySession = await getJourneySession(app, 'officialVisit')
-      expect(journeySession.selectedTimeSlot).toEqual({ timeSlotId: 1, visitSlotId: 1 })
+      expect(journeySession.selectedTimeSlot).toEqual({ visitSlotId: 1 })
     })
   })
 })

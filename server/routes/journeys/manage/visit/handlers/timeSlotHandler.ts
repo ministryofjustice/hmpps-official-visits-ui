@@ -53,15 +53,19 @@ export default class TimeSlotHandler implements PageHandler {
       nextWeek,
       prisonerSchedule,
       slots: availableSlots,
-      selectedTimeSlot:
-        res.locals.formResponses?.['timeSlot'] ||
-        `${officialVisit?.selectedTimeSlot?.visitSlotId}-${officialVisit?.selectedTimeSlot?.timeSlotId}`,
+      selectedTimeSlot: res.locals.formResponses?.['timeSlot'] || officialVisit?.selectedTimeSlot?.visitSlotId,
       backUrl: `visit-type`,
       prisoner: req.session.journey.officialVisit.prisoner,
     })
   }
 
   public POST = async (req: Request, res: Response) => {
+    if (res.locals.mode === 'amend') {
+      // TODO - Call update endpoint
+      req.flash('updateVerb', 'amended')
+      return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
+    }
+
     req.session.journey.officialVisit.selectedTimeSlot = req.body
     saveTimeSlot(req.session.journey, req.body)
     return res.redirect(`select-official-visitors`)
