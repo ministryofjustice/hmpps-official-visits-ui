@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Request, Response, NextFunction } from 'express'
 import type { Services } from '../../../../services'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import logPageViewMiddleware from '../../../../middleware/logPageViewMiddleware'
@@ -22,8 +22,17 @@ export default function AmendRoutes({
 }: Services): Router {
   const router = Router({ mergeParams: true })
 
+  const logChangeIntent = (req: Request, res: Response, next: NextFunction) => {
+    const currentPage = req.url.split('?')[0]?.split('/').pop() || ''
+    res.locals.currentPage = currentPage
+    if (req.query.change) {
+      req.session.journey.amendVisit.changePage = currentPage
+    }
+    next()
+  }
+
   const route = (path: string | string[], handler: PageHandler) =>
-    router.get(path, logPageViewMiddleware(auditService, handler), handler.GET) &&
+    router.get(path, logChangeIntent, logPageViewMiddleware(auditService, handler), handler.GET) &&
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 

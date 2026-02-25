@@ -5,6 +5,8 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import PrisonerService from '../../../../../services/prisonerService'
 import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import ManageUserService from '../../../../../services/manageUsersService'
+import { JourneyVisitor } from '../journey'
+import { OfficialVisit } from '../../../../../@types/officialVisitsApi/types'
 
 export default class AmendVisitLandingHandler implements PageHandler {
   public PAGE_NAME = Page.AMEND_LANDING_PAGE
@@ -15,6 +17,25 @@ export default class AmendVisitLandingHandler implements PageHandler {
     private readonly personalRelationshipsService: PersonalRelationshipsService,
     private readonly manageUsersService: ManageUserService,
   ) {}
+
+  mapVisitorToJourneyVisitor = (visitor: OfficialVisit['officialVisitors'][0]) => {
+    return {
+      assistanceNotes: visitor.assistanceNotes,
+      assistedVisit: visitor.assistedVisit,
+      contactId: visitor.contactId,
+      equipment: !!visitor.visitorEquipment,
+      equipmentNotes: visitor.visitorEquipment?.description,
+      firstName: visitor.firstName,
+      lastName: visitor.lastName,
+      prisonerContactId: visitor.prisonerContactId,
+      relationshipDescription: visitor.relationshipTypeDescription,
+      relationshipTypeDescription: visitor.relationshipTypeDescription,
+      relationshipToPrisonerCode: visitor.relationshipCode,
+      relationshipToPrisonerDescription: visitor.relationshipDescription,
+      leadVisitor: visitor.leadVisitor,
+      notes: visitor.visitorNotes,
+    } as Partial<JourneyVisitor>
+  }
 
   GET = async (req: Request, res: Response) => {
     const { ovId } = req.params
@@ -68,6 +89,12 @@ export default class AmendVisitLandingHandler implements PageHandler {
       visitDate: visit.visitDate,
       visitStatusCode: visit.visitStatus,
       visitType: visit.visitTypeCode,
+      officialVisitors: visit.officialVisitors
+        .filter(o => o.relationshipTypeCode === 'OFFICIAL')
+        .map(this.mapVisitorToJourneyVisitor) as JourneyVisitor[],
+      socialVisitors: visit.officialVisitors
+        .filter(o => o.relationshipTypeCode === 'SOCIAL')
+        .map(this.mapVisitorToJourneyVisitor) as JourneyVisitor[],
     }
 
     req.session.journey.amendVisit = {

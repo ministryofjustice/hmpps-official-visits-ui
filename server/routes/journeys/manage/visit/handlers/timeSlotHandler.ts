@@ -6,6 +6,7 @@ import ActivitiesService from '../../../../../services/activitiesService'
 import { getParsedDateFromQueryString, getWeekOfDatesStartingMonday } from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
 import { saveTimeSlot } from '../createJourneyState'
+import { getBackLink } from './utils'
 
 export default class TimeSlotHandler implements PageHandler {
   public PAGE_NAME = Page.TIME_SLOT_PAGE
@@ -54,7 +55,7 @@ export default class TimeSlotHandler implements PageHandler {
       prisonerSchedule,
       slots: availableSlots,
       selectedTimeSlot: res.locals.formResponses?.['timeSlot'] || officialVisit?.selectedTimeSlot?.visitSlotId,
-      backUrl: `visit-type`,
+      backUrl: getBackLink(req, res, `visit-type`),
       prisoner: req.session.journey.officialVisit.prisoner,
     })
   }

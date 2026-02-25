@@ -181,7 +181,7 @@ describe('Time slot handler', () => {
 
           expect($('.govuk-button').text()).toContain('Submit')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
-          expect($('.govuk-link').last().attr('href')).toContain(`../`)
+          expect($('.govuk-link').last().attr('href')).toContain(`./`)
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.TIME_SLOT_PAGE, {
             who: user.username,
