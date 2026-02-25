@@ -233,5 +233,13 @@ describe('Time slot handler', () => {
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.selectedTimeSlot).toEqual({ visitSlotId: 1 })
     })
+
+    it('should redirect to visit details page when in amend mode', async () => {
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/time-slot`)
+        .send({ visitSlot: '1' })
+        .expect(302)
+        .expect('location', `/manage/amend/1/${journeyId()}`)
+    })
   })
 })
