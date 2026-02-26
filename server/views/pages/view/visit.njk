@@ -72,7 +72,7 @@
           actions: {
             items: [
               {
-                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/time-slot?date=" + visit.visitDate,
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/time-slot?change=true&date=" + visit.visitDate,
                 text: "Change",
                 classes: "govuk-link--no-visited-state",
                 visuallyHiddenText: "date of visit"
@@ -86,7 +86,7 @@
           actions: {
             items: [
               {
-                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/time-slot?date=" + visit.visitDate,
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/time-slot?change=true&date=" + visit.visitDate,
                 text: "Change",
                 classes: "govuk-link--no-visited-state",
                 visuallyHiddenText: "time of visit"
@@ -112,7 +112,7 @@
           actions: {
             items: [
               {
-                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/time-slot?date=" + visit.visitDate,
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/time-slot?change=true&date=" + visit.visitDate,
                 text: "Change",
                 classes: "govuk-link--no-visited-state",
                 visuallyHiddenText: "location of visit"
@@ -126,7 +126,7 @@
           actions: {
             items: [
               {
-                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/visit-type",
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/visit-type?change=true",
                 text: "Change",
                 classes: "govuk-link--no-visited-state",
                 visuallyHiddenText: "visit type"
@@ -140,7 +140,7 @@
           actions: {
             items: [
               {
-                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/comments",
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/comments?change=true",
                 text: "Change",
                 classes: "govuk-link--no-visited-state",
                 visuallyHiddenText: "prisoner notes"
@@ -154,7 +154,7 @@
           actions: {
             items: [
               {
-                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/comments",
+                href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/comments?change=true",
                 text: "Change",
                 classes: "govuk-link--no-visited-state",
                 visuallyHiddenText: "staff notes"
@@ -178,7 +178,7 @@
     }) }}
 
     {% if mode == 'amend' %}
-      <a href="select-official-visitors" class="govuk-link govuk-body float-right govuk-link--no-visited-state">Add or remove visitors</a>
+      <a href="/manage/amend/{{visit.officialVisitId}}/{{journeyId}}/select-official-visitors?change=true" class="govuk-link govuk-body float-right govuk-link--no-visited-state">Add or remove visitors</a>
     {% endif %}
     <p class="govuk-heading-m">Visitor details</p>
 
@@ -203,7 +203,7 @@
                 actions: {
                   items: [
                     {
-                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/assistance-required",
+                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/assistance-required?change=true",
                       text: "Change",
                       classes: "govuk-link--no-visited-state",
                       visuallyHiddenText: "whether assistance is required"
@@ -217,7 +217,7 @@
                 actions: {
                   items: [
                     {
-                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/assistance-required",
+                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/assistance-required?change=true",
                       text: "Change",
                       classes: "govuk-link--no-visited-state",
                       visuallyHiddenText: "notes about the assistance required"
@@ -231,7 +231,7 @@
                 actions: {
                   items: [
                     {
-                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/equipment",
+                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/equipment?change=true",
                       text: "Change",
                       classes: "govuk-link--no-visited-state",
                       visuallyHiddenText: "whether equipment is required"
@@ -245,7 +245,7 @@
                 actions: {
                   items: [
                     {
-                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/equipment",
+                      href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/equipment?change=true",
                       text: "Change",
                       classes: "govuk-link--no-visited-state",
                       visuallyHiddenText: "notes about the equipment required"

@@ -11,11 +11,11 @@
 
 {% block content %}
 
-  {{ createJourneyHeader(prisoner, stepsChecked)}}
+  {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-from-desktop">
-      <span class="govuk-hint">Schedule an official visit</span>
+      <span class="govuk-hint">{{'Schedule' if mode == 'create' else 'Amend'}} an official visit</span>
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
@@ -33,7 +33,12 @@
           errorMessage: validationErrors | findError('visitType')
         }) }}
 
-        {{ continueCancel({stepsChecked: stepsChecked}) }}
+        {{ continueCancel({
+          stepsChecked: stepsChecked, 
+          continueText: 'Continue',
+          cancelText: 'Cancel and return to homepage' if mode == 'create' else 'Cancel and return to visit details',
+          cancelHref: './' if mode == 'amend'
+        })}}
       </form>
     </div>
   </div>

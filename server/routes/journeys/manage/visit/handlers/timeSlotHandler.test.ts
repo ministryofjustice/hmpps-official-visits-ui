@@ -181,7 +181,7 @@ describe('Time slot handler', () => {
 
           expect($('.govuk-button').text()).toContain('Submit')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
-          expect($('.govuk-link').last().attr('href')).toContain(`../`)
+          expect($('.govuk-link').last().attr('href')).toContain(`./`)
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.TIME_SLOT_PAGE, {
             who: user.username,
@@ -232,6 +232,14 @@ describe('Time slot handler', () => {
 
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.selectedTimeSlot).toEqual({ visitSlotId: 1 })
+    })
+
+    it('should redirect to visit details page when in amend mode', async () => {
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/time-slot`)
+        .send({ visitSlot: '1' })
+        .expect(302)
+        .expect('location', `/manage/amend/1/${journeyId()}`)
     })
   })
 })

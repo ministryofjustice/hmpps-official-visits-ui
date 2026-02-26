@@ -3,6 +3,8 @@ import { ApprovedContact, AvailableSlot, VisitStatusType, VisitType } from '../.
 
 export type AmendVisitJourney = {
   backTo?: string
+  /** The page that the last "change" link navigated to */
+  changePage?: string
 }
 
 export type OfficialVisitJourney = {

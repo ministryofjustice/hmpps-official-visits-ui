@@ -36,10 +36,11 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-const URL = `/manage/create/${journeyId()}/visit-type`
+const UUID = journeyId()
+const URL = `/manage/create/${UUID}/visit-type`
 
 describe('Visit type handler', () => {
-  describe('GET', () => {
+  describe('GET (create)', () => {
     it('should render the correct view page', () => {
       return request(app)
         .get(URL)
@@ -48,7 +49,44 @@ describe('Visit type handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
 
+          // There should not be a progress tracker on this page
+          expect($('.moj-progress-bar').length).toBeTruthy()
+
+          expect($('.govuk-hint').text()).toEqual('Schedule an official visit')
           expect(heading).toEqual('What type of official visit?')
+
+          expect($('.govuk-button').text()).toContain('Continue')
+          expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
+          expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=1`)
+
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.VISIT_TYPE_PAGE, {
+            who: user.username,
+            correlationId: expect.any(String),
+          })
+        })
+    })
+  })
+
+  describe('GET (amend)', () => {
+    it('should render the correct view page', () => {
+      return request(app)
+        .get(`/manage/amend/1/${UUID}/visit-type`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          const heading = getPageHeader($)
+
+          // There should not be a progress tracker on this page
+          expect($('.moj-progress-bar').length).toBeFalsy()
+
+          expect($('.govuk-hint').text()).toEqual('Amend an official visit')
+          expect(heading).toEqual('What type of official visit?')
+
+          // Amend will always show Continue button because it can't update without time-slot
+          expect($('.govuk-button').text()).toContain('Continue')
+          expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
+          expect($('.govuk-link').last().attr('href')).toContain(`./`)
+
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.VISIT_TYPE_PAGE, {
             who: user.username,
             correlationId: expect.any(String),
@@ -101,6 +139,16 @@ describe('Visit type handler', () => {
             visitTypeDescription: 'Phone',
           }),
         )
+    })
+
+    it('should redirect to time-slot with date query param when in amend mode', () => {
+      appSetup({ officialVisit: { visitDate: '2025-12-25' } })
+      return request(app)
+        .post(`/manage/amend/1/${UUID}/visit-type`)
+        .send({ visitType: 'PHONE' })
+        .expect(302)
+        .expect('location', 'time-slot?date=2025-12-25')
+        .expect(() => expectNoErrorMessages())
     })
   })
 })
