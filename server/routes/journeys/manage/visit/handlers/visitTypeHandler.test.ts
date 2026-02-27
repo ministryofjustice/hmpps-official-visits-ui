@@ -140,5 +140,15 @@ describe('Visit type handler', () => {
           }),
         )
     })
+
+    it('should redirect to time-slot with date query param when in amend mode', () => {
+      appSetup({ officialVisit: { visitDate: '2025-12-25' } })
+      return request(app)
+        .post(`/manage/amend/1/${UUID}/visit-type`)
+        .send({ visitType: 'PHONE' })
+        .expect(302)
+        .expect('location', 'time-slot?date=2025-12-25')
+        .expect(() => expectNoErrorMessages())
+    })
   })
 })

@@ -152,5 +152,13 @@ describe('comments handler', () => {
       expect(journeySession.prisonerNotes).toEqual('prisoner')
       expect(journeySession.staffNotes).toEqual('staff')
     })
+
+    it('should redirect to visit details page when in amend mode', async () => {
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/comments`)
+        .send({ prisonerNotes: 'prisoner', staffNotes: 'staff' })
+        .expect(302)
+        .expect('location', '/manage/amend/1/9211b69b-826f-4f48-a43f-8af59dddf39f')
+    })
   })
 })

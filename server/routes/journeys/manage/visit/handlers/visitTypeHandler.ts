@@ -35,7 +35,7 @@ export default class VisitTypeHandler implements PageHandler {
     if (res.locals.mode === 'amend') {
       req.session.journey.officialVisit.visitType = visitType.code as VisitType
       req.session.journey.officialVisit.visitTypeDescription = visitType.description
-      return res.redirect(`time-slot`)
+      return res.redirect(`time-slot?date=${req.session.journey.officialVisit.visitDate}`)
     }
 
     // TOOD: Revisit resetting journey data when changing data on CYA
