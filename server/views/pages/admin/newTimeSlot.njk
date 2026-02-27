@@ -1,0 +1,112 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
+
+{% set pageTitle = "Add a new time" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Admin</span>
+        <h1 class="govuk-heading-l">Add a new time for {{ dayLabel | weekDayName }}</h1>
+        <p class="govuk-body">Add a date and time for a new visit in your prison. New visit times can begin now or in the future.</p>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters-from-desktop">
+      <form method="POST">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        <input type="hidden" name="dayCode" value="{{ dayCode }}" />
+
+        <h2 class="govuk-heading-m">Date and time</h2>
+
+        <div class="govuk-form-group">
+            {{ mojDatePicker({
+              id: "startDate",
+              name: "startDate",
+              label: {
+                text: "Start date"
+              },
+              hint: {
+                text: "For example, 17/5/2024."
+              },
+              errorMessage: validationErrors | findError('startDate'),
+              value: (formResponses.startDate or filter.startDate) | mojDate
+            }) }}
+        </div>
+        <div class="govuk-form-group">
+            {{ mojDatePicker({
+              id: "expiryDate",
+              name: "expiryDate",
+              label: {
+                text: "Expiry date (optional)"
+              },
+              hint: {
+                text: "For example, 17/5/2024."
+              },
+              errorMessage: validationErrors | findError('expiryDate'),
+              value: (formResponses.expiryDate or filter.expiryDate) | mojDate
+            }) }}
+        </div>
+
+       <fieldset class="govuk-fieldset">
+         <legend class="govuk-fieldset__legend">
+           Start time
+         </legend>
+
+         {{ govukDateInput({
+           id: "start-time",
+           namePrefix: "startTime",
+           errorMessage: validationErrors | findError('startTime'),
+           items: [
+             {
+               name: "startHour",
+               classes: "govuk-input--width-2",
+               label: "Hour",
+               value: (formResponses["startTime-startHour"] or filter["startTime-startHour"])
+             },
+             {
+               name: "startMinute",
+               classes: "govuk-input--width-2",
+               label: "Minute",
+               value: (formResponses["startTime-startMinute"] or filter["startTime-startMinute"])
+             }
+           ]
+         }) }}
+       </fieldset>
+
+       <fieldset class="govuk-fieldset">
+         <legend class="govuk-fieldset__legend">
+           End time
+         </legend>
+
+         {{ govukDateInput({
+           id: "end-time",
+           namePrefix: "endTime",
+           errorMessage: validationErrors | findError('endTime'),
+           items: [
+             {
+               name: "endHour",
+               classes: "govuk-input--width-2",
+               label: "Hour",
+               value: (formResponses["endTime-endHour"] or filter["endTime-endHour"])
+             },
+             {
+               name: "endMinute",
+               classes: "govuk-input--width-2",
+               label: "Minute",
+               value: (formResponses["endTime-endMinute"] or filter["endTime-endMinute"])
+             }
+           ]
+         }) }}
+       </fieldset>
+
+        <div class="govuk-button-group">
+          {{ govukButton({ text: 'Save', type: 'submit', classes: 'govuk-button' }) }}
+          <a href="/admin/days" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">Cancel and return to schedule</a>
+        </div>
+      </form>
+    </div>
+  </div>
+    </div>
+{% endblock %}

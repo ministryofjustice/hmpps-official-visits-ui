@@ -6,6 +6,7 @@ import {
   CompleteVisitRequest,
   CreateOfficialVisitRequest,
   CreateOfficialVisitResponse,
+  CreateTimeSlotRequest,
   FindByCriteria,
   OfficialVisit,
   OfficialVisitor,
@@ -116,5 +117,10 @@ export default class OfficialVisitsService {
   public async getVisitSlotsAtPrison(prisonId: string, user: HmppsUser) {
     logger.info(`Get visits slots called by ${user.userId} ${user.displayName}`)
     return this.officialVisitsApiClient.getAllTimeSlotsAndVisitSlots(prisonId, user)
+  }
+
+  public async createTimeSlot(body: CreateTimeSlotRequest, user: HmppsUser) {
+    logger.info(`create a time slot called by ${user.userId} ${user.displayName}`)
+    return this.officialVisitsApiClient.createTimeSlot(body, user)
   }
 }

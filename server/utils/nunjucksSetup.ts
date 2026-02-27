@@ -13,6 +13,7 @@ import {
   formatAddressLines,
   formatDate,
   formatOverEighteen,
+  getDayName,
   getTimeDiff,
   initialiseName,
   isDateAndInThePast,
@@ -115,6 +116,7 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
   njkEnv.addFilter('mojDate', (date: string) => date?.split('-').reverse().join('/'))
   njkEnv.addFilter('lastNameCommaFirstName', lastNameCommaFirstName)
   njkEnv.addFilter('firstNameSpaceLastName', firstNameSpaceLastName)
+  njkEnv.addFilter('weekDayName', getDayName)
   njkEnv.addFilter('filterCategoryItems', (items: { value: string }[], values: string[]) =>
     items.filter(o => values.includes(o.value)),
   )

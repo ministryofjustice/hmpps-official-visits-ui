@@ -5,105 +5,61 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "partials/admin/translateDay.njk" import translateDay %}
 
-{% set pageTitle = "Times for official visits" %}
+{% set pageTitle = "Time slots for official visits" %}
 {% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
 
 {% block content %}
   <div class="govuk-grid-row">
-    <span class="govuk-hint">The times when official visits can take place in this prison</span>
-    <h1 class="govuk-heading-l">Times available for official visits</h1>
+    <span class="govuk-hint">Admin</span>
+    <h1 class="govuk-heading-l">Time slots for official visits</h1>
+    <p class="govuk-body">Setting an end date for all visit times will not effect existing visits scheduled for the time and locations.</p>
 
     {# Setup the HTML content of the tabbed pane for each day of the week #}
-    {% set monTimeSlotsHtml = dayVisitTimes(monSlots) %}
-    {% set tueTimeSlotsHtml = dayVisitTimes(tueSlots) %}
-    {% set wedTimeSlotsHtml = dayVisitTimes(wedSlots) %}
-    {% set thuTimeSlotsHtml = dayVisitTimes(thuSlots) %}
-    {% set friTimeSlotsHtml = dayVisitTimes(friSlots) %}
-    {% set satTimeSlotsHtml = dayVisitTimes(satSlots) %}
-    {% set sunTimeSlotsHtml = dayVisitTimes(sunSlots) %}
+    {% set monTimeSlotsHtml = dayVisitTimes(monSlots, 'Monday', 'MON') %}
+    {% set tueTimeSlotsHtml = dayVisitTimes(tueSlots, 'Tuesday', 'TUE') %}
+    {% set wedTimeSlotsHtml = dayVisitTimes(wedSlots, 'Wednesday', 'WED') %}
+    {% set thuTimeSlotsHtml = dayVisitTimes(thuSlots, 'Thursday', 'THU') %}
+    {% set friTimeSlotsHtml = dayVisitTimes(friSlots, 'Friday', 'FRI') %}
+    {% set satTimeSlotsHtml = dayVisitTimes(satSlots, 'Saturday', 'SAT') %}
+    {% set sunTimeSlotsHtml = dayVisitTimes(sunSlots, 'Sunday', 'SUN') %}
 
-    {# Present a tabbed pane of times in the week that official visits are supported at the prison #}
-    {{ govukTabs({
-      items: [
-        {
-          label: "Monday",
-          id: "monday",
-          panel: {
-            html: monTimeSlotsHtml
-          }
-        },
-        {
-          label: "Tuesday",
-          id: "tuesday",
-          panel: {
-            html: tueTimeSlotsHtml
-          }
-        },
-        {
-          label: "Wednesday",
-          id: "wednesday",
-          panel: {
-            html: wedTimeSlotsHtml
-          }
-        },
-        {
-          label: "Thursday",
-          id: "thursday",
-          panel: {
-            html: thuTimeSlotsHtml
-          }
-        },
-        {
-          label: "Friday",
-          id: "friday",
-          panel: {
-            html: friTimeSlotsHtml
-          }
-        },
-        {
-          label: "Saturday",
-          id: "saturday",
-          panel: {
-            html: satTimeSlotsHtml
-          }
-        },
-        {
-          label: "Sunday",
-          id: "sunday",
-          panel: {
-            html: sunTimeSlotsHtml
-          }
-        }
-      ]
-    }) }}
+    {# Build tab items only for days that have slots (matches mock showing only populated days) #}
+    {% set days = [
+      { label: 'Monday', id: 'monday', html: monTimeSlotsHtml, slots: monSlots },
+      { label: 'Tuesday', id: 'tuesday', html: tueTimeSlotsHtml, slots: tueSlots },
+      { label: 'Wednesday', id: 'wednesday', html: wedTimeSlotsHtml, slots: wedSlots },
+      { label: 'Thursday', id: 'thursday', html: thuTimeSlotsHtml, slots: thuSlots },
+      { label: 'Friday', id: 'friday', html: friTimeSlotsHtml, slots: friSlots },
+      { label: 'Saturday', id: 'saturday', html: satTimeSlotsHtml, slots: satSlots },
+      { label: 'Sunday', id: 'sunday', html: sunTimeSlotsHtml, slots: sunSlots }
+    ] %}
 
-    <div class="govuk-button-group">
-      {{ govukButton({
-        text: "Add a new time",
-        preventDoubleClick: true,
-        classes: "govuk-button",
-        href: "#TODO"
-      }) }}
+    {% set items = [] %}
+    {% for d in days %}
+      {% if d.slots and d.slots.length > 0 %}
+        {% set items = (items.push({ label: d.label, id: d.id, panel: { html: d.html } }), items) %}
+      {% endif %}
+    {% endfor %}
 
-      <a href="/"
-         class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">
-        Back to the home page
-      </a>
-    </div>
+    {{ govukTabs({ items: items }) }}
 
   </div>
 {% endblock %}
 
-{% macro dayVisitTimes(slots) %}
+{% macro dayVisitTimes(slots, dayLabel, dayCode) %}
+  <h2 class="govuk-heading-m">Scheduled visit times</h2>
+
   {% set rows = [] %}
   {% if slots.length > 0 %}
     {% for slot in slots %}
+      {% set manageUrl = '/admin/locations/time-slot/' + slot.timeSlot.prisonTimeSlotId %}
+      {% set editUrl = manageUrl + '/edit' %}
       {% set rows = (rows.push([
         { text: slot.timeSlot.startTime },
         { text: slot.timeSlot.endTime },
         { text: slot.timeSlot.effectiveDate | formatDate },
         { text: slot.timeSlot.expiryDate | formatDate },
-        { html: '<a href="/admin/locations/time-slot/' + slot.timeSlot.prisonTimeSlotId + '">Manage locations</a>' }
+        { html: '<span class="actions"><a href="' + manageUrl + '">Manage locations</a> <a href="' + editUrl + '">Edit</a></span>' }
       ]), rows) %}
     {% endfor %}
   {% else %}
@@ -122,8 +78,24 @@
       { text: 'End time' },
       { text: 'Effective from' },
       { text: 'Valid until' },
-      { text: 'Locations' }
+      { text: 'Actions' }
     ],
     rows: rows
   }) }}
+
+  <div class="govuk-button-group govuk-button-group--spread">
+    {{ govukButton({
+      text: "Add " ~ dayLabel ~ " time",
+      preventDoubleClick: true,
+      classes: "govuk-button",
+      href: "/admin/locations/time-slot/new?day=" ~ dayCode
+    }) }}
+
+    {{ govukButton({
+      text: "Set end date for all " ~ dayLabel ~ " visit times",
+      preventDoubleClick: true,
+      classes: "govuk-button--warning",
+      href: "/admin/locations/time-slot/end-date?day=" ~ dayCode
+    }) }}
+  </div>
 {% endmacro %}

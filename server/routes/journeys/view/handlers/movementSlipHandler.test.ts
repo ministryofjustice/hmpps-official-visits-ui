@@ -28,6 +28,10 @@ beforeEach(() => {
   officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
 })
 
+afterEach(() => {
+  jest.resetAllMocks()
+})
+
 const URL = `/view/visit/1/movement-slip`
 
 describe('Official visit movement slip', () => {

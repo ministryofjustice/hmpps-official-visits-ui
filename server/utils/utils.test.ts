@@ -20,6 +20,15 @@ import {
   lastNameCommaFirstName,
   addRemoveLinks,
   firstNameSpaceLastName,
+  // newly added functions for tests
+  getDayName,
+  emptyStringToUndefined,
+  coerceDate,
+  isValidDate,
+  startOfDayLocal,
+  formatDateToLocalDateString,
+  coerceInt,
+  getTime,
 } from './utils'
 
 describe('convert to title case', () => {
@@ -374,5 +383,121 @@ describe('addRemoveLinks', () => {
     const key = 'arrayMultiple'
     const expected = [{ href: '?arraySingle=a&singular=a&arrayMultiple=a%2Cb', text: 'TypeC', value: 'c' }]
     expect(addRemoveLinks(srcItems, filters, key)).toEqual(expected)
+  })
+})
+
+describe('getDayName', () => {
+  it('returns full day name for three-letter codes', () => {
+    expect(getDayName('MON')).toBe('Monday')
+    expect(getDayName('tue')).toBe('Tuesday')
+  })
+
+  it('returns empty string for falsy input', () => {
+    expect(getDayName('')).toBe('')
+    expect(getDayName(null)).toBe('')
+  })
+
+  it('returns original value when not recognised', () => {
+    expect(getDayName('FOO')).toBe('FOO')
+  })
+})
+
+describe('emptyStringToUndefined', () => {
+  it('coerces empty string, null and undefined to undefined', () => {
+    expect(emptyStringToUndefined('')).toBeUndefined()
+    expect(emptyStringToUndefined(null)).toBeUndefined()
+    expect(emptyStringToUndefined(undefined)).toBeUndefined()
+  })
+
+  it('returns non-empty values unchanged', () => {
+    expect(emptyStringToUndefined(0)).toBe(0)
+    expect(emptyStringToUndefined(false)).toBe(false)
+    expect(emptyStringToUndefined('a')).toBe('a')
+  })
+})
+
+describe('coerceDate and isValidDate', () => {
+  it('returns undefined for empty values', () => {
+    expect(coerceDate('')).toBeUndefined()
+    expect(coerceDate(null)).toBeUndefined()
+    expect(coerceDate(undefined)).toBeUndefined()
+  })
+
+  it('returns Date unchanged if already a Date and isValidDate works', () => {
+    const d = new Date(2020, 0, 2)
+    expect(coerceDate(d)).toEqual(d)
+    expect(isValidDate(d)).toBeTruthy()
+  })
+
+  it('parses DD/MM/YYYY into local date', () => {
+    const dt = coerceDate('02/03/2020')
+    expect(dt).toEqual(new Date(2020, 2, 2))
+    expect(isValidDate(dt as Date)).toBeTruthy()
+  })
+
+  it('parses ISO yyyy-mm-dd into local date', () => {
+    const dt = coerceDate('2020-03-02')
+    expect(dt).toEqual(new Date(2020, 2, 2))
+    expect(isValidDate(dt as Date)).toBeTruthy()
+  })
+
+  it('returns invalid Date object for unparseable strings (fallback) and isValidDate is false', () => {
+    const dt = coerceDate('not-a-date') as Date
+    expect(dt instanceof Date).toBeTruthy()
+    expect(isValidDate(dt)).toBeFalsy()
+  })
+})
+
+describe('startOfDayLocal and formatDateToLocalDateString', () => {
+  it('returns start of day (local) for a given date', () => {
+    const d = new Date(2022, 5, 7, 13, 45, 30)
+    expect(startOfDayLocal(d)).toEqual(new Date(2022, 5, 7))
+  })
+
+  it('formats a valid date to yyyy-MM-dd', () => {
+    expect(formatDateToLocalDateString(new Date(2020, 0, 5))).toBe('2020-01-05')
+    expect(formatDateToLocalDateString(new Date(2020, 9, 15))).toBe('2020-10-15')
+  })
+
+  it('returns undefined for invalid or missing dates', () => {
+    expect(formatDateToLocalDateString(undefined)).toBeUndefined()
+    expect(formatDateToLocalDateString(new Date('invalid'))).toBeUndefined()
+  })
+})
+
+describe('coerceInt', () => {
+  it('returns undefined for empty string or null/undefined', () => {
+    expect(coerceInt('')).toBeUndefined()
+    expect(coerceInt(null)).toBeUndefined()
+    expect(coerceInt(undefined)).toBeUndefined()
+  })
+
+  it('returns numbers unchanged', () => {
+    expect(coerceInt(5)).toBe(5)
+  })
+
+  it('parses numeric strings to numbers and trims whitespace', () => {
+    expect(coerceInt(' 42 ')).toBe(42)
+    expect(coerceInt('0')).toBe(0)
+  })
+
+  it('returns trimmed string if not a valid number', () => {
+    expect(coerceInt(' abc ')).toBe('abc')
+  })
+
+  it('returns other types unchanged', () => {
+    expect(coerceInt(true)).toBe(true)
+  })
+})
+
+describe('getTime', () => {
+  it('pads single digit hours and minutes', () => {
+    expect(getTime(9, 5)).toBe('09:05')
+    expect(getTime('9', '5')).toBe('09:05')
+  })
+
+  it('returns correctly formatted times for double digits', () => {
+    expect(getTime(12, 0)).toBe('12:00')
+    expect(getTime(23, 59)).toBe('23:59')
   })
 })
