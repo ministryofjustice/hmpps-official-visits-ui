@@ -17,10 +17,13 @@ export default class ViewVisitPage extends AbstractPage {
     await expect(page.locator('.govuk-hint')).toHaveText('Manage existing official visits')
 
     const links = page.locator('.govuk-link')
+    const buttons = page.locator('.govuk-button')
 
-    await expect(links.nth(0)).toContainText('Amend this visit')
-    await expect(links.nth(1)).toContainText('Cancel visit')
-    await expect(links.nth(2)).toContainText('Complete visit')
+    await expect(links.nth(0)).toContainText('Cancel visit')
+    await expect(links.nth(1)).toContainText('Complete visit')
+
+    await expect(buttons.nth(0)).toHaveText('Print movement slip')
+    await expect(buttons.nth(1)).toHaveText('Amend visit')
 
     await viewVisitPage.verifyNoAccessViolationsOnPage()
 
