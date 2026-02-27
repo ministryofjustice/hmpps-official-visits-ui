@@ -53,7 +53,7 @@ afterEach(() => {
 
 const URL = `/view/visit/1`
 
-describe('Search for an official visit', () => {
+describe('View an official visit', () => {
   describe('GET', () => {
     it('should render the correct view page without backTo param', () => {
       return request(app)
@@ -76,15 +76,14 @@ describe('Search for an official visit', () => {
             '3restrictionsand0alerts',
           )
 
-          expect($('.govuk-link').eq(0).text()).toContain('Amend this visit')
-          expect($('.govuk-link').eq(1).text()).toContain('Cancel visit')
-          expect($('.govuk-link').eq(2).text()).toContain('Complete visit')
+          expect($('.govuk-link').eq(0).text()).toContain('Cancel visit')
+          expect($('.govuk-link').eq(1).text()).toContain('Complete visit')
 
-          expect($('.govuk-link').eq(0).attr('href')).toEqual('/manage/amend/1')
-          expect($('.govuk-link').eq(1).attr('href')).toEqual('/view/visit/1/cancel')
-          expect($('.govuk-link').eq(2).attr('href')).toEqual('/view/visit/1/complete')
+          expect($('.govuk-link').eq(0).attr('href')).toEqual('/view/visit/1/cancel')
+          expect($('.govuk-link').eq(1).attr('href')).toEqual('/view/visit/1/complete')
 
           expect($('.govuk-button').eq(0).attr('href')).toEqual('/view/visit/1/movement-slip')
+          expect($('.govuk-button').eq(1).attr('href')).toEqual('/manage/amend/1')
 
           expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
           expect(getValueByKey($, 'Time')).toEqual('10:00am to 11:00am (1 hour)')
@@ -206,13 +205,12 @@ describe('Search for an official visit', () => {
           expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
-          expect($('.govuk-link').eq(0).text()).toContain('Amend this visit')
-          expect($('.govuk-link').eq(1).text()).toContain('Cancel visit')
-          expect($('.govuk-link').eq(2).text()).toContain('Complete visit')
+          expect($('.govuk-link').eq(0).text()).toContain('Cancel visit')
+          expect($('.govuk-link').eq(1).text()).toContain('Complete visit')
 
-          expect($('.govuk-link').eq(0).attr('href')).toEqual(`/manage/amend/1?backTo=${b64}`)
-          expect($('.govuk-link').eq(1).attr('href')).toEqual(`/view/visit/1/cancel?backTo=${b64}`)
-          expect($('.govuk-link').eq(2).attr('href')).toEqual(`/view/visit/1/complete?backTo=${b64}`)
+          expect($('.govuk-button').eq(1).attr('href')).toEqual(`/manage/amend/1?backTo=${b64}`)
+          expect($('.govuk-link').eq(0).attr('href')).toEqual(`/view/visit/1/cancel?backTo=${b64}`)
+          expect($('.govuk-link').eq(1).attr('href')).toEqual(`/view/visit/1/complete?backTo=${b64}`)
         })
     })
 
