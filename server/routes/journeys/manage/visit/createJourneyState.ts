@@ -107,18 +107,3 @@ function resetLaterPages(journey: Journey, page: Page) {
   })
   journey.reachedCheckAnswers = false
 }
-
-/**
- * Delete keys set by the given pages
- */
-function resetPages(journey: Journey, pages: Page[]) {
-  pages.forEach(page => {
-    const foundPage = pageData.find(p => p.page === page)
-    if (foundPage) {
-      foundPage.keys.forEach(key => {
-        delete journey.officialVisit[key]
-      })
-    }
-  })
-  journey.reachedCheckAnswers = false
-}

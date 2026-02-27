@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
-import { schema, SchemaType } from './equipmentSchema'
+import { schema } from './equipmentSchema'
 import { ApprovedContact, ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
 import { getBackLink } from './utils'
 
