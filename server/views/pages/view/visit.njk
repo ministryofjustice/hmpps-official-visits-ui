@@ -26,7 +26,7 @@
         title: "Visit amended" if updateVerb == 'amended' else "Visit marked as " + updateVerb,
         showTitleAsHeading: true,
         dismissible: false,
-        html: "You have " + updateVerb + " this visit. <a href='" + (backUrl or '/view/list') + "'>Return to search list</a>"
+        html: "You have " + updateVerb + " this visit. <a href='" + (amendedBackUrl or backUrl or '/view/list') + "'>Return to search list</a>"
       }) }}
 
     {% endif %}

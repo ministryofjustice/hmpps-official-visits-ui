@@ -55,6 +55,7 @@ describe('Visit type handler', () => {
           expect($('.govuk-hint').text()).toEqual('Schedule an official visit')
           expect(heading).toEqual('What type of official visit?')
 
+          expect($('.govuk-back-link').attr('href')).toEqual(`results?page=0`)
           expect($('.govuk-button').text()).toContain('Continue')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
           expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=1`)
@@ -70,7 +71,7 @@ describe('Visit type handler', () => {
   describe('GET (amend)', () => {
     it('should render the correct view page', () => {
       return request(app)
-        .get(`/manage/amend/1/${UUID}/visit-type`)
+        .get(`/manage/amend/1/${UUID}/visit-type?change=true`)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
@@ -78,6 +79,7 @@ describe('Visit type handler', () => {
 
           // There should not be a progress tracker on this page
           expect($('.moj-progress-bar').length).toBeFalsy()
+          expect($('.govuk-back-link').attr('href')).toEqual(`./`)
 
           expect($('.govuk-hint').text()).toEqual('Amend an official visit')
           expect(heading).toEqual('What type of official visit?')

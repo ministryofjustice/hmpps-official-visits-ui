@@ -83,7 +83,7 @@ afterEach(() => {
 const URL = `/manage/create/${journeyId()}/assistance-required`
 
 describe('Assistance required handler', () => {
-  describe('GET', () => {
+  describe('GET (create)', () => {
     it('should render the correct view page', () => {
       return request(app)
         .get(URL)
@@ -91,6 +91,7 @@ describe('Assistance required handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
+          expect($('.govuk-hint').eq(0).text()).toEqual('Schedule an official visit')
           expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
 
           expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').val()).toEqual('111')
@@ -120,7 +121,82 @@ describe('Assistance required handler', () => {
           expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Johnny Dasolicitor (Solicitor)')
           expect($('.govuk-checkboxes__label').eq(2).text()).toContain('Jon Dasolicitor (Solicitor)')
           expect($('.govuk-checkboxes__label').eq(3).text()).toContain('Jane Dafriend (Friend)')
-          expect($('.govuk-back-link').attr('href')).toEqual('select-social-visitors')
+
+          expect($('.govuk-back-link').attr('href')).toEqual(`select-social-visitors`)
+          expect($('.govuk-button').text()).toContain('Continue')
+          expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
+          expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=3`)
+
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.ASSISTANCE_REQUIRED_PAGE, {
+            who: user.username,
+            correlationId: expect.any(String),
+          })
+        })
+    })
+
+    it('should go back to official visitors page when social visitors is disabled for the prison', () => {
+      config.featureToggles.allowSocialVisitorsPrisons = ''
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          const heading = getPageHeader($)
+
+          expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
+          expect($('.govuk-back-link').attr('href')).toEqual('select-official-visitors')
+
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.ASSISTANCE_REQUIRED_PAGE, {
+            who: user.username,
+            correlationId: expect.any(String),
+          })
+        })
+    })
+  })
+
+  describe('GET (amend)', () => {
+    it('should render the correct view page', () => {
+      return request(app)
+        .get(`/manage/amend/1/${journeyId()}/assistance-required?change=true`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          const heading = getPageHeader($)
+          expect($('.govuk-hint').eq(0).text()).toEqual('Amend an official visit')
+          expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
+
+          expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').val()).toEqual('111')
+          expect(getArrayItemPropById($, 'assistanceRequired', 1, 'id').val()).toEqual('112')
+          expect(getArrayItemPropById($, 'assistanceRequired', 2, 'id').val()).toEqual('113')
+          expect(getArrayItemPropById($, 'assistanceRequired', 3, 'id').val()).toEqual('222')
+
+          expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').attr('checked')).toBeFalsy()
+          expect(getArrayItemPropById($, 'assistanceRequired', 1, 'id').attr('checked')).toBeFalsy()
+          expect(getArrayItemPropById($, 'assistanceRequired', 2, 'id').attr('checked')).toBeFalsy()
+          expect(getArrayItemPropById($, 'assistanceRequired', 3, 'id').attr('checked')).toBeFalsy()
+
+          expect($('.govuk-label[for="assistanceRequired\\[0\\]\\[notes\\]"]').text()).toContain(
+            'Add any additional information (optional)',
+          )
+          expect($('.govuk-label[for="assistanceRequired\\[1\\]\\[notes\\]"]').text()).toContain(
+            'Add any additional information (optional)',
+          )
+          expect($('.govuk-label[for="assistanceRequired\\[2\\]\\[notes\\]"]').text()).toContain(
+            'Add any additional information (optional)',
+          )
+          expect($('.govuk-label[for="assistanceRequired\\[3\\]\\[notes\\]"]').text()).toContain(
+            'Add any additional information (optional)',
+          )
+
+          expect($('.govuk-checkboxes__label').eq(0).text()).toContain('John Dasolicitor (Solicitor)')
+          expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Johnny Dasolicitor (Solicitor)')
+          expect($('.govuk-checkboxes__label').eq(2).text()).toContain('Jon Dasolicitor (Solicitor)')
+          expect($('.govuk-checkboxes__label').eq(3).text()).toContain('Jane Dafriend (Friend)')
+
+          expect($('.govuk-back-link').attr('href')).toEqual(`./`)
+          expect($('.govuk-button').text()).toContain('Submit')
+          expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
+          expect($('.govuk-link').last().attr('href')).toContain(`./`)
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.ASSISTANCE_REQUIRED_PAGE, {
             who: user.username,
@@ -228,6 +304,36 @@ describe('Assistance required handler', () => {
     it('should accept a form submission', async () => {
       await request(app)
         .post(URL)
+        .send({
+          assistanceRequired: [
+            // Assisted visit with note
+            { id: '111', selected: 'true', notes: 'flag is true and here is a note' },
+            // Not assisted visit but note is present
+            { id: '112', notes: 'flag is false but note is still recorded' },
+            // Assisted visit with no note
+            { id: '113', selected: 'true', notes: '' },
+            // Not assisted visit with no note
+            { id: '222', notes: '' },
+          ],
+        })
+        .expect(302)
+        .expect('location', 'equipment')
+        .expect(() => expectNoErrorMessages())
+
+      const journeySession = (await getJourneySession(app, 'officialVisit')) as OfficialVisitJourney
+      expect(journeySession.officialVisitors[0].assistanceNotes).toEqual('flag is true and here is a note')
+      expect(journeySession.officialVisitors[0].assistedVisit).toEqual(true)
+      expect(journeySession.officialVisitors[1].assistanceNotes).toEqual('flag is false but note is still recorded')
+      expect(journeySession.officialVisitors[1].assistedVisit).toEqual(false)
+      expect(journeySession.officialVisitors[2].assistanceNotes).toEqual(undefined)
+      expect(journeySession.officialVisitors[2].assistedVisit).toEqual(true)
+      expect(journeySession.socialVisitors[0].assistanceNotes).toEqual(undefined)
+      expect(journeySession.socialVisitors[0].assistedVisit).toEqual(false)
+    })
+
+    it('should accept a form submission (amend)', async () => {
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/assistance-required?change=true`)
         .send({
           assistanceRequired: [
             // Assisted visit with note

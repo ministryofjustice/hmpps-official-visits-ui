@@ -9,7 +9,11 @@ import ActivitiesService from '../../../../../services/activitiesService'
 import { getPageHeader, getTextById } from '../../../../testutils/cheerio'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockTimeslots, sortedMockScheduleEvents, mockPrisoner } from '../../../../../testutils/mocks'
-import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
+import {
+  expectErrorMessages,
+  expectFlashMessage,
+  expectNoErrorMessages,
+} from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
 
 jest.mock('../../../../../services/auditService')
@@ -110,6 +114,7 @@ describe('Time slot handler', () => {
           )
           expect($('.govuk-radios__input').eq(0).attr('value')).toEqual('1')
 
+          expect($('.govuk-back-link').attr('href')).toEqual(`visit-type`)
           expect($('.govuk-button').text()).toContain('Continue')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
           expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=1`)
@@ -125,7 +130,7 @@ describe('Time slot handler', () => {
   describe('GET (amend)', () => {
     it('should render the correct view page', () => {
       return request(app)
-        .get(`/manage/amend/1/${UUID}/time-slot`)
+        .get(`/manage/amend/1/${UUID}/time-slot?change=true`)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
@@ -179,6 +184,7 @@ describe('Time slot handler', () => {
           )
           expect($('.govuk-radios__input').eq(0).attr('value')).toEqual('1')
 
+          expect($('.govuk-back-link').attr('href')).toEqual(`./`)
           expect($('.govuk-button').text()).toContain('Submit')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
           expect($('.govuk-link').last().attr('href')).toContain(`./`)
@@ -234,12 +240,13 @@ describe('Time slot handler', () => {
       expect(journeySession.selectedTimeSlot).toEqual({ visitSlotId: 1 })
     })
 
-    it('should redirect to visit details page when in amend mode', async () => {
+    it('should accept a valid time slot in amend mode', async () => {
       await request(app)
         .post(`/manage/amend/1/${journeyId()}/time-slot`)
         .send({ visitSlot: '1' })
         .expect(302)
         .expect('location', `/manage/amend/1/${journeyId()}`)
+        .expect(() => expectFlashMessage('updateVerb', 'amended'))
     })
   })
 })

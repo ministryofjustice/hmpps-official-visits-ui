@@ -36,7 +36,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     res.render('pages/manage/selectOfficialVisitors', {
       contacts: recallContacts(req.session.journey, 'O', approvedOfficialContacts),
       selectedContacts,
-      backUrl: getBackLink(req, res, `time-slot`),
+      backUrl: getBackLink(req, res, `select-official-visitors`),
       prisoner: req.session.journey.officialVisit.prisoner,
     })
   }

@@ -101,6 +101,14 @@ export default class AmendVisitLandingHandler implements PageHandler {
       backTo: b64BackTo,
     }
 
+    const tryDecodeB64 = (b64: string) => {
+      try {
+        return b64 ? decodeURIComponent(atob(b64)) : null
+      } catch {
+        return null
+      }
+    }
+
     const updateVerb = req.flash('updateVerb')[0]
     return res.render('pages/view/visit', {
       visit: {
@@ -111,6 +119,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
       updateVerb,
       b64BackTo: b64BackTo || '',
       journeyId: req.params.journeyId,
+      amendedBackUrl: tryDecodeB64(b64BackTo) || '/view/list',
       backUrl: `/view/visit/${visit.officialVisitId}?backTo=${b64BackTo}`,
       prisoner: req.session.journey.officialVisit.prisoner,
     })
