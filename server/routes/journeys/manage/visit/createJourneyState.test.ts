@@ -104,7 +104,7 @@ describe('Create Journey Guard', () => {
     })
   })
 
-  it('should reset assistance and equipment pages when setting official visitors', () => {
+  it('should set official visitors', () => {
     const journey = mockJourney()
     saveVisitors(journey, 'O', journey.officialVisit.officialVisitors)
     expect(journey.officialVisit).toEqual({
@@ -118,10 +118,12 @@ describe('Create Journey Guard', () => {
       prisonerNotes: journey.officialVisit.prisonerNotes,
       selectedTimeSlot: journey.officialVisit.selectedTimeSlot,
       socialVisitors: journey.officialVisit.socialVisitors,
+      assistancePageCompleted: true,
+      equipmentPageCompleted: true,
     })
   })
 
-  it('should reset assistance and equipment pages when setting social visitors', () => {
+  it('should set social visitors', () => {
     const journey = mockJourney()
     saveVisitors(journey, 'S', journey.officialVisit.socialVisitors)
     expect(journey.officialVisit).toEqual({
@@ -136,6 +138,8 @@ describe('Create Journey Guard', () => {
       selectedTimeSlot: journey.officialVisit.selectedTimeSlot,
       socialVisitors: journey.officialVisit.socialVisitors,
       socialVisitorsPageCompleted: true,
+      assistancePageCompleted: true,
+      equipmentPageCompleted: true,
     })
   })
 

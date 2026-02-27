@@ -62,6 +62,7 @@ describe('comments handler', () => {
           expect(getTextById($, 'prisonerNotes')).toEqual('Some previously entered notes')
           expect(getTextById($, 'staffNotes')).toEqual('Some previously entered staff notes')
 
+          expect($('.govuk-back-link').attr('href')).toEqual(`assistance-required`)
           expect($('.govuk-button').text()).toContain('Continue')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
           expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=3`)
@@ -83,11 +84,15 @@ describe('comments handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
 
+          // There should not be a progress tracker on this page
+          expect($('.moj-progress-bar').length).toBeFalsy()
+
           expect($('.govuk-hint').eq(0).text()).toEqual('Amend an official visit')
           expect(heading).toEqual('Add extra information (optional)')
           expect(getTextById($, 'prisonerNotes')).toEqual('Some previously entered notes')
           expect(getTextById($, 'staffNotes')).toEqual('Some previously entered staff notes')
 
+          expect($('.govuk-back-link').attr('href')).toEqual(`./`)
           expect($('.govuk-button').text()).toContain('Submit')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
           expect($('.govuk-link').last().attr('href')).toContain(`./`)

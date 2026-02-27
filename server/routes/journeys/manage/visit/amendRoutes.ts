@@ -26,6 +26,7 @@ export default function AmendRoutes({
     const currentPage = req.url.split('?')[0]?.split('/').pop() || ''
     res.locals.currentPage = currentPage
     if (req.query.change) {
+      req.session.journey.amendVisit ??= {}
       req.session.journey.amendVisit.changePage = currentPage
     }
     next()

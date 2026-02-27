@@ -13,10 +13,6 @@
   <div class="govuk-grid-row">
     <span class="govuk-hint">Manage existing official visits</span>
 
-    {% if user | hasPermission(PERMISSION.MANAGE)and mode != 'amend' %}
-      <a href="/manage/amend/{{visit.officialVisitId}}{{paramBackTo}}" class="govuk-link float-right govuk-link--no-visited-state"> Amend this visit</a>
-    {% endif %}
-
     <h1 class="govuk-heading-l">Official visit</h1>
     {{ miniProfile(prisoner) }}
 
@@ -26,7 +22,7 @@
         title: "Visit amended" if updateVerb == 'amended' else "Visit marked as " + updateVerb,
         showTitleAsHeading: true,
         dismissible: false,
-        html: "You have " + updateVerb + " this visit. <a href='" + (backUrl or '/view/list') + "'>Return to search list</a>"
+        html: "You have " + updateVerb + " this visit. <a href='" + (amendedBackUrl or backUrl or '/view/list') + "'>Return to search list</a>"
       }) }}
 
     {% endif %}
@@ -35,11 +31,19 @@
       {{ govukButton({
         text: "Print movement slip",
         href: "/view/visit/" + visit.officialVisitId + "/movement-slip",
-        classes: 'govuk-button blue-button',
+        classes: 'govuk-button govuk-button--secondary',
         attributes: {
           "target": "_blank"    
         }
       }) }}
+
+      {% if user | hasPermission(PERMISSION.MANAGE) %}
+        {{ govukButton({
+          text: "Amend visit",
+          href: "/manage/amend/" + visit.officialVisitId + paramBackTo,
+          classes: 'govuk-button blue-button float-right'
+        }) }}
+      {% endif %}
 
       {% set visitActions = [
         {
@@ -271,7 +275,7 @@
       {{ govukButton ({
         text: "Print attendance list (TODO)",
         href: "#TODO",
-        classes: "govuk-button blue-button"
+        classes: "govuk-button govuk-button--secondary"
       }) }}
     {% endif %}
 

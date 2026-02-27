@@ -10,3 +10,7 @@ export function expectNoErrorMessages() {
   expect(flashProvider).toHaveBeenCalledTimes(1)
   expect(flashProvider).toHaveBeenNthCalledWith(1, 'validationErrors')
 }
+
+export function expectFlashMessage(name: string, message: string, nth: number = 1) {
+  expect(flashProvider).toHaveBeenNthCalledWith(nth, name, message)
+}

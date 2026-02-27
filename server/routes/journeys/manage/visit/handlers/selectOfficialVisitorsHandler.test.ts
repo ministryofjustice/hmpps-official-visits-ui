@@ -18,6 +18,7 @@ import { mockOfficialVisitors, mockPrisonerRestrictions, mockPrisoner } from '..
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
 import config from '../../../../../config'
+import { OfficialVisitJourney } from '../journey'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -38,7 +39,7 @@ const appSetup = (
       },
       prisonCode: 'MDI',
       availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
-    },
+    } as OfficialVisitJourney,
   },
 ) => {
   config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
@@ -61,7 +62,7 @@ afterEach(() => {
 const URL = `/manage/create/${journeyId()}/select-official-visitors`
 
 describe('Select official visitors', () => {
-  describe('GET', () => {
+  describe('GET (create)', () => {
     it('should render the correct view page with restrictions and contacts', () => {
       return request(app)
         .get(URL)
@@ -92,6 +93,7 @@ describe('Select official visitors', () => {
 
           // Check page header
           const heading = getPageHeader($)
+          expect($('.govuk-hint').text()).toEqual('Schedule an official visit')
           expect(heading).toEqual("Select official visitors from the prisoner's approved contact list")
 
           // Prisoner restrictions table
@@ -151,6 +153,11 @@ describe('Select official visitors', () => {
           expect(visitorRows.eq(13).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(14).text().trim()).toBeDefined() // Restrictions
 
+          expect($('.govuk-back-link').attr('href')).toEqual(`select-official-visitors`)
+          expect($('.govuk-button').text()).toContain('Continue')
+          expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
+          expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=2`)
+
           // Calls expected
           expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
             mockPrisoner.prisonCode,
@@ -174,7 +181,171 @@ describe('Select official visitors', () => {
           },
           prisonCode: 'MDI',
           availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
-        },
+        } as OfficialVisitJourney,
+      })
+
+      officialVisitsService.getApprovedOfficialContacts.mockResolvedValue([])
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          // Check we have completed step 2/6 on the progress tracker
+          expect(getProgressTrackerCompleted($)).toHaveLength(2)
+          expect(getProgressTrackerItems($)).toHaveLength(5)
+
+          const heading = getPageHeader($)
+          expect(heading).toEqual("Select official visitors from the prisoner's approved contact list")
+
+          // Prisoner restrictions - empty
+          expect(getByDataQa($, 'empty-restrictions-title').text().trim()).toContain('active restrictions')
+          expect(getByDataQa($, 'empty-restrictions-message').text().trim()).toEqual('No active restrictions')
+
+          // Prisoner contacts - empty content
+          expect(getByDataQa($, 'empty-contacts-title').text().trim()).toEqual('Approved official contacts')
+          expect(getByDataQa($, 'empty-contacts-message').text().trim()).toEqual('No approved official contacts')
+          // contact link displayed only for contacts authorizer role
+          expect(getByDataQa($, 'contacts-link').length).toEqual(1)
+
+          // Calls expected
+          expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
+            mockPrisoner.prisonCode,
+            mockPrisoner.prisonerNumber,
+            user,
+          )
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_OFFICIAL_VISITORS_PAGE, {
+            who: user.username,
+            correlationId: expect.any(String),
+          })
+        })
+    })
+  })
+
+  describe('GET (amend)', () => {
+    it('should render the correct view page with restrictions and contacts', () => {
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: mockPrisonerRestrictions,
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          officialVisitors: [],
+          socialVisitors: [],
+        } as OfficialVisitJourney,
+      })
+      return request(app)
+        .get(`/manage/amend/1/${journeyId()}/select-official-visitors?change=true`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          // There should not be a progress tracker on this page
+          expect($('.moj-progress-bar').length).toBeFalsy()
+
+          // Check the prisoner mini-profile is present with correct prisoner details
+          expect(getByDataQa($, 'mini-profile-person-profile-link').text().trim()).toEqual(
+            convertToTitleCase(`${mockPrisoner.lastName}, ${mockPrisoner.firstName}`),
+          )
+          expect(getByDataQa($, 'mini-profile-prisoner-number').text().trim()).toEqual(mockPrisoner.prisonerNumber)
+          expect(getByDataQa($, 'mini-profile-dob').text().trim()).toEqual('1 June 1989')
+          expect(getByDataQa($, 'mini-profile-cell-location').text().trim()).toEqual(mockPrisoner.cellLocation)
+          expect(getByDataQa($, 'mini-profile-prison-name').text().trim()).toEqual(mockPrisoner.prisonName)
+
+          // Check page header
+          const heading = getPageHeader($)
+          expect($('.govuk-hint').text()).toEqual('Amend an official visit')
+          expect(heading).toEqual("Select official visitors from the prisoner's approved contact list")
+
+          // Prisoner restrictions table
+          const restrictionHeaders = getByDataQa($, 'prisoner-restrictions-table').find('thead > tr > th')
+          expect(restrictionHeaders.eq(0).text().trim()).toEqual('Type of restriction')
+          expect(restrictionHeaders.eq(1).text().trim()).toEqual('Comments')
+          expect(restrictionHeaders.eq(2).text().trim()).toEqual('Date from')
+          expect(restrictionHeaders.eq(3).text().trim()).toEqual('Date to')
+
+          // Prisoner restrictions rows
+          const restrictionRows = getByDataQa($, 'prisoner-restrictions-table').find('tbody > tr > td')
+          // Row 1
+          expect(restrictionRows.eq(0).text().trim()).toEqual(mockPrisonerRestrictions[0].commentText)
+          expect(restrictionRows.eq(1).text().trim()).toEqual(formatDate(mockPrisonerRestrictions[0].effectiveDate))
+          expect(restrictionRows.eq(2).text().trim()).toEqual(formatDate(mockPrisonerRestrictions[0].expiryDate))
+          // Row 2
+          expect(restrictionRows.eq(3).text().trim()).toEqual(mockPrisonerRestrictions[1].commentText)
+          expect(restrictionRows.eq(4).text().trim()).toEqual(formatDate(mockPrisonerRestrictions[1].effectiveDate))
+          expect(restrictionRows.eq(5).text().trim()).toEqual(formatDate(mockPrisonerRestrictions[1].expiryDate))
+          /// Row 3
+          expect(restrictionRows.eq(6).text().trim()).toEqual(mockPrisonerRestrictions[2].commentText)
+          expect(restrictionRows.eq(7).text().trim()).toEqual(formatDate(mockPrisonerRestrictions[2].effectiveDate))
+          expect(restrictionRows.eq(8).text().trim()).toEqual('Not entered')
+
+          // Official visitor table
+          const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')
+          expect(visitorHeaders.eq(0).text().trim()).toEqual('Add')
+          expect(visitorHeaders.eq(1).text().trim()).toEqual('Name')
+          expect(visitorHeaders.eq(2).text().trim()).toEqual('Age')
+          expect(visitorHeaders.eq(3).text().trim()).toEqual('Relationship')
+          expect(visitorHeaders.eq(4).text().trim()).toEqual('Address')
+          expect(visitorHeaders.eq(5).text().trim()).toEqual('Active restrictions')
+
+          const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
+          // Row 1
+          expect(visitorRows.eq(0).text().trim()).toEqual(
+            `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName}`,
+          )
+          expect(visitorRows.eq(1).text().trim()).toEqual('Over 18')
+          expect(visitorRows.eq(2).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(3).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(4).text().trim()).toBeDefined() // Restrictions
+          // Row 2
+          expect(visitorRows.eq(5).text().trim()).toEqual(
+            `${mockOfficialVisitors[1].firstName} ${mockOfficialVisitors[1].lastName}`,
+          )
+          expect(visitorRows.eq(6).text().trim()).toEqual('Over 18')
+          expect(visitorRows.eq(7).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(8).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(9).text().trim()).toBeDefined() // Restrictions
+          // Row 3
+          expect(visitorRows.eq(10).text().trim()).toEqual(
+            `${mockOfficialVisitors[2].firstName} ${mockOfficialVisitors[2].lastName}`,
+          )
+          expect(visitorRows.eq(11).text().trim()).toEqual('Over 18')
+          expect(visitorRows.eq(12).text().trim()).toEqual(mockOfficialVisitors[2].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(13).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(14).text().trim()).toBeDefined() // Restrictions
+
+          expect($('.govuk-back-link').attr('href')).toEqual(`./`)
+          expect($('.govuk-button').text()).toContain('Continue')
+          expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
+          expect($('.govuk-link').last().attr('href')).toContain(`./`)
+
+          // Calls expected
+          expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
+            mockPrisoner.prisonCode,
+            mockPrisoner.prisonerNumber,
+            user,
+          )
+          expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_OFFICIAL_VISITORS_PAGE, {
+            who: user.username,
+            correlationId: expect.any(String),
+          })
+        })
+    })
+
+    it('should render the correct view page with no restrictions or contacts', () => {
+      // No contacts or restrictions
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: [],
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+        } as OfficialVisitJourney,
       })
 
       officialVisitsService.getApprovedOfficialContacts.mockResolvedValue([])
@@ -261,6 +432,19 @@ describe('Select official visitors', () => {
       config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
       await request(app)
         .post(URL)
+        .send({ selected: ['1', '2', '3'] })
+        .expect(302)
+        .expect('location', 'select-social-visitors')
+        .expect(() => expectNoErrorMessages())
+
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.officialVisitors).toHaveLength(3)
+    })
+
+    it('should accept the selection of two or more official visitors (amend)', async () => {
+      config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/select-official-visitors`)
         .send({ selected: ['1', '2', '3'] })
         .expect(302)
         .expect('location', 'select-social-visitors')

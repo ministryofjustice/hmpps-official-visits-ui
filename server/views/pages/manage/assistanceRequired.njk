@@ -11,11 +11,11 @@
 
 {% block content %}
 
-  {{ createJourneyHeader(prisoner, stepsChecked)}}
+  {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
-      <span class="govuk-hint">Schedule an official visit</span>
+      <span class="govuk-hint">{{'Schedule' if mode == 'create' else 'Amend'}} an official visit</span>
       <h1 class="govuk-heading-l">{{pageTitle}} (optional)</h1>
       <p>Add any important information about assistance needed for the official visit.</p>
       <p>Wing staff will be notified there is assistance needed for the visitor on the printed unlock list, but for confidentiality the full text will only be visible when you view the details of the official visit in this service.</p>
@@ -47,7 +47,12 @@
           }) }}
         {% endfor %}
 
-        {{ continueCancel({stepsChecked: stepsChecked}) }}
+        {{ continueCancel({
+          stepsChecked: stepsChecked, 
+          continueText: 'Submit' if mode == 'amend' and isChange else 'Continue',
+          cancelText: 'Cancel and return to homepage' if mode == 'create' else 'Cancel and return to visit details',
+          cancelHref: './' if mode == 'amend'
+        })}}
       </form>
     </div>
   </div>

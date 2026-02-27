@@ -4,6 +4,7 @@ import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
 import { recallContacts, saveVisitors } from '../createJourneyState'
+import { getBackLink } from './utils'
 
 export default class SelectSocialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_SOCIAL_VISITORS_PAGE
@@ -28,7 +29,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     res.render('pages/manage/selectSocialVisitors', {
       contacts: recallContacts(req.session.journey, 'S', approvedSocialContacts),
       selectedContacts,
-      backUrl: `select-official-visitors`,
+      backUrl: getBackLink(req, res, `select-official-visitors`),
       prisoner: req.session.journey.officialVisit.prisoner,
     })
   }

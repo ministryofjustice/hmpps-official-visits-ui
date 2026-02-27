@@ -75,9 +75,6 @@ export function saveVisitors(journey: Journey, relationshipType: 'O' | 'S', visi
   } else {
     journey.officialVisit.socialVisitors = visitors
   }
-
-  // Re-show assistance/equipment pages
-  resetPages(journey, [Page.ASSISTANCE_REQUIRED_PAGE, Page.EQUIPMENT_PAGE])
 }
 
 /**
@@ -107,21 +104,6 @@ function resetLaterPages(journey: Journey, page: Page) {
     p.keys.forEach(key => {
       delete journey.officialVisit[key]
     })
-  })
-  journey.reachedCheckAnswers = false
-}
-
-/**
- * Delete keys set by the given pages
- */
-function resetPages(journey: Journey, pages: Page[]) {
-  pages.forEach(page => {
-    const foundPage = pageData.find(p => p.page === page)
-    if (foundPage) {
-      foundPage.keys.forEach(key => {
-        delete journey.officialVisit[key]
-      })
-    }
   })
   journey.reachedCheckAnswers = false
 }
