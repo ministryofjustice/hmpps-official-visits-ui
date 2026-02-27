@@ -4,6 +4,7 @@ import {
   coerceInt,
   formatDateToLocalDateString,
   isValidDate,
+  isWithinWorkingHours,
   startOfDayLocal,
 } from '../../../../utils/utils'
 
@@ -19,14 +20,11 @@ const ERROR_EXPIRY_BEFORE_START = 'End date must be the same as or after the sta
 const ERROR_END_TIME_AFTER_START = 'End time must be after the start time'
 
 const START_TIME_REQUIRED = 'Enter a valid start time'
-const INVALID_START_TIME_RANGE = 'Enter an hour between 08 and 20 and minutes between 0 and 59'
+const INVALID_START_TIME_RANGE = 'Enter start time between 08:00 and 20:00'
 const END_TIME_REQUIRED = 'Enter a valid end time'
-const INVALID_END_TIME_RANGE = 'Enter an hour between 08 and 21 and minutes between 0 and 59'
+const INVALID_END_TIME_RANGE = 'Enter end time between 08:00 and 21:00'
 const VALID_DAY_CODES = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
-const MAX_MINUTE = 59
-const MIN_MINUTE = 0
-const MIN_HOUR = 8
 export const schema = z
   .object({
     startDate: z.any().transform(v => coerceDate(v)),
@@ -105,7 +103,6 @@ export const schema = z
         return
       }
 
-      // At this point we know both hourVal and minVal are present, but they may not be valid numbers due to the preprocess with z.any(), so we check type and integer-ness here to provide a clear error message
       if (
         typeof hourVal !== 'number' ||
         !Number.isInteger(hourVal) ||
@@ -117,10 +114,7 @@ export const schema = z
       }
 
       // Now we know they are integers, we can check the valid ranges
-      if (hourVal < MIN_HOUR || hourVal > hourMax || minVal < MIN_MINUTE || minVal > MAX_MINUTE) {
-        ctx.addIssue({ code: 'custom', path: [pathPrefix], message: rangeMsg })
-      }
-      if ((hourVal === 20 || hourVal === 21) && minVal !== 0) {
+      if (!isWithinWorkingHours(hourVal, minVal, hourMax)) {
         ctx.addIssue({ code: 'custom', path: [pathPrefix], message: rangeMsg })
       }
     }

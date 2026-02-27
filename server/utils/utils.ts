@@ -355,3 +355,14 @@ export const coerceInt = (v: string | unknown) => {
 export const getTime = (hour: string | unknown, minute: string | unknown) => {
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
 }
+
+export const toMinutesSinceMidnight = (hour: number, minute: number) => {
+  return hour * 60 + minute
+}
+
+export const isWithinWorkingHours = (hour: number, minute: number, closingTime: number = 20) => {
+  const OPEN = 8 * 60 // 08:00 -> 480
+  const CLOSE = closingTime * 60 // 20:00 -> 1200
+  const t = toMinutesSinceMidnight(hour, minute)
+  return t >= OPEN && t <= CLOSE // 20:00 allowed, 20:01 rejected
+}

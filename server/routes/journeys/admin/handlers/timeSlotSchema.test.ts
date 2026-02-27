@@ -128,4 +128,75 @@ describe('admin timeSlotSchema', () => {
     // Should have at least one issue about numeric range
     expect(result.error?.issues.length).toBeGreaterThanOrEqual(1)
   })
+
+  it('rejects start time outside of 08:00-21:00', async () => {
+    const result = await schema.safeParseAsync({
+      startDate: tomorrowStr,
+      expiryDate: tomorrowStr,
+      dayCode: 'MON',
+      'startTime-startHour': '20',
+      'startTime-startMinute': '1',
+      'endTime-endHour': '10',
+      'endTime-endMinute': '00',
+    })
+
+    expect(result.success).toBeFalsy()
+    // Should have at least one issue about numeric range
+    expect(result.error?.issues.length).toBeGreaterThanOrEqual(1)
+    expect(
+      result.error?.issues.some((i: { message: string }) => i.message === 'Enter start time between 08:00 and 20:00'),
+    ).toBeTruthy()
+  })
+
+  it('rejects end time outside of 08:00-21:00', async () => {
+    const result = await schema.safeParseAsync({
+      startDate: tomorrowStr,
+      expiryDate: tomorrowStr,
+      dayCode: 'MON',
+      'startTime-startHour': '09',
+      'startTime-startMinute': '00',
+      'endTime-endHour': '21',
+      'endTime-endMinute': '1',
+    })
+
+    expect(result.success).toBeFalsy()
+    expect(result.error?.issues.length).toBeGreaterThanOrEqual(1)
+    expect(
+      result.error?.issues.some((i: { message: string }) => i.message === 'Enter end time between 08:00 and 21:00'),
+    ).toBeTruthy()
+  })
+
+  it('rejects start time before 08:00', async () => {
+    const result = await schema.safeParseAsync({
+      startDate: tomorrowStr,
+      expiryDate: tomorrowStr,
+      dayCode: 'MON',
+      'startTime-startHour': '07',
+      'startTime-startMinute': '59',
+      'endTime-endHour': '10',
+      'endTime-endMinute': '00',
+    })
+
+    expect(result.success).toBeFalsy()
+    expect(
+      result.error?.issues.some((i: { message: string }) => i.message === 'Enter start time between 08:00 and 20:00'),
+    ).toBeTruthy()
+  })
+
+  it('rejects end time before 08:00', async () => {
+    const result = await schema.safeParseAsync({
+      startDate: tomorrowStr,
+      expiryDate: tomorrowStr,
+      dayCode: 'MON',
+      'startTime-startHour': '07',
+      'startTime-startMinute': '00',
+      'endTime-endHour': '07',
+      'endTime-endMinute': '59',
+    })
+
+    expect(result.success).toBeFalsy()
+    expect(
+      result.error?.issues.some((i: { message: string }) => i.message === 'Enter end time between 08:00 and 21:00'),
+    ).toBeTruthy()
+  })
 })

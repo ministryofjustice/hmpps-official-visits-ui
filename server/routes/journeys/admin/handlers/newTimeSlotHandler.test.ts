@@ -195,12 +195,12 @@ describe('NewTimeSlotHandler', () => {
             {
               fieldId: 'startTime',
               href: '#startTime',
-              text: 'Enter an hour between 08 and 20 and minutes between 0 and 59',
+              text: 'Enter start time between 08:00 and 20:00',
             },
             {
               fieldId: 'endTime',
               href: '#endTime',
-              text: 'Enter an hour between 08 and 21 and minutes between 0 and 59',
+              text: 'Enter end time between 08:00 and 21:00',
             },
           ]),
         )
