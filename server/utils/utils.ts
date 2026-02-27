@@ -237,3 +237,132 @@ export const addRemoveLinks = (
       href: `?${new URLSearchParams({ ...rest, ...(newValue.length ? { [key]: newValue } : {}) }).toString()}`,
     }
   })
+
+/**
+ * Converts a day code (e.g. 'MON', 'TUE', 'WED') to its full weekday name (e.g. 'Monday', 'Tuesday', 'Wednesday').
+ * Handles both three-letter codes and full uppercase names.
+ * If the code is not recognized, returns the original code.
+ * @param code The day code to convert.
+ * @returns The full weekday name corresponding to the code, or the original code if not recognized.
+ */
+export const getDayName = (code: string) => {
+  if (!code) return ''
+  const map: Record<string, string> = {
+    MON: 'Monday',
+    TUE: 'Tuesday',
+    WED: 'Wednesday',
+    THU: 'Thursday',
+    FRI: 'Friday',
+    SAT: 'Saturday',
+    SUN: 'Sunday',
+  }
+  const key = (code || '').toString().trim().toUpperCase()
+  return map[key] || code
+}
+
+/**
+ * Coerces empty strings, null, and undefined to undefined, while returning all other values unchanged.
+ * This is useful for form processing where empty strings from form inputs should be treated as undefined.
+ * @param v The value to coerce.
+ * @returns Undefined if the input was an empty string, null, or undefined; otherwise returns the original value.
+ */
+export const emptyStringToUndefined = (v: unknown) => {
+  if (v === '' || v === null || v === undefined) return undefined
+  return v
+}
+
+/**
+ * Coerces a value to a Date object if it's a string in a recognizable date format, or returns it unchanged if it's already a Date or not a string.
+ * Recognizes DD/MM/YYYY, DD/M/YYYY, and ISO yyyy-MM-dd formats as local dates (i.e. without timezone shifts).
+ * @param v The value to coerce.
+ * @returns A Date object if the input was a recognizable date string, or the original value otherwise.
+ */
+export const coerceDate = (v: string | Date) => {
+  const val = emptyStringToUndefined(v)
+  if (val === undefined) return undefined
+  if (val instanceof Date) return val
+  if (typeof val === 'string') {
+    // Try parsing DD/M/YYYY or DD/MM/YYYY format
+    const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+    const match = val.match(dateRegex)
+    if (match) {
+      const [, day, month, year] = match
+      return new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10))
+    }
+    // Explicitly handle ISO yyyy-mm-dd (HTML date inputs) as local date to avoid timezone shifts
+    const isoRegex = /^(\d{4})-(\d{2})-(\d{2})$/
+    const isoMatch = val.match(isoRegex)
+    if (isoMatch) {
+      const [, year, month, day] = isoMatch
+      return new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10))
+    }
+    // Fall back to standard Date constructor for other formats
+    return new Date(val)
+  }
+  return val
+}
+
+/**
+ * Checks if a value is a valid Date object (i.e. an instance of Date and not 'Invalid Date').
+ * @param d The value to check.
+ * @returns True if the value is a valid Date object, false otherwise.
+ */
+export const isValidDate = (d: Date) => d instanceof Date && !Number.isNaN(d.getTime())
+
+/**
+ * Returns a new Date object representing the start of the day (00:00:00) of the given date, in local time.
+ * @param d The date for which to get the start of the day.
+ * @returns A new Date object set to 00:00:00 of the given date in local time.
+ */
+export const startOfDayLocal = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate())
+
+/**
+ * Formats a Date object as a string in 'yyyy-MM-dd' format, or returns undefined if the input is not a valid Date.
+ * @param d The Date object to format.
+ * @returns A string representing the date in 'yyyy-MM-dd' format, or undefined if the input is not a valid Date.
+ */
+export const formatDateToLocalDateString = (d?: Date | undefined) => {
+  if (!d || !(d instanceof Date) || Number.isNaN(d.getTime())) return undefined
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+/**
+ * Coerces a value to an integer if it's a string that can be parsed as an integer, or returns it unchanged if it's already a number or not a string.
+ * @param v The value to coerce.
+ * @returns An integer if the input was a string that can be parsed as an integer, or the original value otherwise.
+ */
+export const coerceInt = (v: string | unknown) => {
+  const val = emptyStringToUndefined(v)
+  if (val === undefined) return undefined
+  if (typeof val === 'number') return val
+  if (typeof val === 'string') {
+    const trimmed = val.trim()
+    if (trimmed === '') return undefined
+    const n = Number(trimmed)
+    return Number.isNaN(n) ? trimmed : n
+  }
+  return val
+}
+
+/** Formats a time given separate hour and minute components into a string in 'HH:mm' format, padding with zeros as necessary.
+ * @param hour The hour component of the time, as a number or string.
+ * @param minute The minute component of the time, as a number or string.
+ * @returns A string representing the time in 'HH:mm' format.
+ */
+export const getTime = (hour: string | unknown, minute: string | unknown) => {
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+}
+
+export const toMinutesSinceMidnight = (hour: number, minute: number) => {
+  return hour * 60 + minute
+}
+
+export const isWithinWorkingHours = (hour: number, minute: number, closingTime: number = 20) => {
+  const OPEN = 8 * 60 // 08:00 -> 480
+  const CLOSE = closingTime * 60 // 20:00 -> 1200
+  const t = toMinutesSinceMidnight(hour, minute)
+  return t >= OPEN && t <= CLOSE // 20:00 allowed, 20:01 rejected
+}

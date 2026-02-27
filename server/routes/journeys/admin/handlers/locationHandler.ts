@@ -14,7 +14,7 @@ export default class LocationHandler implements PageHandler {
     const prisonCode = req.session.activeCaseLoadId || 'MDI'
 
     const allSlots = await this.officialVisitsService.getVisitSlotsAtPrison(prisonCode, user)
-    const matchingTimeSlot = allSlots.timeSlots.filter(slot => slot.timeSlot.prisonTimeSlotId === timeSlotId)
+    const matchingTimeSlot = allSlots?.timeSlots?.filter(slot => slot.timeSlot.prisonTimeSlotId === timeSlotId)
 
     // TODO: Check here that we have exactly one time slot - maybe someone else removed it?
     const timeSlot = matchingTimeSlot[0]

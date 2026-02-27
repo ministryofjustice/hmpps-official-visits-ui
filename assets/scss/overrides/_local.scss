@@ -51,3 +51,19 @@
 .dotted-border {
   border: 2px dashed #666;
 }
+
+.actions {
+  display: inline-flex;
+  gap: 30px; /* adjust */
+}
+
+.govuk-button-group--spread {
+  display: flex;          /* govuk-button-group is usually flex already, but safe */
+  align-items: center;
+  width: 100%;
+}
+
+/* push the 2nd button to the far right */
+.govuk-button-group--spread > :last-child {
+  margin-left: auto;
+}

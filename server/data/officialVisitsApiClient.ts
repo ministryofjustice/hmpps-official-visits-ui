@@ -10,10 +10,12 @@ import {
   CompleteVisitRequest,
   CreateOfficialVisitRequest,
   CreateOfficialVisitResponse,
+  CreateTimeSlotRequest,
   FindByCriteria,
   FindByCriteriaResults,
   OfficialVisit,
   ReferenceDataItem,
+  TimeSlot,
   TimeSlotSummary,
 } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
@@ -193,5 +195,9 @@ export default class OfficialVisitsApiClient extends RestClient {
       { path: `/admin/time-slots/prison/${prisonCode}?activeOnly=true` },
       asSystem(user.username),
     )
+  }
+
+  async createTimeSlot(body: CreateTimeSlotRequest, user: HmppsUser): Promise<TimeSlot> {
+    return this.post<TimeSlot>({ path: `/admin/time-slot`, data: body }, asSystem(user.username))
   }
 }

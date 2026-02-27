@@ -32,6 +32,7 @@ export default class DayHandler implements PageHandler {
       friSlots,
       satSlots,
       sunSlots,
+      backUrl: '/',
     })
   }
 }

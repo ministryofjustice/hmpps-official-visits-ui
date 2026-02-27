@@ -48,6 +48,18 @@ export const user: HmppsUser = {
   permissions: { OV: Permission.DEFAULT | Permission.VIEW | Permission.MANAGE | Permission.CONTACTS_AUTHORISER },
 }
 
+export const adminUser: HmppsUser = {
+  name: 'FIRST LAST',
+  userId: 'id',
+  token: 'token',
+  username: 'user1',
+  displayName: 'First Last',
+  authSource: 'nomis',
+  staffId: 1234,
+  userRoles: [AuthorisedRoles.ADMIN],
+  permissions: { OV: Permission.DEFAULT | Permission.ADMIN },
+}
+
 export const flashProvider = jest.fn()
 
 function appSetup(
