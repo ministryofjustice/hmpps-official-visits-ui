@@ -33,20 +33,34 @@ const defaultJourneySession = () => ({
         firstName: 'John',
         lastName: 'Dasolicitor',
         relationshipToPrisonerDescription: 'Solicitor',
+        relationshipToPrisonerCode: 'SOL',
         prisonerContactId: 111,
+        contactId: 1001,
+        officialVisitorId: 1,
+        assistedVisit: false,
+        leadVisitor: true,
       },
-
       {
         firstName: 'Johnny',
         lastName: 'Dasolicitor',
         relationshipToPrisonerDescription: 'Solicitor',
+        relationshipToPrisonerCode: 'SOL',
         prisonerContactId: 112,
+        contactId: 1002,
+        officialVisitorId: 2,
+        assistedVisit: false,
+        leadVisitor: false,
       },
       {
         firstName: 'Jon',
         lastName: 'Dasolicitor',
         relationshipToPrisonerDescription: 'Solicitor',
+        relationshipToPrisonerCode: 'SOL',
         prisonerContactId: 113,
+        contactId: 1003,
+        officialVisitorId: 3,
+        assistedVisit: false,
+        leadVisitor: false,
       },
     ],
     socialVisitors: [
@@ -54,7 +68,12 @@ const defaultJourneySession = () => ({
         firstName: 'Jane',
         lastName: 'Dafriend',
         relationshipToPrisonerDescription: 'Friend',
+        relationshipToPrisonerCode: 'FRI',
         prisonerContactId: 222,
+        contactId: 2001,
+        officialVisitorId: 4,
+        assistedVisit: false,
+        leadVisitor: false,
       },
     ],
   } as Partial<OfficialVisitJourney>,
@@ -332,6 +351,15 @@ describe('Assistance required handler', () => {
     })
 
     it('should accept a form submission (amend)', async () => {
+      const amendJourneySession = () => ({
+        ...defaultJourneySession(),
+        amendVisit: {
+          changePage: 'assistance-required',
+        },
+      })
+
+      appSetup(amendJourneySession())
+
       await request(app)
         .post(`/manage/amend/1/${journeyId()}/assistance-required?change=true`)
         .send({
@@ -347,8 +375,7 @@ describe('Assistance required handler', () => {
           ],
         })
         .expect(302)
-        .expect('location', 'equipment')
-        .expect(() => expectNoErrorMessages())
+        .expect('location', '/manage/amend/1/9211b69b-826f-4f48-a43f-8af59dddf39f')
 
       const journeySession = (await getJourneySession(app, 'officialVisit')) as OfficialVisitJourney
       expect(journeySession.officialVisitors[0].assistanceNotes).toEqual('flag is true and here is a note')
@@ -359,6 +386,77 @@ describe('Assistance required handler', () => {
       expect(journeySession.officialVisitors[2].assistedVisit).toEqual(true)
       expect(journeySession.socialVisitors[0].assistanceNotes).toEqual(undefined)
       expect(journeySession.socialVisitors[0].assistedVisit).toEqual(false)
+    })
+
+    it('should call updateVisitors service when in amend mode', async () => {
+      const amendJourneySession = () => ({
+        ...defaultJourneySession(),
+        amendVisit: {
+          changePage: 'assistance-required',
+        },
+      })
+
+      appSetup(amendJourneySession())
+
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/assistance-required?change=true`)
+        .send({
+          assistanceRequired: [
+            { id: '111', selected: 'true', notes: 'wheelchair access required' },
+            { id: '112', notes: '' },
+            { id: '113', selected: 'true', notes: '' },
+            { id: '222', notes: '' },
+          ],
+        })
+        .expect(302)
+        .expect('location', '/manage/amend/1/9211b69b-826f-4f48-a43f-8af59dddf39f')
+
+      expect(officialVisitsService.updateVisitors).toHaveBeenCalledWith(
+        'MDI',
+        '1',
+        {
+          officialVisitors: [
+            {
+              officialVisitorId: 1,
+              visitorTypeCode: 'CONTACT',
+              contactId: 1001,
+              prisonerContactId: 111,
+              relationshipCode: 'SOL',
+              leadVisitor: true,
+              assistedVisit: true,
+              assistedNotes: 'wheelchair access required',
+            },
+            {
+              officialVisitorId: 2,
+              visitorTypeCode: 'CONTACT',
+              contactId: 1002,
+              prisonerContactId: 112,
+              relationshipCode: 'SOL',
+              leadVisitor: false,
+              assistedVisit: false,
+            },
+            {
+              officialVisitorId: 3,
+              visitorTypeCode: 'CONTACT',
+              contactId: 1003,
+              prisonerContactId: 113,
+              relationshipCode: 'SOL',
+              leadVisitor: false,
+              assistedVisit: true,
+            },
+            {
+              officialVisitorId: 4,
+              visitorTypeCode: 'CONTACT',
+              contactId: 2001,
+              prisonerContactId: 222,
+              relationshipCode: 'FRI',
+              leadVisitor: false,
+              assistedVisit: false,
+            },
+          ],
+        },
+        user,
+      )
     })
   })
 })

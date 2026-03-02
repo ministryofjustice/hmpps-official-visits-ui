@@ -248,5 +248,46 @@ describe('Time slot handler', () => {
         .expect('location', `/manage/amend/1/${journeyId()}`)
         .expect(() => expectFlashMessage('updateVerb', 'amended'))
     })
+
+    it('should call updateVisitTypeAndSlot service when in amend mode', async () => {
+      const amendJourneySession = () => ({
+        officialVisit: {
+          prisoner: mockPrisoner,
+          availableSlots: [
+            {
+              visitSlotId: 1,
+              visitDate: '2025-12-25',
+              startTime: '10:00',
+              endTime: '11:00',
+              dpsLocationId: 'location-1',
+            },
+          ],
+          visitType: 'IN_PERSON',
+          prisonCode: 'MDI',
+        },
+      })
+
+      appSetup(amendJourneySession())
+
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/time-slot`)
+        .send({ visitSlot: '1' })
+        .expect(302)
+        .expect('location', `/manage/amend/1/${journeyId()}`)
+
+      expect(officialVisitsService.updateVisitTypeAndSlot).toHaveBeenCalledWith(
+        'MDI',
+        '1',
+        {
+          prisonVisitSlotId: 1,
+          visitDate: '2025-12-25',
+          startTime: '10:00',
+          endTime: '11:00',
+          dpsLocationId: 'location-1',
+          visitTypeCode: 'IN_PERSON',
+        },
+        user,
+      )
+    })
   })
 })
