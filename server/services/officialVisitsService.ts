@@ -9,6 +9,9 @@ import {
   CreateTimeSlotRequest,
   FindByCriteria,
   OfficialVisit,
+  OfficialVisitUpdateCommentRequest,
+  OfficialVisitUpdateSlotRequest,
+  OfficialVisitUpdateVisitorsRequest,
   OfficialVisitor,
   SearchLevelType,
   VisitorEquipment,
@@ -122,5 +125,37 @@ export default class OfficialVisitsService {
   public async createTimeSlot(body: CreateTimeSlotRequest, user: HmppsUser) {
     logger.info(`create a time slot called by ${user.userId} ${user.displayName}`)
     return this.officialVisitsApiClient.createTimeSlot(body, user)
+  }
+
+  public async updateVisitors(
+    prisonId: string,
+    visitId: string,
+    body: OfficialVisitUpdateVisitorsRequest,
+    user: HmppsUser,
+  ) {
+    logger.info(`Update visitors for prison ${prisonId} with visit id ${visitId} and body ${JSON.stringify(body)}`)
+    return this.officialVisitsApiClient.updateVisitors(prisonId, visitId, body, user)
+  }
+
+  public async updateVisitTypeAndSlot(
+    prisonId: string,
+    visitId: string,
+    body: OfficialVisitUpdateSlotRequest,
+    user: HmppsUser,
+  ) {
+    logger.info(
+      `Update visit type and slot for prison ${prisonId} with visit id ${visitId} and body ${JSON.stringify(body)}`,
+    )
+    return this.officialVisitsApiClient.updateVisitTypeAndSlot(prisonId, visitId, body, user)
+  }
+
+  public async updateComments(
+    prisonId: string,
+    visitId: string,
+    body: OfficialVisitUpdateCommentRequest,
+    user: HmppsUser,
+  ) {
+    logger.info(`Update comments for prison ${prisonId} with visit id ${visitId} and body ${JSON.stringify(body)}`)
+    return this.officialVisitsApiClient.updateComments(prisonId, visitId, body, user)
   }
 }

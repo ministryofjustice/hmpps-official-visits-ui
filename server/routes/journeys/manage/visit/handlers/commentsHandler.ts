@@ -1,12 +1,13 @@
 import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
+import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { schema } from './commentsSchema'
 
 export default class CommentsHandler implements PageHandler {
   public PAGE_NAME = Page.COMMENTS_PAGE
 
-  constructor() {}
+  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   getBackUrl(req: Request, res: Response) {
     if (res.locals.mode === 'amend') {
@@ -33,8 +34,20 @@ export default class CommentsHandler implements PageHandler {
     req.session.journey.officialVisit.commentsPageCompleted = true
 
     if (res.locals.mode === 'amend') {
-      // TODO: Make call to API to update visit
-      req.flash('updateVerb', 'amended')
+      try {
+        await this.officialVisitsService.updateComments(
+          req.session.journey.officialVisit.prisonCode,
+          req.params.ovId,
+          {
+            staffNotes: req.body.staffNotes,
+            prisonerNotes: req.body.prisonerNotes,
+          },
+          res.locals.user,
+        )
+        req.flash('updateVerb', 'amended')
+      } catch (error) {
+        req.flash('errors', 'Failed to update comments. Please try again.')
+      }
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }
 

@@ -43,6 +43,7 @@ export type OfficialVisitJourney = {
  They can be differentiated through the relationshipTypeCode 'O' or 'S' in ApprovedContact.
  */
 export type JourneyVisitor = ApprovedContact & {
+  officialVisitorId?: number
   equipment?: boolean
   equipmentNotes?: string
   assistedVisit?: boolean

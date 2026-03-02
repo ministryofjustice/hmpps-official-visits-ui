@@ -5,6 +5,9 @@ import {
   ApprovedContact,
   CompleteVisitRequest,
   OfficialVisit,
+  OfficialVisitUpdateCommentRequest,
+  OfficialVisitUpdateSlotRequest,
+  OfficialVisitUpdateVisitorsRequest,
   TimeSlotSummary,
 } from '../@types/officialVisitsApi/types'
 import { mockFindByCriteriaResults } from '../testutils/mocks'
@@ -178,6 +181,57 @@ describe('OfficialVisitsService', () => {
     const result = await officialVisitsService.getVisitSlotsAtPrison('MDI', user)
 
     expect(officialVisitsApiClient.getAllTimeSlotsAndVisitSlots).toHaveBeenCalledTimes(1)
+    expect(result).toEqual(body)
+  })
+
+  it('should update visitors for a visit', async () => {
+    const body: OfficialVisitUpdateVisitorsRequest = {
+      officialVisitors: [
+        {
+          officialVisitorId: 1,
+          visitorTypeCode: 'CONTACT',
+          relationshipCode: 'POM',
+        },
+      ],
+    }
+    officialVisitsApiClient.updateVisitors.mockResolvedValue(body)
+
+    const result = await officialVisitsService.updateVisitors('MDI', '1', body, user)
+
+    expect(officialVisitsApiClient.updateVisitors).toHaveBeenCalledTimes(1)
+    expect(officialVisitsApiClient.updateVisitors).toHaveBeenCalledWith('MDI', '1', body, user)
+    expect(result).toEqual(body)
+  })
+
+  it('should update visit type and slot for a visit', async () => {
+    const body: OfficialVisitUpdateSlotRequest = {
+      prisonVisitSlotId: 123,
+      visitDate: '2022-12-23',
+      startTime: '10:00',
+      endTime: '11:00',
+      dpsLocationId: 'aaaa-bbbb-9f9f9f9f-9f9f9f9f',
+      visitTypeCode: 'IN_PERSON',
+    }
+    officialVisitsApiClient.updateVisitTypeAndSlot.mockResolvedValue(body)
+
+    const result = await officialVisitsService.updateVisitTypeAndSlot('MDI', '1', body, user)
+
+    expect(officialVisitsApiClient.updateVisitTypeAndSlot).toHaveBeenCalledTimes(1)
+    expect(officialVisitsApiClient.updateVisitTypeAndSlot).toHaveBeenCalledWith('MDI', '1', body, user)
+    expect(result).toEqual(body)
+  })
+
+  it('should update comments for a visit', async () => {
+    const body: OfficialVisitUpdateCommentRequest = {
+      staffNotes: 'Staff notes',
+      prisonerNotes: 'Prisoner notes',
+    }
+    officialVisitsApiClient.updateComments.mockResolvedValue(body)
+
+    const result = await officialVisitsService.updateComments('MDI', '1', body, user)
+
+    expect(officialVisitsApiClient.updateComments).toHaveBeenCalledTimes(1)
+    expect(officialVisitsApiClient.updateComments).toHaveBeenCalledWith('MDI', '1', body, user)
     expect(result).toEqual(body)
   })
 })

@@ -231,7 +231,7 @@
               },
               {
                 key: { text: "Does this visitor need equipment?" },
-                value: { text: 'Yes' if contact.visitorEquipment else 'No' },
+                value: { text: 'Yes' if contact.visitorEquipment and contact.visitorEquipment.description.length else 'No' },
                 actions: {
                   items: [
                     {
@@ -245,7 +245,7 @@
               },
               {
                 key: { text: "Equipment" },
-                value: { text: contact.visitorEquipment.description if contact.visitorEquipment else 'None' },
+                value: { text: contact.visitorEquipment.description if contact.visitorEquipment and contact.visitorEquipment.description.length else 'None' },
                 actions: {
                   items: [
                     {

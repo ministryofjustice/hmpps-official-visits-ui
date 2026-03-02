@@ -34,3 +34,6 @@ export type CancelTypeRequest = components['schemas']['OfficialVisitCancellation
 export type TimeSlotSummary = components['schemas']['TimeSlotSummary']
 export type CreateTimeSlotRequest = components['schemas']['CreateTimeSlotRequest']
 export type TimeSlot = components['schemas']['TimeSlot']
+export type OfficialVisitUpdateVisitorsRequest = components['schemas']['OfficialVisitUpdateVisitorsRequest']
+export type OfficialVisitUpdateSlotRequest = components['schemas']['OfficialVisitUpdateSlotRequest']
+export type OfficialVisitUpdateCommentRequest = components['schemas']['OfficialVisitUpdateCommentRequest']
