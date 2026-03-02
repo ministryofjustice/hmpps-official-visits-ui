@@ -34,20 +34,16 @@ export default class CommentsHandler implements PageHandler {
     req.session.journey.officialVisit.commentsPageCompleted = true
 
     if (res.locals.mode === 'amend') {
-      try {
-        await this.officialVisitsService.updateComments(
-          req.session.journey.officialVisit.prisonCode,
-          req.params.ovId,
-          {
-            staffNotes: req.body.staffNotes,
-            prisonerNotes: req.body.prisonerNotes,
-          },
-          res.locals.user,
-        )
-        req.flash('updateVerb', 'amended')
-      } catch (error) {
-        req.flash('errors', 'Failed to update comments. Please try again.')
-      }
+      await this.officialVisitsService.updateComments(
+        req.session.journey.officialVisit.prisonCode,
+        req.params.ovId,
+        {
+          staffNotes: req.body.staffNotes,
+          prisonerNotes: req.body.prisonerNotes,
+        },
+        res.locals.user,
+      )
+      req.flash('updateVerb', 'amended')
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }
 

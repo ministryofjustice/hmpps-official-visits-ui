@@ -2,12 +2,7 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import {
-  ApprovedContact,
-  ContactRelationship,
-  OfficialVisitor,
-  VisitorType,
-} from '../../../../../@types/officialVisitsApi/types'
+import { ApprovedContact, ContactRelationship, OfficialVisitor } from '../../../../../@types/officialVisitsApi/types'
 import { getBackLink } from './utils'
 import { schema } from './equipmentSchema'
 
@@ -39,30 +34,26 @@ export default class EquipmentHandler implements PageHandler {
     req.session.journey.officialVisit.equipmentPageCompleted = true
 
     if (res.locals.mode === 'amend') {
-      try {
-        const allVisitors = [...officialVisit.officialVisitors, ...(officialVisit.socialVisitors || [])]
-        const officialVisitors: OfficialVisitor[] = allVisitors.map(visitor => ({
-          officialVisitorId: visitor.officialVisitorId,
-          visitorTypeCode: 'CONTACT',
-          contactId: visitor.contactId,
-          prisonerContactId: visitor.prisonerContactId,
-          relationshipCode: visitor.relationshipToPrisonerCode,
-          leadVisitor: visitor.leadVisitor,
-          assistedVisit: visitor.assistedVisit,
-          assistedNotes: visitor.assistanceNotes,
-          ...(visitor.equipmentNotes ? { visitorEquipment: { description: visitor.equipmentNotes } } : {}),
-        }))
+      const allVisitors = [...officialVisit.officialVisitors, ...(officialVisit.socialVisitors || [])]
+      const officialVisitors: OfficialVisitor[] = allVisitors.map(visitor => ({
+        officialVisitorId: visitor.officialVisitorId,
+        visitorTypeCode: 'CONTACT',
+        contactId: visitor.contactId,
+        prisonerContactId: visitor.prisonerContactId,
+        relationshipCode: visitor.relationshipToPrisonerCode,
+        leadVisitor: visitor.leadVisitor,
+        assistedVisit: visitor.assistedVisit,
+        assistedNotes: visitor.assistanceNotes,
+        ...(visitor.equipmentNotes ? { visitorEquipment: { description: visitor.equipmentNotes } } : {}),
+      }))
 
-        await this.officialVisitsService.updateVisitors(
-          officialVisit.prisonCode,
-          req.params.ovId,
-          { officialVisitors },
-          res.locals.user,
-        )
-        req.flash('updateVerb', 'amended')
-      } catch (error) {
-        req.flash('errors', 'Failed to update visitor equipment. Please try again.')
-      }
+      await this.officialVisitsService.updateVisitors(
+        officialVisit.prisonCode,
+        req.params.ovId,
+        { officialVisitors },
+        res.locals.user,
+      )
+      req.flash('updateVerb', 'amended')
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }
     return res.redirect(`comments`)
