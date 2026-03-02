@@ -5,6 +5,7 @@ import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import AuditService from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
+import { TimeSlot } from '../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/officialVisitsService')
@@ -22,36 +23,39 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('NewTimeSlotHandler', () => {
+describe('EditTimeSlotHandler', () => {
   describe('GET', () => {
-    it('renders the add new time page with day label', () => {
-      return request(app)
-        .get('/admin/locations/time-slot/new?day=MON')
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          const heading = $('h1.govuk-heading-l').text().trim()
-          expect(heading).toEqual('Add a new time for Monday')
-          // assert back link goes to days page
-          const backLink = $('a.govuk-back-link')
-          expect(backLink.text().trim()).toEqual('Back')
-          expect(backLink.attr('href')).toEqual('/admin/days')
-          // assert date input fields are present
-          expect($('input[name="startDate"]').length).toBe(1)
-          expect($('input[name="expiryDate"]').length).toBe(1)
-          // assert time input fields are present
-          expect($('input[name="startTime-startHour"]').length).toBe(1)
-          expect($('input[name="startTime-startMinute"]').length).toBe(1)
-          expect($('input[name="endTime-endHour"]').length).toBe(1)
-          expect($('input[name="endTime-endMinute"]').length).toBe(1)
-        })
+    it('renders edit page', async () => {
+      const existing = {
+        prisonTimeSlotId: 123,
+        effectiveDate: '2024-01-01',
+        expiryDate: '2025-01-01',
+        startTime: '10:00',
+        endTime: '11:00',
+      }
+
+      officialVisitsService.getPrisonTimeSlotById.mockResolvedValue(existing as TimeSlot)
+
+      const res = await request(app).get('/admin/locations/time-slot/123/edit?day=MON').expect(200)
+      const $ = cheerio.load(res.text)
+      const heading = $('h1.govuk-heading-l').text().trim()
+      expect(heading).toEqual('Edit a time for Monday')
+
+      // hidden timeSlotId input is present
+      expect($('input[name="timeSlotId"]').val()).toBe('123')
+
+      // check start and end time prefilled
+      expect($('input[name="startTime-startHour"]').val()).toBe('10')
+      expect($('input[name="startTime-startMinute"]').val()).toBe('00')
+      expect($('input[name="endTime-endHour"]').val()).toBe('11')
+      expect($('input[name="endTime-endMinute"]').val()).toBe('00')
     })
   })
 
   describe('POST', () => {
     it('shows errors when required fields missing', () => {
       return request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/locations/time-slot/1/edit')
         .send({ dayCode: 'MON' })
         .expect(302)
         .expect('location', '/')
@@ -82,7 +86,7 @@ describe('NewTimeSlotHandler', () => {
       const yesterdayStr = yesterday.toISOString().split('T')[0]
 
       return request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/locations/time-slot/1/edit')
         .send({
           dayCode: 'MON',
           startDate: yesterdayStr,
@@ -110,10 +114,9 @@ describe('NewTimeSlotHandler', () => {
         )
     })
 
-    // test for valid day value
     it('shows errors when day code is invalid', () => {
       return request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/locations/time-slot/1/edit')
         .send({
           dayCode: 'DEN', // invalid day code
           startDate: '2055-12-25',
@@ -138,7 +141,7 @@ describe('NewTimeSlotHandler', () => {
 
     it('shows errors when date and time formats are invalid', () => {
       return request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/locations/time-slot/1/edit')
         .send({
           dayCode: 'MON',
           startDate: 'invalid-date',
@@ -178,7 +181,7 @@ describe('NewTimeSlotHandler', () => {
 
     it('shows errors when time fields are out of allowed range', () => {
       return request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/locations/time-slot/1/edit')
         .send({
           dayCode: 'MON',
           startDate: '2055-12-25',
@@ -206,11 +209,12 @@ describe('NewTimeSlotHandler', () => {
         )
     })
 
-    it('redirects back to days on success', async () => {
+    it('calls updateTimeSlot', async () => {
       await request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/locations/time-slot/123/edit?day=MON')
         .send({
           dayCode: 'MON',
+          timeSlotId: '123',
           startDate: '2055-12-25',
           expiryDate: '2066-12-25',
           'startTime-startHour': '09',
@@ -221,17 +225,7 @@ describe('NewTimeSlotHandler', () => {
         .expect(302)
         .expect('location', '/admin/days')
 
-      expect(officialVisitsService.createTimeSlot).toHaveBeenCalledWith(
-        {
-          prisonCode: 'HEI',
-          effectiveDate: '2055-12-25',
-          expiryDate: '2066-12-25',
-          startTime: '09:00',
-          endTime: '10:00',
-          dayCode: 'MON',
-        },
-        adminUser,
-      )
+      expect(officialVisitsService.updateTimeSlot).toHaveBeenCalled()
     })
   })
 })

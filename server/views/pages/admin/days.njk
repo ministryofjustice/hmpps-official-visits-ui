@@ -52,8 +52,8 @@
   {% set rows = [] %}
   {% if slots.length > 0 %}
     {% for slot in slots %}
-      {% set manageUrl = '/admin/locations/time-slot/' + slot.timeSlot.prisonTimeSlotId %}
-      {% set editUrl = manageUrl + '/edit' %}
+      {% set manageUrl = '/admin/locations/time-slot/' + slot.timeSlot.prisonTimeSlotId +'/location'%}
+      {% set editUrl = "/admin/locations/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/edit?day=" ~ dayCode %}
       {% set rows = (rows.push([
         { text: slot.timeSlot.startTime },
         { text: slot.timeSlot.endTime },
