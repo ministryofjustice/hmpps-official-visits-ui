@@ -14,6 +14,7 @@ import {
   OfficialVisitUpdateVisitorsRequest,
   OfficialVisitor,
   SearchLevelType,
+  UpdateTimeSlotRequest,
   VisitorEquipment,
   VisitorType,
 } from '../@types/officialVisitsApi/types'
@@ -157,5 +158,15 @@ export default class OfficialVisitsService {
   ) {
     logger.info(`Update comments for prison ${prisonId} with visit id ${visitId} and body ${JSON.stringify(body)}`)
     return this.officialVisitsApiClient.updateComments(prisonId, visitId, body, user)
+  }
+
+  public async getPrisonTimeSlotById(prisonTimeSlotId: number, user: HmppsUser) {
+    logger.info(`Get prison time slot ${prisonTimeSlotId} called by ${user.userId}`)
+    return this.officialVisitsApiClient.getPrisonTimeSlotById(prisonTimeSlotId, user)
+  }
+
+  public async updateTimeSlot(prisonTimeSlotId: number, body: UpdateTimeSlotRequest, user: HmppsUser) {
+    logger.info(`Update time slot ${prisonTimeSlotId} called by ${user.userId}`)
+    return this.officialVisitsApiClient.updateTimeSlot(prisonTimeSlotId, body, user)
   }
 }

@@ -113,7 +113,11 @@ export const schema = z
         return
       }
 
-      // Now we know they are integers, we can check the valid ranges
+      if (hourVal < 8 || hourVal > hourMax || minVal < 0 || minVal > 59) {
+        ctx.addIssue({ code: 'custom', path: [pathPrefix], message: rangeMsg })
+        return
+      }
+
       if (!isWithinWorkingHours(hourVal, minVal, hourMax)) {
         ctx.addIssue({ code: 'custom', path: [pathPrefix], message: rangeMsg })
       }

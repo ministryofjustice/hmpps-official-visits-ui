@@ -20,6 +20,7 @@ import {
   ReferenceDataItem,
   TimeSlot,
   TimeSlotSummary,
+  UpdateTimeSlotRequest,
 } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
 
@@ -228,5 +229,13 @@ export default class OfficialVisitsApiClient extends RestClient {
       { path: `/official-visit/prison/${prisonCode}/id/${visitId}/update-comments`, data: body },
       asSystem(user.username),
     )
+  }
+
+  async getPrisonTimeSlotById(prisonTimeSlotId: number, user: HmppsUser): Promise<TimeSlot> {
+    return this.get<TimeSlot>({ path: `/admin/time-slot/${prisonTimeSlotId}` }, asSystem(user.username))
+  }
+
+  async updateTimeSlot(prisonTimeSlotId: number, body: UpdateTimeSlotRequest, user: HmppsUser): Promise<TimeSlot> {
+    return this.put<TimeSlot>({ path: `/admin/time-slot/${prisonTimeSlotId}`, data: body }, asSystem(user.username))
   }
 }
