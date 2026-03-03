@@ -199,4 +199,24 @@ describe('admin timeSlotSchema', () => {
       result.error?.issues.some((i: { message: string }) => i.message === 'Enter end time between 08:00 and 21:00'),
     ).toBeTruthy()
   })
+
+  it('rejects hour and minute ranges outside (hour: 8-20 for start, 8-21 for end; minute: 0-59)', async () => {
+    const result = await schema.safeParseAsync({
+      startDate: tomorrowStr,
+      expiryDate: tomorrowStr,
+      dayCode: 'MON',
+      'startTime-startHour': '20',
+      'startTime-startMinute': '331',
+      'endTime-endHour': '20',
+      'endTime-endMinute': '331',
+    })
+
+    expect(result.success).toBeFalsy()
+    expect(
+      result.error?.issues.some((i: { message: string }) => i.message === 'Enter start time between 08:00 and 20:00'),
+    ).toBeTruthy()
+    expect(
+      result.error?.issues.some((i: { message: string }) => i.message === 'Enter end time between 08:00 and 21:00'),
+    ).toBeTruthy()
+  })
 })
