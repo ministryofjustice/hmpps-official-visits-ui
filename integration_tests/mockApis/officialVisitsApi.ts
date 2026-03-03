@@ -27,6 +27,9 @@ export default {
   stubRefData: (group: string, response: ReferenceDataItem[]) =>
     simpleApiMock(`/official-visits-api/reference-data/group/${group}`, response),
   stubAvailableSlots: (response: AvailableSlot[]) => simpleApiMock(`/official-visits-api/available-slots/.*`, response),
+  // New helper to stub admin time slot summary (used by admin days page)
+  stubTimeSlotSummary: (response: Record<string, unknown>) =>
+    simpleApiMock(`/official-visits-api/admin/time-slots/prison/.*`, response),
   stubOfficialContacts: (response: ApprovedContact[]) =>
     simpleApiMock(`/official-visits-api/prisoner/.*/approved-relationships\\?relationshipType=O`, response),
   stubSocialContacts: (response: ApprovedContact[]) =>
@@ -89,4 +92,7 @@ export default {
         jsonBody: {},
       },
     }),
+  // New helper to stub creating a time slot via admin API
+  stubCreateTimeSlot: (response: Record<string, unknown> = {}) =>
+    simplePostApiMock(`/official-visits-api/admin/time-slot`, response),
 }

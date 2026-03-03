@@ -219,4 +219,19 @@ describe('admin timeSlotSchema', () => {
       result.error?.issues.some((i: { message: string }) => i.message === 'Enter end time between 08:00 and 21:00'),
     ).toBeTruthy()
   })
+
+  it('allows past start and end date when timeSlotId is present (editing existing time slot)', async () => {
+    const result = await schema.safeParseAsync({
+      startDate: yesterdayStr,
+      expiryDate: tomorrowStr,
+      dayCode: 'MON',
+      timeSlotId: '123', // Simulate presence of timeSlotId for edit mode
+      'startTime-startHour': '09',
+      'startTime-startMinute': '00',
+      'endTime-endHour': '10',
+      'endTime-endMinute': '00',
+    })
+
+    expect(result.success).toBeTruthy()
+  })
 })

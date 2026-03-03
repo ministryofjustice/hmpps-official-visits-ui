@@ -89,7 +89,7 @@ export default class EditTimeSlotHandler implements PageHandler {
     logger.info(`Updating time slot ${id}`)
     await this.officialVisitsService.updateTimeSlot(id, payload, user)
 
-    res.addSuccessMessage('New time for visit updated', 'You have updated a visiting time in your prisons schedule.')
+    res.addSuccessMessage('Time for visit updated', 'You have updated a visiting time in your prisons schedule.')
     return res.redirect('/admin/days')
   }
 }

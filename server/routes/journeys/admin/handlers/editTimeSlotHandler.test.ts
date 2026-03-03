@@ -90,6 +90,7 @@ describe('EditTimeSlotHandler', () => {
         .send({
           dayCode: 'MON',
           startDate: yesterdayStr,
+          timeSlotId: 1,
           expiryDate: yesterdayStr,
           'startTime-startHour': '09',
           'startTime-startMinute': '00',
@@ -97,27 +98,14 @@ describe('EditTimeSlotHandler', () => {
           'endTime-endMinute': '00',
         })
         .expect(302)
-        .expect('location', '/')
-        .expect(() =>
-          expectErrorMessages([
-            {
-              fieldId: 'startDate',
-              href: '#startDate',
-              text: 'Select a date that is today or in the future for the start date',
-            },
-            {
-              fieldId: 'expiryDate',
-              href: '#expiryDate',
-              text: 'Select a date that is today or in the future for the end date',
-            },
-          ]),
-        )
+        .expect('location', '/admin/days') // For edits we allow past dates since they may be existing slots that started/expired in the past, so should redirect to success page instead of showing errors
     })
 
     it('shows errors when day code is invalid', () => {
       return request(app)
         .post('/admin/locations/time-slot/1/edit')
         .send({
+          timeSlotId: 1,
           dayCode: 'DEN', // invalid day code
           startDate: '2055-12-25',
           expiryDate: '2066-12-25',
@@ -143,6 +131,7 @@ describe('EditTimeSlotHandler', () => {
       return request(app)
         .post('/admin/locations/time-slot/1/edit')
         .send({
+          timeSlotId: 1,
           dayCode: 'MON',
           startDate: 'invalid-date',
           expiryDate: 'also-invalid',
@@ -183,6 +172,7 @@ describe('EditTimeSlotHandler', () => {
       return request(app)
         .post('/admin/locations/time-slot/1/edit')
         .send({
+          timeSlotId: 1,
           dayCode: 'MON',
           startDate: '2055-12-25',
           expiryDate: '2066-12-25',
