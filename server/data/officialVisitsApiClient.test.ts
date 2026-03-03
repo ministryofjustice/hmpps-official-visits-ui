@@ -102,4 +102,91 @@ describe('OfficialVisitsApiClient', () => {
       expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('updateVisitors', () => {
+    it('should update visitors for an official visit', async () => {
+      const prisonCode = 'AAA'
+      const visitId = '1'
+      const expected = { data: 'data' }
+
+      nock(config.apis.officialVisitsApi.url)
+        .put(`/official-visit/prison/${prisonCode}/id/${visitId}/visitors`)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, expected)
+
+      const response = await officialVisitsApiClient.updateVisitors(
+        prisonCode,
+        visitId,
+        {
+          officialVisitors: [
+            {
+              officialVisitorId: 1,
+              visitorTypeCode: 'CONTACT',
+              relationshipCode: 'POM',
+            },
+          ],
+        },
+        user,
+      )
+
+      expect(response).toEqual(expected)
+      expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('updateVisitTypeAndSlot', () => {
+    it('should update visit type and slot for an official visit', async () => {
+      const prisonCode = 'AAA'
+      const visitId = '1'
+      const expected = { data: 'data' }
+
+      nock(config.apis.officialVisitsApi.url)
+        .put(`/official-visit/prison/${prisonCode}/id/${visitId}/update-type-and-slot`)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, expected)
+
+      const response = await officialVisitsApiClient.updateVisitTypeAndSlot(
+        prisonCode,
+        visitId,
+        {
+          prisonVisitSlotId: 123,
+          visitDate: '2022-12-23',
+          startTime: '10:00',
+          endTime: '11:00',
+          dpsLocationId: 'aaaa-bbbb-9f9f9f9f-9f9f9f9f',
+          visitTypeCode: 'IN_PERSON',
+        },
+        user,
+      )
+
+      expect(response).toEqual(expected)
+      expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('updateComments', () => {
+    it('should update comments for an official visit', async () => {
+      const prisonCode = 'AAA'
+      const visitId = '1'
+      const expected = { data: 'data' }
+
+      nock(config.apis.officialVisitsApi.url)
+        .put(`/official-visit/prison/${prisonCode}/id/${visitId}/update-comments`)
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, expected)
+
+      const response = await officialVisitsApiClient.updateComments(
+        prisonCode,
+        visitId,
+        {
+          staffNotes: 'Staff notes',
+          prisonerNotes: 'Prisoner notes',
+        },
+        user,
+      )
+
+      expect(response).toEqual(expected)
+      expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
+    })
+  })
 })

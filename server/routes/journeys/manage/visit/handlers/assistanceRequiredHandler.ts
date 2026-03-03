@@ -1,15 +1,16 @@
 import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
-import { schema } from './assistanceRequiredSchema'
-import { ApprovedContact, ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
+import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import { ApprovedContact, ContactRelationship, VisitorType } from '../../../../../@types/officialVisitsApi/types'
 import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 import { getBackLink } from './utils'
+import { schema } from './assistanceRequiredSchema'
 
 export default class AssistanceRequiredHandler implements PageHandler {
   public PAGE_NAME = Page.ASSISTANCE_REQUIRED_PAGE
 
-  constructor() {}
+  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   BODY = schema
 
@@ -38,7 +39,25 @@ export default class AssistanceRequiredHandler implements PageHandler {
 
     officialVisit.assistancePageCompleted = true
     if (res.locals.mode === 'amend' && req.session.journey.amendVisit?.changePage === 'assistance-required') {
-      // TODO: API call for amending visitors
+      const allVisitors = [...officialVisit.officialVisitors, ...(officialVisit.socialVisitors || [])]
+      const officialVisitors = allVisitors.map(visitor => ({
+        officialVisitorId: visitor.officialVisitorId,
+        visitorTypeCode: 'CONTACT' as VisitorType,
+        contactId: visitor.contactId,
+        prisonerContactId: visitor.prisonerContactId,
+        relationshipCode: visitor.relationshipToPrisonerCode,
+        leadVisitor: visitor.leadVisitor,
+        assistedVisit: visitor.assistedVisit,
+        assistedNotes: visitor.assistanceNotes,
+        ...(visitor.equipmentNotes ? { visitorEquipment: { description: visitor.equipmentNotes } } : {}),
+      }))
+
+      await this.officialVisitsService.updateVisitors(
+        officialVisit.prisonCode,
+        req.params.ovId,
+        { officialVisitors },
+        res.locals.user,
+      )
       req.flash('updateVerb', 'amended')
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }

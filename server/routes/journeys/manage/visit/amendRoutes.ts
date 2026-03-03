@@ -60,9 +60,9 @@ export default function AmendRoutes({
   route(`/time-slot`, new TimeSlotHandler(officialVisitsService, activitiesService))
   route(`/select-official-visitors`, new SelectOfficialVisitorsHandler(officialVisitsService))
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService))
-  route('/assistance-required', new AssistanceRequiredHandler())
-  route('/equipment', new EquipmentHandler())
-  route('/comments', new CommentsHandler())
+  route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
+  route('/equipment', new EquipmentHandler(officialVisitsService))
+  route('/comments', new CommentsHandler(officialVisitsService))
 
   return router
 }

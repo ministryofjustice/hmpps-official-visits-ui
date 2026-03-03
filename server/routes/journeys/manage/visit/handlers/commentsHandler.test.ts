@@ -26,6 +26,7 @@ const defaultJourneySession = () => ({
     prisoner: mockPrisoner,
     prisonerNotes: 'Some previously entered notes',
     staffNotes: 'Some previously entered staff notes',
+    prisonCode: 'MDI',
   } as Partial<OfficialVisitJourney>,
 })
 
@@ -164,6 +165,33 @@ describe('comments handler', () => {
         .send({ prisonerNotes: 'prisoner', staffNotes: 'staff' })
         .expect(302)
         .expect('location', '/manage/amend/1/9211b69b-826f-4f48-a43f-8af59dddf39f')
+    })
+
+    it('should call updateComments service when in amend mode', async () => {
+      const amendJourneySession = () => ({
+        ...defaultJourneySession(),
+        amendVisit: {
+          changePage: 'comments',
+        },
+      })
+
+      appSetup(amendJourneySession())
+
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/comments`)
+        .send({ prisonerNotes: 'updated prisoner notes', staffNotes: 'updated staff notes' })
+        .expect(302)
+        .expect('location', '/manage/amend/1/9211b69b-826f-4f48-a43f-8af59dddf39f')
+
+      expect(officialVisitsService.updateComments).toHaveBeenCalledWith(
+        'MDI',
+        '1',
+        {
+          prisonerNotes: 'updated prisoner notes',
+          staffNotes: 'updated staff notes',
+        },
+        user,
+      )
     })
   })
 })

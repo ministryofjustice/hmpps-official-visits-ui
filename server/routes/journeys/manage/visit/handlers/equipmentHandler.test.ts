@@ -29,12 +29,18 @@ const defaultJourneySession = () => ({
   officialVisit: {
     prisoner: mockPrisoner,
     visitType: 'IN_PERSON',
+    prisonCode: 'MDI',
     officialVisitors: [
       {
         firstName: 'John',
         lastName: 'Dasolicitor',
         relationshipToPrisonerDescription: 'Solicitor',
+        relationshipToPrisonerCode: 'SOL',
         prisonerContactId: 111,
+        contactId: 1001,
+        officialVisitorId: 1,
+        assistedVisit: false,
+        leadVisitor: true,
       },
     ],
     socialVisitors: [
@@ -42,7 +48,12 @@ const defaultJourneySession = () => ({
         firstName: 'Jane',
         lastName: 'Dafriend',
         relationshipToPrisonerDescription: 'Friend',
+        relationshipToPrisonerCode: 'FRI',
         prisonerContactId: 222,
+        contactId: 2001,
+        officialVisitorId: 2,
+        assistedVisit: false,
+        leadVisitor: false,
       },
     ],
   } as Partial<OfficialVisitJourney>,
@@ -198,6 +209,52 @@ describe('Equipment handler', () => {
 
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.officialVisitors[0].equipmentNotes).toEqual('note')
+    })
+
+    it('should call updateVisitors service when in amend mode', async () => {
+      const amendJourneySession = () => ({
+        ...defaultJourneySession(),
+        amendVisit: {
+          changePage: 'equipment',
+        },
+      })
+
+      appSetup(amendJourneySession())
+
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/equipment`)
+        .send({ equipment: [{ id: '111', notes: 'laptop and presentation materials' }] })
+        .expect(302)
+        .expect('location', `/manage/amend/1/${journeyId()}`)
+
+      expect(officialVisitsService.updateVisitors).toHaveBeenCalledWith(
+        'MDI',
+        '1',
+        {
+          officialVisitors: [
+            {
+              officialVisitorId: 1,
+              visitorTypeCode: 'CONTACT',
+              contactId: 1001,
+              prisonerContactId: 111,
+              relationshipCode: 'SOL',
+              leadVisitor: true,
+              assistedVisit: false,
+              visitorEquipment: { description: 'laptop and presentation materials' },
+            },
+            {
+              officialVisitorId: 2,
+              visitorTypeCode: 'CONTACT',
+              contactId: 2001,
+              prisonerContactId: 222,
+              relationshipCode: 'FRI',
+              leadVisitor: false,
+              assistedVisit: false,
+            },
+          ],
+        },
+        user,
+      )
     })
   })
 })

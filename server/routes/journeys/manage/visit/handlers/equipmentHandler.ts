@@ -1,14 +1,15 @@
 import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
-import { schema } from './equipmentSchema'
-import { ApprovedContact, ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
+import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import { ApprovedContact, ContactRelationship, OfficialVisitor } from '../../../../../@types/officialVisitsApi/types'
 import { getBackLink } from './utils'
+import { schema } from './equipmentSchema'
 
 export default class EquipmentHandler implements PageHandler {
   public PAGE_NAME = Page.EQUIPMENT_PAGE
 
-  constructor() {}
+  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   public GET = async (req: Request, res: Response) => {
     const contacts = [
@@ -33,7 +34,25 @@ export default class EquipmentHandler implements PageHandler {
     req.session.journey.officialVisit.equipmentPageCompleted = true
 
     if (res.locals.mode === 'amend') {
-      // TODO: API call for amending visitors
+      const allVisitors = [...officialVisit.officialVisitors, ...(officialVisit.socialVisitors || [])]
+      const officialVisitors: OfficialVisitor[] = allVisitors.map(visitor => ({
+        officialVisitorId: visitor.officialVisitorId,
+        visitorTypeCode: 'CONTACT',
+        contactId: visitor.contactId,
+        prisonerContactId: visitor.prisonerContactId,
+        relationshipCode: visitor.relationshipToPrisonerCode,
+        leadVisitor: visitor.leadVisitor,
+        assistedVisit: visitor.assistedVisit,
+        assistedNotes: visitor.assistanceNotes,
+        ...(visitor.equipmentNotes ? { visitorEquipment: { description: visitor.equipmentNotes } } : {}),
+      }))
+
+      await this.officialVisitsService.updateVisitors(
+        officialVisit.prisonCode,
+        req.params.ovId,
+        { officialVisitors },
+        res.locals.user,
+      )
       req.flash('updateVerb', 'amended')
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }

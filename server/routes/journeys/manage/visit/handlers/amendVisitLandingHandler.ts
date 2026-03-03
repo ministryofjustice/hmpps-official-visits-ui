@@ -20,10 +20,11 @@ export default class AmendVisitLandingHandler implements PageHandler {
 
   mapVisitorToJourneyVisitor = (visitor: OfficialVisit['officialVisitors'][0]) => {
     return {
+      officialVisitorId: visitor.officialVisitorId,
       assistanceNotes: visitor.assistanceNotes,
       assistedVisit: visitor.assistedVisit,
       contactId: visitor.contactId,
-      equipment: !!visitor.visitorEquipment,
+      equipment: !!visitor.visitorEquipment?.description,
       equipmentNotes: visitor.visitorEquipment?.description,
       firstName: visitor.firstName,
       lastName: visitor.lastName,

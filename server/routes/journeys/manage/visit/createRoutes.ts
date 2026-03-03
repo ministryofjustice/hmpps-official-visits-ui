@@ -70,9 +70,9 @@ export default function CreateRoutes({
   route(`/review-scheduled-events`, new ReviewScheduledEventsHandler(officialVisitsService))
   route(`/select-official-visitors`, new SelectOfficialVisitorsHandler(officialVisitsService))
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService))
-  route('/assistance-required', new AssistanceRequiredHandler())
-  route('/equipment', new EquipmentHandler())
-  route('/comments', new CommentsHandler())
+  route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
+  route('/equipment', new EquipmentHandler(officialVisitsService))
+  route('/comments', new CommentsHandler(officialVisitsService))
   route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService))
   route('/cancellation-check', new CancellationCheckHandler())
 

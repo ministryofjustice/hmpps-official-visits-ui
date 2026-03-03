@@ -62,8 +62,26 @@ export default class TimeSlotHandler implements PageHandler {
 
   public POST = async (req: Request, res: Response) => {
     if (res.locals.mode === 'amend') {
-      // TODO - Call update endpoint
-      req.flash('updateVerb', 'amended')
+      const selectedSlot = req.session.journey.officialVisit.availableSlots.find(
+        slot => slot.visitSlotId === req.body.visitSlotId,
+      )
+
+      if (selectedSlot) {
+        await this.officialVisitsService.updateVisitTypeAndSlot(
+          req.session.journey.officialVisit.prisonCode,
+          req.params.ovId,
+          {
+            prisonVisitSlotId: selectedSlot.visitSlotId,
+            visitDate: selectedSlot.visitDate,
+            startTime: selectedSlot.startTime,
+            endTime: selectedSlot.endTime,
+            dpsLocationId: selectedSlot.dpsLocationId,
+            visitTypeCode: req.session.journey.officialVisit.visitType,
+          },
+          res.locals.user,
+        )
+        req.flash('updateVerb', 'amended')
+      }
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }
 

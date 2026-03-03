@@ -14,6 +14,9 @@ import {
   FindByCriteria,
   FindByCriteriaResults,
   OfficialVisit,
+  OfficialVisitUpdateCommentRequest,
+  OfficialVisitUpdateSlotRequest,
+  OfficialVisitUpdateVisitorsRequest,
   ReferenceDataItem,
   TimeSlot,
   TimeSlotSummary,
@@ -200,6 +203,32 @@ export default class OfficialVisitsApiClient extends RestClient {
 
   async createTimeSlot(body: CreateTimeSlotRequest, user: HmppsUser): Promise<TimeSlot> {
     return this.post<TimeSlot>({ path: `/admin/time-slot`, data: body }, asSystem(user.username))
+  }
+
+  async updateVisitors(prisonCode: string, visitId: string, body: OfficialVisitUpdateVisitorsRequest, user: HmppsUser) {
+    return this.put(
+      { path: `/official-visit/prison/${prisonCode}/id/${visitId}/visitors`, data: body },
+      asSystem(user.username),
+    )
+  }
+
+  async updateVisitTypeAndSlot(
+    prisonCode: string,
+    visitId: string,
+    body: OfficialVisitUpdateSlotRequest,
+    user: HmppsUser,
+  ) {
+    return this.put(
+      { path: `/official-visit/prison/${prisonCode}/id/${visitId}/update-type-and-slot`, data: body },
+      asSystem(user.username),
+    )
+  }
+
+  async updateComments(prisonCode: string, visitId: string, body: OfficialVisitUpdateCommentRequest, user: HmppsUser) {
+    return this.put(
+      { path: `/official-visit/prison/${prisonCode}/id/${visitId}/update-comments`, data: body },
+      asSystem(user.username),
+    )
   }
 
   async getPrisonTimeSlotById(prisonTimeSlotId: number, user: HmppsUser): Promise<TimeSlot> {
