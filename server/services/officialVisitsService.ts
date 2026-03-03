@@ -11,6 +11,7 @@ import {
   OfficialVisit,
   OfficialVisitor,
   SearchLevelType,
+  UpdateTimeSlotRequest,
   VisitorEquipment,
   VisitorType,
 } from '../@types/officialVisitsApi/types'
@@ -122,5 +123,15 @@ export default class OfficialVisitsService {
   public async createTimeSlot(body: CreateTimeSlotRequest, user: HmppsUser) {
     logger.info(`create a time slot called by ${user.userId} ${user.displayName}`)
     return this.officialVisitsApiClient.createTimeSlot(body, user)
+  }
+
+  public async getPrisonTimeSlotById(prisonTimeSlotId: number, user: HmppsUser) {
+    logger.info(`Get prison time slot ${prisonTimeSlotId} called by ${user.userId}`)
+    return this.officialVisitsApiClient.getPrisonTimeSlotById(prisonTimeSlotId, user)
+  }
+
+  public async updateTimeSlot(prisonTimeSlotId: number, body: UpdateTimeSlotRequest, user: HmppsUser) {
+    logger.info(`Update time slot ${prisonTimeSlotId} called by ${user.userId}`)
+    return this.officialVisitsApiClient.updateTimeSlot(prisonTimeSlotId, body, user)
   }
 }

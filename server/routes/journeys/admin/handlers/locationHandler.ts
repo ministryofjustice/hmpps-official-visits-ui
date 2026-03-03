@@ -16,12 +16,11 @@ export default class LocationHandler implements PageHandler {
     const allSlots = await this.officialVisitsService.getVisitSlotsAtPrison(prisonCode, user)
     const matchingTimeSlot = allSlots?.timeSlots?.filter(slot => slot.timeSlot.prisonTimeSlotId === timeSlotId)
 
-    // TODO: Check here that we have exactly one time slot - maybe someone else removed it?
-    const timeSlot = matchingTimeSlot[0]
+    const timeSlot = matchingTimeSlot?.[0]
 
     res.render('pages/admin/locations', {
-      timeSlot: timeSlot.timeSlot,
-      visitSlots: timeSlot.visitSlots,
+      timeSlot: timeSlot?.timeSlot,
+      visitSlots: timeSlot?.visitSlots,
     })
   }
 }

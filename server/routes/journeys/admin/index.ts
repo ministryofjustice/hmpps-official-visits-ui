@@ -7,6 +7,7 @@ import DayHandler from './handlers/dayHandler'
 import LocationHandler from './handlers/locationHandler'
 import VisitSlotHandler from './handlers/visitSlotHandler'
 import NewTimeSlotHandler from './handlers/newTimeSlotHandler'
+import EditTimeSlotHandler from './handlers/editTimeSlotHandler'
 
 export default function Index({ auditService, officialVisitsService }: Services): Router {
   const router = Router({ mergeParams: true })
@@ -18,7 +19,8 @@ export default function Index({ auditService, officialVisitsService }: Services)
 
   route('/days', new DayHandler(officialVisitsService))
   route('/locations/time-slot/new', new NewTimeSlotHandler(officialVisitsService))
-  route('/locations/time-slot/:timeSlotId', new LocationHandler(officialVisitsService))
+  route('/locations/time-slot/:timeSlotId/edit', new EditTimeSlotHandler(officialVisitsService))
+  route('/locations/time-slot/:timeSlotId/location', new LocationHandler(officialVisitsService))
   route('/locations/time-slot/:timeSlotId/visit-slot/:visitSlotId', new VisitSlotHandler(officialVisitsService))
 
   return router
