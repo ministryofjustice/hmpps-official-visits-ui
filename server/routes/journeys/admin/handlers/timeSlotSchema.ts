@@ -46,7 +46,6 @@ export const schema = z
     // Deterministic ordering of errors is important. We add issues in the sequence below.
 
     // 1) Start date: required -> invalid -> past
-    const timeSlotIdParam = data.timeSlotId
     const rawStart = data.startDate
     const startIsMissing = typeof rawStart === 'undefined' || rawStart === null || rawStart === ''
     const startIsDate = rawStart instanceof Date && isValidDate(rawStart)
@@ -58,8 +57,7 @@ export const schema = z
     } else {
       const startDay = startOfDayLocal(rawStart as Date)
       const today = startOfDayLocal(new Date())
-      // Only check if start date is in the past if it's a new time slot (no timeSlotIdParam) - for edits we allow past start dates since they may be existing slots that started in the past
-      if (!timeSlotIdParam && startDay.getTime() < today.getTime()) {
+      if (startDay.getTime() < today.getTime()) {
         ctx.addIssue({ code: 'custom', path: ['startDate'], message: ERROR_START_DATE_PAST })
       }
     }
@@ -76,7 +74,7 @@ export const schema = z
       const expiryDay = startOfDayLocal(rawExpiry as Date)
       const today = startOfDayLocal(new Date())
       // Only check if expiry date is in the past if it's a new time slot (no timeSlotIdParam) - for edits we allow past expiry dates since they may be existing slots that expired in the past
-      if (!timeSlotIdParam && expiryDay.getTime() < today.getTime()) {
+      if (expiryDay.getTime() < today.getTime()) {
         ctx.addIssue({ code: 'custom', path: ['expiryDate'], message: ERROR_EXPIRY_DATE_PAST })
       }
     }

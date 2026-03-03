@@ -14,7 +14,6 @@ test.describe('Admin add time slot', () => {
     await prisonApi.stubGetPrisonerImage()
     await manageUsersApi.stubGetByUsername()
     await officialVisitsApi.stubCreateTimeSlot({})
-    // stub admin time slot summary (days page) with a MON slot so the Monday tab is rendered
     await officialVisitsApi.stubTimeSlotSummary({
       prisonCode: 'MDI',
       prisonName: 'Moorland',
