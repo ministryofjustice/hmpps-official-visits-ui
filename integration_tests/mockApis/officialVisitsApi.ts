@@ -53,4 +53,40 @@ export default {
     simplePostApiMock(`/official-visits-api/official-visit/prison/LEI/id/\\d+/complete`, response),
   stubCancelVisit: (response: RecursivePartial<CancelTypeRequest>) =>
     simplePostApiMock(`/official-visits-api/official-visit/prison/LEI/id/\\d+/cancel`, response),
+  stubUpdateVisitors: (prisonCode: string, visitId: string) =>
+    stubFor({
+      request: {
+        method: 'PUT',
+        urlPattern: `/official-visits-api/official-visit/prison/${prisonCode}/id/${visitId}/visitors`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {},
+      },
+    }),
+  stubUpdateVisitTypeAndSlot: (prisonCode: string, visitId: string) =>
+    stubFor({
+      request: {
+        method: 'PUT',
+        urlPattern: `/official-visits-api/official-visit/prison/${prisonCode}/id/${visitId}/update-type-and-slot`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {},
+      },
+    }),
+  stubUpdateComments: (prisonCode: string, visitId: string) =>
+    stubFor({
+      request: {
+        method: 'PUT',
+        urlPattern: `/official-visits-api/official-visit/prison/${prisonCode}/id/${visitId}/update-comments`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {},
+      },
+    }),
 }
