@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, Page, test } from '@playwright/test'
 import hmppsAuth from '../mockApis/hmppsAuth'
 import { login, resetStubs } from '../testUtils'
 import componentsApi from '../mockApis/componentsApi'
@@ -7,6 +7,15 @@ import manageUsersApi from '../mockApis/manageUsersApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
 import { apiMock, simpleApiMock } from '../testHelpers'
+
+async function loginAsAdmin(page: Page) {
+  await login(page, {
+    name: 'AdminUser',
+    roles: [`ROLE_${AuthorisedRoles.ADMIN}`, `ROLE_${AuthorisedRoles.DEFAULT}`],
+    active: true,
+    authSource: 'nomis',
+  })
+}
 
 test.describe('Admin edit time slot', () => {
   test.beforeEach(async () => {
@@ -53,15 +62,34 @@ test.describe('Admin edit time slot', () => {
   })
 
   test('should allow admin to edit an existing Monday time slot and show success banner', async ({ page }) => {
-    // Login as ADMIN
-    await login(page, {
-      name: 'AdminUser',
-      roles: [`ROLE_${AuthorisedRoles.ADMIN}`, `ROLE_${AuthorisedRoles.DEFAULT}`],
-      active: true,
-      authSource: 'nomis',
-    })
+    await loginAsAdmin(page)
 
-    // Go to admin days page
+    await page.goto('/admin/days')
+
+    const mondayTab = page.getByRole('tab', { name: 'Monday' })
+    if (await mondayTab.count()) {
+      await mondayTab.click()
+    }
+
+    const editLink = page.locator('a[href*="/admin/locations/time-slot/3/edit"]')
+    await expect(editLink).toBeVisible()
+    await editLink.click()
+
+    await expect(page.getByRole('heading', { name: 'Edit a time for Monday' })).toBeVisible()
+
+    await page.fill('input[name="startDate"]', new Date().toISOString().split('T')[0])
+    await page.fill('input[name="startTime-startHour"]', '11')
+    await page.fill('input[name="startTime-startMinute"]', '15')
+    await page.fill('input[name="endTime-endHour"]', '12')
+    await page.fill('input[name="endTime-endMinute"]', '30')
+
+    await Promise.all([page.waitForURL('**/admin/days'), page.getByRole('button', { name: 'Save' }).click()])
+
+    await expect(page.getByText('You have updated a visiting time')).toBeVisible()
+  })
+
+  test('should show validation error when start date is in the past', async ({ page }) => {
+    await loginAsAdmin(page)
     await page.goto('/admin/days')
 
     const mondayTab = page.getByRole('tab', { name: 'Monday' })
@@ -80,8 +108,10 @@ test.describe('Admin edit time slot', () => {
     await page.fill('input[name="endTime-endHour"]', '12')
     await page.fill('input[name="endTime-endMinute"]', '30')
 
-    await Promise.all([page.waitForURL('**/admin/days'), page.getByRole('button', { name: 'Save' }).click()])
+    await page.getByRole('button', { name: 'Save' }).click()
 
-    await expect(page.getByText('You have updated a visiting time')).toBeVisible()
+    await expect(
+      page.getByRole('link', { name: 'Select a date that is today or in the future for the start date' }),
+    ).toBeVisible()
   })
 })
