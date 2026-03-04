@@ -236,7 +236,7 @@ test.describe('Amend official visits', () => {
     expect(await page.getByRole('textbox', { name: 'Prisoner notes' }).textContent()).toEqual('prisoner notes')
 
     // Back should go back to amend overview page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.getByRole('link', { name: 'Change   prisoner notes (' }).click()
 
@@ -270,7 +270,7 @@ test.describe('Amend official visits', () => {
     expect(page.getByRole('radio', { name: 'Video', exact: true })).toBeChecked()
 
     // Back should go back to amend overview page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.getByRole('link', { name: 'Change   visit type (Visit' }).click()
 
@@ -296,7 +296,7 @@ test.describe('Amend official visits', () => {
     expect(page.getByRole('radio', { name: '8am to 5pm First Location' })).toBeChecked()
 
     // Back should go back to visit type page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/visit-type`)
     await page.getByRole('button', { name: 'Continue' }).click()
 
@@ -324,7 +324,7 @@ test.describe('Amend official visits', () => {
     expect(page.getByRole('radio', { name: '8am to 5pm First Location' })).toBeChecked()
 
     // Back should go back to amend overview page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.getByRole('link', { name: 'Change   date of visit (Visit' }).click()
 
@@ -354,7 +354,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to amend overview page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.getByRole('link', { name: 'Add or remove visitors' }).click()
 
@@ -380,7 +380,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to visitors page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/select-official-visitors`)
     await page.goBack()
 
@@ -400,7 +400,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to social visitors page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/select-social-visitors`)
     await page.goBack()
 
@@ -420,7 +420,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to assistance required page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/assistance-required`)
     await page.goBack()
 
@@ -453,7 +453,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to amend overview page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.getByRole('link', { name: 'Add or remove visitors' }).click()
 
@@ -479,7 +479,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to visitors page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/select-official-visitors`)
     await page.goBack()
 
@@ -499,7 +499,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to social visitors page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/select-social-visitors`)
     await page.goBack()
 
@@ -530,7 +530,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to amend visit overview page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.goBack()
 
@@ -557,7 +557,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to amend visit overview page
-    await page.getByRole('link', { name: 'Back' }).click()
+    await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.goBack()
 
@@ -573,7 +573,7 @@ test.describe('Amend official visits', () => {
 
   test('should cancel and return to visit details', async ({ page }) => {
     await login(page)
-    await page.goto(`/manage/amend/1/${journeyId}`)
+    await page.goto(`/manage/amend/1/${journeyId}/?backTo=${btoa('/view/visit/1')}`)
 
     const amendVisitPage = await AmendVisitPage.verifyOnPage(page)
     await amendVisitPage.getCancelButton().click()
