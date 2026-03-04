@@ -1,6 +1,7 @@
 {% extends "govuk/template.njk" %}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 
 {% block head %}
   <link href="{{ '/assets/css/index.css' | assetMap }}" rel="stylesheet"/>
@@ -21,6 +22,12 @@
 {% endblock %}
 
 {% block beforeContent %}
+  {{ govukPhaseBanner({
+    tag: {
+      text: "Beta"
+    },
+    html: 'This is a new service - your <a class="govuk-link" href="mailto:officialvisits-productteam@justice.gov.uk">feedback</a> will help us to improve it. You can find out more on <a class="govuk-link" href="https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx" target="_blank">SharePoint.</a>'
+  }) }}
   {% if backUrl %}
     {{ govukBackLink({
       text: "Back",
