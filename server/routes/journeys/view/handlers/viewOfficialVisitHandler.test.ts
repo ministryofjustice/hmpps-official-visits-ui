@@ -76,14 +76,11 @@ describe('View an official visit', () => {
             '3restrictionsand0alerts',
           )
 
-          expect($('.govuk-link').eq(0).text()).toContain('Cancel visit')
-          expect($('.govuk-link').eq(1).text()).toContain('Complete visit')
+          expect($('.govuk-link:contains("Cancel visit")').attr('href')).toEqual('/view/visit/1/cancel')
+          expect($('.govuk-link:contains("Complete visit")').attr('href')).toEqual('/view/visit/1/complete')
 
-          expect($('.govuk-link').eq(0).attr('href')).toEqual('/view/visit/1/cancel')
-          expect($('.govuk-link').eq(1).attr('href')).toEqual('/view/visit/1/complete')
-
-          expect($('.govuk-button').eq(0).attr('href')).toEqual('/view/visit/1/movement-slip')
-          expect($('.govuk-button').eq(1).attr('href')).toEqual('/manage/amend/1')
+          expect($('.govuk-button[href="/view/visit/1/movement-slip"]').length).toBe(1)
+          expect($('.govuk-button[href="/manage/amend/1"]').length).toBe(1)
 
           expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
           expect(getValueByKey($, 'Time')).toEqual('10:00am to 11:00am (1 hour)')
@@ -205,12 +202,11 @@ describe('View an official visit', () => {
           expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
-          expect($('.govuk-link').eq(0).text()).toContain('Cancel visit')
-          expect($('.govuk-link').eq(1).text()).toContain('Complete visit')
-
-          expect($('.govuk-button').eq(1).attr('href')).toEqual(`/manage/amend/1?backTo=${b64}`)
-          expect($('.govuk-link').eq(0).attr('href')).toEqual(`/view/visit/1/cancel?backTo=${b64}`)
-          expect($('.govuk-link').eq(1).attr('href')).toEqual(`/view/visit/1/complete?backTo=${b64}`)
+          expect($('.govuk-button:contains("Amend visit")').attr('href')).toEqual(`/manage/amend/1?backTo=${b64}`)
+          expect($('.govuk-link:contains("Cancel visit")').attr('href')).toEqual(`/view/visit/1/cancel?backTo=${b64}`)
+          expect($('.govuk-link:contains("Complete visit")').attr('href')).toEqual(
+            `/view/visit/1/complete?backTo=${b64}`,
+          )
         })
     })
 
