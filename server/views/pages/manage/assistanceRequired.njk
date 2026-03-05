@@ -49,7 +49,7 @@
 
         {{ continueCancel({
           stepsChecked: stepsChecked, 
-          continueText: 'Submit' if mode == 'amend' and isChange else 'Continue',
+          continueText: submitAction,
           cancelText: 'Cancel and return to homepage' if mode == 'create' else 'Cancel and return to visit details',
           cancelHref: './' if mode == 'amend'
         })}}

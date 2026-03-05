@@ -6,6 +6,7 @@ import { ApprovedContact, ContactRelationship, VisitorType } from '../../../../.
 import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 import { getBackLink } from './utils'
 import { schema } from './assistanceRequiredSchema'
+import { OfficialVisitJourney } from '../journey'
 
 export default class AssistanceRequiredHandler implements PageHandler {
   public PAGE_NAME = Page.ASSISTANCE_REQUIRED_PAGE
@@ -20,6 +21,9 @@ export default class AssistanceRequiredHandler implements PageHandler {
       ...(req.session.journey.officialVisit.socialVisitors || []),
     ].filter(o => o.prisonerContactId)
 
+    const { officialVisit } = req.session.journey
+    const changeThisPage = req.session.journey.amendVisit?.changePage === 'assistance-required'
+
     res.render('pages/manage/assistanceRequired', {
       contacts,
       backUrl: getBackLink(
@@ -28,7 +32,8 @@ export default class AssistanceRequiredHandler implements PageHandler {
         socialVisitorsPageEnabled(req as Request) ? `select-social-visitors` : `select-official-visitors`,
       ),
       prisoner: req.session.journey.officialVisit.prisoner,
-      isChange: res.locals.mode === 'amend' && req.session.journey.amendVisit?.changePage === 'assistance-required',
+      submitAction:
+        res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit)) ? 'Submit' : 'Continue',
     })
   }
 
@@ -38,7 +43,9 @@ export default class AssistanceRequiredHandler implements PageHandler {
     officialVisit.socialVisitors = getSelected(officialVisit.socialVisitors, req.body as ContactRelationship[])
 
     officialVisit.assistancePageCompleted = true
-    if (res.locals.mode === 'amend' && req.session.journey.amendVisit?.changePage === 'assistance-required') {
+    const changeThisPage = req.session.journey.amendVisit?.changePage === 'assistance-required'
+
+    if (res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit))) {
       const allVisitors = [...officialVisit.officialVisitors, ...(officialVisit.socialVisitors || [])]
       const officialVisitors = allVisitors.map(visitor => ({
         officialVisitorId: visitor.officialVisitorId,
@@ -61,8 +68,12 @@ export default class AssistanceRequiredHandler implements PageHandler {
       req.flash('updateVerb', 'amended')
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }
-    return res.redirect(officialVisit.visitType === 'IN_PERSON' ? `equipment` : `comments`)
+    return res.redirect(equipmentPageEnabled(officialVisit) ? `equipment` : `comments`)
   }
+}
+
+const equipmentPageEnabled = (officialVisit: OfficialVisitJourney) => {
+  return officialVisit.visitType === 'IN_PERSON'
 }
 
 const getSelected = (contacts: ApprovedContact[], body: ContactRelationship[]) => {
