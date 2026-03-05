@@ -65,6 +65,8 @@ generic-service:
   allowlist:
     groups:
       - internal
+      - prisons
+      - private_prisons
 
 generic-prometheus-alerts:
   targetApplication: hmpps-official-visits-ui
