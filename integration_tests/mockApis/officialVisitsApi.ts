@@ -91,7 +91,6 @@ export default {
         jsonBody: {},
       },
     }),
-  // New helper to stub creating a time slot via admin API
   stubCreateTimeSlot: (response: Record<string, unknown> = {}) =>
     simplePostApiMock(`/official-visits-api/admin/time-slot`, response),
 }
