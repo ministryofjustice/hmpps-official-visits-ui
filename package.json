@@ -101,7 +101,7 @@
     "chokidar": "^4.0.3",
     "concurrently": "^9.2.1",
     "dotenv": "^17.2.2",
-    "esbuild": "^0.25.12",
+    "esbuild": "0.27.3",
     "esbuild-plugin-clean": "^1.0.1",
     "esbuild-plugin-copy": "^2.1.1",
     "esbuild-plugin-manifest": "^1.0.5",
