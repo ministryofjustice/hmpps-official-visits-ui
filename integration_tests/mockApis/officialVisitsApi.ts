@@ -27,6 +27,8 @@ export default {
   stubRefData: (group: string, response: ReferenceDataItem[]) =>
     simpleApiMock(`/official-visits-api/reference-data/group/${group}`, response),
   stubAvailableSlots: (response: AvailableSlot[]) => simpleApiMock(`/official-visits-api/available-slots/.*`, response),
+  stubTimeSlotSummary: (response: Record<string, unknown>) =>
+    simpleApiMock(`/official-visits-api/admin/time-slots/prison/.*`, response),
   stubOfficialContacts: (response: ApprovedContact[]) =>
     simpleApiMock(`/official-visits-api/prisoner/.*/approved-relationships\\?relationshipType=O`, response),
   stubSocialContacts: (response: ApprovedContact[]) =>
@@ -89,4 +91,6 @@ export default {
         jsonBody: {},
       },
     }),
+  stubCreateTimeSlot: (response: Record<string, unknown> = {}) =>
+    simplePostApiMock(`/official-visits-api/admin/time-slot`, response),
 }

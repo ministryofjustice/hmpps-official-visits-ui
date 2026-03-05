@@ -90,6 +90,7 @@ describe('EditTimeSlotHandler', () => {
         .send({
           dayCode: 'MON',
           startDate: yesterdayStr,
+          timeSlotId: 1,
           expiryDate: yesterdayStr,
           'startTime-startHour': '09',
           'startTime-startMinute': '00',
@@ -118,6 +119,7 @@ describe('EditTimeSlotHandler', () => {
       return request(app)
         .post('/admin/locations/time-slot/1/edit')
         .send({
+          timeSlotId: 1,
           dayCode: 'DEN', // invalid day code
           startDate: '2055-12-25',
           expiryDate: '2066-12-25',
@@ -143,6 +145,7 @@ describe('EditTimeSlotHandler', () => {
       return request(app)
         .post('/admin/locations/time-slot/1/edit')
         .send({
+          timeSlotId: 1,
           dayCode: 'MON',
           startDate: 'invalid-date',
           expiryDate: 'also-invalid',
@@ -183,6 +186,7 @@ describe('EditTimeSlotHandler', () => {
       return request(app)
         .post('/admin/locations/time-slot/1/edit')
         .send({
+          timeSlotId: 1,
           dayCode: 'MON',
           startDate: '2055-12-25',
           expiryDate: '2066-12-25',

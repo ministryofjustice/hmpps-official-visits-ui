@@ -28,6 +28,10 @@ const VALID_DAY_CODES = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 export const schema = z
   .object({
     startDate: z.any().transform(v => coerceDate(v)),
+    timeSlotId: z
+      .any()
+      .transform(v => coerceInt(v))
+      .optional(), // only available in edit mode, not required and ignored in new time slot creation
     expiryDate: z
       .any()
       .transform(v => coerceDate(v))
@@ -69,6 +73,7 @@ export const schema = z
     } else if (expiryIsDate) {
       const expiryDay = startOfDayLocal(rawExpiry as Date)
       const today = startOfDayLocal(new Date())
+      // Only check if expiry date is in the past if it's a new time slot (no timeSlotIdParam) - for edits we allow past expiry dates since they may be existing slots that expired in the past
       if (expiryDay.getTime() < today.getTime()) {
         ctx.addIssue({ code: 'custom', path: ['expiryDate'], message: ERROR_EXPIRY_DATE_PAST })
       }
