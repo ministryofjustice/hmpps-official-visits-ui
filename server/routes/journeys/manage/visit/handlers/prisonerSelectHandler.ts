@@ -6,6 +6,7 @@ import PersonalRelationshipsService from '../../../../../services/personalRelati
 import { schema } from './prisonerSearchSchema'
 import logger from '../../../../../../logger'
 import { savePrisonerSelection } from '../createJourneyState'
+import OfficialVisitsService from '../../../../../services/officialVisitsService'
 
 export default class PrisonerSelectHandler implements PageHandler {
   public PAGE_NAME = Page.PRISONER_SELECT_PAGE
@@ -15,7 +16,8 @@ export default class PrisonerSelectHandler implements PageHandler {
   constructor(
     private readonly prisonerService: PrisonerService,
     private readonly personalRelationshipsService: PersonalRelationshipsService,
-  ) {}
+    private readonly officialVisitsService: OfficialVisitsService
+  ) { }
 
   public GET = async (req: Request, res: Response) => {
     const prisonerNumber = req.query.prisonerNumber as string
@@ -27,11 +29,20 @@ export default class PrisonerSelectHandler implements PageHandler {
       this.personalRelationshipsService.getPrisonerRestrictions(prisonerNumber, 0, 10, user, true, false),
       this.prisonerService.getPrisonerByPrisonerNumber(prisonerNumber, user),
     ])
+
     const activeRestrictions =
       restrictions?.content?.filter(
         restriction => !restriction.expiryDate || new Date(restriction.expiryDate) >= now,
       ) || []
+
+    const contacts = await this.officialVisitsService.getAllContacts(prisoner.prisonId!, res.locals.user, true, true)
     req.session.journey.officialVisit.searchPage = searchPage
+
+    if (!contacts.length) {
+      req.flash('noActiveApprovedContacts', 'true')
+      return res.redirect('results')
+    }
+
     savePrisonerSelection(req.session.journey, {
       firstName: prisoner.firstName,
       lastName: prisoner.lastName,
