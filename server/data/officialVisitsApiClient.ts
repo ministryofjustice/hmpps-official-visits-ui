@@ -11,6 +11,7 @@ import {
   CreateOfficialVisitRequest,
   CreateOfficialVisitResponse,
   CreateTimeSlotRequest,
+  CreateVisitSlotRequest,
   FindByCriteria,
   FindByCriteriaResults,
   OfficialVisit,
@@ -21,6 +22,7 @@ import {
   TimeSlot,
   TimeSlotSummary,
   UpdateTimeSlotRequest,
+  VisitLocation,
 } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
 
@@ -205,6 +207,13 @@ export default class OfficialVisitsApiClient extends RestClient {
     return this.post<TimeSlot>({ path: `/admin/time-slot`, data: body }, asSystem(user.username))
   }
 
+  async createVisitSlot(prisonTimeSlotId: number, body: CreateVisitSlotRequest, user: HmppsUser): Promise<TimeSlot> {
+    return this.post<TimeSlot>(
+      { path: `/admin/time-slot/${prisonTimeSlotId}/visit-slot`, data: body },
+      asSystem(user.username),
+    )
+  }
+
   async updateVisitors(prisonCode: string, visitId: string, body: OfficialVisitUpdateVisitorsRequest, user: HmppsUser) {
     return this.put(
       { path: `/official-visit/prison/${prisonCode}/id/${visitId}/visitors`, data: body },
@@ -237,5 +246,12 @@ export default class OfficialVisitsApiClient extends RestClient {
 
   async updateTimeSlot(prisonTimeSlotId: number, body: UpdateTimeSlotRequest, user: HmppsUser): Promise<TimeSlot> {
     return this.put<TimeSlot>({ path: `/admin/time-slot/${prisonTimeSlotId}`, data: body }, asSystem(user.username))
+  }
+
+  async getOfficialVisitLocationsAtPrison(prisonCode: string, user: HmppsUser): Promise<VisitLocation[]> {
+    return this.get<VisitLocation[]>(
+      { path: `/admin/prison/${prisonCode}/official-visit-locations` },
+      asSystem(user.username),
+    )
   }
 }

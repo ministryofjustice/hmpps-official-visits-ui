@@ -21,6 +21,7 @@ export default class LocationHandler implements PageHandler {
     res.render('pages/admin/locations', {
       timeSlot: timeSlot?.timeSlot,
       visitSlots: timeSlot?.visitSlots,
+      backUrl: '/admin/days',
     })
   }
 }

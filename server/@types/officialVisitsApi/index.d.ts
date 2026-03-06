@@ -131,62 +131,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/queue-admin/retry-dlq/{dlqName}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    /**
-     * @description Requires one of the following roles:
-     *     * OFFICIAL_VISITS_ADMIN
-     */
-    put: operations['retryDlq']
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/queue-admin/retry-all-dlqs': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put: operations['retryAllDlqs']
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/queue-admin/purge-queue/{queueName}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    /**
-     * @description Requires one of the following roles:
-     *     * OFFICIAL_VISITS_ADMIN
-     */
-    put: operations['purgeQueue']
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   '/official-visit/prison/{prisonCode}/id/{officialVisitId}/visitors': {
     parameters: {
       query?: never
@@ -778,26 +722,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/queue-admin/get-dlq-messages/{dlqName}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * @description Requires one of the following roles:
-     *     * OFFICIAL_VISITS_ADMIN
-     */
-    get: operations['getDlqMessages']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   '/prisoner/{prisonerNumber}/approved-relationships': {
     parameters: {
       query?: never
@@ -886,6 +810,29 @@ export interface paths {
      *     * OFFICIAL_VISITS_ADMIN
      */
     get: operations['getAllTimeSlotsAndVisitSlots']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/admin/prison/{prisonCode}/official-visit-locations': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get all official visit locations at a prison
+     * @description Requires role: ROLE_OFFICIAL_VISITS_ADMIN.
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     */
+    get: operations['getOfficialVisitLocationsAtPrison']
     put?: never
     post?: never
     delete?: never
@@ -1556,14 +1503,6 @@ export interface components {
        * @example X999X
        */
       updateUsername: string
-    }
-    RetryDlqResult: {
-      /** Format: int32 */
-      messagesFoundCount: number
-    }
-    PurgeQueueResult: {
-      /** Format: int32 */
-      messagesFoundCount: number
     }
     /** @description The request body for updating  visitors details for an official visit */
     OfficialVisitUpdateVisitorsRequest: {
@@ -2979,19 +2918,6 @@ export interface components {
        */
       officialVisitId: number
     }
-    DlqMessage: {
-      body: {
-        [key: string]: unknown
-      }
-      messageId: string
-    }
-    GetDlqResult: {
-      /** Format: int32 */
-      messagesFoundCount: number
-      /** Format: int32 */
-      messagesReturnedCount: number
-      messages: components['schemas']['DlqMessage'][]
-    }
     ApprovedContact: {
       /**
        * Format: int64
@@ -3344,6 +3270,19 @@ export interface components {
       /** @description List of visit slots associated with time slot */
       visitSlots: components['schemas']['VisitSlot'][]
     }
+    /** @description Response for a prison visit location (id and name) */
+    VisitLocation: {
+      /**
+       * Format: uuid
+       * @description DPS location id
+       */
+      locationId: string
+      /**
+       * @description The formatted local name of the location
+       * @example Legal visits room 8
+       */
+      locationName?: string
+    }
   }
   responses: never
   parameters: never
@@ -3661,70 +3600,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  retryDlq: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        dlqName: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['RetryDlqResult']
-        }
-      }
-    }
-  }
-  retryAllDlqs: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['RetryDlqResult'][]
-        }
-      }
-    }
-  }
-  purgeQueue: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        queueName: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['PurgeQueueResult']
         }
       }
     }
@@ -4259,6 +4134,15 @@ export interface operations {
       }
       /** @description The prison visit slot did not exist */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Another visit exists with the same offender visit ID */
+      409: {
         headers: {
           [name: string]: unknown
         }
@@ -5123,30 +5007,6 @@ export interface operations {
       }
     }
   }
-  getDlqMessages: {
-    parameters: {
-      query?: {
-        maxMessages?: number
-      }
-      header?: never
-      path: {
-        dlqName: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['GetDlqResult']
-        }
-      }
-    }
-  }
   getApprovedContacts: {
     parameters: {
       query?: {
@@ -5330,6 +5190,47 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['TimeSlotSummary']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getOfficialVisitLocationsAtPrison: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description prison code */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description List of visit locations */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VisitLocation'][]
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */
