@@ -89,6 +89,13 @@ export default class OfficialVisitsService {
     return this.officialVisitsApiClient.getApprovedSocialContacts(prisonId, prisonerNumber, user)
   }
 
+  public async getAllContacts(prisonerNumber: string, user: HmppsUser, approved?: boolean, currentTerm?: boolean) {
+    logger.info(
+      `Get all contacts for prisoner ${prisonerNumber} with filters: approved=${approved}, currentTerm=${currentTerm}`,
+    )
+    return this.officialVisitsApiClient.getAllContacts(prisonerNumber, user, approved, currentTerm)
+  }
+
   public async getAvailableSlots(
     res: Response,
     prisonId: string,

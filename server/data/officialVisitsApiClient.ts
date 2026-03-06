@@ -167,6 +167,28 @@ export default class OfficialVisitsApiClient extends RestClient {
     )
   }
 
+  async getAllContacts(
+    prisonerNumber: string,
+    user: HmppsUser,
+    approved?: boolean,
+    currentTerm?: boolean,
+  ): Promise<components['schemas']['PrisonerContact'][]> {
+    const queryParams = new URLSearchParams()
+    if (approved !== undefined) {
+      queryParams.append('approved', approved.toString())
+    }
+    if (currentTerm !== undefined) {
+      queryParams.append('currentTerm', currentTerm.toString())
+    }
+
+    const queryString = queryParams.toString()
+    const path = queryString
+      ? `/prisoner/${prisonerNumber}/all-contacts?${queryString}`
+      : `/prisoner/${prisonerNumber}/all-contacts`
+
+    return this.get<components['schemas']['PrisonerContact'][]>({ path }, asSystem(user.username))
+  }
+
   async getVisits(
     prisonId: string,
     criteria: FindByCriteria,
