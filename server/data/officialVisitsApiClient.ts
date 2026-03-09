@@ -22,6 +22,7 @@ import {
   TimeSlot,
   TimeSlotSummary,
   UpdateTimeSlotRequest,
+  UpdateVisitSlotRequest,
   VisitLocation,
 } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
@@ -169,6 +170,28 @@ export default class OfficialVisitsApiClient extends RestClient {
     )
   }
 
+  async getAllContacts(
+    prisonerNumber: string,
+    user: HmppsUser,
+    approved?: boolean,
+    currentTerm?: boolean,
+  ): Promise<components['schemas']['PrisonerContact'][]> {
+    const queryParams = new URLSearchParams()
+    if (approved !== undefined) {
+      queryParams.append('approved', approved.toString())
+    }
+    if (currentTerm !== undefined) {
+      queryParams.append('currentTerm', currentTerm.toString())
+    }
+
+    const queryString = queryParams.toString()
+    const path = queryString
+      ? `/prisoner/${prisonerNumber}/all-contacts?${queryString}`
+      : `/prisoner/${prisonerNumber}/all-contacts`
+
+    return this.get<components['schemas']['PrisonerContact'][]>({ path }, asSystem(user.username))
+  }
+
   async getVisits(
     prisonId: string,
     criteria: FindByCriteria,
@@ -212,6 +235,10 @@ export default class OfficialVisitsApiClient extends RestClient {
       { path: `/admin/time-slot/${prisonTimeSlotId}/visit-slot`, data: body },
       asSystem(user.username),
     )
+  }
+
+  async updateVisitSlot(visitSlotId: number, body: UpdateVisitSlotRequest, user: HmppsUser) {
+    return this.put<TimeSlot>({ path: `/admin/visit-slot/id/${visitSlotId}`, data: body }, asSystem(user.username))
   }
 
   async updateVisitors(prisonCode: string, visitId: string, body: OfficialVisitUpdateVisitorsRequest, user: HmppsUser) {

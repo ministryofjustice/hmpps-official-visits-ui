@@ -23,7 +23,7 @@
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
         {% for contact in contacts %}
-          <input type="hidden" id="assistanceRequired[{{loop.index0}}][id]" name="assistanceRequired[{{loop.index0}}][id]" value="{{contact.prisonerContactId}}">
+          <input type="hidden" id="assistanceRequired[{{loop.index0}}][id]" name="assistanceRequired[{{loop.index0}}][id]" value="{{contact.contactId}}">
           {{ govukCheckboxes({
             items: [{
               name: "assistanceRequired[" + loop.index0 + "][selected]",

@@ -137,8 +137,8 @@ test.describe('Create an official visit', () => {
         visitDate: format(new Date(), 'yyyy-MM-dd'),
       } as AvailableSlot,
     ])
-    await officialVisitsApi.stubOfficialContacts(mockOfficialVisitors)
-    await officialVisitsApi.stubSocialContacts(mockSocialVisitors)
+    await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors])
+
     await officialVisitsApi.stubCreateVisit({ officialVisitId: 1 } as OfficialVisit)
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
   })
@@ -190,6 +190,12 @@ test.describe('Create an official visit', () => {
 
     const selectOfficialContactPage = await SelectOfficialContactPage.verifyOnPage(page)
     await checkCancelPage(selectOfficialContactPage, SelectOfficialContactPage.verifyOnPage, 2)
+
+    expect(page.getByRole('checkbox', { name: 'Abe Smith' })).not.toBeChecked()
+    expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
+    // Chris Smith should not be visible as they are not an approved visitor
+    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).not.toBeVisible()
+
     await selectOfficialContactPage.checkContact(0)
     await selectOfficialContactPage.continueButton.click()
 
@@ -201,6 +207,12 @@ test.describe('Create an official visit', () => {
 
     const selectSocialContactPage = await SelectSocialContactPage.verifyOnPage(page)
     await checkCancelPage(selectSocialContactPage, SelectSocialContactPage.verifyOnPage, 2)
+
+    expect(page.getByRole('checkbox', { name: 'Abe Smith' })).not.toBeChecked()
+    expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
+    // Chris Smith should not be visible as they are not an approved visitor
+    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).not.toBeVisible()
+
     await selectSocialContactPage.checkContact(1)
     await selectSocialContactPage.continueButton.click()
 
@@ -263,6 +275,64 @@ test.describe('Create an official visit', () => {
     expect(await confirmationPage.page.locator('#visit-details').innerText()).toEqual(
       'The visit will take place on Thursday, 1 January 2026 from 10am to 11am (1 hour) in First Location.',
     )
+  })
+
+  test('no approved contacts (no CONTACT_AUTHORISER role)', async ({ page }) => {
+    await officialVisitsApi.stubAllContacts([])
+    await login(page)
+    await page.goto(`/manage/create/${uuid}/search`)
+    const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)
+
+    await checkCancelPage(prisonerSearchPage, PrisonerSearchPage.verifyOnPage, 0)
+
+    await prisonerSearchPage.searchBox.fill('John')
+    await prisonerSearchPage.searchButton.click()
+
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/results/)
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/results/)
+
+    const prisonerSearchResultsPage = await PrisonerSearchResultsPage.verifyOnPage(page)
+    await prisonerSearchResultsPage.selectThisPrisoner()
+
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/results/)
+    expect(page.getByRole('region', { name: 'warning: Prisoner has no' })).toBeVisible()
+    expect(page.getByText('You need the Contacts Authoriser in your establishment to add contacts')).toBeVisible()
+  })
+
+  test('no approved contacts (CONTACT_AUTHORISER role)', async ({ page }) => {
+    await officialVisitsApi.stubAllContacts([])
+    await login(page, {
+      name: 'AUser',
+      roles: [
+        `ROLE_${AuthorisedRoles.CONTACTS_AUTHORISER}`,
+        `ROLE_${AuthorisedRoles.DEFAULT}`,
+        `ROLE_${AuthorisedRoles.MANAGE}`,
+      ],
+      active: true,
+      authSource: 'nomis',
+    })
+    await page.goto(`/manage/create/${uuid}/search`)
+    const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)
+
+    await checkCancelPage(prisonerSearchPage, PrisonerSearchPage.verifyOnPage, 0)
+
+    await prisonerSearchPage.searchBox.fill('John')
+    await prisonerSearchPage.searchButton.click()
+
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/results/)
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/results/)
+
+    const prisonerSearchResultsPage = await PrisonerSearchResultsPage.verifyOnPage(page)
+    await prisonerSearchResultsPage.selectThisPrisoner()
+
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/results/)
+    expect(page.getByRole('region', { name: 'warning: Prisoner has no' })).toBeVisible()
+    expect(page.getByRole('link', { name: 'View and add contacts' })).toBeVisible()
+
+    const href = await page.getByRole('link', { name: 'View and add contacts' }).getAttribute('href')
+    expect(href).toMatch(/https:\/\/contacts-dev.hmpps.service.justice.gov.uk\/prisoner\/A1111AA\/contacts\/list/)
   })
 })
 

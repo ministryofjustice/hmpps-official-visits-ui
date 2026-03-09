@@ -43,9 +43,9 @@ export const schema = async (req: Request) => {
       ]
 
       return contacts.map(contact => {
-        const formContact = equipment.find(o => Number(o.id) === contact.prisonerContactId)
+        const formContact = equipment.find(o => Number(o.id) === contact.contactId)
         return {
-          prisonerContactId: contact.prisonerContactId,
+          contactId: contact.contactId,
           equipmentNotes: formContact?.notes,
           equipment: !!formContact,
         } as ContactRelationship

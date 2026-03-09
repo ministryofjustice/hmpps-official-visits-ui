@@ -51,7 +51,6 @@ describe('NewVisitSlotHandler', () => {
       expect(res.text).toContain(
         'Add a new location and location capacity. For video visits location capacities should',
       )
-      expect(res.text).toContain('Capacity')
       expect(res.text).toContain('Maximum adults capacity')
       expect(res.text).toContain('Number of people that can be in the room')
       expect(res.text).toContain('Maximum groups capacity')

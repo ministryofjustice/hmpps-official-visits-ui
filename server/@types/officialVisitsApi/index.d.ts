@@ -731,12 +731,36 @@ export interface paths {
     }
     /**
      * Get the approved contacts for a prisoner for official or social visits
+     * @deprecated
      * @description Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
      *     * ROLE_OFFICIAL_VISITS__R
      *     * ROLE_OFFICIAL_VISITS__RW
      */
     get: operations['getApprovedContacts']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/prisoner/{prisonerNumber}/all-contacts': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get all of the available contacts for a prisoner for official visits
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS__RW
+     */
+    get: operations['getAllContacts']
     put?: never
     post?: never
     delete?: never
@@ -3023,6 +3047,100 @@ export interface components {
       /** Format: int32 */
       totalExpired: number
     }
+    PrisonerContact: {
+      /**
+       * Format: int64
+       * @description The prisoner contact number
+       * @example 1
+       */
+      prisonerContactId: number
+      /**
+       * Format: int64
+       * @description The unique identifier for the prisoner contact
+       * @example 1
+       */
+      contactId: number
+      /** @description Prisoner number (NOMS ID) */
+      prisonerNumber: string
+      /** @description The last name of the contact */
+      lastName: string
+      /** @description The first name of the contact */
+      firstName: string
+      /** @description Coded value indicating either a social or official contact */
+      relationshipTypeCode: string
+      /** @description Relationship type Description */
+      relationshipTypeDescription: string
+      /** @description The relationship to the prisoner. A code from SOCIAL_RELATIONSHIP or OFFICIAL_RELATIONSHIP reference data groups depending on the relationship type. */
+      relationshipToPrisonerCode: string
+      /** @description Relationship type Description */
+      relationshipToPrisonerDescription: string
+      /** @description Indicates whether the contact is an approved visitor */
+      isApprovedVisitor: boolean
+      /** @description Is this contact the prisoner's next of kin? */
+      isNextOfKin: boolean
+      /** @description Is this contact the prisoner's emergency contact? */
+      isEmergencyContact: boolean
+      /** @description Is this prisoner's contact relationship active? */
+      isRelationshipActive: boolean
+      /** @description Is this relationship active for the current booking? */
+      currentTerm: boolean
+      /** @description Whether the contact is a staff member */
+      isStaff: boolean
+      /** @description Restriction Summary */
+      restrictionSummary: components['schemas']['RestrictionsSummary']
+      /** @description The title code for the contact */
+      titleCode?: string
+      /** @description The description of the title code, if present */
+      titleDescription?: string
+      /** @description The middle names of the contact, if any */
+      middleNames?: string
+      /**
+       * Format: date
+       * @description The date of birth of the contact
+       */
+      dateOfBirth?: string
+      /**
+       * Format: date
+       * @description The date the contact deceased, if known
+       */
+      deceasedDate?: string
+      /** @description Flat number in the address, if any */
+      flat?: string
+      /** @description Property name or number */
+      property?: string
+      /** @description Street Name */
+      street?: string
+      /** @description Area or locality, if any */
+      area?: string
+      /** @description City code */
+      cityCode?: string
+      /** @description The description of city code */
+      cityDescription?: string
+      /** @description Country code */
+      countyCode?: string
+      /** @description The description of county code */
+      countyDescription?: string
+      /** @description Postal code */
+      postcode?: string
+      /** @description Country Code */
+      countryCode?: string
+      /** @description Flag to indicate whether this address indicates no fixed address */
+      countryDescription?: string
+      /** @description Flag to indicate whether this address indicates no fixed address */
+      noFixedAddress?: boolean
+      /** @description If true this address should be considered as the primary residential address */
+      primaryAddress?: boolean
+      /** @description If true this address should be considered for sending mail to */
+      mailAddress?: boolean
+      /** @description Type of the latest phone number */
+      phoneType?: string
+      /** @description Description of the type of the latest phone number */
+      phoneTypeDescription?: string
+      /** @description The latest phone number, if there are any */
+      phoneNumber?: string
+      /** @description The extension number of the latest phone number */
+      extNumber?: string
+    }
     OfficialVisitDetails: {
       /**
        * Format: int64
@@ -5050,6 +5168,51 @@ export interface operations {
       }
       /** @description The prisoner was not found. */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getAllContacts: {
+    parameters: {
+      query?: {
+        /** @description Restricts to approved only contacts when true */
+        approved?: boolean
+        /** @description Restricts to current term only contacts when true */
+        currentTerm?: boolean
+      }
+      header?: never
+      path: {
+        prisonerNumber: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The contacts for the prisoner */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PrisonerContact'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
         headers: {
           [name: string]: unknown
         }

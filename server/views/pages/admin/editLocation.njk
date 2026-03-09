@@ -1,0 +1,87 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "partials/admin/translateDay.njk" import translateDay %}
+
+{% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <span class="govuk-hint">Admin</span>
+        <h1 class="govuk-heading-l">Edit location and capacities
+            for {{ translateDay(timeSlot.dayCode) }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
+        <p class="govuk-body">Make changes to the location or location capacity. For video visits location capacities should be
+            set to 0.</p>
+
+        <form method="POST">
+            <div class="govuk-grid-row govuk-body">
+                <div class="govuk-grid-column-two-thirds">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                    <input type="hidden" name="dpsLocationId" value="{{ visitSlot.dpsLocationId }}" />
+                    <h2>Visit location {{ visitSlot.locationDescription }}</h2>
+
+                    {{ govukInput({
+                        id: "maxAdults",
+                        name: "maxAdults",
+                        label: {
+                            text: "Maximum adults capacity",
+                            classes: "govuk-!-font-weight-bold"
+                        },
+                        hint: {
+                            text: "Number of people that can be in the room"
+                        },
+                        classes: "govuk-input--width-4",
+                        inputmode: "numeric",
+                        autocomplete: "off",
+                        errorMessage: validationErrors | findError('maxAdults'),
+                        value: formResponses.maxAdults or visitSlot.maxAdults
+                    }) }}
+
+                    {{ govukInput({
+                        id: "maxGroups",
+                        name: "maxGroups",
+                        label: {
+                            text: "Maximum groups capacity",
+                            classes: "govuk-!-font-weight-bold"
+                        },
+                        hint: {
+                            text: "Number of separate groups (visits)"
+                        },
+                        classes: "govuk-input--width-4",
+                        inputmode: "numeric",
+                        autocomplete: "off",
+                        errorMessage: validationErrors | findError('maxGroups'),
+                        value: formResponses.maxGroups or visitSlot.maxGroups
+                    }) }}
+
+                    {{ govukInput({
+                        id: "maxVideo",
+                        name: "maxVideo",
+                        label: {
+                            text: "Maximum video visits capacity",
+                            classes: "govuk-!-font-weight-bold"
+                        },
+                        hint: {
+                            text: "Total number of video visit you can book for this location"
+                        },
+                        classes: "govuk-input--width-4",
+                        inputmode: "numeric",
+                        autocomplete: "off",
+                        errorMessage: validationErrors | findError('maxVideo'),
+                        value: formResponses.maxVideo or visitSlot.maxVideo
+                    }) }}
+
+                    <div class="govuk-button-group">
+                        {{ govukButton({
+                            text: "Save",
+                            classes: "govuk-!-margin-bottom-0",
+                            preventDoubleClick: true
+                        }) }}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

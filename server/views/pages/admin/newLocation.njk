@@ -27,8 +27,6 @@
                         items: locations | locationsToOptions | addSelectValue('', 'Select a location') | sort(false, false, 'text') | setSelected(formResponses.location or filter.location or '')
                     }) }}
 
-                    <h2 class="govuk-heading-m">Capacity</h2>
-
                     {{ govukInput({
                         id: "maxAdults",
                         name: "maxAdults",

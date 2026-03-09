@@ -7,6 +7,7 @@ import { JourneyVisitor } from '../journey'
 import { recallContacts, saveVisitors } from '../createJourneyState'
 import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 import { getBackLink } from './utils'
+import { HmppsUser } from '../../../../../interfaces/hmppsUser'
 
 export default class SelectOfficialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_OFFICIAL_VISITORS_PAGE
@@ -15,42 +16,43 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
 
   BODY = schema
 
+  private getSelectableContacts = async (
+    prisonerNumber: string,
+    user: HmppsUser,
+    contactsOnVisit: JourneyVisitor[],
+  ) => {
+    const allContacts = await this.officialVisitsService.getAllOfficialContacts(prisonerNumber, user, undefined, true)
+
+    return allContacts.filter(o => o.isApprovedVisitor || contactsOnVisit?.some(v => v.contactId === o.contactId))
+  }
+
   public GET = async (req: Request, res: Response) => {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
-    const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
+    const { prisonerNumber } = req.session.journey.officialVisit.prisoner
 
-    // Get the prisoner's list of approved, official contacts
-    const approvedOfficialContacts = await this.officialVisitsService.getApprovedOfficialContacts(
-      prisonCode,
-      prisonerNumber,
-      res.locals.user,
-    )
+    const journeyVisitors = req.session.journey.officialVisit.officialVisitors || []
+    const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
 
     // Get the approved official contacts who are already selected for this visit from session data
-    const selectedContacts =
-      res.locals.formResponses?.selected ||
-      req.session.journey.officialVisit.officialVisitors?.map(v => v.prisonerContactId) ||
-      []
+    const selectedContacts = res.locals.formResponses?.selected || journeyVisitors?.map(v => v.contactId) || []
 
     // Show the list and prefill the selected checkboxes for official visitors
     res.render('pages/manage/selectOfficialVisitors', {
-      contacts: recallContacts(req.session.journey, 'O', approvedOfficialContacts),
+      contacts: recallContacts(req.session.journey, 'O', selectableContacts),
       selectedContacts,
-      backUrl: getBackLink(req, res, `select-official-visitors`),
+      backUrl: getBackLink(req, res, `time-slot`),
       prisoner: req.session.journey.officialVisit.prisoner,
     })
   }
 
   public POST = async (req: Request<unknown, SchemaType>, res: Response) => {
     // Use the prison and prisoner details from the session
-    const { prisonCode, prisonerNumber } = req.session.journey.officialVisit.prisoner
+    const { prisonerNumber } = req.session.journey.officialVisit.prisoner
     const selected: string[] = Array.isArray(req.body.selected) ? req.body.selected : []
 
-    const allApprovedOfficialContacts = recallContacts(
-      req.session.journey,
-      'O',
-      await this.officialVisitsService.getApprovedOfficialContacts(prisonCode, prisonerNumber, res.locals.user),
-    )
+    const journeyVisitors = req.session.journey.officialVisit.officialVisitors || []
+    const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
+    const officialContacts = recallContacts(req.session.journey, 'O', selectableContacts)
 
     // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Need to check against the time slot selected in the session
 
@@ -59,13 +61,9 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       req.session.journey,
       'O',
       selected
-        .map((o: string) => {
-          const contact = allApprovedOfficialContacts?.find(c => c.prisonerContactId === Number(o))
-          return contact ? { ...contact, leadVisitor: false } : undefined
-        })
+        .map((o: string) => officialContacts?.find(c => c.contactId === Number(o)))
         .filter((o: JourneyVisitor) => o),
     )
-
     return res.redirect(socialVisitorsPageEnabled(req as Request) ? `select-social-visitors` : `assistance-required`)
   }
 }

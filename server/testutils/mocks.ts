@@ -5,6 +5,7 @@ import {
   FindByCriteriaResults,
   FindByCriteriaVisit,
   OfficialVisit,
+  TimeSlotSummary,
 } from '../@types/officialVisitsApi/types'
 import { PrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
 import { PrisonerScheduledEvents, ScheduledEvent } from '../@types/activitiesApi/types'
@@ -129,7 +130,7 @@ export const contactRestrictionSummary = {
 export const mockOfficialVisitors = [
   {
     prisonerContactId: 1,
-    contactId: 1,
+    contactId: 101,
     prisonerNumber: 'A1337AA',
     lastName: 'Smith',
     firstName: 'Abe',
@@ -153,7 +154,7 @@ export const mockOfficialVisitors = [
   },
   {
     prisonerContactId: 2,
-    contactId: 2,
+    contactId: 102,
     prisonerNumber: 'A1337AA',
     lastName: 'Smith',
     firstName: 'Bertie',
@@ -177,7 +178,7 @@ export const mockOfficialVisitors = [
   },
   {
     prisonerContactId: 3,
-    contactId: 3,
+    contactId: 103,
     prisonerNumber: 'A1337AA',
     lastName: 'Smith',
     firstName: 'Chris',
@@ -185,7 +186,7 @@ export const mockOfficialVisitors = [
     relationshipTypeDescription: 'Official',
     relationshipToPrisonerCode: 'SOC',
     relationshipToPrisonerDescription: 'Social worker',
-    isApprovedVisitor: true,
+    isApprovedVisitor: false,
     isNextOfKin: false,
     isEmergencyContact: false,
     isRelationshipActive: true,
@@ -204,7 +205,7 @@ export const mockOfficialVisitors = [
 export const mockSocialVisitors = [
   {
     prisonerContactId: 1,
-    contactId: 1,
+    contactId: 201,
     prisonerNumber: 'A1337AA',
     lastName: 'Smith',
     firstName: 'Abe',
@@ -228,7 +229,7 @@ export const mockSocialVisitors = [
   },
   {
     prisonerContactId: 2,
-    contactId: 2,
+    contactId: 202,
     prisonerNumber: 'A1337AA',
     lastName: 'Smith',
     firstName: 'Bertie',
@@ -237,6 +238,30 @@ export const mockSocialVisitors = [
     relationshipToPrisonerCode: 'BRO',
     relationshipToPrisonerDescription: 'Brother',
     isApprovedVisitor: true,
+    isNextOfKin: false,
+    isEmergencyContact: false,
+    isRelationshipActive: true,
+    currentTerm: true,
+    isStaff: false,
+    restrictionSummary: contactRestrictionSummary,
+    dateOfBirth: '2006-01-01',
+    street: '27 Acorn Road',
+    area: 'Bushby',
+    postcode: 'LE4 4NH',
+    noFixedAddress: false,
+    primaryAddress: true,
+  },
+  {
+    prisonerContactId: 3,
+    contactId: 203,
+    prisonerNumber: 'A1337AA',
+    lastName: 'Smith',
+    firstName: 'Chris',
+    relationshipTypeCode: 'S',
+    relationshipTypeDescription: 'Social',
+    relationshipToPrisonerCode: 'BRO',
+    relationshipToPrisonerDescription: 'Brother',
+    isApprovedVisitor: false,
     isNextOfKin: false,
     isEmergencyContact: false,
     isRelationshipActive: true,
@@ -406,3 +431,52 @@ export const mockUser = {
   userId: '',
   username: 'USERNAME_GEN',
 } as User
+
+export const allSlots: TimeSlotSummary = {
+  prisonCode: '',
+  prisonName: '',
+  timeSlots: [
+    {
+      timeSlot: {
+        dayCode: 'MON',
+        prisonTimeSlotId: 1,
+        startTime: '09:00',
+        endTime: '10:00',
+        effectiveDate: '2025-01-01',
+        expiryDate: '2056-12-31',
+        prisonCode: 'MDI',
+        createdBy: 'BP',
+        createdTime: '2025-01-01T09:00:00',
+      },
+      visitSlots: [],
+    },
+    {
+      timeSlot: {
+        dayCode: 'TUE',
+        prisonTimeSlotId: 2,
+        startTime: '10:00',
+        endTime: '11:00',
+        effectiveDate: '2025-01-02',
+        expiryDate: '2056-12-31',
+        prisonCode: 'MDI',
+        createdBy: 'BP',
+        createdTime: '2025-01-01T09:00:00',
+      },
+      visitSlots: [],
+    },
+    {
+      timeSlot: {
+        dayCode: 'MON',
+        prisonTimeSlotId: 3,
+        startTime: '11:00',
+        endTime: '12:00',
+        effectiveDate: '2025-01-03',
+        expiryDate: '2056-12-31',
+        prisonCode: 'MDI',
+        createdBy: 'BP',
+        createdTime: '2025-01-01T09:00:00',
+      },
+      visitSlots: [],
+    },
+  ],
+}

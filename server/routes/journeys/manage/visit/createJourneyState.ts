@@ -84,7 +84,7 @@ export function recallContacts(journey: Journey, relationshipType: 'O' | 'S', co
   const existing =
     relationshipType === 'O' ? journey.officialVisit.officialVisitors : journey.officialVisit.socialVisitors
   return contacts.map(contact => {
-    const existingContact = (existing || []).find(v => v.prisonerContactId === contact.prisonerContactId)
+    const existingContact = (existing || []).find(v => v.contactId === contact.contactId)
     return {
       ...contact,
       assistanceNotes: existingContact?.assistanceNotes,
@@ -100,6 +100,10 @@ export function recallContacts(journey: Journey, relationshipType: 'O' | 'S', co
  */
 function resetLaterPages(journey: Journey, page: Page) {
   const pageIndex = pageData.findIndex(p => p.page === page) + 1
+  if (!pageIndex) {
+    // All defined pages would get cleared if the page isn't found
+    return
+  }
   pageData.slice(pageIndex).forEach(p => {
     p.keys.forEach(key => {
       delete journey.officialVisit[key]

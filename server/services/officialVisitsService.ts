@@ -30,12 +30,6 @@ export default class OfficialVisitsService {
     return this.officialVisitsApiClient.getOfficialVisitById(prisonCode, visitId, user)
   }
 
-  public visitIsAmendable(date: Date, startTime: Date, visitStatusCode: string) {
-    // TODO: Populate the rules here
-    logger.info(`Just using vars ${date}, ${startTime}, ${visitStatusCode}`)
-    return true
-  }
-
   public async createVisit(sessionVisit: OfficialVisitJourney, user: HmppsUser): Promise<CreateOfficialVisitResponse> {
     // Populate the create visit request from the session object
     const request = {
@@ -50,7 +44,7 @@ export default class OfficialVisitsService {
       staffNotes: sessionVisit.staffNotes, // Not supplied by UI journey yet
       prisonerNotes: sessionVisit.prisonerNotes,
       searchTypeCode: 'FULL' as SearchLevelType, // Not supplied by UI journey yet
-      officialVisitors: [...sessionVisit.officialVisitors, ...sessionVisit.socialVisitors].map(o => ({
+      officialVisitors: [...(sessionVisit.officialVisitors || []), ...(sessionVisit.socialVisitors || [])].map(o => ({
         visitorTypeCode: 'CONTACT' as VisitorType,
         contactId: o.contactId,
         prisonerContactId: o.prisonerContactId,
@@ -69,21 +63,35 @@ export default class OfficialVisitsService {
     return this.officialVisitsApiClient.createOfficialVisit(sessionVisit.prisonCode, request, user)
   }
 
-  public async amendVisit(sessionVisit: OfficialVisitJourney, user: HmppsUser) {
-    logger.info(`Just using vars ${JSON.stringify(sessionVisit)}, ${JSON.stringify(user)}`)
-    // TODO: Map the journey to a VisitAmendRequest, call the service amend, and return the amended visit
-  }
-
   public async getReferenceData(res: Response, code: components['schemas']['ReferenceDataGroup']) {
     return this.officialVisitsApiClient.getReferenceData(code, res.locals.user)
   }
 
-  public async getApprovedOfficialContacts(prisonId: string, prisonerNumber: string, user: HmppsUser) {
-    return this.officialVisitsApiClient.getApprovedOfficialContacts(prisonId, prisonerNumber, user)
+  public async getAllOfficialContacts(
+    prisonerNumber: string,
+    user: HmppsUser,
+    approved?: boolean,
+    currentTerm?: boolean,
+  ) {
+    const allContacts = await this.getAllContacts(prisonerNumber, user, approved, currentTerm)
+    return allContacts.filter(contact => contact.relationshipTypeCode === 'O')
   }
 
-  public async getApprovedSocialContacts(prisonId: string, prisonerNumber: string, user: HmppsUser) {
-    return this.officialVisitsApiClient.getApprovedSocialContacts(prisonId, prisonerNumber, user)
+  public async getAllSocialContacts(
+    prisonerNumber: string,
+    user: HmppsUser,
+    approved?: boolean,
+    currentTerm?: boolean,
+  ) {
+    const allContacts = await this.getAllContacts(prisonerNumber, user, approved, currentTerm)
+    return allContacts.filter(contact => contact.relationshipTypeCode === 'S')
+  }
+
+  public async getAllContacts(prisonerNumber: string, user: HmppsUser, approved?: boolean, currentTerm?: boolean) {
+    logger.info(
+      `Get all contacts for prisoner ${prisonerNumber} with filters: approved=${approved}, currentTerm=${currentTerm}`,
+    )
+    return this.officialVisitsApiClient.getAllContacts(prisonerNumber, user, approved, currentTerm)
   }
 
   public async getAvailableSlots(
@@ -175,5 +183,14 @@ export default class OfficialVisitsService {
   public async getOfficialVisitLocationsAtPrison(prisonId: string, user: HmppsUser) {
     logger.info(`get official visit locations for prison ${prisonId} called by ${user.userId}`)
     return this.officialVisitsApiClient.getOfficialVisitLocationsAtPrison(prisonId, user)
+  }
+
+  public async updateVisitSlot(
+    visitSlotId: number,
+    body: components['schemas']['UpdateVisitSlotRequest'],
+    user: HmppsUser,
+  ) {
+    logger.info(`Update visit slot ${visitSlotId} called by ${user.userId}`)
+    return this.officialVisitsApiClient.updateVisitSlot(visitSlotId, body, user)
   }
 }

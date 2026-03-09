@@ -26,7 +26,7 @@
           {% set contactItems = (contactItems.push({
             name: "equipment[" + loop.index0 + "][id]",
             id: "equipment[" + loop.index0 + "][id]",
-            value: contact.prisonerContactId,
+            value: contact.contactId,
             text: (contact.firstName + " " + contact.lastName) | convertToTitleCase + " (" + contact.relationshipToPrisonerDescription + ")",
             checked: formResponses.equipment[loop.index0].id if formResponses.equipment else contact.equipment,
             conditional: {
