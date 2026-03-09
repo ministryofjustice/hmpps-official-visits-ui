@@ -8,6 +8,10 @@ import {
   FindByCriteriaResults,
   OfficialVisit,
   ReferenceDataItem,
+  TimeSlot,
+  TimeSlotSummary,
+  VisitLocation,
+  VisitSlot,
 } from '../../server/@types/officialVisitsApi/types'
 import { components } from '../../server/@types/officialVisitsApi'
 
@@ -95,4 +99,12 @@ export default {
     }),
   stubCreateTimeSlot: (response: Record<string, unknown> = {}) =>
     simplePostApiMock(`/official-visits-api/admin/time-slot`, response),
+  stubGetAllTimeSlotsAndVisitSlots: (response: TimeSlotSummary) =>
+    simpleApiMock(`/official-visits-api/admin/time-slots/prison/.*`, response),
+  stubCreateVisitSlot: (timeSlotId: number, response: RecursivePartial<VisitSlot>) =>
+    simplePostApiMock(`/official-visits-api/admin/time-slot/${timeSlotId}/visit-slot`, response),
+  stubGetOfficialVisitLocationsAtPrison: (prisonCode: string, response: RecursivePartial<VisitLocation[]>) =>
+    simpleApiMock(`/official-visits-api/admin/prison/${prisonCode}/official-visit-locations`, response),
+  stubGetPrisonTimeSlotById: (prisonTimeSlotId: number, response: RecursivePartial<TimeSlot>) =>
+    simpleApiMock(`/official-visits-api/admin/time-slot/${prisonTimeSlotId}`, response),
 }

@@ -13,29 +13,44 @@
     <span class="govuk-hint">The locations and capacity for official visits</span>
     <h1 class="govuk-heading-l">Locations for {{ translateDay(timeSlot.dayCode) }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
 
-    {# Create the content for locations available in a single time slot #}
-    {% set locationsHtml = visitLocations(timeSlot, visitSlots) %}
+      {% set rows = [] %}
+      {% if visitSlots.length > 0 %}
+          {% for slot in visitSlots %}
+              {% set rows = (rows.push([
+                  { text: slot.locationDescription },
+                  { text: slot.maxAdults },
+                  { text: slot.maxGroups },
+                  { text: slot.maxVideo },
+                  { html: '<a href="/admin/locations/time-slot/' + timeSlot.prisonTimeSlotId + '/visit-slot/' + slot.visitSlotId + '">Manage location</a>' }
+              ]), rows) %}
+          {% endfor %}
+      {% else %}
+          {% set rows = (rows.push([
+              { text: 'No locations' },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+          ]), rows) %}
+      {% endif %}
 
-    {# Single tab for locations one one day #}
-    {{ govukTabs({
-      items: [
-        {
-          label: translateDay(timeSlot.dayCode),
-          id: "locations",
-          panel: {
-            html: locationsHtml
-          }
-        }
-      ]
-    }) }}
+      {{ govukTable({
+          head: [
+              { text: 'Location' },
+              { text: 'Maximum Adults' },
+              { text: 'Maximum Groups' },
+              { text: 'Maximum Video Visits' },
+              { text: 'Actions' }
+          ],
+          rows: rows
+      }) }}
 
     <div class="govuk-button-group">
       {{ govukButton({
         text: "Add a new location",
         preventDoubleClick: true,
-        href: "#TODO"
+        href: "/admin/locations/time-slot/" ~ timeSlot.prisonTimeSlotId ~ "/visit-slot/new"
       }) }}
-
       <a href="/admin/days#{{ translateDay(timeSlot.dayCode) | trim | lower }}"
          class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">
         Back to day view
@@ -44,37 +59,3 @@
 
   </div>
 {% endblock %}
-
-{% macro visitLocations(timeSlot, visitSlots) %}
-  {% set rows = [] %}
-  {% if visitSlots.length > 0 %}
-    {% for slot in visitSlots %}
-      {% set rows = (rows.push([
-        { text: slot.locationDescription },
-        { text: slot.maxAdults },
-        { text: slot.maxGroups },
-        { text: slot.maxVideo },
-        { html: '<a href="/admin/locations/time-slot/' + timeSlot.prisonTimeSlotId + '/visit-slot/' + slot.visitSlotId + '">Manage location</a>' }
-      ]), rows) %}
-    {% endfor %}
-  {% else %}
-    {% set rows = (rows.push([
-      { text: 'No locations' },
-      { text: '' },
-      { text: '' },
-      { text: '' },
-      { text: '' }
-    ]), rows) %}
-  {% endif %}
-
-  {{ govukTable({
-    head: [
-      { text: 'Location' },
-      { text: 'Maximum Adults' },
-      { text: 'Maximum Groups' },
-      { text: 'Maximum Video Visits' },
-      { text: 'Actions' }
-    ],
-    rows: rows
-  }) }}
-{% endmacro %}

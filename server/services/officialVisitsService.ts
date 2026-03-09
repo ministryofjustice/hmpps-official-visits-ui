@@ -17,6 +17,7 @@ import {
   UpdateTimeSlotRequest,
   VisitorEquipment,
   VisitorType,
+  CreateVisitSlotRequest,
 } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
@@ -64,10 +65,6 @@ export default class OfficialVisitsService {
 
   public async getReferenceData(res: Response, code: components['schemas']['ReferenceDataGroup']) {
     return this.officialVisitsApiClient.getReferenceData(code, res.locals.user)
-  }
-
-  public async getActiveRestrictions(res: Response, prisonId: string, prisonerNumber: string) {
-    return this.officialVisitsApiClient.getActiveRestrictions(prisonId, prisonerNumber, res.locals.user)
   }
 
   public async getAllOfficialContacts(
@@ -136,6 +133,11 @@ export default class OfficialVisitsService {
     return this.officialVisitsApiClient.createTimeSlot(body, user)
   }
 
+  public async createVisitSlot(prisonTimeSlotId: number, body: CreateVisitSlotRequest, user: HmppsUser) {
+    logger.info(`create a visit slot called by ${user.userId} ${user.displayName}`)
+    return this.officialVisitsApiClient.createVisitSlot(prisonTimeSlotId, body, user)
+  }
+
   public async updateVisitors(
     prisonId: string,
     visitId: string,
@@ -176,5 +178,10 @@ export default class OfficialVisitsService {
   public async updateTimeSlot(prisonTimeSlotId: number, body: UpdateTimeSlotRequest, user: HmppsUser) {
     logger.info(`Update time slot ${prisonTimeSlotId} called by ${user.userId}`)
     return this.officialVisitsApiClient.updateTimeSlot(prisonTimeSlotId, body, user)
+  }
+
+  public async getOfficialVisitLocationsAtPrison(prisonId: string, user: HmppsUser) {
+    logger.info(`get official visit locations for prison ${prisonId} called by ${user.userId}`)
+    return this.officialVisitsApiClient.getOfficialVisitLocationsAtPrison(prisonId, user)
   }
 }

@@ -37,6 +37,7 @@ describe('LocationHandler', () => {
     expect(res.text).toContain('Locations for time slot')
     expect(res.text).toContain('Room 1')
     expect(res.text).toContain('Maximum Adults')
+    expect(res.text).toContain(`/admin/locations/time-slot/${timeSlotId}/visit-slot/new`)
   })
 
   it('should show no time slots when no matching time slot', async () => {

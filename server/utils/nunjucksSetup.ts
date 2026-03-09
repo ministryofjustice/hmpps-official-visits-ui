@@ -134,4 +134,10 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
         .map(visitor => `${firstNameSpaceLastName(visitor)} (${visitor.relationshipDescription})`)
         .join(seperator),
   )
+  njkEnv.addFilter('locationsToOptions', locations => {
+    return locations.map((loc: { locationId: any; locationName: any }) => ({
+      value: loc.locationId,
+      text: loc.locationName,
+    }))
+  })
 }
