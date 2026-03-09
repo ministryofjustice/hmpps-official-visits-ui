@@ -5,6 +5,7 @@ import {
   FindByCriteriaResults,
   FindByCriteriaVisit,
   OfficialVisit,
+  TimeSlotSummary,
 } from '../@types/officialVisitsApi/types'
 import { PrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
 import { PrisonerScheduledEvents, ScheduledEvent } from '../@types/activitiesApi/types'
@@ -430,3 +431,52 @@ export const mockUser = {
   userId: '',
   username: 'USERNAME_GEN',
 } as User
+
+export const allSlots: TimeSlotSummary = {
+  prisonCode: '',
+  prisonName: '',
+  timeSlots: [
+    {
+      timeSlot: {
+        dayCode: 'MON',
+        prisonTimeSlotId: 1,
+        startTime: '09:00',
+        endTime: '10:00',
+        effectiveDate: '2025-01-01',
+        expiryDate: '2056-12-31',
+        prisonCode: 'MDI',
+        createdBy: 'BP',
+        createdTime: '2025-01-01T09:00:00',
+      },
+      visitSlots: [],
+    },
+    {
+      timeSlot: {
+        dayCode: 'TUE',
+        prisonTimeSlotId: 2,
+        startTime: '10:00',
+        endTime: '11:00',
+        effectiveDate: '2025-01-02',
+        expiryDate: '2056-12-31',
+        prisonCode: 'MDI',
+        createdBy: 'BP',
+        createdTime: '2025-01-01T09:00:00',
+      },
+      visitSlots: [],
+    },
+    {
+      timeSlot: {
+        dayCode: 'MON',
+        prisonTimeSlotId: 3,
+        startTime: '11:00',
+        endTime: '12:00',
+        effectiveDate: '2025-01-03',
+        expiryDate: '2056-12-31',
+        prisonCode: 'MDI',
+        createdBy: 'BP',
+        createdTime: '2025-01-01T09:00:00',
+      },
+      visitSlots: [],
+    },
+  ],
+}
