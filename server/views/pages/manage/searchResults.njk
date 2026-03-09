@@ -18,10 +18,10 @@
 {% if showAlert %}
     {{ mojAlert({
         variant: "warning",
-        title: "Prisoner has no active approved contacts",
+        title: "Prisoner has no approved contacts",
         showTitleAsHeading: true,
         dismissible: false,
-        html: "Visits cannot be booked for prisoners that do not have active approved contacts.<br/>" + ("<a href='https://contacts-dev.hmpps.service.justice.gov.uk/prisoner/" + alertPrisonerNumber + "/contacts/list'>View and add contacts</a> from the prisoner profile." if user | hasPermission(PERMISSION.CONTACTS_AUTHORISER) else "You need the Contacts Authoriser in your establishment to add contacts for this prisoner.")
+        html: "Visits cannot be booked for prisoners that do not have approved contacts.<br/>" + ("<a href='https://contacts-dev.hmpps.service.justice.gov.uk/prisoner/" + alertPrisonerNumber + "/contacts/list'>View and add contacts</a> from the prisoner profile." if user | hasPermission(PERMISSION.CONTACTS_AUTHORISER) else "You need the Contacts Authoriser in your establishment to add contacts for this prisoner.")
     }) }}
 {% endif %}
 
