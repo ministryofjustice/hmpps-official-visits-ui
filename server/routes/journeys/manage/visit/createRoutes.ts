@@ -50,7 +50,10 @@ export default function CreateRoutes({
 
   route('/search', new PrisonerSearchHandler())
   route('/results', new PrisonerSearchResultsHandler(prisonerService, telemetryService))
-  route('/prisoner-select', new PrisonerSelectHandler(prisonerService, personalRelationshipsService, officialVisitsService))
+  route(
+    '/prisoner-select',
+    new PrisonerSelectHandler(prisonerService, personalRelationshipsService, officialVisitsService),
+  )
   route(
     `/confirmation/:officialVisitId`,
     new ConfirmationHandler(officialVisitsService, prisonerService, telemetryService),
