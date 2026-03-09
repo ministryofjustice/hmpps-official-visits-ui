@@ -5,7 +5,7 @@ import logPageViewMiddleware from '../../../middleware/logPageViewMiddleware'
 import validationMiddleware from '../../../middleware/validationMiddleware'
 import DayHandler from './handlers/dayHandler'
 import LocationHandler from './handlers/locationHandler'
-import VisitSlotHandler from './handlers/visitSlotHandler'
+import EditLocationHandler from './handlers/editLocationHandler'
 import NewTimeSlotHandler from './handlers/newTimeSlotHandler'
 import EditTimeSlotHandler from './handlers/editTimeSlotHandler'
 import NewLocationHandler from './handlers/newLocationHandler'
@@ -23,7 +23,7 @@ export default function Index({ auditService, officialVisitsService }: Services)
   route('/locations/time-slot/:timeSlotId/edit', new EditTimeSlotHandler(officialVisitsService))
   route('/locations/time-slot/:timeSlotId/location', new LocationHandler(officialVisitsService))
   route('/locations/time-slot/:timeSlotId/visit-slot/new', new NewLocationHandler(officialVisitsService))
-  route('/locations/time-slot/:timeSlotId/visit-slot/:visitSlotId', new VisitSlotHandler(officialVisitsService))
+  route('/locations/time-slot/:timeSlotId/visit-slot/:visitSlotId', new EditLocationHandler(officialVisitsService))
 
   return router
 }

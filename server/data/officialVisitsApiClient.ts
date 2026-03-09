@@ -22,6 +22,7 @@ import {
   TimeSlot,
   TimeSlotSummary,
   UpdateTimeSlotRequest,
+  UpdateVisitSlotRequest,
   VisitLocation,
 } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
@@ -234,6 +235,10 @@ export default class OfficialVisitsApiClient extends RestClient {
       { path: `/admin/time-slot/${prisonTimeSlotId}/visit-slot`, data: body },
       asSystem(user.username),
     )
+  }
+
+  async updateVisitSlot(visitSlotId: number, body: UpdateVisitSlotRequest, user: HmppsUser) {
+    return this.put<TimeSlot>({ path: `/admin/visit-slot/id/${visitSlotId}`, data: body }, asSystem(user.username))
   }
 
   async updateVisitors(prisonCode: string, visitId: string, body: OfficialVisitUpdateVisitorsRequest, user: HmppsUser) {

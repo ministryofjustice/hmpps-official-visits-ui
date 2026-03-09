@@ -6,7 +6,7 @@ import { CreateVisitSlotRequest } from '../../../../@types/officialVisitsApi/typ
 import { schema } from './newLocationSchema'
 
 export default class NewLocationHandler implements PageHandler {
-  public PAGE_NAME = Page.ADMIN_NEW_VISIT_SLOT_PAGE
+  public PAGE_NAME = Page.ADMIN_ADD_LOCATION_PAGE
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 

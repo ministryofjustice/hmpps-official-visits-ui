@@ -97,6 +97,18 @@ export default {
         jsonBody: {},
       },
     }),
+  stubUpdateVisitSlot: (visitSlotId: string) =>
+    stubFor({
+      request: {
+        method: 'PUT',
+        urlPattern: `/official-visits-api/admin/visit-slot/id/${visitSlotId}`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {},
+      },
+    }),
   stubCreateTimeSlot: (response: Record<string, unknown> = {}) =>
     simplePostApiMock(`/official-visits-api/admin/time-slot`, response),
   stubGetAllTimeSlotsAndVisitSlots: (response: TimeSlotSummary) =>

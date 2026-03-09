@@ -10,22 +10,17 @@
 {% block content %}
     <div class="govuk-grid-row">
         <span class="govuk-hint">Admin</span>
-        <h1 class="govuk-heading-l">Add new location and capacities
+        <h1 class="govuk-heading-l">Edit location and capacities
             for {{ translateDay(timeSlot.dayCode) }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
-        <p class="govuk-body">Add a new location and location capacity. For video visits location capacities should be
+        <p class="govuk-body">Make changes to the location or location capacity. For video visits location capacities should be
             set to 0.</p>
 
         <form method="POST">
             <div class="govuk-grid-row govuk-body">
                 <div class="govuk-grid-column-two-thirds">
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-                    {{ govukSelect({
-                        id: 'dpsLocationId',
-                        name: 'dpsLocationId',
-                        label: { text: 'Location' },
-                        errorMessage: validationErrors | findError('dpsLocationId'),
-                        items: locations | locationsToOptions | addSelectValue('', 'Select a location') | sort(false, false, 'text') | setSelected(formResponses.location or filter.location or '')
-                    }) }}
+                    <input type="hidden" name="dpsLocationId" value="{{ visitSlot.dpsLocationId }}" />
+                    <h2>Visit location {{ visitSlot.locationDescription }}</h2>
 
                     {{ govukInput({
                         id: "maxAdults",
@@ -41,7 +36,7 @@
                         inputmode: "numeric",
                         autocomplete: "off",
                         errorMessage: validationErrors | findError('maxAdults'),
-                        value: formResponses.maxAdults
+                        value: formResponses.maxAdults or visitSlot.maxAdults
                     }) }}
 
                     {{ govukInput({
@@ -58,7 +53,7 @@
                         inputmode: "numeric",
                         autocomplete: "off",
                         errorMessage: validationErrors | findError('maxGroups'),
-                        value: formResponses.maxGroups
+                        value: formResponses.maxGroups or visitSlot.maxGroups
                     }) }}
 
                     {{ govukInput({
@@ -75,7 +70,7 @@
                         inputmode: "numeric",
                         autocomplete: "off",
                         errorMessage: validationErrors | findError('maxVideo'),
-                        value: formResponses.maxVideo
+                        value: formResponses.maxVideo or visitSlot.maxVideo
                     }) }}
 
                     <div class="govuk-button-group">

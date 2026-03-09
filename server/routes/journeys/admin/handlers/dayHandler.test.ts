@@ -2,7 +2,7 @@ import { type Express } from 'express'
 import request from 'supertest'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
-import { TimeSlotSummary } from '../../../../@types/officialVisitsApi/types'
+import { allSlots } from '../../../../testutils/mocks'
 
 jest.mock('../../../../services/officialVisitsService')
 
@@ -20,55 +20,6 @@ afterEach(() => {
 
 describe('DayHandler', () => {
   it('should fetch all time slots and render the days page with slots split by day', async () => {
-    const allSlots: TimeSlotSummary = {
-      prisonCode: '',
-      prisonName: '',
-      timeSlots: [
-        {
-          timeSlot: {
-            dayCode: 'MON',
-            prisonTimeSlotId: 1,
-            startTime: '09:00',
-            endTime: '10:00',
-            effectiveDate: '2025-01-01',
-            expiryDate: null,
-            prisonCode: 'MDI',
-            createdBy: 'BP',
-            createdTime: '2025-01-01T09:00:00',
-          },
-          visitSlots: [],
-        },
-        {
-          timeSlot: {
-            dayCode: 'TUE',
-            prisonTimeSlotId: 2,
-            startTime: '10:00',
-            endTime: '11:00',
-            effectiveDate: '2025-01-02',
-            expiryDate: null,
-            prisonCode: 'MDI',
-            createdBy: 'BP',
-            createdTime: '2025-01-01T09:00:00',
-          },
-          visitSlots: [],
-        },
-        {
-          timeSlot: {
-            dayCode: 'MON',
-            prisonTimeSlotId: 3,
-            startTime: '11:00',
-            endTime: '12:00',
-            effectiveDate: '2025-01-03',
-            expiryDate: null,
-            prisonCode: 'MDI',
-            createdBy: 'BP',
-            createdTime: '2025-01-01T09:00:00',
-          },
-          visitSlots: [],
-        },
-      ],
-    }
-
     officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(allSlots)
 
     const res = await request(app).get(`/admin/days`)

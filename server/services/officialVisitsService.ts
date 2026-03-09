@@ -184,4 +184,13 @@ export default class OfficialVisitsService {
     logger.info(`get official visit locations for prison ${prisonId} called by ${user.userId}`)
     return this.officialVisitsApiClient.getOfficialVisitLocationsAtPrison(prisonId, user)
   }
+
+  public async updateVisitSlot(
+    visitSlotId: number,
+    body: components['schemas']['UpdateVisitSlotRequest'],
+    user: HmppsUser,
+  ) {
+    logger.info(`Update visit slot ${visitSlotId} called by ${user.userId}`)
+    return this.officialVisitsApiClient.updateVisitSlot(visitSlotId, body, user)
+  }
 }
