@@ -160,6 +160,7 @@ export default {
   maintenanceMode: get('MAINTENANCE_MODE', 'false') === 'true',
   applicationInsightsConnectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', '', requiredInProduction),
   featureToggles: {
-    allowSocialVisitorsPrisons: get('ALLOW_SOCIAL_VISITORS_PRISONS', ''),
+    allowSocialVisitorsPrisons: get('FEATURE_ALLOW_SOCIAL_VISITORS_PRISONS', ''),
+    dpsEnabledPrisons: get('FEATURE_DPS_ENABLED_PRISONS', ''),
   },
 }
