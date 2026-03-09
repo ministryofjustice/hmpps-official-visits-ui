@@ -35,7 +35,12 @@ export default class PrisonerSelectHandler implements PageHandler {
         restriction => !restriction.expiryDate || new Date(restriction.expiryDate) >= now,
       ) || []
 
-    const contacts = await this.officialVisitsService.getAllContacts(prisonerNumber, res.locals.user, true, true)
+    const contacts = await this.officialVisitsService.getAllOfficialContacts(
+      prisonerNumber,
+      res.locals.user,
+      true,
+      true,
+    )
     req.session.journey.officialVisit.searchPage = searchPage
 
     if (!contacts.length) {
