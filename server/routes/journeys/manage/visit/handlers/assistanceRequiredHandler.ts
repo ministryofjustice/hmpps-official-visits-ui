@@ -19,7 +19,7 @@ export default class AssistanceRequiredHandler implements PageHandler {
     const contacts = [
       ...req.session.journey.officialVisit.officialVisitors,
       ...(req.session.journey.officialVisit.socialVisitors || []),
-    ].filter(o => o.prisonerContactId)
+    ].filter(o => o.contactId)
 
     const { officialVisit } = req.session.journey
     const changeThisPage = req.session.journey.amendVisit?.changePage === 'assistance-required'
@@ -39,16 +39,16 @@ export default class AssistanceRequiredHandler implements PageHandler {
 
   public POST = async (req: Request, res: Response) => {
     const { officialVisit } = req.session.journey
-    officialVisit.officialVisitors = getSelected(officialVisit.officialVisitors, req.body as ContactRelationship[])
-    officialVisit.socialVisitors = getSelected(officialVisit.socialVisitors, req.body as ContactRelationship[])
+    officialVisit.officialVisitors = getSelected(officialVisit?.officialVisitors, req.body as ContactRelationship[])
+    officialVisit.socialVisitors = getSelected(officialVisit?.socialVisitors, req.body as ContactRelationship[])
 
     officialVisit.assistancePageCompleted = true
     const changeThisPage = req.session.journey.amendVisit?.changePage === 'assistance-required'
 
     if (res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit))) {
-      const allVisitors = [...officialVisit.officialVisitors, ...(officialVisit.socialVisitors || [])]
+      const allVisitors = [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])]
       const officialVisitors = allVisitors.map(visitor => ({
-        officialVisitorId: visitor.officialVisitorId,
+        officialVisitorId: visitor.officialVisitorId || 0,
         visitorTypeCode: 'CONTACT' as VisitorType,
         contactId: visitor.contactId,
         prisonerContactId: visitor.prisonerContactId,
@@ -78,7 +78,7 @@ const equipmentPageEnabled = (officialVisit: OfficialVisitJourney) => {
 
 const getSelected = (contacts: ApprovedContact[], body: ContactRelationship[]) => {
   return (contacts || []).map(contact => {
-    const foundContact = body.find(o => o.prisonerContactId === contact.prisonerContactId)
+    const foundContact = body.find(o => o.contactId === contact.contactId)
     return {
       ...contact,
       assistanceNotes: foundContact?.assistanceNotes,

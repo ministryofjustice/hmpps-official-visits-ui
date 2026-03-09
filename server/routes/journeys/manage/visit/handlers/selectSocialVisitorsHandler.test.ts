@@ -48,7 +48,7 @@ const appSetup = (
 
 beforeEach(() => {
   appSetup()
-  officialVisitsService.getApprovedSocialContacts.mockResolvedValue(mockSocialVisitors)
+  officialVisitsService.getAllSocialContacts.mockResolvedValue(mockSocialVisitors)
 })
 
 afterEach(() => {
@@ -149,10 +149,11 @@ describe('Select social visitors', () => {
           expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=2`)
 
           // Calls expected
-          expect(officialVisitsService.getApprovedSocialContacts).toHaveBeenCalledWith(
-            mockPrisoner.prisonCode,
+          expect(officialVisitsService.getAllSocialContacts).toHaveBeenCalledWith(
             mockPrisoner.prisonerNumber,
             user,
+            undefined,
+            true,
           )
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_SOCIAL_VISITORS_PAGE, {
             who: user.username,
@@ -244,10 +245,11 @@ describe('Select social visitors', () => {
           expect($('.govuk-link').last().attr('href')).toContain(`./`)
 
           // Calls expected
-          expect(officialVisitsService.getApprovedSocialContacts).toHaveBeenCalledWith(
-            mockPrisoner.prisonCode,
+          expect(officialVisitsService.getAllSocialContacts).toHaveBeenCalledWith(
             mockPrisoner.prisonerNumber,
             user,
+            undefined,
+            true,
           )
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_SOCIAL_VISITORS_PAGE, {
             who: user.username,
@@ -270,7 +272,7 @@ describe('Select social visitors', () => {
     it('should accept the selection of one social visitor', async () => {
       await request(app)
         .post(URL)
-        .send({ selected: ['1'] })
+        .send({ selected: ['201'] })
         .expect(302)
         .expect('location', 'assistance-required')
         .expect(() => expectNoErrorMessages())
@@ -282,7 +284,7 @@ describe('Select social visitors', () => {
     it('should accept the selection of two social visitors', async () => {
       await request(app)
         .post(URL)
-        .send({ selected: ['1', '2'] })
+        .send({ selected: ['201', '202'] })
         .expect(302)
         .expect('location', 'assistance-required')
         .expect(() => expectNoErrorMessages())
@@ -294,7 +296,7 @@ describe('Select social visitors', () => {
     it('should accept the selection of two social visitors (amend)', async () => {
       await request(app)
         .post(`/manage/amend/1/${journeyId()}/select-social-visitors`)
-        .send({ selected: ['1', '2'] })
+        .send({ selected: ['201', '202'] })
         .expect(302)
         .expect('location', 'assistance-required')
         .expect(() => expectNoErrorMessages())

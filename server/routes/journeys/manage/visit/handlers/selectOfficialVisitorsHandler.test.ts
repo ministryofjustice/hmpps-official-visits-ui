@@ -52,7 +52,7 @@ const appSetup = (
 
 beforeEach(() => {
   appSetup()
-  officialVisitsService.getApprovedOfficialContacts.mockResolvedValue(mockOfficialVisitors)
+  officialVisitsService.getAllOfficialContacts.mockResolvedValue(mockOfficialVisitors)
 })
 
 afterEach(() => {
@@ -144,25 +144,18 @@ describe('Select official visitors', () => {
           expect(visitorRows.eq(7).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(8).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(9).text().trim()).toBeDefined() // Restrictions
-          // Row 3
-          expect(visitorRows.eq(10).text().trim()).toEqual(
-            `${mockOfficialVisitors[2].firstName} ${mockOfficialVisitors[2].lastName}`,
-          )
-          expect(visitorRows.eq(11).text().trim()).toEqual('Over 18')
-          expect(visitorRows.eq(12).text().trim()).toEqual(mockOfficialVisitors[2].relationshipToPrisonerDescription)
-          expect(visitorRows.eq(13).text().trim()).toContain(`Acorn Road`)
-          expect(visitorRows.eq(14).text().trim()).toBeDefined() // Restrictions
 
-          expect($('.govuk-back-link').attr('href')).toEqual(`select-official-visitors`)
+          expect($('.govuk-back-link').attr('href')).toEqual(`time-slot`)
           expect($('.govuk-button').text()).toContain('Continue')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
           expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=2`)
 
           // Calls expected
-          expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
-            mockPrisoner.prisonCode,
+          expect(officialVisitsService.getAllOfficialContacts).toHaveBeenCalledWith(
             mockPrisoner.prisonerNumber,
             user,
+            undefined,
+            true,
           )
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_OFFICIAL_VISITORS_PAGE, {
             who: user.username,
@@ -184,7 +177,7 @@ describe('Select official visitors', () => {
         } as OfficialVisitJourney,
       })
 
-      officialVisitsService.getApprovedOfficialContacts.mockResolvedValue([])
+      officialVisitsService.getAllOfficialContacts.mockResolvedValue([])
 
       return request(app)
         .get(URL)
@@ -210,10 +203,11 @@ describe('Select official visitors', () => {
           expect(getByDataQa($, 'contacts-link').length).toEqual(1)
 
           // Calls expected
-          expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
-            mockPrisoner.prisonCode,
+          expect(officialVisitsService.getAllOfficialContacts).toHaveBeenCalledWith(
             mockPrisoner.prisonerNumber,
             user,
+            undefined,
+            true,
           )
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_OFFICIAL_VISITORS_PAGE, {
             who: user.username,
@@ -308,14 +302,6 @@ describe('Select official visitors', () => {
           expect(visitorRows.eq(7).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(8).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(9).text().trim()).toBeDefined() // Restrictions
-          // Row 3
-          expect(visitorRows.eq(10).text().trim()).toEqual(
-            `${mockOfficialVisitors[2].firstName} ${mockOfficialVisitors[2].lastName}`,
-          )
-          expect(visitorRows.eq(11).text().trim()).toEqual('Over 18')
-          expect(visitorRows.eq(12).text().trim()).toEqual(mockOfficialVisitors[2].relationshipToPrisonerDescription)
-          expect(visitorRows.eq(13).text().trim()).toContain(`Acorn Road`)
-          expect(visitorRows.eq(14).text().trim()).toBeDefined() // Restrictions
 
           expect($('.govuk-back-link').attr('href')).toEqual(`./`)
           expect($('.govuk-button').text()).toContain('Continue')
@@ -323,10 +309,11 @@ describe('Select official visitors', () => {
           expect($('.govuk-link').last().attr('href')).toContain(`./`)
 
           // Calls expected
-          expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
-            mockPrisoner.prisonCode,
+          expect(officialVisitsService.getAllOfficialContacts).toHaveBeenCalledWith(
             mockPrisoner.prisonerNumber,
             user,
+            undefined,
+            true,
           )
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_OFFICIAL_VISITORS_PAGE, {
             who: user.username,
@@ -348,7 +335,7 @@ describe('Select official visitors', () => {
         } as OfficialVisitJourney,
       })
 
-      officialVisitsService.getApprovedOfficialContacts.mockResolvedValue([])
+      officialVisitsService.getAllOfficialContacts.mockResolvedValue([])
 
       return request(app)
         .get(URL)
@@ -374,10 +361,11 @@ describe('Select official visitors', () => {
           expect(getByDataQa($, 'contacts-link').length).toEqual(1)
 
           // Calls expected
-          expect(officialVisitsService.getApprovedOfficialContacts).toHaveBeenCalledWith(
-            mockPrisoner.prisonCode,
+          expect(officialVisitsService.getAllOfficialContacts).toHaveBeenCalledWith(
             mockPrisoner.prisonerNumber,
             user,
+            undefined,
+            true,
           )
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.SELECT_OFFICIAL_VISITORS_PAGE, {
             who: user.username,
@@ -406,7 +394,7 @@ describe('Select official visitors', () => {
     it('should accept the selection of one official visitor and redirect to social visitors page', async () => {
       await request(app)
         .post(URL)
-        .send({ selected: ['1'] })
+        .send({ selected: ['101'] })
         .expect(302)
         .expect('location', 'select-social-visitors')
         .expect(() => expectNoErrorMessages())
@@ -419,7 +407,7 @@ describe('Select official visitors', () => {
       config.featureToggles.allowSocialVisitorsPrisons = ''
       await request(app)
         .post(URL)
-        .send({ selected: ['1'] })
+        .send({ selected: ['101'] })
         .expect(302)
         .expect('location', 'assistance-required')
         .expect(() => expectNoErrorMessages())
@@ -432,26 +420,26 @@ describe('Select official visitors', () => {
       config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
       await request(app)
         .post(URL)
-        .send({ selected: ['1', '2', '3'] })
+        .send({ selected: ['101', '102'] })
         .expect(302)
         .expect('location', 'select-social-visitors')
         .expect(() => expectNoErrorMessages())
 
       const journeySession = await getJourneySession(app, 'officialVisit')
-      expect(journeySession.officialVisitors).toHaveLength(3)
+      expect(journeySession.officialVisitors).toHaveLength(2)
     })
 
     it('should accept the selection of two or more official visitors (amend)', async () => {
       config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
       await request(app)
         .post(`/manage/amend/1/${journeyId()}/select-official-visitors`)
-        .send({ selected: ['1', '2', '3'] })
+        .send({ selected: ['101', '102'] })
         .expect(302)
         .expect('location', 'select-social-visitors')
         .expect(() => expectNoErrorMessages())
 
       const journeySession = await getJourneySession(app, 'officialVisit')
-      expect(journeySession.officialVisitors).toHaveLength(3)
+      expect(journeySession.officialVisitors).toHaveLength(2)
     })
   })
 })

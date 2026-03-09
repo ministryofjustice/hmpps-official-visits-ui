@@ -15,7 +15,7 @@ export default class EquipmentHandler implements PageHandler {
     const contacts = [
       ...req.session.journey.officialVisit.officialVisitors,
       ...(req.session.journey.officialVisit.socialVisitors || []),
-    ].filter(o => o.prisonerContactId)
+    ].filter(o => o.contactId)
 
     res.render('pages/manage/equipment', {
       contacts,
@@ -62,7 +62,7 @@ export default class EquipmentHandler implements PageHandler {
 
 const getSelected = (contacts: ApprovedContact[], body: ContactRelationship[]) => {
   return (contacts || []).map(contact => {
-    const foundContact = body.find(o => o.prisonerContactId === contact.prisonerContactId)
+    const foundContact = body.find(o => o.contactId === contact.contactId)
     return {
       ...contact,
       equipmentNotes: foundContact?.equipmentNotes,
