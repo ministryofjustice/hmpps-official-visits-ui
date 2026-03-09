@@ -34,10 +34,6 @@ export default class CheckYourAnswersHandler implements PageHandler {
       return res.redirect(`confirmation/${response.officialVisitId}`)
     }
 
-    if (mode === 'amend') {
-      await this.officialVisitsService.amendVisit(visit, user)
-    }
-
     return res.redirect(`confirmation`)
   }
 }

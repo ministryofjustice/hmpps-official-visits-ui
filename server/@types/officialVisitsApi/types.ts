@@ -9,7 +9,7 @@ export type ApprovedContact = components['schemas']['ApprovedContact']
 export type AvailableSlot = components['schemas']['AvailableSlot']
 
 export type ContactRelationship = {
-  prisonerContactId: number
+  contactId: number
   assistanceNotes?: string
   assistedVisit?: boolean
   equipment?: boolean

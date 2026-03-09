@@ -2,7 +2,6 @@ import type { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import { RecursivePartial, simpleApiMock, simplePostApiMock } from '../testHelpers'
 import {
-  ApprovedContact,
   AvailableSlot,
   CancelTypeRequest,
   CompleteVisitRequest,
@@ -10,6 +9,7 @@ import {
   OfficialVisit,
   ReferenceDataItem,
 } from '../../server/@types/officialVisitsApi/types'
+import { components } from '../../server/@types/officialVisitsApi'
 
 export default {
   stubPing: (httpStatus = 200): SuperAgentRequest =>
@@ -29,10 +29,12 @@ export default {
   stubAvailableSlots: (response: AvailableSlot[]) => simpleApiMock(`/official-visits-api/available-slots/.*`, response),
   stubTimeSlotSummary: (response: Record<string, unknown>) =>
     simpleApiMock(`/official-visits-api/admin/time-slots/prison/.*`, response),
-  stubOfficialContacts: (response: ApprovedContact[]) =>
-    simpleApiMock(`/official-visits-api/prisoner/.*/approved-relationships\\?relationshipType=O`, response),
-  stubSocialContacts: (response: ApprovedContact[]) =>
-    simpleApiMock(`/official-visits-api/prisoner/.*/approved-relationships\\?relationshipType=S`, response),
+  stubAllContacts: (response: components['schemas']['PrisonerContact'][]) => {
+    return Promise.all([
+      simpleApiMock(`/official-visits-api/prisoner/.*/all-contacts.*`, response),
+      simpleApiMock(`/official-visits-api/prisoner/.*/all-contacts?currentTerm=true`, response),
+    ])
+  },
   stubFindByCriteria: (response: FindByCriteriaResults, bodyPatterns: object[], page: number = 0) => {
     return stubFor({
       request: {

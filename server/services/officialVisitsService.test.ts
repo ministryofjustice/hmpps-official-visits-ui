@@ -112,11 +112,11 @@ describe('OfficialVisitsService', () => {
         lastName: 'Smith',
       } as ApprovedContact,
     ]
-    officialVisitsApiClient.getApprovedOfficialContacts.mockResolvedValue(expected)
+    officialVisitsApiClient.getAllContacts.mockResolvedValue(expected)
 
-    const result = await officialVisitsService.getApprovedOfficialContacts('MDI', prisonerNumber, user)
+    const result = await officialVisitsService.getAllOfficialContacts(prisonerNumber, user, true, true)
 
-    expect(officialVisitsApiClient.getApprovedOfficialContacts).toHaveBeenCalledTimes(1)
+    expect(officialVisitsApiClient.getAllContacts).toHaveBeenCalledTimes(1)
     expect(result).toEqual(expected)
   })
 
@@ -132,11 +132,11 @@ describe('OfficialVisitsService', () => {
         lastName: 'Smith',
       } as ApprovedContact,
     ]
-    officialVisitsApiClient.getApprovedSocialContacts.mockResolvedValue(expected)
+    officialVisitsApiClient.getAllContacts.mockResolvedValue(expected)
 
-    const result = await officialVisitsService.getApprovedSocialContacts('MDI', prisonerNumber, user)
+    const result = await officialVisitsService.getAllSocialContacts(prisonerNumber, user, true, true)
 
-    expect(officialVisitsApiClient.getApprovedSocialContacts).toHaveBeenCalledTimes(1)
+    expect(officialVisitsApiClient.getAllContacts).toHaveBeenCalledTimes(1)
     expect(result).toEqual(expected)
   })
 

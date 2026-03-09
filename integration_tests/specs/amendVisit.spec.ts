@@ -37,7 +37,7 @@ const getMockVisit = () => ({
       lastName: mockOfficialVisitors[0].lastName,
       officialVisitorId: mockOfficialVisitors[0].prisonerContactId,
       prisonerContactId: mockOfficialVisitors[0].prisonerContactId,
-      contactId: mockOfficialVisitors[0].prisonerContactId,
+      contactId: mockOfficialVisitors[0].contactId,
       relationshipTypeCode: 'OFFICIAL',
       relationshipDescription: 'Solicitor',
       visitorTypeCode: 'CONTACT',
@@ -57,7 +57,7 @@ const getMockVisit = () => ({
       lastName: mockSocialVisitors[0].lastName,
       officialVisitorId: mockSocialVisitors[0].prisonerContactId,
       prisonerContactId: mockSocialVisitors[0].prisonerContactId,
-      contactId: mockSocialVisitors[0].prisonerContactId,
+      contactId: mockSocialVisitors[0].contactId,
       visitorTypeDescription: 'Contact',
       relationshipDescription: 'Brother',
       relationshipTypeCode: 'SOCIAL',
@@ -72,6 +72,39 @@ const getMockVisit = () => ({
         description: 'Test equipment (social)',
       },
     },
+    {
+      firstName: mockOfficialVisitors[2].firstName,
+      lastName: mockOfficialVisitors[2].lastName,
+      officialVisitorId: mockOfficialVisitors[2].prisonerContactId,
+      prisonerContactId: mockOfficialVisitors[2].prisonerContactId,
+      contactId: mockOfficialVisitors[2].contactId,
+      relationshipTypeCode: 'OFFICIAL',
+      relationshipDescription: 'Solicitor',
+      visitorTypeCode: 'CONTACT',
+      relationshipTypeDescription: 'Official',
+      visitorTypeDescription: 'Contact',
+      leadVisitor: true,
+      createdBy: 'TEST_USER',
+      createdTime: '2023-01-01T00:00:00',
+    },
+    {
+      firstName: mockSocialVisitors[2].firstName,
+      lastName: mockSocialVisitors[2].lastName,
+      officialVisitorId: mockSocialVisitors[2].prisonerContactId,
+      prisonerContactId: mockSocialVisitors[2].prisonerContactId,
+      contactId: mockSocialVisitors[2].contactId,
+      visitorTypeDescription: 'Contact',
+      relationshipDescription: 'Brother',
+      relationshipTypeCode: 'SOCIAL',
+      relationshipTypeDescription: 'Social',
+      visitorTypeCode: 'CONTACT',
+      leadVisitor: true,
+      createdBy: 'TEST_USER',
+      createdTime: '2023-01-01T00:00:00',
+    },
+    // Get Chris Smith (not approved visitor)
+    mockOfficialVisitors.find(o => !o.isApprovedVisitor)!,
+    mockSocialVisitors.find(o => !o.isApprovedVisitor)!,
   ],
 })
 
@@ -119,8 +152,7 @@ test.describe('Amend official visits', () => {
     )
 
     await officialVisitsApi.stubGetOfficialVisitById(getMockVisit() as OfficialVisit)
-    await officialVisitsApi.stubOfficialContacts(mockOfficialVisitors)
-    await officialVisitsApi.stubSocialContacts(mockSocialVisitors)
+    await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors])
 
     await officialVisitsApi.stubUpdateVisitors('LEI', '1')
     await officialVisitsApi.stubUpdateVisitTypeAndSlot('LEI', '1')
@@ -195,13 +227,13 @@ test.describe('Amend official visits', () => {
     await expect(page.locator('.govuk-summary-card__title > a').first()).toHaveText('Abe Smith')
     await expect(page.locator('.govuk-summary-card__title > a').first()).toHaveAttribute(
       'href',
-      'http://localhost:9091/prisoner/G4793VF/contacts/manage/1/relationship/1',
+      'http://localhost:9091/prisoner/G4793VF/contacts/manage/101/relationship/1',
     )
 
     await expect(page.locator('.govuk-summary-card__title > a').nth(1)).toHaveText('Abe Smith')
     await expect(page.locator('.govuk-summary-card__title > a').nth(1)).toHaveAttribute(
       'href',
-      'http://localhost:9091/prisoner/G4793VF/contacts/manage/1/relationship/1',
+      'http://localhost:9091/prisoner/G4793VF/contacts/manage/201/relationship/1',
     )
 
     // Verify change links are present
@@ -366,7 +398,8 @@ test.describe('Amend official visits', () => {
     // Pre-selected value
     expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
     expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).not.toBeChecked()
+    // Chris Smith should be visible and checked (unapproved but already on the visit)
+    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
 
     // Select another visitor
     await page.getByRole('checkbox', { name: 'Bertie Smith' }).check()
@@ -387,6 +420,8 @@ test.describe('Amend official visits', () => {
     // Pre-selected value
     expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
     expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
+    // Chris Smith should be visible and checked (unapproved but already on the visit)
+    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
 
     // Select another visitor
     await page.getByRole('checkbox', { name: 'Bertie Smith' }).check()
@@ -465,7 +500,8 @@ test.describe('Amend official visits', () => {
     // Pre-selected value
     expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
     expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).not.toBeChecked()
+    // Chris Smith should be visible and checked (unapproved but already on the visit)
+    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
 
     // Select another visitor
     await page.getByRole('checkbox', { name: 'Bertie Smith' }).check()
@@ -485,7 +521,7 @@ test.describe('Amend official visits', () => {
 
     // Pre-selected value
     expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
+    expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).toBeChecked()
 
     // Select another visitor
     await page.getByRole('checkbox', { name: 'Bertie Smith' }).check()

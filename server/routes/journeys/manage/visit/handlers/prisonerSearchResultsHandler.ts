@@ -23,7 +23,7 @@ export default class PrisonerSearchResultsHandler implements PageHandler {
     const { officialVisit } = req.session.journey
     const { searchTerm } = officialVisit
 
-    const showAlert = req.flash('noActiveApprovedContacts')[0]
+    const alertPrisonerNumber = req.flash('noActiveApprovedContacts')[0]
 
     const results = await this.prisonerService.searchInCaseload(searchTerm, prisonCode, user, {
       page,
@@ -38,7 +38,8 @@ export default class PrisonerSearchResultsHandler implements PageHandler {
       backTo: encodeURIComponent(`results?page=${page}`),
       searchTerm,
       results,
-      showAlert,
+      showAlert: !!alertPrisonerNumber,
+      alertPrisonerNumber,
       showBreadcrumbs: false,
     })
   }

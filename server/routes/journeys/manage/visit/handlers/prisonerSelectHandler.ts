@@ -16,8 +16,8 @@ export default class PrisonerSelectHandler implements PageHandler {
   constructor(
     private readonly prisonerService: PrisonerService,
     private readonly personalRelationshipsService: PersonalRelationshipsService,
-    private readonly officialVisitsService: OfficialVisitsService
-  ) { }
+    private readonly officialVisitsService: OfficialVisitsService,
+  ) {}
 
   public GET = async (req: Request, res: Response) => {
     const prisonerNumber = req.query.prisonerNumber as string
@@ -35,11 +35,11 @@ export default class PrisonerSelectHandler implements PageHandler {
         restriction => !restriction.expiryDate || new Date(restriction.expiryDate) >= now,
       ) || []
 
-    const contacts = await this.officialVisitsService.getAllContacts(prisoner.prisonId!, res.locals.user, true, true)
+    const contacts = await this.officialVisitsService.getAllContacts(prisonerNumber, res.locals.user, true, true)
     req.session.journey.officialVisit.searchPage = searchPage
 
     if (!contacts.length) {
-      req.flash('noActiveApprovedContacts', 'true')
+      req.flash('noActiveApprovedContacts', prisonerNumber)
       return res.redirect('results')
     }
 
@@ -59,6 +59,6 @@ export default class PrisonerSelectHandler implements PageHandler {
     })
     logger.info(`Session journey officialVisit : ${JSON.stringify(req.session.journey.officialVisit, null, 2)}`)
 
-    res.redirect('visit-type')
+    return res.redirect('visit-type')
   }
 }

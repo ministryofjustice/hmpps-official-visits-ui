@@ -38,9 +38,9 @@ export const schema = async (req: Request) => {
 
       return contacts
         .map(contact => {
-          const formContact = assistanceRequired.find(o => Number(o.id) === contact.prisonerContactId)
+          const formContact = assistanceRequired.find(o => Number(o.id) === contact.contactId)
           return {
-            prisonerContactId: contact.prisonerContactId,
+            contactId: contact.contactId,
             assistanceNotes: formContact?.notes,
             assistedVisit: !!formContact?.selected,
           } as ContactRelationship
