@@ -94,7 +94,7 @@ describe('comments handler', () => {
           expect(getTextById($, 'staffNotes')).toEqual('Some previously entered staff notes')
 
           expect($('.govuk-back-link').attr('href')).toEqual(`./`)
-          expect($('.govuk-button').text()).toContain('Submit')
+          expect($('.govuk-button').text()).toContain('Save')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
           expect($('.govuk-link').last().attr('href')).toContain(`./`)
 
