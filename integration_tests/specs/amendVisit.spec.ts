@@ -277,11 +277,11 @@ test.describe('Amend official visits', () => {
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.getByRole('link', { name: 'Change   prisoner notes (' }).click()
 
-    // Can submit new values
+    // Can Save new values
     await page.getByRole('textbox', { name: 'Staff notes' }).fill('amended staff notes')
     await page.getByRole('textbox', { name: 'Prisoner notes' }).fill('amended prisoner notes')
 
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'Save' }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}`)
     expect(page.getByRole('region', { name: 'success: Visit amended' }))
   })
@@ -311,7 +311,7 @@ test.describe('Amend official visits', () => {
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.getByRole('link', { name: 'Change   visit type (Visit' }).click()
 
-    // Can submit new values
+    // Can Save new values
     await page.getByRole('radio', { name: 'Not video', exact: true }).check()
 
     await page.getByRole('button', { name: 'Continue' }).click()
@@ -334,7 +334,7 @@ test.describe('Amend official visits', () => {
 
     // Can select a different time slot
     await page.getByRole('radio', { name: '8am to 5pm Second Location' }).check()
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'Save' }).click()
 
     expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
   })
@@ -362,7 +362,7 @@ test.describe('Amend official visits', () => {
 
     // Can select a different time slot
     await page.getByRole('radio', { name: '8am to 5pm Second Location' }).check()
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'Save' }).click()
 
     expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
   })
@@ -467,7 +467,7 @@ test.describe('Amend official visits', () => {
     expect(page.getByText('Test equipment (social)')).toBeVisible()
     expect(page.getByRole('checkbox', { name: 'Bertie Smith (Brother)' })).not.toBeChecked()
 
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'Save' }).click()
     expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
   })
 
@@ -547,7 +547,7 @@ test.describe('Amend official visits', () => {
     expect(page.getByText('Test assistance notes (social)')).toBeVisible()
     expect(page.getByRole('checkbox', { name: 'Bertie Smith (Brother)' })).not.toBeChecked()
 
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'Save' }).click()
     expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
   })
 
@@ -576,7 +576,7 @@ test.describe('Amend official visits', () => {
     expect(page.getByRole('checkbox', { name: 'Abe Smith (Brother)' })).toBeChecked()
     expect(page.getByText('Test assistance notes (social)')).toBeVisible()
 
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'Save' }).click()
     expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
   })
 
@@ -603,7 +603,7 @@ test.describe('Amend official visits', () => {
     expect(page.getByRole('checkbox', { name: 'Abe Smith (Brother)' })).toBeChecked()
     expect(page.getByText('Test equipment (social)')).toBeVisible()
 
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'Save' }).click()
     expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
   })
 

@@ -33,7 +33,7 @@ export default class AssistanceRequiredHandler implements PageHandler {
       ),
       prisoner: req.session.journey.officialVisit.prisoner,
       submitAction:
-        res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit)) ? 'Submit' : 'Continue',
+        res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit)) ? 'Save' : 'Continue',
     })
   }
 

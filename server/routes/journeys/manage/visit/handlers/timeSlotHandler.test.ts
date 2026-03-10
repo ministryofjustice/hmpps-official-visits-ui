@@ -185,7 +185,7 @@ describe('Time slot handler', () => {
           expect($('.govuk-radios__input').eq(0).attr('value')).toEqual('1')
 
           expect($('.govuk-back-link').attr('href')).toEqual(`./`)
-          expect($('.govuk-button').text()).toContain('Submit')
+          expect($('.govuk-button').text()).toContain('Save')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
           expect($('.govuk-link').last().attr('href')).toContain(`./`)
 

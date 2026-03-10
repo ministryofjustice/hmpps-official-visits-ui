@@ -55,7 +55,7 @@
 
         {{ continueCancel({
           stepsChecked: stepsChecked, 
-          continueText: 'Submit' if mode == 'amend' else 'Continue',
+          continueText: 'Save' if mode == 'amend' else 'Continue',
           cancelText: 'Cancel and return to homepage' if mode == 'create' else 'Cancel and return to visit details',
           cancelHref: './' if mode == 'amend'
         })}}
