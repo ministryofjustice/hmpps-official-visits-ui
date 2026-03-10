@@ -91,6 +91,7 @@ export function recallContacts(journey: Journey, relationshipType: 'O' | 'S', co
       equipmentNotes: existingContact?.equipmentNotes,
       assistedVisit: existingContact?.assistedVisit,
       equipment: existingContact?.equipment,
+      officialVisitorId: existingContact?.officialVisitorId,
     } as JourneyVisitor
   })
 }
