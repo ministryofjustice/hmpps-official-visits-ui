@@ -6,7 +6,7 @@ import prisonApi from '../mockApis/prisonApi'
 import manageUsersApi from '../mockApis/manageUsersApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
-import { TimeSlot, TimeSlotSummary, VisitLocation } from '../../server/@types/officialVisitsApi/types'
+import { TimeSlot, TimeSlotSummary, VisitLocation, VisitSlot } from '../../server/@types/officialVisitsApi/types'
 
 test.describe('Admin: Edit a location', () => {
   test.beforeEach(async () => {
@@ -28,8 +28,6 @@ test.describe('Admin: Edit a location', () => {
       active: true,
       authSource: 'nomis',
     })
-
-    // Provide a minimal time slot summary containing the time slot with id 1 and prison LEI
     const timeSlotSummaryForTest = {
       prisonCode: 'LEI',
       prisonName: 'Leeds (HMP)',
@@ -62,7 +60,18 @@ test.describe('Admin: Edit a location', () => {
       ],
     }
 
+    // Provide a minimal time slot summary containing the time slot with id 1 and prison LEI
+    const visitSlot = {
+      visitSlotId: 1,
+      dpsLocationId: 1,
+      locationDescription: 'Room 1',
+      maxAdults: 2,
+      maxGroups: 1,
+      maxVideo: 0,
+    }
+
     await officialVisitsApi.stubGetAllTimeSlotsAndVisitSlots(timeSlotSummaryForTest as unknown as TimeSlotSummary)
+    await officialVisitsApi.stubGetVisitSlot(1, visitSlot as unknown as VisitSlot)
     await officialVisitsApi.stubGetPrisonTimeSlotById(1, {
       prisonTimeSlotId: 1,
       dayCode: 'MON',
@@ -73,7 +82,7 @@ test.describe('Admin: Edit a location', () => {
     } as TimeSlot)
 
     // Stub create visit slot POST
-    await officialVisitsApi.stubUpdateVisitSlot('1')
+    await officialVisitsApi.stubUpdateVisitSlot(1)
     await officialVisitsApi.stubGetOfficialVisitLocationsAtPrison('LEI', [
       { locationId: 'loc-1', locationName: 'Visit room 1' },
       { locationId: 'loc-2', locationName: 'Visit room 2' },

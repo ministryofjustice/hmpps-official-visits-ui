@@ -4,7 +4,6 @@ import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import AuditService from '../../../../services/auditService'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
-import { allSlots } from '../../../../testutils/mocks'
 import { TimeSlot } from '../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../services/officialVisitsService')
@@ -26,21 +25,29 @@ afterEach(() => {
 describe('EditLocationHandler', () => {
   describe('GET', () => {
     it('renders edit page', async () => {
-      allSlots.timeSlots[0].visitSlots = [
-        {
-          visitSlotId: 11,
-          dpsLocationId: 'loc-1',
-          locationDescription: 'Location 1',
-          maxAdults: 5,
-          maxGroups: 2,
-          maxVideo: 0,
-          prisonCode: '',
-          prisonTimeSlotId: 0,
-          createdBy: '',
-          createdTime: '',
-        },
-      ]
-      officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(allSlots)
+      officialVisitsService.getPrisonTimeSlotById.mockResolvedValue({
+        dayCode: 'MON',
+        prisonTimeSlotId: 1,
+        startTime: '09:00',
+        endTime: '10:00',
+        effectiveDate: '2025-01-01',
+        expiryDate: '2056-12-31',
+        prisonCode: 'MDI',
+        createdBy: 'BP',
+        createdTime: '2025-01-01T09:00:00',
+      })
+      officialVisitsService.getVisitSlot.mockResolvedValue({
+        visitSlotId: 11,
+        dpsLocationId: 'loc-1',
+        locationDescription: 'Location 1',
+        maxAdults: 5,
+        maxGroups: 2,
+        maxVideo: 0,
+        prisonCode: '',
+        prisonTimeSlotId: 0,
+        createdBy: '',
+        createdTime: '',
+      })
 
       const res = await request(app).get('/admin/locations/time-slot/1/visit-slot/11')
 
