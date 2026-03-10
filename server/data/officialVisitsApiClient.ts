@@ -24,6 +24,7 @@ import {
   UpdateTimeSlotRequest,
   UpdateVisitSlotRequest,
   VisitLocation,
+  VisitSlot,
 } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
 
@@ -280,5 +281,9 @@ export default class OfficialVisitsApiClient extends RestClient {
       { path: `/admin/prison/${prisonCode}/official-visit-locations` },
       asSystem(user.username),
     )
+  }
+
+  async getVisitSlot(visitSlotId: number, user: HmppsUser): Promise<VisitSlot> {
+    return this.get<VisitSlot>({ path: `/admin/visit-slot/id/${visitSlotId}` }, asSystem(user.username))
   }
 }

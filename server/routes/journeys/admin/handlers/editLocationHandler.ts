@@ -13,24 +13,14 @@ export default class EditLocationHandler implements PageHandler {
 
   public GET = async (req: Request, res: Response) => {
     const { user } = res.locals
-    const prisonCode = req.session.activeCaseLoadId
     const timeSlotId = Number(req.params.timeSlotId)
     const visitSlotId = Number(req.params.visitSlotId)
 
-    const allSlots = await this.officialVisitsService.getVisitSlotsAtPrison(prisonCode, user)
-
-    // Get this specific time slot
-    const matchingTimeSlot = allSlots.timeSlots.filter(slot => slot.timeSlot.prisonTimeSlotId === timeSlotId)
-    const timeSlot = matchingTimeSlot[0]
-
-    // Get this specific visit slot
-    const matchingVisitSlot = timeSlot.visitSlots.filter(slot => slot.visitSlotId === visitSlotId)
-    const visitSlot = matchingVisitSlot[0]
-
-    // TODO : get the visit slot(location) by id directly from the API instead of filtering through all the time slots and visit slots
+    const visitSlot = await this.officialVisitsService.getVisitSlot(visitSlotId, user)
+    const timeSlot = await this.officialVisitsService.getPrisonTimeSlotById(timeSlotId, user)
 
     res.render('pages/admin/editLocation', {
-      timeSlot: timeSlot.timeSlot,
+      timeSlot,
       visitSlot,
       backUrl: `/admin/locations/time-slot/${timeSlotId}/location`,
     })
