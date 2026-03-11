@@ -1,0 +1,95 @@
+import { expect, test } from '@playwright/test'
+import hmppsAuth from '../mockApis/hmppsAuth'
+import { login, resetStubs } from '../testUtils'
+import componentsApi from '../mockApis/componentsApi'
+import prisonApi from '../mockApis/prisonApi'
+import manageUsersApi from '../mockApis/manageUsersApi'
+import officialVisitsApi from '../mockApis/officialVisitsApi'
+import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
+import { TimeSlot, TimeSlotSummary, VisitLocation, VisitSlot } from '../../server/@types/officialVisitsApi/types'
+import {
+  timeSlotSummaryNoVisits,
+  timeSlotSummaryWithVisits,
+  visitSlotNoVisits,
+  visitSlotWithVisits,
+  prisonTimeSlot,
+  visitLocations,
+} from './mocks'
+
+const setupStubs = async (timeSlotSummary: TimeSlotSummary, visitSlot: VisitSlot) => {
+  await officialVisitsApi.stubGetAllTimeSlotsAndVisitSlots(timeSlotSummary)
+  await officialVisitsApi.stubGetVisitSlot(1, visitSlot)
+  await officialVisitsApi.stubGetPrisonTimeSlotById(1, prisonTimeSlot as TimeSlot)
+  await officialVisitsApi.stubGetOfficialVisitLocationsAtPrison('LEI', visitLocations as VisitLocation[])
+}
+
+test.describe('Admin: Delete a location', () => {
+  test.beforeEach(async () => {
+    await hmppsAuth.stubSignInPage()
+    await componentsApi.stubComponents()
+    await prisonApi.stubGetPrisonerImage()
+    await manageUsersApi.stubGetByUsername()
+  })
+
+  test.afterEach(async () => {
+    await resetStubs()
+  })
+
+  test('should allow admin to delete a location', async ({ page }) => {
+    // Login as admin
+    await login(page, {
+      name: 'AdminUser',
+      roles: [`ROLE_${AuthorisedRoles.ADMIN}`, `ROLE_${AuthorisedRoles.DEFAULT}`],
+      active: true,
+      authSource: 'nomis',
+    })
+
+    await setupStubs(timeSlotSummaryNoVisits as unknown as TimeSlotSummary, visitSlotNoVisits as unknown as VisitSlot)
+
+    // Stub delete visit slot
+    await officialVisitsApi.stubDeleteVisitSlot(1)
+
+    await page.goto('/admin/locations/time-slot/1/location')
+
+    await page.getByRole('link', { name: 'Delete' }).click()
+
+    // Click Delete link added to the manage location page - we need to navigate to the delete URL
+    await page.goto('/admin/locations/time-slot/1/visit-slot/1/delete')
+
+    await expect(page).toHaveURL(/\/admin\/locations\/time-slot\/1\/visit-slot\/1\/delete/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Are you sure you want to delete this location/)
+
+    await expect(page.getByText('Room 1')).toBeVisible()
+
+    // Submit the form to delete
+    await page.getByRole('button', { name: 'Delete' }).click()
+
+    await expect(page).toHaveURL('/admin/locations/time-slot/1/location')
+
+    await expect(page.getByText('Location deleted')).toBeVisible()
+    await expect(
+      page.getByText('You have deleted the location from your prisons visiting schedule. Return to DPS home page'),
+    ).toBeVisible()
+  })
+
+  test('delete link should not be visible if there are visits booked for a location', async ({ page }) => {
+    await login(page, {
+      name: 'AdminUser',
+      roles: [`ROLE_${AuthorisedRoles.ADMIN}`, `ROLE_${AuthorisedRoles.DEFAULT}`],
+      active: true,
+      authSource: 'nomis',
+    })
+
+    await setupStubs(
+      timeSlotSummaryWithVisits as unknown as TimeSlotSummary,
+      visitSlotWithVisits as unknown as VisitSlot,
+    )
+
+    // Stub delete visit slot (shouldn't be used in this scenario, but harmless)
+    await officialVisitsApi.stubDeleteVisitSlot(1)
+
+    await page.goto('/admin/locations/time-slot/1/location')
+
+    await expect(page.getByRole('link', { name: 'Delete' })).not.toBeVisible()
+  })
+})

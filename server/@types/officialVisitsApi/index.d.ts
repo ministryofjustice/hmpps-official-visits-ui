@@ -826,6 +826,29 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/admin/visit/visit-slot/{visitSlotId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Check whether any visits are associated with a prison visit slot
+     * @description Requires role: ROLE_OFFICIAL_VISITS_ADMIN. Returns true if there are any visits referencing the given prison visit slot id.
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     */
+    get: operations['hasVisitsForVisitSlot']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/admin/time-slots/prison/{prisonCode}': {
     parameters: {
       query?: never
@@ -1715,6 +1738,8 @@ export interface components {
        * @description Maximum groups allowed in the visit slot
        */
       maxGroups?: number
+      /** @description Whether there are any visits booked for this visit slot */
+      hasVisit: boolean
       /**
        * @description Username who created the visit slot
        * @example admin
@@ -5368,6 +5393,47 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['AvailableSlot'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  hasVisitsForVisitSlot: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description The internal ID for the prison visit slot */
+        visitSlotId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Boolean indicating whether visits exist for the visit slot */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': boolean
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */

@@ -1,0 +1,41 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "partials/admin/translateDay.njk" import translateDay %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <span class="govuk-hint">Admin</span>
+    <h1 class="govuk-heading-l">Are you sure you want to delete this location from your prisons visiting schedule?</h1>
+
+    <div class="govuk-grid-row govuk-body">
+      <div class="govuk-grid-column-two-thirds">
+        {% set rows = [] %}
+        {% set rows = (rows.push([
+            { text: visitSlot.locationDescription },
+            { text: visitSlot.maxAdults },
+            { text: visitSlot.maxGroups },
+            { text: visitSlot.maxVideo }
+        ]), rows) %}
+
+        {{ govukTable({
+            head: [
+                { text: 'Location' },
+                { text: 'Maximum Adults' },
+                { text: 'Maximum Groups' },
+                { text: 'Maximum Video Visits' }
+            ],
+            rows: rows
+        }) }}
+
+        <form method="POST">
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+          {{ govukButton({ text: 'Delete', classes: 'govuk-button--warning' }) }}
+          <a href="{{ backTo }}" class="govuk-link govuk-!-margin-left-4">Cancel and return to schedule</a>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

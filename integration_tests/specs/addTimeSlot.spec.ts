@@ -6,6 +6,7 @@ import prisonApi from '../mockApis/prisonApi'
 import manageUsersApi from '../mockApis/manageUsersApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
+import { timeSlotSummaryMdi } from './mocks'
 
 test.describe('Admin add time slot', () => {
   test.beforeEach(async () => {
@@ -14,26 +15,7 @@ test.describe('Admin add time slot', () => {
     await prisonApi.stubGetPrisonerImage()
     await manageUsersApi.stubGetByUsername()
     await officialVisitsApi.stubCreateTimeSlot({})
-    await officialVisitsApi.stubTimeSlotSummary({
-      prisonCode: 'MDI',
-      prisonName: 'Moorland',
-      timeSlots: [
-        {
-          timeSlot: {
-            dayCode: 'MON',
-            prisonTimeSlotId: 1,
-            startTime: '09:00',
-            endTime: '10:00',
-            effectiveDate: '2026-01-01',
-            expiryDate: null,
-            prisonCode: 'MDI',
-            createdBy: 'test',
-            createdTime: '2026-01-01T09:00:00',
-          },
-          visitSlots: [],
-        },
-      ],
-    })
+    await officialVisitsApi.stubTimeSlotSummary(timeSlotSummaryMdi)
   })
 
   test.afterEach(async () => {
