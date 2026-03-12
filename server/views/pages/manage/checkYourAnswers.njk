@@ -7,12 +7,25 @@
 {% from "partials/continueCancel.njk" import continueCancel %}
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 {% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set pageTitle = "Check and confirm the official visit details" %}
 
 {% block content %}
 
   {{ createJourneyHeader(prisoner, stepsChecked)}}
+
+  {% if not capacityCheck %}
+    {{ mojAlert({
+      variant: "warning",
+      role: "alert",
+      title: "Capacity for visit slot selected is exceeded",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "The visit slot has exceeded maximum visitor capacity. <a href=\"time-slot\" class=\"govuk-link\">Choose another time slot</a>",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">

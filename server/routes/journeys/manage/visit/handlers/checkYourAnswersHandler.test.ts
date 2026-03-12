@@ -8,6 +8,7 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import { getPageHeader, getValueByKey } from '../../../../testutils/cheerio'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
+import { AvailableSlot } from '../../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -113,6 +114,9 @@ beforeEach(() => {
     visitorAndContactIds: [],
     prisonerNumber: 'G4793VF',
   })
+  officialVisitsService.getAvailableSlots.mockResolvedValue([
+    mockOfficialVisitJourney.selectedTimeSlot as AvailableSlot,
+  ])
 })
 
 afterEach(() => {
@@ -165,6 +169,103 @@ describe('check your answers handler', () => {
       await request(app).post(URL).send().expect(302).expect('location', 'confirmation/1')
 
       expect(officialVisitsService.createVisit.mock.calls[0][0]).toEqual(mockOfficialVisitJourney)
+    })
+
+    it('should show capacity error when slot is no longer available', async () => {
+      officialVisitsService.getAvailableSlots.mockResolvedValue([])
+
+      await request(app)
+        .post(URL)
+        .send()
+        .expect(200)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
+          expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
+          expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
+          expect($('.moj-alert__content a').attr('href')).toBe('time-slot')
+        })
+
+      expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
+    })
+
+    it('should show capacity error when too many visitors for in-person visit', async () => {
+      const slotWithLimitedCapacity = {
+        ...mockOfficialVisitJourney.selectedTimeSlot,
+        availableAdults: 1,
+        availableGroups: 5,
+      }
+      officialVisitsService.getAvailableSlots.mockResolvedValue([slotWithLimitedCapacity as AvailableSlot])
+
+      const journeyWithTwoVisitors = {
+        ...mockOfficialVisitJourney,
+        socialVisitors: [
+          {
+            prisonerContactId: 7332365,
+            contactId: 20085648,
+            prisonerNumber: 'G4793VF',
+            lastName: 'Second',
+            firstName: 'Visitor',
+            relationshipTypeCode: 'S',
+            relationshipTypeDescription: 'Social',
+            relationshipToPrisonerCode: 'FRI',
+            relationshipToPrisonerDescription: 'Friend',
+            assistanceNotes: '',
+            assistedVisit: false,
+            equipmentNotes: '',
+            equipment: false,
+          },
+        ],
+      } as OfficialVisitJourney
+
+      appSetup({ officialVisit: journeyWithTwoVisitors })
+
+      await request(app)
+        .post(URL)
+        .send()
+        .expect(200)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
+          expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
+          expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
+          expect($('.moj-alert__content a').attr('href')).toBe('time-slot')
+        })
+
+      expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
+    })
+
+    it('should show capacity error when video visit has no capacity', async () => {
+      const videoVisitJourney = {
+        ...mockOfficialVisitJourney,
+        visitType: 'VIDEO',
+        visitTypeDescription: 'Video visit',
+      } as OfficialVisitJourney
+
+      const slotWithNoVideoCapacity = {
+        ...mockOfficialVisitJourney.selectedTimeSlot,
+        availableVideoSessions: 0,
+      }
+      officialVisitsService.getAvailableSlots.mockResolvedValue([slotWithNoVideoCapacity as AvailableSlot])
+
+      appSetup({ officialVisit: videoVisitJourney })
+
+      await request(app)
+        .post(URL)
+        .send()
+        .expect(200)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
+          expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
+          expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
+          expect($('.moj-alert__content a').attr('href')).toBe('time-slot')
+        })
+
+      expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
     })
   })
 })

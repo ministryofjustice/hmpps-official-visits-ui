@@ -5,7 +5,7 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import ActivitiesService from '../../../../../services/activitiesService'
 import { getParsedDateFromQueryString, getWeekOfDatesStartingMonday } from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
-import { saveTimeSlot } from '../createJourneyState'
+import { saveTimeSlot, filterAvailableSlots } from '../createJourneyState'
 import { getBackLink } from './utils'
 
 export default class TimeSlotHandler implements PageHandler {
@@ -26,7 +26,6 @@ export default class TimeSlotHandler implements PageHandler {
     const { officialVisit } = req.session.journey
     const { prisonCode, prisonerNumber } = officialVisit.prisoner
 
-    // Get the available slots with some capacity on the date selected
     const availableSlots = await this.officialVisitsService.getAvailableSlots(
       res,
       prisonCode,
@@ -35,10 +34,10 @@ export default class TimeSlotHandler implements PageHandler {
       officialVisit.visitType === 'VIDEO',
     )
 
-    // Stored here and used in the schema check on the POST
-    req.session.journey.officialVisit.availableSlots = availableSlots
+    const filteredSlots = filterAvailableSlots(availableSlots, officialVisit.visitType, 1)
 
-    // Get the prisoner's schedule on the date selected
+    req.session.journey.officialVisit.availableSlots = filteredSlots
+
     const prisonerSchedule = await this.activitiesService.getPrisonersSchedule(
       prisonCode,
       selectedDate,
@@ -53,7 +52,7 @@ export default class TimeSlotHandler implements PageHandler {
       previousWeek,
       nextWeek,
       prisonerSchedule,
-      slots: availableSlots,
+      slots: filteredSlots,
       selectedTimeSlot: res.locals.formResponses?.['timeSlot'] || officialVisit?.selectedTimeSlot?.visitSlotId,
       backUrl: getBackLink(req, res, `visit-type`),
       prisoner: req.session.journey.officialVisit.prisoner,
