@@ -26,7 +26,6 @@ export default class TimeSlotHandler implements PageHandler {
     const { officialVisit } = req.session.journey
     const { prisonCode, prisonerNumber } = officialVisit.prisoner
 
-    // Get the available slots with some capacity on the date selected
     const availableSlots = await this.officialVisitsService.getAvailableSlots(
       res,
       prisonCode,
@@ -35,13 +34,10 @@ export default class TimeSlotHandler implements PageHandler {
       officialVisit.visitType === 'VIDEO',
     )
 
-    // Filter out slots that don't have capacity for at least 1 visitor
     const filteredSlots = filterAvailableSlots(availableSlots, officialVisit.visitType, 1)
 
-    // Stored here and used in the schema check on the POST
     req.session.journey.officialVisit.availableSlots = filteredSlots
 
-    // Get the prisoner's schedule on the date selected
     const prisonerSchedule = await this.activitiesService.getPrisonersSchedule(
       prisonCode,
       selectedDate,

@@ -114,7 +114,6 @@ beforeEach(() => {
     visitorAndContactIds: [],
     prisonerNumber: 'G4793VF',
   })
-  // Mock the getAvailableSlots method to return the selected slot
   officialVisitsService.getAvailableSlots.mockResolvedValue([
     mockOfficialVisitJourney.selectedTimeSlot as AvailableSlot,
   ])
@@ -173,7 +172,6 @@ describe('check your answers handler', () => {
     })
 
     it('should show capacity error when slot is no longer available', async () => {
-      // Mock getAvailableSlots to return empty array (slot no longer available)
       officialVisitsService.getAvailableSlots.mockResolvedValue([])
 
       await request(app)
@@ -193,7 +191,6 @@ describe('check your answers handler', () => {
     })
 
     it('should show capacity error when too many visitors for in-person visit', async () => {
-      // Create a slot with only 1 adult capacity but 2 visitors
       const slotWithLimitedCapacity = {
         ...mockOfficialVisitJourney.selectedTimeSlot,
         availableAdults: 1,
@@ -201,7 +198,6 @@ describe('check your answers handler', () => {
       }
       officialVisitsService.getAvailableSlots.mockResolvedValue([slotWithLimitedCapacity as AvailableSlot])
 
-      // Add a second visitor to exceed capacity
       const journeyWithTwoVisitors = {
         ...mockOfficialVisitJourney,
         socialVisitors: [

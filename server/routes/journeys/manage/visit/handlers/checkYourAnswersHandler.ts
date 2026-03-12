@@ -15,8 +15,7 @@ export default class CheckYourAnswersHandler implements PageHandler {
 
     req.session.journey.reachedCheckAnswers = true
 
-    // Perform capacity check before showing CYA page
-    const capacityCheckResult = await this.performCapacityCheck(req, res)
+    const capacityCheckResult = await this.checkSlotCapacity(req, res)
 
     return res.render('pages/manage/checkYourAnswers', {
       visit: officialVisit,
@@ -31,11 +30,9 @@ export default class CheckYourAnswersHandler implements PageHandler {
     const { mode } = req.routeContext
     const visit = req.session.journey.officialVisit
 
-    // Re-check this slot is still available and has capacity
-    const capacityCheckResult = await this.performCapacityCheck(req, res)
+    const capacityCheckResult = await this.checkSlotCapacity(req, res)
 
     if (!capacityCheckResult) {
-      // If capacity check fails, re-render CYA page with error
       return res.render('pages/manage/checkYourAnswers', {
         visit,
         contacts: [...visit.officialVisitors, ...visit.socialVisitors],
@@ -52,7 +49,7 @@ export default class CheckYourAnswersHandler implements PageHandler {
     return res.redirect(`confirmation`)
   }
 
-  private async performCapacityCheck(req: Request, res: Response) {
+  private async checkSlotCapacity(req: Request, res: Response) {
     const { officialVisit } = req.session.journey
     const selectedSlot = officialVisit.selectedTimeSlot
 
@@ -60,7 +57,6 @@ export default class CheckYourAnswersHandler implements PageHandler {
       return false
     }
 
-    // Get the latest available slots for the prison and date
     const availableSlots = await this.officialVisitsService.getAvailableSlots(
       res,
       officialVisit.prisonCode,
@@ -69,22 +65,14 @@ export default class CheckYourAnswersHandler implements PageHandler {
       officialVisit.visitType === 'VIDEO',
     )
 
-    // Handle case where availableSlots is undefined or null
-    if (!availableSlots || !Array.isArray(availableSlots)) {
-      return false
-    }
-
-    // Find the selected slot from the available slots
     const currentSlot = availableSlots.find(slot => slot.visitSlotId === selectedSlot.visitSlotId)
 
     if (!currentSlot) {
       return false
     }
 
-    // Count total visitors
     const totalVisitors = [...officialVisit.officialVisitors, ...officialVisit.socialVisitors].length
 
-    // Perform capacity check using extracted function
     return checkSlotCapacity(currentSlot, officialVisit.visitType, totalVisitors)
   }
 }

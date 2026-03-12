@@ -77,7 +77,6 @@ export function recallContacts(journey: Journey, relationshipType: 'O' | 'S', co
   })
 }
 
-// Capacity check functions
 export function checkVideoCapacity(slot: AvailableSlot): boolean {
   return slot.availableVideoSessions > 0
 }
@@ -100,8 +99,7 @@ export function checkSlotCapacity(slot: AvailableSlot, visitType: VisitType, vis
   if (visitType === 'IN_PERSON') {
     return checkInPersonCapacity(slot, visitorCount)
   }
-  // Skip check if unknown visit type
-  return true
+  return true // Skip check if unknown visit type
 }
 
 export function filterAvailableSlots(
