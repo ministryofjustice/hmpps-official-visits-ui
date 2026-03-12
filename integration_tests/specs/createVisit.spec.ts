@@ -131,7 +131,7 @@ test.describe('Create an official visit', () => {
         endTime: '17:00',
         dpsLocationId: 'xxx',
         locationDescription: 'Legal visits room 2',
-        availableAdults: 1,
+        availableAdults: 2,
         availableGroups: 1,
         availableVideoSessions: 1,
         visitDate: format(new Date(), 'yyyy-MM-dd'),
@@ -179,7 +179,7 @@ test.describe('Create an official visit', () => {
 
     const timeSlotPage = await TimeSlotPage.verifyOnPage(page)
     await checkCancelPage(timeSlotPage, TimeSlotPage.verifyOnPage, 1)
-    await timeSlotPage.selectRadioButton('8am to 5pm Legal Visits Room 2 Groups 1, people 1, video 1')
+    await timeSlotPage.selectRadioButton('8am to 5pm Legal Visits Room 2 Groups 1, people 2, video 1')
     await timeSlotPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
