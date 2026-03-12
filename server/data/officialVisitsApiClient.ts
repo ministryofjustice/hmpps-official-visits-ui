@@ -286,4 +286,8 @@ export default class OfficialVisitsApiClient extends RestClient {
   async getVisitSlot(visitSlotId: number, user: HmppsUser): Promise<VisitSlot> {
     return this.get<VisitSlot>({ path: `/admin/visit-slot/id/${visitSlotId}` }, asSystem(user.username))
   }
+
+  async deleteVisitSlot(visitSlotId: number, user: HmppsUser) {
+    return this.delete({ path: `/admin/visit-slot/id/${visitSlotId}` }, asSystem(user.username))
+  }
 }

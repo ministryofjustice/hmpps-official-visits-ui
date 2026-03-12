@@ -198,4 +198,9 @@ export default class OfficialVisitsService {
     logger.info(`Update visit slot ${visitSlotId} called by ${user.userId}`)
     return this.officialVisitsApiClient.updateVisitSlot(visitSlotId, body, user)
   }
+
+  public async deleteVisitSlot(visitSlotId: number, user: HmppsUser) {
+    logger.info(`Delete visit slot ${visitSlotId} called by ${user.userId}`)
+    return this.officialVisitsApiClient.deleteVisitSlot(visitSlotId, user)
+  }
 }

@@ -8,6 +8,7 @@ import officialVisitsApi from '../mockApis/officialVisitsApi'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
 import { getMatchingRequests } from '../mockApis/wiremock'
 import { TimeSlot, TimeSlotSummary, VisitLocation } from '../../server/@types/officialVisitsApi/types'
+import { timeSlotSummaryNoVisits, prisonTimeSlot, visitLocations } from './mocks'
 
 test.describe('Admin: Add a new location', () => {
   test.beforeEach(async () => {
@@ -31,38 +32,8 @@ test.describe('Admin: Add a new location', () => {
     })
 
     // Provide a minimal time slot summary containing the time slot with id 1 and prison LEI
-    const timeSlotSummaryForTest = {
-      prisonCode: 'LEI',
-      prisonName: 'Leeds (HMP)',
-      timeSlots: [
-        {
-          timeSlot: {
-            prisonTimeSlotId: 1,
-            prisonCode: 'LEI',
-            dayCode: 'MON',
-            startTime: '09:00',
-            endTime: '10:00',
-            effectiveDate: '2026-01-01',
-            expiryDate: '2026-12-31',
-            createdBy: 'TEST_USER',
-            createdTime: '2026-01-01T09:00:00Z',
-            updatedBy: 'TEST_USER',
-            updatedTime: '2026-01-02T10:00:00Z',
-          },
-          visitSlots: [],
-        },
-      ],
-    }
-
-    await officialVisitsApi.stubGetAllTimeSlotsAndVisitSlots(timeSlotSummaryForTest as TimeSlotSummary)
-    await officialVisitsApi.stubGetPrisonTimeSlotById(1, {
-      prisonTimeSlotId: 1,
-      dayCode: 'MON',
-      effectiveDate: '2024-01-01',
-      expiryDate: '2025-01-01',
-      startTime: '10:00',
-      endTime: '11:00',
-    } as TimeSlot)
+    await officialVisitsApi.stubGetAllTimeSlotsAndVisitSlots(timeSlotSummaryNoVisits as TimeSlotSummary)
+    await officialVisitsApi.stubGetPrisonTimeSlotById(1, prisonTimeSlot as TimeSlot)
 
     // Stub create visit slot POST
     await officialVisitsApi.stubCreateVisitSlot(1, {
@@ -72,10 +43,7 @@ test.describe('Admin: Add a new location', () => {
       maxGroups: 2,
       maxVideo: 0,
     })
-    await officialVisitsApi.stubGetOfficialVisitLocationsAtPrison('LEI', [
-      { locationId: 'loc-1', locationName: 'Visit room 1' },
-      { locationId: 'loc-2', locationName: 'Visit room 2' },
-    ] as VisitLocation[])
+    await officialVisitsApi.stubGetOfficialVisitLocationsAtPrison('LEI', visitLocations as VisitLocation[])
 
     // Go to the locations page for time slot 1
     await page.goto('/admin/locations/time-slot/1/location')
