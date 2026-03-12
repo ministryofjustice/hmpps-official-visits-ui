@@ -4,7 +4,7 @@ import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import AuditService from '../../../../services/auditService'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
-import { TimeSlot } from '../../../../@types/officialVisitsApi/types'
+import { TimeSlot, VisitSlot } from '../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../services/officialVisitsService')
 jest.mock('../../../../services/auditService')
@@ -47,7 +47,7 @@ describe('EditLocationHandler', () => {
         prisonTimeSlotId: 0,
         createdBy: '',
         createdTime: '',
-      })
+      } as VisitSlot)
 
       const res = await request(app).get('/admin/locations/time-slot/1/visit-slot/11')
 

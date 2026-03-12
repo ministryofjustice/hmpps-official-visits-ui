@@ -109,6 +109,16 @@ export default {
         jsonBody: {},
       },
     }),
+  stubDeleteVisitSlot: (visitSlotId: number) =>
+    stubFor({
+      request: {
+        method: 'DELETE',
+        urlPattern: `/official-visits-api/admin/visit-slot/id/${visitSlotId}`,
+      },
+      response: {
+        status: 204,
+      },
+    }),
   stubGetVisitSlot: (visitSlotId: number, response: VisitSlot) =>
     simpleApiMock(`/official-visits-api/admin/visit-slot/id/${visitSlotId}`, response),
   stubCreateTimeSlot: (response: Record<string, unknown> = {}) =>
