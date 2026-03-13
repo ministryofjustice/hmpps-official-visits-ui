@@ -2,7 +2,6 @@
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "partials/admin/translateDay.njk" import translateDay %}
 
 {% block content %}
   <div class="govuk-grid-row">
@@ -32,7 +31,7 @@
         <form method="POST">
           <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
           {{ govukButton({ text: 'Delete', classes: 'govuk-button--warning' }) }}
-          <a href="{{ backTo }}" class="govuk-link govuk-!-margin-left-4">Cancel and return to schedule</a>
+          <a href="{{ backUrl }}" class="govuk-link govuk-!-margin-left-4">Cancel and return to schedule</a>
         </form>
       </div>
     </div>

@@ -44,6 +44,15 @@ describe('DeleteLocationHandler', () => {
       expect(res.status).toBe(200)
       expect(res.text).toContain('Are you sure you want to delete this location')
       expect(res.text).toContain('Location 1')
+      expect(res.text).toContain('Location')
+      expect(res.text).toContain('Maximum Adults')
+      expect(res.text).toContain('Maximum Groups')
+      expect(res.text).toContain('Maximum Video Visits')
+      expect(res.text).toContain('5')
+      expect(res.text).toContain('2')
+      expect(res.text).toContain('0')
+      expect(res.text).toContain('Delete')
+      expect(res.text).toContain('Cancel and return to schedule')
     })
 
     it('throws error if visit slot has visits booked', async () => {
