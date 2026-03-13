@@ -52,7 +52,7 @@ describe('EditLocationHandler', () => {
       const res = await request(app).get('/admin/locations/time-slot/1/visit-slot/11')
 
       expect(res.status).toBe(200)
-      expect(res.text).toContain('Edit location and capacities')
+      expect(res.text).toContain('Edit location and location capacities')
       expect(res.text).toContain('Monday')
       expect(res.text).toContain('09:00 - 10:00')
       expect(res.text).toContain(

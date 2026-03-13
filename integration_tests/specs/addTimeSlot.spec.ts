@@ -34,12 +34,12 @@ test.describe('Admin add time slot', () => {
     // Go to admin days page
     await page.goto('/admin/days')
 
-    const addMondayLink = page.getByRole('button', { name: 'Add Monday time' })
+    const addMondayLink = page.getByRole('button', { name: 'Add a new time' })
     await expect(addMondayLink).toBeVisible()
 
     await addMondayLink.click()
 
-    await expect(page.getByRole('heading', { name: 'Add a new time for Monday' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Add a new time' })).toBeVisible()
 
     await page.fill('input[name="startTime-startHour"]', '10')
     await page.fill('input[name="startTime-startMinute"]', '00')

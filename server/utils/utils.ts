@@ -366,3 +366,30 @@ export const isWithinWorkingHours = (hour: number, minute: number, closingTime: 
   const t = toMinutesSinceMidnight(hour, minute)
   return t >= OPEN && t <= CLOSE // 20:00 allowed, 20:01 rejected
 }
+
+export const translateDay = (dayCode: string) => {
+  switch (dayCode) {
+    case 'MON':
+      return 'Monday'
+    case 'TUE':
+      return 'Tuesday'
+    case 'WED':
+      return 'Wednesday'
+    case 'THU':
+      return 'Thursday'
+    case 'FRI':
+      return 'Friday'
+    case 'SAT':
+      return 'Saturday'
+    case 'SUN':
+      return 'Sunday'
+    default:
+      return ''
+  }
+}
+
+// Convert HH:mm (or H:mm) to minutes for reliable numeric comparison
+export const toMinutes = (time: string) => {
+  const [h, m] = time.split(':').map(Number)
+  return h * 60 + m
+}

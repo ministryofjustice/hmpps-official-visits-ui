@@ -3,16 +3,19 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/tabs/macro.njk" import govukTabs %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "partials/admin/translateDay.njk" import translateDay %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 
 {% set pageTitle = "Time slots for official visits" %}
 {% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
 
 {% block content %}
-  <div class="govuk-grid-row">
+  <div>
     <span class="govuk-hint">Admin</span>
     <h1 class="govuk-heading-l">Time slots for official visits</h1>
-    <p class="govuk-body">Setting an end date for all visit times will not effect existing visits scheduled for the time and locations.</p>
+      {{ govukWarningText({
+          text: "Setting an end date for all visit times will not effect existing visits scheduled for the time and locations.",
+          iconFallbackText: "Warning"
+      }) }}
 
     {# Setup the HTML content of the tabbed pane for each day of the week #}
     {% set monTimeSlotsHtml = dayVisitTimes(monSlots, 'Monday', 'MON') %}
@@ -83,19 +86,12 @@
     rows: rows
   }) }}
 
-  <div class="govuk-button-group govuk-button-group--spread">
+  <div class="govuk-button-group">
     {{ govukButton({
-      text: "Add " ~ dayLabel ~ " time",
+      text: "Add a new time",
       preventDoubleClick: true,
       classes: "govuk-button",
       href: "/admin/locations/time-slot/new?day=" ~ dayCode
-    }) }}
-
-    {{ govukButton({
-      text: "Set end date for all " ~ dayLabel ~ " visit times",
-      preventDoubleClick: true,
-      classes: "govuk-button--warning",
-      href: "/admin/locations/time-slot/end-date?day=" ~ dayCode
     }) }}
   </div>
 {% endmacro %}
