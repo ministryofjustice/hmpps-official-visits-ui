@@ -10,7 +10,7 @@
 {% endif %}
 
 {% block content %}
-  <div class="govuk-grid-row">
+  <div>
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Admin</span>
         {% if editMode %}
@@ -21,7 +21,7 @@
           <p class="govuk-body">Add a date and time for a new visit in your prison. New visit times can begin now or in the future.</p>
         {% endif %}
 
-  <div class="govuk-grid-row">
+  <div>
     <div class="govuk-grid-column-three-quarters-from-desktop">
       <form method="POST">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}" />

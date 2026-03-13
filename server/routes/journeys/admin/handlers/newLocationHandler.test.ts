@@ -45,7 +45,7 @@ describe('NewVisitSlotHandler', () => {
       const res = await request(app).get('/admin/locations/time-slot/1/visit-slot/new')
 
       expect(res.status).toBe(200)
-      expect(res.text).toContain('Add new location and capacities')
+      expect(res.text).toContain('Add new location and location capacities')
       expect(res.text).toContain('Monday')
       expect(res.text).toContain('10:00 - 11:00')
       expect(res.text).toContain(

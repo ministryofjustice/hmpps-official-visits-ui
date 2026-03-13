@@ -7,7 +7,7 @@
 {% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
 
 {% block content %}
-    <div class="govuk-grid-row">
+    <div>
         <span class="govuk-hint">Admin</span>
         <h1 class="govuk-heading-l">Add new location and location capacities
             for {{ timeSlot.dayCode | translateDay }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
