@@ -48,8 +48,6 @@ export default class DayHandler implements PageHandler {
       SUN: sunSlots,
     } = daySlots
 
-    // Render the slots across the various days in this prison
-
     res.render('pages/admin/days', {
       monSlots,
       tueSlots,
