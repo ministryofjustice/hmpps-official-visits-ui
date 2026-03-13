@@ -21,6 +21,7 @@ import {
   parseDate,
   timeStringTo12HourPretty,
   toDuration,
+  translateDay,
 } from './utils'
 import restrictionTagColour from './restrictionTagColour'
 import { FieldValidationError } from '../middleware/setUpFlash'
@@ -121,6 +122,7 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
     items.filter(o => values.includes(o.value)),
   )
   njkEnv.addFilter('addRemoveLinks', addRemoveLinks)
+  njkEnv.addFilter('translateDay', translateDay)
   njkEnv.addFilter('refDataToOptions', (items: ReferenceDataItem[]) =>
     items.map((item: ReferenceDataItem) => ({ value: item.code, text: item.description })),
   )
