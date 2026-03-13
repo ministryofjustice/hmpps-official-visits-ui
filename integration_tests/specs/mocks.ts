@@ -157,3 +157,27 @@ export const prisonTimeSlotMdi: TimeSlot = {
   expiryDate: null as unknown as string,
   prisonCode: 'MDI',
 } as unknown as TimeSlot
+
+// Variant where the time slot has no visitSlots associated (used to test deleting a time slot)
+export const timeSlotSummaryNoVisitSlots: TimeSlotSummary = {
+  prisonCode: 'LEI',
+  prisonName: 'Leeds (HMP)',
+  timeSlots: [
+    {
+      timeSlot: {
+        prisonTimeSlotId: 1,
+        prisonCode: 'LEI',
+        dayCode: 'MON',
+        startTime: '09:00',
+        endTime: '10:00',
+        effectiveDate: '2026-01-01',
+        expiryDate: '2026-12-31',
+        createdBy: 'TEST_USER',
+        createdTime: '2026-01-01T09:00:00Z',
+        updatedBy: 'TEST_USER',
+        updatedTime: '2026-01-02T10:00:00Z',
+      },
+      visitSlots: [],
+    },
+  ],
+}

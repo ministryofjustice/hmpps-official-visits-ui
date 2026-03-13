@@ -1,0 +1,41 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% set pageTitle = "Delete visiting time" %}
+
+{% block content %}
+  <div>
+    <span class="govuk-hint">Admin</span>
+    <h1 class="govuk-heading-l">Are you sure you want to delete this visiting time?</h1>
+
+    <div class="govuk-grid-row govuk-body">
+      <div class="govuk-grid-column-two-thirds">
+        {% set rows = [] %}
+        {% set rows = (rows.push([
+            { text: timeSlot.timeSlot.startTime },
+            { text: timeSlot.timeSlot.endTime },
+            { text: (timeSlot.timeSlot.effectiveDate | formatDate) },
+            { text: (timeSlot.timeSlot.expiryDate | formatDate) }
+        ]), rows) %}
+
+        {{ govukTable({
+            head: [
+                { text: 'Start time' },
+                { text: 'End time' },
+                { text: 'Effective from' },
+                { text: 'Valid until' }
+            ],
+            rows: rows
+        }) }}
+
+        <form method="post">
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+          {{ govukButton({ text: 'Delete', classes: 'govuk-button--warning' }) }}
+          <a href="{{ backUrl }}" class="govuk-link govuk-!-margin-left-4">Cancel and return to schedule</a>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
