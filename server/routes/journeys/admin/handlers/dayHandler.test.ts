@@ -3,6 +3,7 @@ import request from 'supertest'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import { allSlots } from '../../../../testutils/mocks'
+import { TimeSlotSummary } from '../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../services/officialVisitsService')
 
@@ -47,5 +48,78 @@ describe('DayHandler', () => {
     // assert links
     expect(res.text).toContain('href="/admin/locations/time-slot/1/location">Manage locations</a>')
     expect(res.text).toContain('href="/admin/locations/time-slot/1/edit?day=MON">Edit</a>')
+  })
+
+  it('should sort time slots by start time within each day', async () => {
+    const unsortedSlots: TimeSlotSummary = {
+      prisonCode: 'MDI',
+      prisonName: 'Mock Prison',
+      timeSlots: [
+        {
+          timeSlot: {
+            dayCode: 'MON',
+            prisonTimeSlotId: 1,
+            startTime: '13:30',
+            endTime: '14:30',
+            effectiveDate: '2025-01-01',
+            expiryDate: '2056-12-31',
+            prisonCode: 'MDI',
+            createdBy: 'BP',
+            createdTime: '2025-01-01T09:00:00',
+          },
+          visitSlots: [],
+        },
+        {
+          timeSlot: {
+            dayCode: 'MON',
+            prisonTimeSlotId: 2,
+            startTime: '09:00',
+            endTime: '11:45',
+            effectiveDate: '2025-01-01',
+            expiryDate: '2056-12-31',
+            prisonCode: 'MDI',
+            createdBy: 'BP',
+            createdTime: '2025-01-01T09:00:00',
+          },
+          visitSlots: [],
+        },
+        {
+          timeSlot: {
+            dayCode: 'MON',
+            prisonTimeSlotId: 3,
+            startTime: '09:00',
+            endTime: '10:00',
+            effectiveDate: '2025-01-01',
+            expiryDate: '2056-12-31',
+            prisonCode: 'MDI',
+            createdBy: 'BP',
+            createdTime: '2025-01-01T09:00:00',
+          },
+          visitSlots: [],
+        },
+        {
+          timeSlot: {
+            dayCode: 'MON',
+            prisonTimeSlotId: 4,
+            startTime: '16:00',
+            endTime: '17:00',
+            effectiveDate: '2025-01-01',
+            expiryDate: '2056-12-31',
+            prisonCode: 'MDI',
+            createdBy: 'BP',
+            createdTime: '2025-01-01T09:00:00',
+          },
+          visitSlots: [],
+        },
+      ],
+    }
+
+    officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(unsortedSlots)
+
+    const res = await request(app).get(`/admin/days`)
+
+    expect(res.status).toBe(200)
+
+    expect(res.text).toMatch(/09:00[\s\S]*10:00[\s\S]*09:00[\s\S]*11:45[\s\S]*13:30[\s\S]*16:00/)
   })
 })
