@@ -290,4 +290,8 @@ export default class OfficialVisitsApiClient extends RestClient {
   async deleteVisitSlot(visitSlotId: number, user: HmppsUser) {
     return this.delete({ path: `/admin/visit-slot/id/${visitSlotId}` }, asSystem(user.username))
   }
+
+  async deleteTimeSlot(timeSlotId: number, user: HmppsUser) {
+    return this.delete({ path: `/admin/time-slot/${timeSlotId}` }, asSystem(user.username))
+  }
 }

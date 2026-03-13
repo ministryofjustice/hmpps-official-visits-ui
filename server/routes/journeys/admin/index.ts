@@ -10,6 +10,7 @@ import NewTimeSlotHandler from './handlers/newTimeSlotHandler'
 import EditTimeSlotHandler from './handlers/editTimeSlotHandler'
 import NewLocationHandler from './handlers/newLocationHandler'
 import DeleteLocationHandler from './handlers/deleteLocationHandler'
+import DeleteTimeSlotHandler from './handlers/deleteTimeSlotHandler'
 
 export default function Index({ auditService, officialVisitsService }: Services): Router {
   const router = Router({ mergeParams: true })
@@ -29,6 +30,7 @@ export default function Index({ auditService, officialVisitsService }: Services)
     '/locations/time-slot/:timeSlotId/visit-slot/:visitSlotId/delete',
     new DeleteLocationHandler(officialVisitsService),
   )
+  route('/locations/time-slot/:timeSlotId/delete', new DeleteTimeSlotHandler(officialVisitsService))
 
   return router
 }
