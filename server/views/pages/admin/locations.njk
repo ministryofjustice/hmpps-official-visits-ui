@@ -8,7 +8,7 @@
 {% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
 
 {% block content %}
-  <div class="govuk-grid-row">
+  <div>
     <span class="govuk-hint">The locations and capacity for official visits</span>
     <h1 class="govuk-heading-l">Locations for {{ timeSlot.dayCode | translateDay }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
 
