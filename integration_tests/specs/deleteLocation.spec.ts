@@ -53,9 +53,6 @@ test.describe('Admin: Delete a location', () => {
 
     await page.getByRole('link', { name: 'Delete' }).click()
 
-    // Click Delete link added to the manage location page - we need to navigate to the delete URL
-    await page.goto('/admin/locations/time-slot/1/visit-slot/1/delete')
-
     await expect(page).toHaveURL(/\/admin\/locations\/time-slot\/1\/visit-slot\/1\/delete/)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Are you sure you want to delete this location/)
 
