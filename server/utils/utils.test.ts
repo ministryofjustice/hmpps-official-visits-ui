@@ -29,7 +29,6 @@ import {
   formatDateToLocalDateString,
   coerceInt,
   getTime,
-  groupAndSortTimeSlots,
 } from './utils'
 import { TimeSlotSummaryItem } from '../@types/officialVisitsApi/types'
 
@@ -501,43 +500,5 @@ describe('getTime', () => {
   it('returns correctly formatted times for double digits', () => {
     expect(getTime(12, 0)).toBe('12:00')
     expect(getTime(23, 59)).toBe('23:59')
-  })
-})
-
-describe('groupAndSortTimeSlots', () => {
-  const makeSlot = (day: string, startTime: string, prisonTimeSlotId = 1): TimeSlotSummaryItem =>
-    ({
-      timeSlot: {
-        prisonTimeSlotId,
-        prisonCode: 'MDI',
-        dayCode: day,
-        startTime,
-        endTime: '11:00',
-        effectiveDate: '2026-01-01',
-        createdBy: 'test',
-        createdTime: '2026-01-01T00:00:00Z',
-      },
-      visitSlots: [],
-    }) as TimeSlotSummaryItem
-
-  it('groups slots by day and sorts them by startTime', () => {
-    const items: TimeSlotSummaryItem[] = [
-      makeSlot('MON', '10:00'),
-      makeSlot('TUE', '09:00'),
-      makeSlot('MON', '09:30'),
-      makeSlot('MON', '11:00'),
-      makeSlot('TUE', '08:00'),
-    ]
-
-    const grouped = groupAndSortTimeSlots(items)
-
-    expect(Object.keys(grouped).sort()).toEqual(['MON', 'TUE'])
-    expect(grouped['MON'].map(s => s.timeSlot.startTime)).toEqual(['09:30', '10:00', '11:00'])
-    expect(grouped['TUE'].map(s => s.timeSlot.startTime)).toEqual(['08:00', '09:00'])
-  })
-
-  it('returns empty object for undefined input', () => {
-    const grouped = groupAndSortTimeSlots(undefined)
-    expect(Object.keys(grouped)).toEqual([])
   })
 })

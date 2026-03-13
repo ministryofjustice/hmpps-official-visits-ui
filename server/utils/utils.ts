@@ -394,27 +394,3 @@ export const toMinutes = (time: string) => {
   const [h, m] = time.split(':').map(Number)
   return h * 60 + m
 }
-
-export const sortByStartTime = (a: TimeSlotSummaryItem, b: TimeSlotSummaryItem) =>
-  toMinutes(a.timeSlot.startTime) - toMinutes(b.timeSlot.startTime)
-
-/**
- * Group time slots by dayCode and sort each group's slots by startTime.
- * Returns an object keyed by day code (e.g., 'MON') with arrays of TimeSlotSummaryItem sorted by startTime.
- */
-export const groupAndSortTimeSlots = (items: TimeSlotSummaryItem[] | undefined) => {
-  const timeSlots = items ?? []
-  const grouped = timeSlots.reduce<Record<string, TimeSlotSummaryItem[]>>((acc, slot) => {
-    const day = slot?.timeSlot?.dayCode || 'UNKNOWN'
-    if (!acc[day]) acc[day] = []
-    acc[day].push(slot)
-    return acc
-  }, {})
-
-  // Sort each group's entries in-place using existing sort helper
-  for (const day of Object.keys(grouped)) {
-    grouped[day].sort(sortByStartTime)
-  }
-
-  return grouped
-}
