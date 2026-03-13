@@ -74,7 +74,7 @@ describe('DayHandler', () => {
             dayCode: 'MON',
             prisonTimeSlotId: 2,
             startTime: '09:00',
-            endTime: '10:00',
+            endTime: '11:45',
             effectiveDate: '2025-01-01',
             expiryDate: '2056-12-31',
             prisonCode: 'MDI',
@@ -87,6 +87,20 @@ describe('DayHandler', () => {
           timeSlot: {
             dayCode: 'MON',
             prisonTimeSlotId: 3,
+            startTime: '09:00',
+            endTime: '10:00',
+            effectiveDate: '2025-01-01',
+            expiryDate: '2056-12-31',
+            prisonCode: 'MDI',
+            createdBy: 'BP',
+            createdTime: '2025-01-01T09:00:00',
+          },
+          visitSlots: [],
+        },
+        {
+          timeSlot: {
+            dayCode: 'MON',
+            prisonTimeSlotId: 4,
             startTime: '16:00',
             endTime: '17:00',
             effectiveDate: '2025-01-01',
@@ -106,14 +120,6 @@ describe('DayHandler', () => {
 
     expect(res.status).toBe(200)
 
-    // The Monday slots should be sorted by start time: 09:00, 13:30, 16:00
-    const mondayText = res.text.match(/Monday[\s\S]*?Tuesday/m)?.[0] || ''
-    const lines = mondayText.split('\n')
-
-    // Find the table rows for Monday (look for the start times in order)
-    const startTimeLines = lines.filter(line => line.match(/\d{2}:\d{2}/))
-
-    // The times should appear in sorted order
-    expect(res.text).toMatch(/09:00[\s\S]*13:30[\s\S]*16:00/)
+    expect(res.text).toMatch(/09:00[\s\S]*10:00[\s\S]*09:00[\s\S]*11:45[\s\S]*13:30[\s\S]*16:00/)
   })
 })

@@ -14,27 +14,39 @@ export default class DayHandler implements PageHandler {
 
     const allSlots = await this.officialVisitsService.getVisitSlotsAtPrison(prisonCode, user)
 
-    const monSlots = allSlots.timeSlots
-      .filter(slot => slot.timeSlot.dayCode === 'MON')
-      .sort((a, b) => a.timeSlot.startTime.localeCompare(b.timeSlot.startTime))
-    const tueSlots = allSlots.timeSlots
-      .filter(slot => slot.timeSlot.dayCode === 'TUE')
-      .sort((a, b) => a.timeSlot.startTime.localeCompare(b.timeSlot.startTime))
-    const wedSlots = allSlots.timeSlots
-      .filter(slot => slot.timeSlot.dayCode === 'WED')
-      .sort((a, b) => a.timeSlot.startTime.localeCompare(b.timeSlot.startTime))
-    const thuSlots = allSlots.timeSlots
-      .filter(slot => slot.timeSlot.dayCode === 'THU')
-      .sort((a, b) => a.timeSlot.startTime.localeCompare(b.timeSlot.startTime))
-    const friSlots = allSlots.timeSlots
-      .filter(slot => slot.timeSlot.dayCode === 'FRI')
-      .sort((a, b) => a.timeSlot.startTime.localeCompare(b.timeSlot.startTime))
-    const satSlots = allSlots.timeSlots
-      .filter(slot => slot.timeSlot.dayCode === 'SAT')
-      .sort((a, b) => a.timeSlot.startTime.localeCompare(b.timeSlot.startTime))
-    const sunSlots = allSlots.timeSlots
-      .filter(slot => slot.timeSlot.dayCode === 'SUN')
-      .sort((a, b) => a.timeSlot.startTime.localeCompare(b.timeSlot.startTime))
+    // Group and sort time slots by day
+    const daySlots = allSlots.timeSlots.reduce(
+      (acc, slot) => {
+        const { dayCode } = slot.timeSlot
+        if (!acc[dayCode]) {
+          acc[dayCode] = []
+        }
+        acc[dayCode].push(slot)
+        return acc
+      },
+      {} as Record<string, typeof allSlots.timeSlots>,
+    )
+
+    // Sort each day's slots by start time, then by end time for tie-breakers
+    Object.keys(daySlots).forEach(dayCode => {
+      daySlots[dayCode].sort((a, b) => {
+        const startTimeCompare = a.timeSlot.startTime.localeCompare(b.timeSlot.startTime)
+        if (startTimeCompare !== 0) {
+          return startTimeCompare
+        }
+        return a.timeSlot.endTime.localeCompare(b.timeSlot.endTime)
+      })
+    })
+
+    const {
+      MON: monSlots,
+      TUE: tueSlots,
+      WED: wedSlots,
+      THU: thuSlots,
+      FRI: friSlots,
+      SAT: satSlots,
+      SUN: sunSlots,
+    } = daySlots
 
     // Render the slots across the various days in this prison
 
