@@ -131,4 +131,14 @@ export default {
     simpleApiMock(`/official-visits-api/admin/prison/${prisonCode}/official-visit-locations`, response),
   stubGetPrisonTimeSlotById: (prisonTimeSlotId: number, response: RecursivePartial<TimeSlot>) =>
     simpleApiMock(`/official-visits-api/admin/time-slot/${prisonTimeSlotId}`, response),
+  stubDeleteTimeSlot: (timeSlotId: number) =>
+    stubFor({
+      request: {
+        method: 'DELETE',
+        urlPattern: `/official-visits-api/admin/time-slot/${timeSlotId}`,
+      },
+      response: {
+        status: 204,
+      },
+    }),
 }

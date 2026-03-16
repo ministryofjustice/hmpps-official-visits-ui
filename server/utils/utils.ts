@@ -387,9 +387,3 @@ export const translateDay = (dayCode: string) => {
       return ''
   }
 }
-
-// Convert HH:mm (or H:mm) to minutes for reliable numeric comparison
-export const toMinutes = (time: string) => {
-  const [h, m] = time.split(':').map(Number)
-  return h * 60 + m
-}
