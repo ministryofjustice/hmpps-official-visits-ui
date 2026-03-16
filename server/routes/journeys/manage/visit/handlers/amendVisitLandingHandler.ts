@@ -6,7 +6,7 @@ import PrisonerService from '../../../../../services/prisonerService'
 import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import ManageUserService from '../../../../../services/manageUsersService'
 import { JourneyVisitor } from '../journey'
-import { OfficialVisit } from '../../../../../@types/officialVisitsApi/types'
+import { OfficialVisit, RestrictionSummary } from '../../../../../@types/officialVisitsApi/types'
 
 export default class AmendVisitLandingHandler implements PageHandler {
   public PAGE_NAME = Page.AMEND_LANDING_PAGE
@@ -46,7 +46,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
     const prisonCode = req.session.activeCaseLoadId
     const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), user)
 
-    const [restrictions, prisoner] = await Promise.all([
+    const [restrictions, prisoner, contacts] = await Promise.all([
       this.personalRelationshipsService.getPrisonerRestrictions(
         visit.prisonerVisited.prisonerNumber,
         0,
@@ -56,7 +56,23 @@ export default class AmendVisitLandingHandler implements PageHandler {
         false,
       ),
       this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerVisited.prisonerNumber, user),
+      this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user, true, true),
     ])
+
+    // Hydrate visitor restrictions from contact data
+    const hydratedVisitors = (visit.officialVisitors || []).map(visitor => {
+      const contact = contacts?.find(c => c.contactId === visitor.contactId)
+      return {
+        ...visitor,
+        restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
+        // Add other contact details that might be useful
+        firstName: contact?.firstName || visitor.firstName || '',
+        lastName: contact?.lastName || visitor.lastName || '',
+        phoneNumber: contact?.phoneNumber || visitor.phoneNumber || '',
+        // Preserve existing email address from visitor data
+        emailAddress: visitor.emailAddress || '',
+      }
+    })
 
     const createdUser = await this.manageUsersService.getUserByUsername(visit.createdBy, user)
     const modifiedUser =
@@ -90,10 +106,10 @@ export default class AmendVisitLandingHandler implements PageHandler {
       visitDate: visit.visitDate,
       visitStatusCode: visit.visitStatus,
       visitType: visit.visitTypeCode,
-      officialVisitors: visit.officialVisitors
+      officialVisitors: hydratedVisitors
         .filter(o => o.relationshipTypeCode === 'OFFICIAL')
         .map(this.mapVisitorToJourneyVisitor) as JourneyVisitor[],
-      socialVisitors: visit.officialVisitors
+      socialVisitors: hydratedVisitors
         .filter(o => o.relationshipTypeCode === 'SOCIAL')
         .map(this.mapVisitorToJourneyVisitor) as JourneyVisitor[],
     }
@@ -114,6 +130,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
     return res.render('pages/view/visit', {
       visit: {
         ...visit,
+        officialVisitors: hydratedVisitors,
         createdBy: createdUser.name,
         updatedBy: modifiedUser.name,
       },
