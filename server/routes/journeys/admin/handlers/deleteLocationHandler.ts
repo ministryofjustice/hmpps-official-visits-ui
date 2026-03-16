@@ -19,7 +19,7 @@ export default class DeleteLocationHandler implements PageHandler {
     res.render('pages/admin/deleteLocation', {
       visitSlot,
       timeSlotId,
-      backTo: `/admin/locations/time-slot/${timeSlotId}/location`,
+      backUrl: `/admin/locations/time-slot/${timeSlotId}/location`,
     })
   }
 
@@ -33,8 +33,8 @@ export default class DeleteLocationHandler implements PageHandler {
     await this.officialVisitsService.deleteVisitSlot(visitSlotId, user)
 
     const backTo = `/admin/locations/time-slot/${timeSlotId}/location`
-    const header = 'Location deleted'
-    const message = `You have deleted the location from your prisons visiting schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
+    const header = 'Location for visit deleted'
+    const message = `You have deleted a location for a visiting time in your prisons schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
     res.addSuccessMessage(header, message)
     return res.redirect(backTo)
   }

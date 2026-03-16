@@ -32,6 +32,7 @@ export type FindByCriteriaVisit = components['schemas']['OfficialVisitSummarySea
 export type CompleteVisitRequest = components['schemas']['OfficialVisitCompletionRequest']
 export type CancelTypeRequest = components['schemas']['OfficialVisitCancellationRequest']
 export type TimeSlotSummary = components['schemas']['TimeSlotSummary']
+export type TimeSlotSummaryItem = components['schemas']['TimeSlotSummaryItem']
 export type CreateTimeSlotRequest = components['schemas']['CreateTimeSlotRequest']
 export type UpdateTimeSlotRequest = components['schemas']['UpdateTimeSlotRequest']
 export type UpdateVisitSlotRequest = components['schemas']['UpdateVisitSlotRequest']

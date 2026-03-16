@@ -41,10 +41,7 @@ describe('DayHandler', () => {
     expect(res.text).toContain('2 January 2025')
     expect(res.text).toContain('3 January 2025')
     expect(res.text).toContain('Manage locations')
-    expect(res.text).toContain('Add Monday time')
-    expect(res.text).toContain('Add Tuesday time')
-    expect(res.text).toContain('Set end date for all Monday visit times')
-    expect(res.text).toContain('Set end date for all Tuesday visit times')
+    expect(res.text).toContain('Add a new time')
     // assert links
     expect(res.text).toContain('href="/admin/locations/time-slot/1/location">Manage locations</a>')
     expect(res.text).toContain('href="/admin/locations/time-slot/1/edit?day=MON">Edit</a>')

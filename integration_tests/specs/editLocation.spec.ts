@@ -41,7 +41,7 @@ test.describe('Admin: Edit a location', () => {
 
     await page.goto('/admin/locations/time-slot/1/location')
 
-    await page.getByRole('link', { name: 'Manage location' }).click()
+    await page.getByRole('link', { name: 'Edit' }).click()
 
     await expect(page).toHaveURL(/\/admin\/locations\/time-slot\/1\/visit-slot\/1/)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Edit location/)

@@ -3,15 +3,14 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "partials/admin/translateDay.njk" import translateDay %}
 
 {% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
 
 {% block content %}
-    <div class="govuk-grid-row">
+    <div>
         <span class="govuk-hint">Admin</span>
-        <h1 class="govuk-heading-l">Add new location and capacities
-            for {{ translateDay(timeSlot.dayCode) }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
+        <h1 class="govuk-heading-l">Add new location and location capacities
+            for {{ timeSlot.dayCode | translateDay }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
         <p class="govuk-body">Add a new location and location capacity. For video visits location capacities should be
             set to 0.</p>
 
@@ -84,6 +83,10 @@
                             classes: "govuk-!-margin-bottom-0",
                             preventDoubleClick: true
                         }) }}
+                        <a href="admin/locations/time-slot/{{ timeSlot.prisonTimeSlotId}}/location"
+                           class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">
+                            Cancel and return to schedule
+                        </a>
                     </div>
                 </div>
             </div>

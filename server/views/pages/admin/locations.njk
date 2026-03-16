@@ -3,20 +3,19 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/tabs/macro.njk" import govukTabs %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "partials/admin/translateDay.njk" import translateDay %}
 
 {% set pageTitle = "Locations for time slot" %}
 {% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
 
 {% block content %}
-  <div class="govuk-grid-row">
+  <div>
     <span class="govuk-hint">The locations and capacity for official visits</span>
-    <h1 class="govuk-heading-l">Locations for {{ translateDay(timeSlot.dayCode) }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
+    <h1 class="govuk-heading-l">Locations for {{ timeSlot.dayCode | translateDay }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
 
       {% set rows = [] %}
       {% if visitSlots.length > 0 %}
           {% for slot in visitSlots %}
-              {% set actionHtml = '<a href="/admin/locations/time-slot/' + timeSlot.prisonTimeSlotId + '/visit-slot/' + slot.visitSlotId + '">Manage location</a>' %}
+              {% set actionHtml = '<a href="/admin/locations/time-slot/' + timeSlot.prisonTimeSlotId + '/visit-slot/' + slot.visitSlotId + '">Edit</a>' %}
                 {% if slot.hasVisit == false %}
                   {% set actionHtml = actionHtml + ' <a class="govuk-link govuk-!-margin-left-4" href="/admin/locations/time-slot/' + timeSlot.prisonTimeSlotId + '/visit-slot/' + slot.visitSlotId + '/delete">Delete</a>' %}
               {% endif %}
@@ -55,9 +54,9 @@
         preventDoubleClick: true,
         href: "/admin/locations/time-slot/" ~ timeSlot.prisonTimeSlotId ~ "/visit-slot/new"
       }) }}
-      <a href="/admin/days#{{ translateDay(timeSlot.dayCode) | trim | lower }}"
+      <a href="/admin/days#{{ timeSlot.dayCode | translateDay | trim | lower }}"
          class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">
-        Back to day view
+        Return to schedule day view
       </a>
     </div>
 
