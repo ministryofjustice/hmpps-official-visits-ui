@@ -415,7 +415,7 @@ test.describe('Amend official visits', () => {
     // Back should go back to visitors page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/select-official-visitors`)
-    await page.goBack()
+    await page.goto(`http://localhost:3007/manage/amend/1/${journeyId}/select-social-visitors`)
 
     // Pre-selected value
     expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
