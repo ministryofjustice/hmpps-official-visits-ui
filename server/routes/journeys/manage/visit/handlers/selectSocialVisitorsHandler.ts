@@ -10,7 +10,7 @@ import { HmppsUser } from '../../../../../interfaces/hmppsUser'
 export default class SelectSocialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_SOCIAL_VISITORS_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
 
   private getSelectableContacts = async (
     prisonerNumber: string,
@@ -19,7 +19,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
   ) => {
     const allContacts = await this.officialVisitsService.getAllSocialContacts(prisonerNumber, user, undefined, true)
 
-    return allContacts.filter(o => o.isApprovedVisitor || contactsOnVisit?.some(v => v.contactId === o.contactId))
+    return allContacts.filter(o => o.isApprovedVisitor || contactsOnVisit?.some(v => v.contactId === o.contactId && v.relationshipToPrisonerCode === o.relationshipToPrisonerCode))
   }
 
   public GET = async (req: Request, res: Response) => {
@@ -29,7 +29,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
 
     // Record the approved social contacts who are already selected for this visit in session data
-    const selectedContacts = res.locals.formResponses?.selected || journeyVisitors?.map(v => v.contactId) || []
+    const selectedContacts = res.locals.formResponses?.selected || journeyVisitors?.map(v => `${v.contactId}-${v.relationshipToPrisonerCode}`) || []
     // Show the list and prefill the checkboxes for the selected social visitors
     res.render('pages/manage/selectSocialVisitors', {
       contacts: recallContacts(req.session.journey, 'S', selectableContacts),
@@ -55,7 +55,10 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
       req.session.journey,
       'S',
       selected
-        .map((o: string) => socialContacts?.find(c => c.contactId === Number(o)))
+        .map((o: string) => {
+          const [contactId, relationshipToPrisonerCode] = o.split('-')
+          return socialContacts?.find(c => c.contactId === Number(contactId) && c.relationshipToPrisonerCode === relationshipToPrisonerCode)
+        })
         .filter((o: JourneyVisitor) => o),
     )
 
