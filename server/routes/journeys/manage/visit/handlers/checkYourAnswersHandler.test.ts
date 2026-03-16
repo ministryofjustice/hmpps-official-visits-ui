@@ -8,7 +8,7 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import { getPageHeader, getValueByKey } from '../../../../testutils/cheerio'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
-import { AvailableSlot } from '../../../../../@types/officialVisitsApi/types'
+import { AvailableSlot, RestrictionSummary } from '../../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -85,6 +85,20 @@ const mockOfficialVisitJourney = {
       assistedVisit: true,
       equipmentNotes: 'Equipment details',
       equipment: true,
+      isApprovedVisitor: true,
+      isNextOfKin: false,
+      isEmergencyContact: false,
+      isRelationshipActive: true,
+      restrictionSummary: {
+        active: [
+          {
+            restrictionType: 'CCTV',
+            restrictionTypeDescription: 'CCTV monitoring required',
+            startDate: '2024-01-01',
+            expiryDate: '2025-12-31',
+          },
+        ],
+      },
     },
   ],
   socialVisitors: [],
@@ -93,7 +107,7 @@ const mockOfficialVisitJourney = {
   prisonerNotes: 'prisoner notes',
   staffNotes: 'staff notes',
   commentsPageCompleted: true,
-} as Partial<OfficialVisitJourney>
+} as unknown as Partial<OfficialVisitJourney>
 
 const defaultJourneySession = () => ({
   officialVisit: mockOfficialVisitJourney,
@@ -138,6 +152,18 @@ describe('check your answers handler', () => {
           expect(heading).toEqual('Check and confirm the official visit details')
           expect($('h2.govuk-heading-l').text()).toEqual('Visit detailsVisitor details')
 
+          // Check restrictions badge is rendered correctly (1 restriction = singular)
+          expect(res.text).toContain('ACTIVE RESTRICTION IN PLACE')
+
+          // Check restrictions table is rendered correctly
+          expect(res.text).toContain('active restrictions')
+          expect(res.text).toContain('Previous info')
+          expect(res.text).toContain('2 October 2024')
+          expect(res.text).toContain('Type of restriction')
+          expect(res.text).toContain('Comments')
+          expect(res.text).toContain('Date from')
+          expect(res.text).toContain('Date to')
+
           expect(getValueByKey($, 'Prisoner')).toEqual('Tim Harrison (G4793VF)')
           expect(getValueByKey($, 'Visit type')).toEqual('Attend in person')
           expect(getValueByKey($, 'Date')).toEqual('Monday, 26 January 2026')
@@ -154,12 +180,136 @@ describe('check your answers handler', () => {
           expect(getValueByKey($, 'Does this visitor need equipment?')).toEqual('Yes')
           expect(getValueByKey($, 'Equipment')).toEqual('Equipment details')
 
+          // Check visitor restrictions are displayed
+          expect(res.text).toContain('Restrictions')
+          expect(res.text).toContain('CCTV monitoring required')
+
           expect($('.govuk-button').text().trim()).toEqual('Create official visit')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.CHECK_YOUR_ANSWERS_PAGE, {
             who: user.username,
             correlationId: expect.any(String),
           })
+        })
+    })
+
+    it('should render ACTIVE RESTRICTIONS IN PLACE badge when multiple restrictions exist', () => {
+      // Create a mock with multiple restrictions
+      const mockJourneyWithMultipleRestrictions = {
+        ...mockOfficialVisitJourney,
+        prisoner: {
+          ...mockOfficialVisitJourney.prisoner,
+          restrictions: [
+            {
+              prisonerRestrictionId: 175317,
+              prisonerNumber: 'G4793VF',
+              restrictionType: 'PREINF',
+              restrictionTypeDescription: 'Previous info',
+              effectiveDate: '2024-10-02',
+              authorisedUsername: 'JDIMBLEBY_GEN',
+              authorisedByDisplayName: 'Jo Dimbleby',
+              currentTerm: true,
+              createdBy: 'JDIMBLEBY_GEN',
+              createdTime: '2024-10-02T11:58:01.285998',
+            },
+            {
+              prisonerRestrictionId: 175318,
+              prisonerNumber: 'G4793VF',
+              restrictionType: 'CCTV',
+              restrictionTypeDescription: 'CCTV monitoring required',
+              effectiveDate: '2024-10-01',
+              authorisedUsername: 'JDIMBLEBY_GEN',
+              authorisedByDisplayName: 'Jo Dimbleby',
+              currentTerm: true,
+              createdBy: 'JDIMBLEBY_GEN',
+              createdTime: '2024-10-01T11:58:01.285998',
+            },
+          ],
+        },
+      }
+
+      const journeyWithMultipleRestrictions = () => ({
+        officialVisit: mockJourneyWithMultipleRestrictions,
+      })
+
+      appSetup(journeyWithMultipleRestrictions())
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('ACTIVE RESTRICTIONS IN PLACE')
+          expect(res.text).toContain('moj-badge--red')
+        })
+    })
+
+    it('should not render badge when no active restrictions exist', () => {
+      const mockJourneyWithExpiredRestrictions = {
+        ...mockOfficialVisitJourney,
+        prisoner: {
+          ...mockOfficialVisitJourney.prisoner,
+          restrictions: [
+            {
+              prisonerRestrictionId: 175317,
+              prisonerNumber: 'G4793VF',
+              restrictionType: 'PREINF',
+              restrictionTypeDescription: 'Previous info',
+              effectiveDate: '2020-10-02', // Expired
+              expiryDate: '2021-10-02', // Expired
+              authorisedUsername: 'JDIMBLEBY_GEN',
+              authorisedByDisplayName: 'Jo Dimbleby',
+              currentTerm: true,
+              createdBy: 'JDIMBLEBY_GEN',
+              createdTime: '2020-10-02T11:58:01.285998',
+            },
+          ],
+        },
+      }
+
+      const journeyWithExpiredRestrictions = () => ({
+        officialVisit: mockJourneyWithExpiredRestrictions,
+      })
+
+      appSetup(journeyWithExpiredRestrictions())
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).not.toContain('ACTIVE RESTRICTION IN PLACE')
+          expect(res.text).not.toContain('ACTIVE RESTRICTIONS IN PLACE')
+          expect(res.text).not.toContain('moj-badge--red')
+        })
+    })
+
+    it('should display "None" for visitor with no restrictions', () => {
+      // Create a mock with visitor having no restrictions
+      const mockJourneyWithNoVisitorRestrictions = {
+        ...mockOfficialVisitJourney,
+        officialVisitors: [
+          {
+            ...mockOfficialVisitJourney.officialVisitors[0],
+            restrictionSummary: {
+              active: [] as RestrictionSummary[],
+            },
+          },
+        ],
+      }
+
+      const journeyWithNoVisitorRestrictions = () => ({
+        officialVisit: mockJourneyWithNoVisitorRestrictions as unknown as Partial<OfficialVisitJourney>,
+      })
+
+      appSetup(journeyWithNoVisitorRestrictions())
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          // Check visitor restrictions show "None"
+          expect(res.text).toContain('Restrictions')
+          expect(res.text).toContain('None')
+          expect(res.text).not.toContain('CCTV monitoring required')
         })
     })
   })
