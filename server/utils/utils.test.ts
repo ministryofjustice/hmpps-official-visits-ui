@@ -30,7 +30,6 @@ import {
   coerceInt,
   getTime,
 } from './utils'
-import { TimeSlotSummaryItem } from '../@types/officialVisitsApi/types'
 
 describe('convert to title case', () => {
   it.each([
