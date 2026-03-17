@@ -65,7 +65,9 @@ export function recallContacts(journey: Journey, relationshipType: 'O' | 'S', co
   const existing =
     relationshipType === 'O' ? journey.officialVisit.officialVisitors : journey.officialVisit.socialVisitors
   return contacts.map(contact => {
-    const existingContact = (existing || []).find(v => v.contactId === contact.contactId)
+    const existingContact = (existing || []).find(
+      v => v.contactId === contact.contactId && v.relationshipToPrisonerCode === contact.relationshipToPrisonerCode,
+    )
     return {
       ...contact,
       assistanceNotes: existingContact?.assistanceNotes,

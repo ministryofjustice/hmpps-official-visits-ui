@@ -33,6 +33,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
       relationshipTypeDescription: visitor.relationshipTypeDescription,
       relationshipToPrisonerCode: visitor.relationshipCode,
       relationshipToPrisonerDescription: visitor.relationshipDescription,
+      relationshipTypeCode: visitor.relationshipTypeCode,
       leadVisitor: visitor.leadVisitor,
       notes: visitor.visitorNotes,
     } as Partial<JourneyVisitor>
