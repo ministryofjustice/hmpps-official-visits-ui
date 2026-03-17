@@ -18,7 +18,7 @@ import { mockOfficialVisitors, mockPrisonerRestrictions, mockPrisoner } from '..
 import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
 import config from '../../../../../config'
-import { OfficialVisitJourney } from '../journey'
+import { JourneyVisitor, OfficialVisitJourney } from '../journey'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -394,7 +394,7 @@ describe('Select official visitors', () => {
     it('should accept the selection of one official visitor and redirect to social visitors page', async () => {
       await request(app)
         .post(URL)
-        .send({ selected: ['101'] })
+        .send({ selected: ['101-SOL'] })
         .expect(302)
         .expect('location', 'select-social-visitors')
         .expect(() => expectNoErrorMessages())
@@ -407,7 +407,7 @@ describe('Select official visitors', () => {
       config.featureToggles.allowSocialVisitorsPrisons = ''
       await request(app)
         .post(URL)
-        .send({ selected: ['101'] })
+        .send({ selected: ['101-SOL'] })
         .expect(302)
         .expect('location', 'assistance-required')
         .expect(() => expectNoErrorMessages())
@@ -420,7 +420,7 @@ describe('Select official visitors', () => {
       config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
       await request(app)
         .post(URL)
-        .send({ selected: ['101', '102'] })
+        .send({ selected: ['101-SOL', '102-POL'] })
         .expect(302)
         .expect('location', 'select-social-visitors')
         .expect(() => expectNoErrorMessages())
@@ -433,13 +433,47 @@ describe('Select official visitors', () => {
       config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
       await request(app)
         .post(`/manage/amend/1/${journeyId()}/select-official-visitors`)
-        .send({ selected: ['101', '102'] })
+        .send({ selected: ['101-SOL', '102-POL'] })
         .expect(302)
         .expect('location', 'select-social-visitors')
         .expect(() => expectNoErrorMessages())
 
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.officialVisitors).toHaveLength(2)
+    })
+
+    it('should handle official visitors with same contact ID but different relationship codes', async () => {
+      const mockVisitorsWithSameContactId = [
+        ...mockOfficialVisitors,
+        {
+          ...mockOfficialVisitors[0],
+          relationshipToPrisonerCode: 'JUD',
+          relationshipToPrisonerDescription: 'Judge',
+        },
+      ]
+      officialVisitsService.getAllOfficialContacts.mockResolvedValue(mockVisitorsWithSameContactId)
+
+      await request(app)
+        .post(URL)
+        .send({ selected: ['101-SOL', '101-JUD'] })
+        .expect(302)
+        .expect('location', 'select-social-visitors')
+        .expect(() => expectNoErrorMessages())
+
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.officialVisitors).toHaveLength(2)
+
+      const visitors = journeySession.officialVisitors
+      const solicitorVisitor = visitors.find((v: JourneyVisitor) => v.relationshipToPrisonerCode === 'SOL')
+      const judgeVisitor = visitors.find((v: JourneyVisitor) => v.relationshipToPrisonerCode === 'JUD')
+
+      expect(solicitorVisitor).toBeDefined()
+      expect(solicitorVisitor.contactId).toBe(101)
+      expect(solicitorVisitor.relationshipToPrisonerCode).toBe('SOL')
+
+      expect(judgeVisitor).toBeDefined()
+      expect(judgeVisitor.contactId).toBe(101)
+      expect(judgeVisitor.relationshipToPrisonerCode).toBe('JUD')
     })
   })
 })

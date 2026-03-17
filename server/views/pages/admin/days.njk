@@ -57,12 +57,18 @@
     {% for slot in slots %}
       {% set manageUrl = '/admin/locations/time-slot/' + slot.timeSlot.prisonTimeSlotId +'/location'%}
       {% set editUrl = "/admin/locations/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/edit?day=" ~ dayCode %}
+      {% set deleteUrl = "/admin/locations/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/delete" %}
+      {% set actionLinks = '<span class="actions"><a href="' + manageUrl + '">Manage locations</a> <a href="' + editUrl + '">Edit</a>' %}
+      {% if slot.visitSlots and slot.visitSlots.length == 0 %}
+        {% set actionLinks = actionLinks + ' <a href="' + deleteUrl + '">Delete</a>' %}
+      {% endif %}
+      {% set actionLinks = actionLinks + '</span>' %}
       {% set rows = (rows.push([
         { text: slot.timeSlot.startTime },
         { text: slot.timeSlot.endTime },
         { text: slot.timeSlot.effectiveDate | formatDate },
         { text: slot.timeSlot.expiryDate | formatDate },
-        { html: '<span class="actions"><a href="' + manageUrl + '">Manage locations</a> <a href="' + editUrl + '">Edit</a></span>' }
+        { html: actionLinks }
       ]), rows) %}
     {% endfor %}
   {% else %}

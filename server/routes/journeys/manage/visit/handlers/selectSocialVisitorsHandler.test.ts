@@ -13,6 +13,7 @@ import {
   getByDataQa,
 } from '../../../../testutils/cheerio'
 import { Journey } from '../../../../../@types/express'
+import { JourneyVisitor } from '../journey'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockSocialVisitors, mockPrisonerRestrictions, mockPrisoner } from '../../../../../testutils/mocks'
 import { expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
@@ -272,19 +273,24 @@ describe('Select social visitors', () => {
     it('should accept the selection of one social visitor', async () => {
       await request(app)
         .post(URL)
-        .send({ selected: ['201'] })
+        .send({ selected: ['201-BRO'] })
         .expect(302)
         .expect('location', 'assistance-required')
         .expect(() => expectNoErrorMessages())
 
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.socialVisitors).toHaveLength(1)
+      const visitor = journeySession.socialVisitors[0]
+      expect(visitor.contactId).toBe(201)
+      expect(visitor.relationshipToPrisonerCode).toBe('BRO')
+      expect(visitor.firstName).toBe('Abe')
+      expect(visitor.lastName).toBe('Smith')
     })
 
     it('should accept the selection of two social visitors', async () => {
       await request(app)
         .post(URL)
-        .send({ selected: ['201', '202'] })
+        .send({ selected: ['201-BRO', '202-BRO'] })
         .expect(302)
         .expect('location', 'assistance-required')
         .expect(() => expectNoErrorMessages())
@@ -296,13 +302,47 @@ describe('Select social visitors', () => {
     it('should accept the selection of two social visitors (amend)', async () => {
       await request(app)
         .post(`/manage/amend/1/${journeyId()}/select-social-visitors`)
-        .send({ selected: ['201', '202'] })
+        .send({ selected: ['201-BRO', '202-BRO'] })
         .expect(302)
         .expect('location', 'assistance-required')
         .expect(() => expectNoErrorMessages())
 
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.socialVisitors).toHaveLength(2)
+    })
+
+    it('should handle visitors with same contact ID but different relationship codes', async () => {
+      const mockVisitorsWithSameContactId = [
+        ...mockSocialVisitors,
+        {
+          ...mockSocialVisitors[0],
+          relationshipToPrisonerCode: 'FRI',
+          relationshipToPrisonerDescription: 'Friend',
+        },
+      ]
+      officialVisitsService.getAllSocialContacts.mockResolvedValue(mockVisitorsWithSameContactId)
+
+      await request(app)
+        .post(URL)
+        .send({ selected: ['201-BRO', '201-FRI'] })
+        .expect(302)
+        .expect('location', 'assistance-required')
+        .expect(() => expectNoErrorMessages())
+
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.socialVisitors).toHaveLength(2)
+
+      const visitors = journeySession.socialVisitors
+      const brotherVisitor = visitors.find((v: JourneyVisitor) => v.relationshipToPrisonerCode === 'BRO')
+      const friendVisitor = visitors.find((v: JourneyVisitor) => v.relationshipToPrisonerCode === 'FRI')
+
+      expect(brotherVisitor).toBeDefined()
+      expect(brotherVisitor.contactId).toBe(201)
+      expect(brotherVisitor.relationshipToPrisonerCode).toBe('BRO')
+
+      expect(friendVisitor).toBeDefined()
+      expect(friendVisitor.contactId).toBe(201)
+      expect(friendVisitor.relationshipToPrisonerCode).toBe('FRI')
     })
   })
 })
