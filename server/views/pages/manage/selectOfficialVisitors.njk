@@ -97,9 +97,9 @@
               },
               items: [
                 {
-                  value: contact.contactId,
+                  value: contact.contactId + "-" + contact.relationshipToPrisonerCode,
                   html: "<span class='govuk-visually-hidden'>" + (contact.firstName + " " + contact.lastName) | convertToTitleCase + "</span>",
-                  checked: selectedContacts | includes(contact.contactId)
+                  checked: selectedContacts | includes(contact.contactId + "-" + contact.relationshipToPrisonerCode)
                 }
               ]
             }) },

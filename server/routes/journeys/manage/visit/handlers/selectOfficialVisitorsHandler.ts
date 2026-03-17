@@ -23,7 +23,13 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
   ) => {
     const allContacts = await this.officialVisitsService.getAllOfficialContacts(prisonerNumber, user, undefined, true)
 
-    return allContacts.filter(o => o.isApprovedVisitor || contactsOnVisit?.some(v => v.contactId === o.contactId))
+    return allContacts.filter(
+      o =>
+        o.isApprovedVisitor ||
+        contactsOnVisit?.some(
+          v => v.contactId === o.contactId && v.relationshipToPrisonerCode === o.relationshipToPrisonerCode,
+        ),
+    )
   }
 
   public GET = async (req: Request, res: Response) => {
@@ -34,7 +40,10 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
 
     // Get the approved official contacts who are already selected for this visit from session data
-    const selectedContacts = res.locals.formResponses?.selected || journeyVisitors?.map(v => v.contactId) || []
+    const selectedContacts =
+      res.locals.formResponses?.selected ||
+      journeyVisitors?.map(v => `${v.contactId}-${v.relationshipToPrisonerCode}`) ||
+      []
 
     // Show the list and prefill the selected checkboxes for official visitors
     res.render('pages/manage/selectOfficialVisitors', {
@@ -61,7 +70,12 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       req.session.journey,
       'O',
       selected
-        .map((o: string) => officialContacts?.find(c => c.contactId === Number(o)))
+        .map((o: string) => {
+          const [contactId, relationshipToPrisonerCode] = o.split('-')
+          return officialContacts?.find(
+            c => c.contactId === Number(contactId) && c.relationshipToPrisonerCode === relationshipToPrisonerCode,
+          )
+        })
         .filter((o: JourneyVisitor) => o),
     )
     return res.redirect(socialVisitorsPageEnabled(req as Request) ? `select-social-visitors` : `assistance-required`)
