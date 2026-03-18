@@ -40,7 +40,6 @@
 
   <br />
 
-  {# Active restrictions badge #}
   {% if prisoner.restrictions and prisoner.restrictions | length > 0 %}
     {% set activeRestrictions = prisoner.restrictions | rejectattr("expiryDate", "isDateAndInThePast") %}
     {% if activeRestrictions | length > 0 %}

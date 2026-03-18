@@ -8,7 +8,12 @@ import officialVisitsApi from '../mockApis/officialVisitsApi'
 import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
 import prisonApi from '../mockApis/prisonApi'
 import ListVisitsPage from '../pages/listVisitsPage'
-import { mockPrisonerRestrictions, mockVisitByIdVisit } from '../../server/testutils/mocks'
+import {
+  mockOfficialVisitors,
+  mockPrisonerRestrictions,
+  mockSocialVisitors,
+  mockVisitByIdVisit,
+} from '../../server/testutils/mocks'
 import ViewVisitPage from '../pages/viewVisitPage'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
 import manageUsersApi from '../mockApis/manageUsersApi'
@@ -131,6 +136,7 @@ test.describe('View official visits', () => {
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
     await officialVisitsApi.stubCompleteVisit({})
     await officialVisitsApi.stubCancelVisit({})
+    await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors])
   })
 
   test.afterEach(async () => {

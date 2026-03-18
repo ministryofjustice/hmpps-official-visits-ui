@@ -60,18 +60,11 @@ export default class AmendVisitLandingHandler implements PageHandler {
       this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user, true, true),
     ])
 
-    // Hydrate visitor restrictions from contact data
-    const hydratedVisitors = (visit.officialVisitors || []).map(visitor => {
+    const enrichedVisitors = (visit.officialVisitors || []).map(visitor => {
       const contact = contacts?.find(c => c.contactId === visitor.contactId)
       return {
         ...visitor,
         restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
-        // Add other contact details that might be useful
-        firstName: contact?.firstName || visitor.firstName || '',
-        lastName: contact?.lastName || visitor.lastName || '',
-        phoneNumber: contact?.phoneNumber || visitor.phoneNumber || '',
-        // Preserve existing email address from visitor data
-        emailAddress: visitor.emailAddress || '',
       }
     })
 
@@ -107,10 +100,10 @@ export default class AmendVisitLandingHandler implements PageHandler {
       visitDate: visit.visitDate,
       visitStatusCode: visit.visitStatus,
       visitType: visit.visitTypeCode,
-      officialVisitors: hydratedVisitors
+      officialVisitors: enrichedVisitors
         .filter(o => o.relationshipTypeCode === 'OFFICIAL')
         .map(this.mapVisitorToJourneyVisitor) as JourneyVisitor[],
-      socialVisitors: hydratedVisitors
+      socialVisitors: enrichedVisitors
         .filter(o => o.relationshipTypeCode === 'SOCIAL')
         .map(this.mapVisitorToJourneyVisitor) as JourneyVisitor[],
     }
@@ -131,7 +124,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
     return res.render('pages/view/visit', {
       visit: {
         ...visit,
-        officialVisitors: hydratedVisitors,
+        officialVisitors: enrichedVisitors,
         createdBy: createdUser.name,
         updatedBy: modifiedUser.name,
       },

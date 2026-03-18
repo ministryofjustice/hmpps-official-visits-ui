@@ -18,7 +18,6 @@
 
   {{ createJourneyHeader(prisoner, stepsChecked)}}
 
-  {# Active restrictions badge #}
   {% set activeRestrictions = prisoner.restrictions | rejectattr("expiryDate", "isDateAndInThePast") %}
   {% if activeRestrictions | length > 0 %}
     {% set badgeText = "ACTIVE RESTRICTION IN PLACE" if (activeRestrictions | length == 1) else "ACTIVE RESTRICTIONS IN PLACE" %}

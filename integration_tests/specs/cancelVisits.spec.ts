@@ -9,7 +9,12 @@ import officialVisitsApi from '../mockApis/officialVisitsApi'
 import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
 import prisonApi from '../mockApis/prisonApi'
 import ListVisitsPage from '../pages/listVisitsPage'
-import { mockPrisonerRestrictions, mockVisitByIdVisit } from '../../server/testutils/mocks'
+import {
+  mockOfficialVisitors,
+  mockPrisonerRestrictions,
+  mockSocialVisitors,
+  mockVisitByIdVisit,
+} from '../../server/testutils/mocks'
 import ViewVisitPage from '../pages/viewVisitPage'
 import CancelVisitPage from '../pages/cancelVisitPage'
 import { completionCodes, locations, mockPrisoner, searchLevels, statuses, visitTypes } from '../mockData/data'
@@ -22,6 +27,7 @@ test.describe('Cancel an official visit', () => {
     await prisonApi.stubGetPrisonerImage()
     await prisonerSearchApi.stubGetByPrisonerNumber(mockPrisoner)
     await personalRelationshipsApi.stubRestrictions({ content: mockPrisonerRestrictions })
+    await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors])
     await prisonerSearchApi.stubSearchInCaseload({
       content: [mockPrisoner],
       first: true,

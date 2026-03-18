@@ -45,7 +45,6 @@ beforeEach(() => {
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
   manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
-  // Mock the getAllContacts call to return empty array (no restrictions by default)
   officialVisitsService.getAllContacts.mockResolvedValue([])
 })
 
@@ -67,7 +66,6 @@ describe('View an official visit', () => {
           expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
-          // Should show restrictions badge since mock data has one active restriction (no expiry date)
           expect(res.text).toContain('ACTIVE RESTRICTION IN PLACE')
           expect(res.text).toContain('moj-badge--red')
 

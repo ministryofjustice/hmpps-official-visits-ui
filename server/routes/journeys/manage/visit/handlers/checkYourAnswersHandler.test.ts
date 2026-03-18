@@ -152,10 +152,8 @@ describe('check your answers handler', () => {
           expect(heading).toEqual('Check and confirm the official visit details')
           expect($('h2.govuk-heading-l').text()).toEqual('Visit detailsVisitor details')
 
-          // Check restrictions badge is rendered correctly (1 restriction = singular)
           expect(res.text).toContain('ACTIVE RESTRICTION IN PLACE')
 
-          // Check restrictions table is rendered correctly
           expect(res.text).toContain('active restrictions')
           expect(res.text).toContain('Previous info')
           expect(res.text).toContain('2 October 2024')
@@ -180,7 +178,6 @@ describe('check your answers handler', () => {
           expect(getValueByKey($, 'Does this visitor need equipment?')).toEqual('Yes')
           expect(getValueByKey($, 'Equipment')).toEqual('Equipment details')
 
-          // Check visitor restrictions are displayed
           expect(res.text).toContain('Restrictions')
           expect(res.text).toContain('CCTV monitoring required')
 
@@ -194,7 +191,6 @@ describe('check your answers handler', () => {
     })
 
     it('should render ACTIVE RESTRICTIONS IN PLACE badge when multiple restrictions exist', () => {
-      // Create a mock with multiple restrictions
       const mockJourneyWithMultipleRestrictions = {
         ...mockOfficialVisitJourney,
         prisoner: {
@@ -254,8 +250,8 @@ describe('check your answers handler', () => {
               prisonerNumber: 'G4793VF',
               restrictionType: 'PREINF',
               restrictionTypeDescription: 'Previous info',
-              effectiveDate: '2020-10-02', // Expired
-              expiryDate: '2021-10-02', // Expired
+              effectiveDate: '2020-10-02',
+              expiryDate: '2021-10-02',
               authorisedUsername: 'JDIMBLEBY_GEN',
               authorisedByDisplayName: 'Jo Dimbleby',
               currentTerm: true,
@@ -283,7 +279,6 @@ describe('check your answers handler', () => {
     })
 
     it('should display "None" for visitor with no restrictions', () => {
-      // Create a mock with visitor having no restrictions
       const mockJourneyWithNoVisitorRestrictions = {
         ...mockOfficialVisitJourney,
         officialVisitors: [
@@ -306,7 +301,6 @@ describe('check your answers handler', () => {
         .get(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
-          // Check visitor restrictions show "None"
           expect(res.text).toContain('Restrictions')
           expect(res.text).toContain('None')
           expect(res.text).not.toContain('CCTV monitoring required')
