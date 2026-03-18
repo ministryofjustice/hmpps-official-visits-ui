@@ -61,7 +61,9 @@ export default class AmendVisitLandingHandler implements PageHandler {
     ])
 
     const enrichedVisitors = (visit.officialVisitors || []).map(visitor => {
-      const contact = contacts?.find(c => c.contactId === visitor.contactId)
+      const contact = contacts?.find(
+        c => c.contactId === visitor.contactId && c.relationshipToPrisonerCode === visitor.relationshipCode,
+      )
       return {
         ...visitor,
         restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
