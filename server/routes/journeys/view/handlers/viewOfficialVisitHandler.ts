@@ -40,7 +40,6 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user, true, true),
     ])
 
-    // Hydrate visitor restrictions from contact data
     const enrichedVisitors = (visit.officialVisitors || []).map(visitor => {
       const contact = contacts?.find(c => c.contactId === visitor.contactId)
       return {
