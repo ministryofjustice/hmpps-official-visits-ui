@@ -222,7 +222,7 @@ export default class OfficialVisitsApiClient extends RestClient {
 
   async getAllTimeSlotsAndVisitSlots(prisonCode: string, user: HmppsUser): Promise<TimeSlotSummary> {
     return this.get<TimeSlotSummary>(
-      { path: `/admin/time-slots/prison/${prisonCode}?activeOnly=true` },
+      { path: `/admin/time-slots/prison/${prisonCode}?activeOnly=false` },
       asSystem(user.username),
     )
   }

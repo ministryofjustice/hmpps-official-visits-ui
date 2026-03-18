@@ -5,6 +5,7 @@ import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import AuditService from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
+import { TimeSlot } from '../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/officialVisitsService')
@@ -35,7 +36,7 @@ describe('NewTimeSlotHandler', () => {
           // assert back link goes to days page
           const backLink = $('a.govuk-back-link')
           expect(backLink.text().trim()).toEqual('Back')
-          expect(backLink.attr('href')).toEqual('/admin/days')
+          expect(backLink.attr('href')).toEqual('/admin/days#monday')
           // assert date input fields are present
           expect($('input[name="startDate"]').length).toBe(1)
           expect($('input[name="expiryDate"]').length).toBe(1)
@@ -207,8 +208,17 @@ describe('NewTimeSlotHandler', () => {
     })
 
     it('redirects back to days on success', async () => {
+      officialVisitsService.createTimeSlot.mockResolvedValue({
+        prisonTimeSlotId: 123,
+        prisonCode: 'HEI',
+        dayCode: 'MON',
+        startTime: '09:00',
+        endTime: '10:00',
+        effectiveDate: '2055-12-25',
+        expiryDate: '2066-12-25',
+      } as unknown as TimeSlot)
       await request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/locations/time-slot/new?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2055-12-25',
@@ -219,7 +229,7 @@ describe('NewTimeSlotHandler', () => {
           'endTime-endMinute': '00',
         })
         .expect(302)
-        .expect('location', '/admin/days')
+        .expect('location', '/admin/days#monday')
 
       expect(officialVisitsService.createTimeSlot).toHaveBeenCalledWith(
         {
@@ -232,6 +242,38 @@ describe('NewTimeSlotHandler', () => {
         },
         adminUser,
       )
+    })
+
+    it('should handle service errors gracefully', async () => {
+      officialVisitsService.createTimeSlot.mockRejectedValue(new Error('Service error'))
+      await request(app)
+        .post('/admin/locations/time-slot/new?day=MON')
+        .send({
+          dayCode: 'MON',
+          startDate: '2055-12-25',
+          expiryDate: '2066-12-25',
+          'startTime-startHour': '09',
+          'startTime-startMinute': '00',
+          'endTime-endHour': '10',
+          'endTime-endMinute': '00',
+        })
+        .expect(500)
+    })
+
+    it('should handle falsy timeSlot (null or undefined) gracefully', async () => {
+      officialVisitsService.createTimeSlot.mockResolvedValue(null as unknown as TimeSlot)
+      await request(app)
+        .post('/admin/locations/time-slot/new?day=MON')
+        .send({
+          dayCode: 'MON',
+          startDate: '2055-12-25',
+          expiryDate: '2066-12-25',
+          'startTime-startHour': '09',
+          'startTime-startMinute': '00',
+          'endTime-endHour': '10',
+          'endTime-endMinute': '00',
+        })
+        .expect(500)
     })
   })
 })

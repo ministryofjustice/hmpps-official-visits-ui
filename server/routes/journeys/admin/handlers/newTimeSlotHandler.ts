@@ -4,7 +4,7 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { CreateTimeSlotRequest } from '../../../../@types/officialVisitsApi/types'
 import { schema } from './timeSlotSchema'
-import { getTime } from '../../../../utils/utils'
+import { getTime, translateDay } from '../../../../utils/utils'
 
 export default class NewTimeSlotHandler implements PageHandler {
   public PAGE_NAME = Page.ADMIN_NEW_TIME_SLOT_PAGE
@@ -18,10 +18,11 @@ export default class NewTimeSlotHandler implements PageHandler {
     const dayCode = (day || '').toString()
 
     // Translate day code to readable label using existing partial if needed in template
+    const returnUrlSuffix = translateDay(dayCode).trim().toLowerCase()
     res.render('pages/admin/newTimeSlot', {
       dayCode,
       dayLabel: dayCode, // template will use a helper to translate if necessary
-      backUrl: '/admin/days',
+      backUrl: `/admin/days#${returnUrlSuffix}`,
     })
   }
 
@@ -39,7 +40,7 @@ export default class NewTimeSlotHandler implements PageHandler {
     const { user } = res.locals
     const prisonCode = req.session.activeCaseLoadId
 
-    await this.officialVisitsService.createTimeSlot(
+    const timeSlot = await this.officialVisitsService.createTimeSlot(
       {
         prisonCode,
         effectiveDate: startDate,
@@ -50,11 +51,16 @@ export default class NewTimeSlotHandler implements PageHandler {
       } as CreateTimeSlotRequest,
       user,
     )
+
+    if (!timeSlot) {
+      throw new Error('createTimeSlot returned null or undefined')
+    }
+
+    const returnUrlSuffix = translateDay(timeSlot.dayCode).trim().toLowerCase()
     const header = 'New time for visit created'
     const message =
       'You have created a new visiting time in your prisons schedule. To add locations and capacities for this visit select manage locations.'
     res.addSuccessMessage(header, message)
-
-    return res.redirect('/admin/days')
+    return res.redirect(`/admin/days#${returnUrlSuffix}`)
   }
 }
