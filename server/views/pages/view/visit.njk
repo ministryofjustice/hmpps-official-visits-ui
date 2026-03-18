@@ -5,6 +5,10 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "moj/components/alert/macro.njk" import mojAlert %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{%- from "moj/components/badge/macro.njk" import mojBadge -%}
+{% from "partials/restriction-summary.njk" import restrictionSummary %}
 
 {% set pageTitle = "Official visit with " + visit.prisonerVisited | firstNameSpaceLastName %}
 {% set paramBackTo = ("?backTo=" + b64BackTo)if b64BackTo %}
@@ -15,19 +19,8 @@
   <h1 class="govuk-heading-l">Official visit</h1>
   {{ miniProfile(prisoner) }}
 
-  {% if updateVerb %}
-    {{ mojAlert({
-      variant: "success",
-      title: "Visit amended" if updateVerb == 'amended' else "Visit marked as " + updateVerb,
-      showTitleAsHeading: true,
-      dismissible: false,
-      html: "You have " + updateVerb + " this visit. <a href='" + (amendedBackUrl or backUrl or '/view/list') + "'>Return to search list</a>"
-    }) }}
-
-  {% endif %}
-
   {% if mode != 'amend' %}
-    {{ govukButton({
+      {{ govukButton({
       text: "Print movement slip",
       href: "/view/visit/" + visit.officialVisitId + "/movement-slip",
       classes: 'govuk-button govuk-button--secondary',
@@ -43,7 +36,73 @@
         classes: 'govuk-button blue-button float-right'
       }) }}
     {% endif %}
+  {% endif %}  
 
+  <br />
+
+  {% if prisoner.restrictions and prisoner.restrictions | length > 0 %}
+    {% set activeRestrictions = prisoner.restrictions | rejectattr("expiryDate", "isDateAndInThePast") %}
+    {% if activeRestrictions | length > 0 %}
+      {% set badgeText = "ACTIVE RESTRICTION IN PLACE" if (activeRestrictions | length == 1) else "ACTIVE RESTRICTIONS IN PLACE" %}
+      {{ mojBadge({ text: badgeText, classes: "moj-badge--red govuk-!-margin-bottom-4" }) }}
+    {% endif %}
+  {% endif %}
+
+  {% if updateVerb %}
+    {{ mojAlert({
+      variant: "success",
+      title: "Visit amended" if updateVerb == 'amended' else "Visit marked as " + updateVerb,
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "You have " + updateVerb + " this visit. <a href='" + (amendedBackUrl or backUrl or '/view/list') + "'>Return to search list</a>"
+    }) }}
+
+  {% endif %}
+
+  {% set rows = [] %}
+  {% if prisoner.restrictions and prisoner.restrictions | length > 0 %}
+    {% for pr in prisoner.restrictions %}
+      {% set restrictionTagHtml %}
+          {{ govukTag({ text: pr.restrictionTypeDescription, classes: 'wide-tag ' + pr.restrictionType | restrictionTagColour }) }}
+          {{ ' (expired)' if (pr.expiryDate | isDateAndInThePast) }}
+      {% endset %}
+
+      {% set rows = (rows.push([
+        { html: restrictionTagHtml },
+        { text: pr.commentText or "", classes: "long-text-column"},
+        { text: pr.effectiveDate | formatDate },
+        { text: (pr.expiryDate | formatDate) or "Not entered" }
+      ]), rows) %}
+    {% endfor %}
+  {% endif %}
+
+  {% set captionText %}
+    {{ (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma }} active restrictions
+  {% endset %}
+
+  <div class="govuk-summary-card">
+    {% if rows.length > 0 %}
+      <div class="govuk-summary-card__content" data-qa="prisoner-restrictions-table">
+        {{ govukTable({
+          caption: captionText,
+          captionClasses: "govuk-table__caption--m",
+          firstCellIsHeader: true,
+          head: [
+            { text: "Type of restriction" },
+            { text: "Comments" },
+            { text: "Date from" },
+            { text: "Date to" }
+          ],
+          rows: rows
+        }) }}
+      </div>
+    {% else %}
+      <div class="govuk-summary-card__content govuk-summary-card__title">{{ captionText }}</div>
+      <div class="govuk-body govuk-!-margin-top-0 govuk-!-margin-left-4">No active restrictions</div>
+    {% endif %}
+  </div>
+
+  {% if mode != 'amend' %}
     {% set visitActions = [
       {
         href: "/view/visit/" + visit.officialVisitId + "/cancel" + paramBackTo,
@@ -263,7 +322,19 @@
             {
               key: { text: "Telephone number" },
               value: { text: contact.phoneNumber or 'None' }
-            }
+            },
+            {
+              key: { text: "Restrictions" },
+              value: { 
+                html: restrictionSummary((contact.restrictionSummary and contact.restrictionSummary.active) or []) 
+              }
+            } if (contact.restrictionSummary and contact.restrictionSummary.active and contact.restrictionSummary.active | length > 0),
+            {
+              key: { text: "Restrictions" },
+              value: { 
+                text: "None"
+              }
+            } if not (contact.restrictionSummary and contact.restrictionSummary.active and contact.restrictionSummary.active | length > 0)
           ] | filterNonFalsy
         }) }}
       </div>

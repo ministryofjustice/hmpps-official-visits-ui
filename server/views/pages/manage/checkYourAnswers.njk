@@ -8,12 +8,21 @@
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 {% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 {% from "moj/components/alert/macro.njk" import mojAlert %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{%- from "moj/components/badge/macro.njk" import mojBadge -%}
+{% from "partials/restriction-summary.njk" import restrictionSummary %}
 
 {% set pageTitle = "Check and confirm the official visit details" %}
 
 {% block content %}
 
   {{ createJourneyHeader(prisoner, stepsChecked)}}
+
+  {% set activeRestrictions = prisoner.restrictions | rejectattr("expiryDate", "isDateAndInThePast") %}
+  {% if activeRestrictions | length > 0 %}
+    {% set badgeText = "ACTIVE RESTRICTION IN PLACE" if (activeRestrictions | length == 1) else "ACTIVE RESTRICTIONS IN PLACE" %}
+    {{ mojBadge({ text: badgeText, classes: "moj-badge--red govuk-!-margin-bottom-4" }) }}
+  {% endif %}
 
   {% if not capacityCheck %}
     {{ mojAlert({
@@ -31,6 +40,52 @@
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Schedule an official visit</span>
       <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      {% set rows = [] %}
+      {% for pr in prisoner.restrictions %}
+
+        {% set restrictionTagHtml %}
+            {{ govukTag({ text: pr.restrictionTypeDescription, classes: 'wide-tag ' + pr.restrictionType | restrictionTagColour }) }}
+            {{ ' (expired)' if (pr.expiryDate | isDateAndInThePast) }}
+        {% endset %}
+
+        {% set rows = (rows.push([
+          { html: restrictionTagHtml },
+          { text: pr.commentText, classes: "long-text-column"},
+          { text: pr.effectiveDate | formatDate },
+          { text: (pr.expiryDate | formatDate) or "Not entered" }
+        ]), rows) %}
+      {% endfor %}
+
+      {% set captionText %}
+        {{ (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma }} active restrictions
+      {% endset %}
+
+      <div class="govuk-summary-card">
+        {% if rows.length > 0 %}
+          <div class="govuk-summary-card__content" data-qa="prisoner-restrictions-table">
+            {{ govukTable({
+              caption: captionText,
+              captionClasses: "govuk-table__caption--m",
+              firstCellIsHeader: true,
+              head: [
+                { text: "Type of restriction" },
+                { text: "Comments" },
+                { text: "Date from" },
+                { text: "Date to" }
+              ],
+              rows: rows
+            }) }}
+          </div>
+        {% else %}
+          <div class="govuk-summary-card__content govuk-summary-card__title">{{ captionText }}</div>
+          <div class="govuk-body govuk-!-margin-top-0 govuk-!-margin-left-4">No active restrictions</div>
+        {% endif %}
+      </div>
     </div>
   </div>
 
@@ -187,7 +242,13 @@
                     {
                       key: { text: "Equipment" },
                       value: { text: contact.equipmentNotes or "None" }
-                    } if visit.visitType == 'IN_PERSON'
+                    } if visit.visitType == 'IN_PERSON',
+                    {
+                      key: { text: "Restrictions" },
+                      value: { 
+                        html: restrictionSummary(contact.restrictionSummary.active or []) 
+                      }
+                    }
                   ]
                 })}}
             </div>

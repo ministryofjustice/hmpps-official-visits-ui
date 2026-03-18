@@ -45,6 +45,7 @@ beforeEach(() => {
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
   manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
+  officialVisitsService.getAllContacts.mockResolvedValue([])
 })
 
 afterEach(() => {
@@ -233,6 +234,76 @@ describe('Search for an official visit', () => {
             who: user.username,
             correlationId: expect.any(String),
           })
+        })
+    })
+
+    it('should display restrictions badge with existing mock data (has restriction without expiry)', () => {
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('ACTIVE RESTRICTION IN PLACE')
+          expect(res.text).toContain('moj-badge--red')
+          expect(res.text).toContain('prisoner-restrictions-table')
+          expect(res.text).toContain('Type of restriction')
+          expect(res.text).toContain('Comments')
+          expect(res.text).toContain('Date from')
+          expect(res.text).toContain('Date to')
+        })
+    })
+
+    it('should not display restrictions badge when prisoner has no active restrictions', () => {
+      personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: [] })
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).not.toContain('ACTIVE RESTRICTION IN PLACE')
+          expect(res.text).not.toContain('ACTIVE RESTRICTIONS IN PLACE')
+          expect(res.text).not.toContain('moj-badge--red')
+        })
+    })
+
+    it('should display visitor restrictions when contacts have restrictions', () => {
+      const mockContactsWithRestrictions = [
+        {
+          prisonerContactId: 7332364,
+          contactId: 20085647,
+          prisonerNumber: 'G4793VF',
+          lastName: 'Malicious',
+          firstName: 'Peter',
+          relationshipTypeCode: 'O',
+          relationshipTypeDescription: 'Official',
+          relationshipToPrisonerCode: 'SOL',
+          relationshipToPrisonerDescription: 'Solicitor',
+          isApprovedVisitor: true,
+          isNextOfKin: false,
+          isEmergencyContact: false,
+          isRelationshipActive: true,
+          currentTerm: true,
+          isStaff: false,
+          restrictionSummary: {
+            active: [
+              {
+                restrictionType: 'BAN',
+                restrictionTypeDescription: 'Banned',
+              },
+            ],
+            totalActive: 1,
+            totalExpired: 0,
+          },
+        },
+      ]
+
+      officialVisitsService.getAllContacts.mockResolvedValue(mockContactsWithRestrictions)
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('Banned')
+          expect(res.text).toContain('govuk-tag--red')
         })
     })
   })
