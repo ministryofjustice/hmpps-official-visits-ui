@@ -142,7 +142,7 @@ test.describe('Create an official visit', () => {
       {
         ...mockOfficialVisitors[0],
         relationshipToPrisonerDescription: 'Police',
-        relationshipToPrisonerCode: 'POL'
+        relationshipToPrisonerCode: 'POL',
       },
       ...mockSocialVisitors,
     ])

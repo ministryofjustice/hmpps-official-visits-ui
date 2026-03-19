@@ -3,13 +3,14 @@ import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { checkSlotCapacity } from '../createJourneyState'
+import { ApprovedContact } from '../../../../../@types/officialVisitsApi/types'
 
 export default class CheckYourAnswersHandler implements PageHandler {
   public PAGE_NAME = Page.CHECK_YOUR_ANSWERS_PAGE
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
-  private checkForDuplicateContactIds(officialVisitors: any[], socialVisitors: any[]): boolean {
+  private checkForDuplicateContactIds(officialVisitors: ApprovedContact[], socialVisitors: ApprovedContact[]): boolean {
     const allContactIds = [...officialVisitors, ...socialVisitors].map(visitor => visitor.contactId)
     const uniqueContactIds = new Set(allContactIds)
     return allContactIds.length !== uniqueContactIds.size
