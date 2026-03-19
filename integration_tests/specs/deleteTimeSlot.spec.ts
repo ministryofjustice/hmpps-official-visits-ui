@@ -63,7 +63,7 @@ test.describe('Admin: Delete a time slot', () => {
     // Submit the form to delete
     await page.getByRole('button', { name: 'Delete' }).click()
 
-    await expect(page).toHaveURL('/admin/days')
+    await expect(page).toHaveURL('/admin/days#monday')
 
     await expect(page.getByText('Visiting time deleted')).toBeVisible()
     await expect(

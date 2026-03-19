@@ -4,7 +4,7 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { CreateTimeSlotRequest, TimeSlot } from '../../../../@types/officialVisitsApi/types'
 import { schema } from './timeSlotSchema'
-import { getTime } from '../../../../utils/utils'
+import { getTime, translateDay } from '../../../../utils/utils'
 import logger from '../../../../../logger'
 
 export default class EditTimeSlotHandler implements PageHandler {
@@ -48,12 +48,12 @@ export default class EditTimeSlotHandler implements PageHandler {
         // TODO: if not found or error ?
       }
     }
-
+    const returnUrlSuffix = translateDay(dayCode).trim().toLowerCase()
     // Translate day code to readable label using existing partial if needed in template
     res.render('pages/admin/newTimeSlot', {
       dayCode,
       dayLabel: dayCode, // template will use a helper to translate if necessary
-      backUrl: '/admin/days',
+      backUrl: `/admin/days#${returnUrlSuffix}`,
       editMode,
       existing,
       prefill,
@@ -90,6 +90,9 @@ export default class EditTimeSlotHandler implements PageHandler {
     await this.officialVisitsService.updateTimeSlot(id, payload, user)
 
     res.addSuccessMessage('Time for visit updated', 'You have updated a visiting time in your prisons schedule.')
-    return res.redirect('/admin/days')
+    const returnUrlSuffix = translateDay(dayCode as string)
+      .trim()
+      .toLowerCase()
+    return res.redirect(`/admin/days#${returnUrlSuffix}`)
   }
 }

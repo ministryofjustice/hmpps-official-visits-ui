@@ -54,8 +54,8 @@
         preventDoubleClick: true,
         href: "/admin/locations/time-slot/" ~ timeSlot.prisonTimeSlotId ~ "/visit-slot/new"
       }) }}
-      <a href="/admin/days#{{ timeSlot.dayCode | translateDay | trim | lower }}"
-         class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">
+      <a href="{{ backUrl }}"
+         class="govuk-link govuk-!-margin-left-4">
         Return to schedule day view
       </a>
     </div>

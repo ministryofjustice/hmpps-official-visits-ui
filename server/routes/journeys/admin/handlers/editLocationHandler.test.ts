@@ -1,5 +1,6 @@
 import type { Express } from 'express'
 import request from 'supertest'
+import cheerio from 'cheerio'
 import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import AuditService from '../../../../services/auditService'
@@ -70,6 +71,11 @@ describe('EditLocationHandler', () => {
       expect(res.text).toMatch(/id="maxAdults"[^>]*value="5"/)
       expect(res.text).toMatch(/id="maxGroups"[^>]*value="2"/)
       expect(res.text).toMatch(/id="maxVideo"[^>]*value="0"/)
+      expect(res.text).toContain('<a href="/admin/locations/time-slot/1/location" class="govuk-back-link">Back</a>')
+      const $ = cheerio.load(res.text)
+      const cancelAnchor = $('a[href="/admin/locations/time-slot/1/location"]').eq(1)
+      const cancelText = cancelAnchor.text().replace(/\s+/g, ' ').trim()
+      expect(cancelText).toBe('Cancel and return to schedule')
     })
   })
 
