@@ -183,6 +183,9 @@ describe('check your answers handler', () => {
 
           expect($('.govuk-button').text().trim()).toEqual('Create official visit')
 
+          expect(res.text).not.toContain('Duplicate visitors selected')
+          expect(res.text).not.toContain('You have selected the same contact more than once')
+
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.CHECK_YOUR_ANSWERS_PAGE, {
             who: user.username,
             correlationId: expect.any(String),
@@ -306,6 +309,98 @@ describe('check your answers handler', () => {
           expect(res.text).not.toContain('CCTV monitoring required')
         })
     })
+
+    it('should display duplicate contact error when same contact appears in both official and social visitors', () => {
+      const mockJourneyWithDuplicateContact = {
+        ...mockOfficialVisitJourney,
+        socialVisitors: [
+          {
+            prisonerContactId: 7332365,
+            contactId: 20085647,
+            prisonerNumber: 'G4793VF',
+            lastName: 'Malicious',
+            firstName: 'Peter',
+            relationshipTypeCode: 'S',
+            relationshipTypeDescription: 'Social',
+            relationshipToPrisonerCode: 'FRI',
+            relationshipToPrisonerDescription: 'Friend',
+            assistanceNotes: '',
+            assistedVisit: false,
+            equipmentNotes: '',
+            equipment: false,
+          },
+        ],
+      }
+
+      const journeyWithDuplicateContact = () => ({
+        officialVisit: mockJourneyWithDuplicateContact as unknown as Partial<OfficialVisitJourney>,
+      })
+
+      appSetup(journeyWithDuplicateContact())
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
+          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
+          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
+          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+        })
+    })
+
+    it('should display duplicate contact error when same contact appears twice in official visitors', () => {
+      const mockJourneyWithDuplicateOfficialContact = {
+        ...mockOfficialVisitJourney,
+        officialVisitors: [
+          {
+            ...mockOfficialVisitJourney.officialVisitors[0],
+          },
+          {
+            prisonerContactId: 7332365,
+            contactId: 20085647,
+            prisonerNumber: 'G4793VF',
+            lastName: 'Malicious',
+            firstName: 'Peter',
+            relationshipTypeCode: 'O',
+            relationshipTypeDescription: 'Official',
+            relationshipToPrisonerCode: 'POL',
+            relationshipToPrisonerDescription: 'Police Officer',
+            assistanceNotes: '',
+            assistedVisit: false,
+            equipmentNotes: '',
+            equipment: false,
+            isApprovedVisitor: true,
+            isNextOfKin: false,
+            isEmergencyContact: false,
+            isRelationshipActive: true,
+            restrictionSummary: {
+              active: [] as RestrictionSummary[],
+            },
+          },
+        ],
+      }
+
+      const journeyWithDuplicateOfficialContact = () => ({
+        officialVisit: mockJourneyWithDuplicateOfficialContact as unknown as Partial<OfficialVisitJourney>,
+      })
+
+      appSetup(journeyWithDuplicateOfficialContact())
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
+          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
+          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
+          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+        })
+    })
   })
 
   describe('POST', () => {
@@ -407,6 +502,104 @@ describe('check your answers handler', () => {
           expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
           expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
           expect($('.moj-alert__content a').attr('href')).toBe('time-slot')
+        })
+
+      expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
+    })
+
+    it('should show duplicate contact error when same contact appears in both official and social visitors on POST', async () => {
+      const mockJourneyWithDuplicateContact = {
+        ...mockOfficialVisitJourney,
+        socialVisitors: [
+          {
+            prisonerContactId: 7332365,
+            contactId: 20085647, // Same contactId as official visitor
+            prisonerNumber: 'G4793VF',
+            lastName: 'Malicious',
+            firstName: 'Peter',
+            relationshipTypeCode: 'S',
+            relationshipTypeDescription: 'Social',
+            relationshipToPrisonerCode: 'FRI',
+            relationshipToPrisonerDescription: 'Friend',
+            assistanceNotes: '',
+            assistedVisit: false,
+            equipmentNotes: '',
+            equipment: false,
+          },
+        ],
+      }
+
+      const journeyWithDuplicateContact = () => ({
+        officialVisit: mockJourneyWithDuplicateContact as unknown as Partial<OfficialVisitJourney>,
+      })
+
+      appSetup(journeyWithDuplicateContact())
+
+      await request(app)
+        .post(URL)
+        .send()
+        .expect(200)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
+          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
+          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
+          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+        })
+
+      expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
+    })
+
+    it('should show duplicate contact error when same contact appears twice in official visitors on POST', async () => {
+      const mockJourneyWithDuplicateOfficialContact = {
+        ...mockOfficialVisitJourney,
+        officialVisitors: [
+          {
+            ...mockOfficialVisitJourney.officialVisitors[0],
+          },
+          {
+            prisonerContactId: 7332365,
+            contactId: 20085647,
+            prisonerNumber: 'G4793VF',
+            lastName: 'Malicious',
+            firstName: 'Peter',
+            relationshipTypeCode: 'O',
+            relationshipTypeDescription: 'Official',
+            relationshipToPrisonerCode: 'POL',
+            relationshipToPrisonerDescription: 'Police Officer',
+            assistanceNotes: '',
+            assistedVisit: false,
+            equipmentNotes: '',
+            equipment: false,
+            isApprovedVisitor: true,
+            isNextOfKin: false,
+            isEmergencyContact: false,
+            isRelationshipActive: true,
+            restrictionSummary: {
+              active: [] as RestrictionSummary[],
+            },
+          },
+        ],
+      }
+
+      const journeyWithDuplicateOfficialContact = () => ({
+        officialVisit: mockJourneyWithDuplicateOfficialContact as unknown as Partial<OfficialVisitJourney>,
+      })
+
+      appSetup(journeyWithDuplicateOfficialContact())
+
+      await request(app)
+        .post(URL)
+        .send()
+        .expect(200)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
+          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
+          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
+          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
         })
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
