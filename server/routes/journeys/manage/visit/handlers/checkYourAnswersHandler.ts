@@ -9,6 +9,12 @@ export default class CheckYourAnswersHandler implements PageHandler {
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
+  private checkForDuplicateContactIds(officialVisitors: any[], socialVisitors: any[]): boolean {
+    const allContactIds = [...officialVisitors, ...socialVisitors].map(visitor => visitor.contactId)
+    const uniqueContactIds = new Set(allContactIds)
+    return allContactIds.length !== uniqueContactIds.size
+  }
+
   public GET = async (req: Request, res: Response) => {
     const { officialVisit } = req.session.journey
     const { prisoner } = officialVisit
@@ -16,12 +22,17 @@ export default class CheckYourAnswersHandler implements PageHandler {
     req.session.journey.reachedCheckAnswers = true
 
     const capacityCheckResult = await this.checkSlotCapacity(req, res)
+    const hasDuplicateContactIds = this.checkForDuplicateContactIds(
+      officialVisit.officialVisitors || [],
+      officialVisit.socialVisitors || [],
+    )
 
     return res.render('pages/manage/checkYourAnswers', {
       visit: officialVisit,
       contacts: [...officialVisit.officialVisitors, ...officialVisit.socialVisitors],
       prisoner,
       capacityCheck: capacityCheckResult,
+      hasDuplicateContactIds,
     })
   }
 
@@ -31,6 +42,10 @@ export default class CheckYourAnswersHandler implements PageHandler {
     const visit = req.session.journey.officialVisit
 
     const capacityCheckResult = await this.checkSlotCapacity(req, res)
+    const hasDuplicateContactIds = this.checkForDuplicateContactIds(
+      visit.officialVisitors || [],
+      visit.socialVisitors || [],
+    )
 
     if (!capacityCheckResult) {
       return res.render('pages/manage/checkYourAnswers', {
@@ -38,6 +53,17 @@ export default class CheckYourAnswersHandler implements PageHandler {
         contacts: [...visit.officialVisitors, ...visit.socialVisitors],
         prisoner: visit.prisoner,
         capacityCheck: capacityCheckResult,
+        hasDuplicateContactIds,
+      })
+    }
+
+    if (hasDuplicateContactIds) {
+      return res.render('pages/manage/checkYourAnswers', {
+        visit,
+        contacts: [...visit.officialVisitors, ...visit.socialVisitors],
+        prisoner: visit.prisoner,
+        capacityCheck: capacityCheckResult,
+        hasDuplicateContactIds,
       })
     }
 

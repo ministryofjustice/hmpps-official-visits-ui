@@ -18,12 +18,6 @@
 
   {{ createJourneyHeader(prisoner, stepsChecked)}}
 
-  {% set activeRestrictions = prisoner.restrictions | rejectattr("expiryDate", "isDateAndInThePast") %}
-  {% if activeRestrictions | length > 0 %}
-    {% set badgeText = "ACTIVE RESTRICTION IN PLACE" if (activeRestrictions | length == 1) else "ACTIVE RESTRICTIONS IN PLACE" %}
-    {{ mojBadge({ text: badgeText, classes: "moj-badge--red govuk-!-margin-bottom-4" }) }}
-  {% endif %}
-
   {% if not capacityCheck %}
     {{ mojAlert({
       variant: "warning",
@@ -34,6 +28,24 @@
       html: "The visit slot has exceeded maximum visitor capacity. <a href=\"time-slot\" class=\"govuk-link\">Choose another time slot</a>",
       classes: 'govuk-!-margin-bottom-6'
     }) }}
+  {% endif %}
+
+  {% if hasDuplicateContactIds %}
+    {{ mojAlert({
+      variant: "warning",
+      role: "alert",
+      title: "Duplicate visitors selected",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "You have selected the same contact more than once. <a href=\"select-official-visitors\" class=\"govuk-link\">Remove duplicate visitors</a>",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+
+  {% set activeRestrictions = prisoner.restrictions | rejectattr("expiryDate", "isDateAndInThePast") %}
+  {% if activeRestrictions | length > 0 %}
+    {% set badgeText = "ACTIVE RESTRICTION IN PLACE" if (activeRestrictions | length == 1) else "ACTIVE RESTRICTIONS IN PLACE" %}
+    {{ mojBadge({ text: badgeText, classes: "moj-badge--red govuk-!-margin-bottom-4" }) }}
   {% endif %}
 
   <div class="govuk-grid-row govuk-body">

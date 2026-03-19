@@ -137,7 +137,15 @@ test.describe('Create an official visit', () => {
         visitDate: format(new Date(), 'yyyy-MM-dd'),
       } as AvailableSlot,
     ])
-    await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors])
+    await officialVisitsApi.stubAllContacts([
+      ...mockOfficialVisitors,
+      {
+        ...mockOfficialVisitors[0],
+        relationshipToPrisonerDescription: 'Police',
+        relationshipToPrisonerCode: 'POL'
+      },
+      ...mockSocialVisitors,
+    ])
 
     await officialVisitsApi.stubCreateVisit({ officialVisitId: 1 } as OfficialVisit)
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
@@ -191,12 +199,15 @@ test.describe('Create an official visit', () => {
     const selectOfficialContactPage = await SelectOfficialContactPage.verifyOnPage(page)
     await checkCancelPage(selectOfficialContactPage, SelectOfficialContactPage.verifyOnPage, 2)
 
-    expect(page.getByRole('checkbox', { name: 'Abe Smith' })).not.toBeChecked()
+    // Both Abe Smiths
+    expect(page.locator('input[name="selected[0]"]')).not.toBeChecked()
+    expect(page.locator('input[name="selected[2]"]')).not.toBeChecked()
     expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
     // Chris Smith should not be visible as they are not an approved visitor
     expect(page.getByRole('checkbox', { name: 'Chris Smith' })).not.toBeVisible()
 
     await selectOfficialContactPage.checkContact(0)
+    await selectOfficialContactPage.checkContact(2)
     await selectOfficialContactPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-social-visitors/)
@@ -247,7 +258,7 @@ test.describe('Create an official visit', () => {
     await equipmentPage.selectCheckbox(
       `${mockSocialVisitors[1].firstName} ${mockSocialVisitors[1].lastName} (${mockSocialVisitors[1].relationshipToPrisonerDescription})`,
     )
-    await equipmentPage.fillBoxForContact(1, 'Equipment required (social)')
+    await equipmentPage.fillBoxForContact(2, 'Equipment required (social)')
 
     await equipmentPage.continueButton.click()
 
@@ -261,6 +272,20 @@ test.describe('Create an official visit', () => {
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/check-your-answers/)
     const cyaPage = await CheckYourAnswersPage.verifyOnPage(page)
+
+    expect(page.getByText('You have selected the same contact more than once')).toBeVisible()
+    expect(page.getByRole('link', { name: 'Remove duplicate visitors' })).toBeVisible()
+
+    const duplicateErrorLink = page.getByRole('link', { name: 'Remove duplicate visitors' })
+    const href = await duplicateErrorLink.getAttribute('href')
+    expect(href).toContain('select-official-visitors')
+
+    await duplicateErrorLink.click()
+
+    await selectOfficialContactPage.uncheckContact(2)
+    await selectOfficialContactPage.continueButton.click()
+    await page.goto(`/manage/create/${uuid}/check-your-answers`)
+
     await checkCancelPage(cyaPage, CheckYourAnswersPage.verifyOnPage, 4)
 
     await cyaPage.continueButton.click()
