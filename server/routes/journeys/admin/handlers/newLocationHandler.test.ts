@@ -60,6 +60,10 @@ describe('NewVisitSlotHandler', () => {
 
       const $ = cheerio.load(res.text)
       expect($('select#dpsLocationId').length).toBeGreaterThan(0)
+      expect(res.text).toContain('<a href="/admin/locations/time-slot/1/location" class="govuk-back-link">Back</a>')
+      const cancelAnchor = $('a[href="/admin/locations/time-slot/1/location"]').eq(1)
+      const cancelText = cancelAnchor.text().replace(/\s+/g, ' ').trim()
+      expect(cancelText).toBe('Cancel and return to schedule')
     })
   })
 

@@ -115,7 +115,8 @@
 
                     <div class="govuk-button-group">
                         {{ govukButton({ text: 'Save', type: 'submit', classes: 'govuk-button' }) }}
-                        <a href="/admin/days" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">Cancel
+                        <a href="{{ backUrl }}"
+                           class="govuk-link govuk-!-margin-left-4">Cancel
                             and
                             return to schedule</a>
                     </div>

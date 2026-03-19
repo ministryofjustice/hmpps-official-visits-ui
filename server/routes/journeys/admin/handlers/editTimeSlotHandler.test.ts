@@ -49,6 +49,10 @@ describe('EditTimeSlotHandler', () => {
       expect($('input[name="startTime-startMinute"]').val()).toBe('00')
       expect($('input[name="endTime-endHour"]').val()).toBe('11')
       expect($('input[name="endTime-endMinute"]').val()).toBe('00')
+      expect(res.text).toContain('<a href="/admin/days#monday" class="govuk-back-link">Back</a>')
+      const cancelAnchor = $('a[href="/admin/days#monday"]').eq(1)
+      const cancelText = cancelAnchor.text().replace(/\s+/g, ' ').trim()
+      expect(cancelText).toBe('Cancel and return to schedule')
     })
   })
 
@@ -227,7 +231,7 @@ describe('EditTimeSlotHandler', () => {
           'endTime-endMinute': '00',
         })
         .expect(302)
-        .expect('location', '/admin/days')
+        .expect('location', '/admin/days#monday')
 
       expect(officialVisitsService.updateTimeSlot).toHaveBeenCalled()
     })

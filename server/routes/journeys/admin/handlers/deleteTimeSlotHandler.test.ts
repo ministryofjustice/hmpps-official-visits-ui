@@ -57,6 +57,10 @@ describe('DeleteTimeSlotHandler', () => {
       expect(res.text).toContain('Are you sure you want to delete this visiting time')
       expect(res.text).toContain('Delete')
       expect(res.text).toContain('Cancel and return to schedule')
+      expect(res.text).toContain('<a href="/admin/days#monday" class="govuk-back-link">Back</a>')
+      expect(res.text).toContain(
+        '<a href="/admin/days#monday" class="govuk-link govuk-!-margin-left-4">Cancel and return to schedule</a>',
+      )
     })
 
     it('throws error if getPrisonTimeSlotById fails', async () => {

@@ -83,7 +83,7 @@ test.describe('Admin edit time slot', () => {
     await page.fill('input[name="endTime-endHour"]', '12')
     await page.fill('input[name="endTime-endMinute"]', '30')
 
-    await Promise.all([page.waitForURL('**/admin/days'), page.getByRole('button', { name: 'Save' }).click()])
+    await Promise.all([page.waitForURL('**/admin/days#monday'), page.getByRole('button', { name: 'Save' }).click()])
 
     await expect(page.getByText('You have updated a visiting time')).toBeVisible()
   })

@@ -3,6 +3,7 @@ import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { TimeSlotSummaryItem } from '../../../../@types/officialVisitsApi/types'
+import { translateDay } from '../../../../utils/utils'
 
 export default class DeleteTimeSlotHandler implements PageHandler {
   public PAGE_NAME = Page.ADMIN_DELETE_TIME_SLOT_PAGE
@@ -23,15 +24,19 @@ export default class DeleteTimeSlotHandler implements PageHandler {
     }
 
     // The admin days page groups this differently; we render a confirmation page similar to deleteLocation
+    const dayCode = summary.dayCode as string
+    const returnUrlSuffix = translateDay(dayCode).trim().toLowerCase()
     res.render('pages/admin/deleteTimeSlot', {
       timeSlot,
-      backUrl: '/admin/days',
+      dayCode,
+      backUrl: `/admin/days#${returnUrlSuffix}`,
     })
   }
 
   public POST = async (req: Request, res: Response) => {
     const { user, digitalPrisonServicesUrl } = res.locals
     const timeSlotId = Number(req.params.timeSlotId)
+    const { dayCode } = req.body
 
     // Check for associated visit slots first
     const all = await this.officialVisitsService.getVisitSlotsAtPrison(req.session.activeCaseLoadId, user)
@@ -42,10 +47,10 @@ export default class DeleteTimeSlotHandler implements PageHandler {
 
     await this.officialVisitsService.deleteTimeSlot(timeSlotId, user)
 
-    const backTo = '/admin/days'
     const header = 'Visiting time deleted'
     const message = `You have deleted a visiting time in your prisons schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
     res.addSuccessMessage(header, message)
-    return res.redirect(backTo)
+    const returnUrlSuffix = translateDay(dayCode).trim().toLowerCase()
+    return res.redirect(`/admin/days#${returnUrlSuffix}`)
   }
 }
