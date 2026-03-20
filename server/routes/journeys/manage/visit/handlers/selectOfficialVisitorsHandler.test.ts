@@ -416,6 +416,43 @@ describe('Select official visitors', () => {
       expect(journeySession.officialVisitors).toHaveLength(1)
     })
 
+    it('should redirect to social visitors page when social visitors exist in journey data even if prison is not enabled', async () => {
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: mockPrisonerRestrictions,
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          socialVisitors: [
+            {
+              prisonerContactId: 2,
+              contactId: 201,
+              prisonerNumber: 'A1234',
+              firstName: 'Jane',
+              lastName: 'Doe',
+              relationshipTypeCode: 'S',
+              relationshipTypeDescription: 'Social',
+              relationshipToPrisonerCode: 'FRI',
+              relationshipToPrisonerDescription: 'Friend',
+            } as JourneyVisitor,
+          ],
+        } as OfficialVisitJourney,
+      })
+
+      config.featureToggles.allowSocialVisitorsPrisons = '' // Prison not enabled
+      await request(app)
+        .post(URL)
+        .send({ selected: ['101-SOL'] })
+        .expect(302)
+        .expect('location', 'select-social-visitors')
+        .expect(() => expectNoErrorMessages())
+
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.officialVisitors).toHaveLength(1)
+    })
+
     it('should accept the selection of two or more official visitors', async () => {
       config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
       await request(app)
