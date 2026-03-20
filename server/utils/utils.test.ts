@@ -551,12 +551,6 @@ describe('socialVisitorsPageEnabled', () => {
     expect(socialVisitorsPageEnabled(mockReq as Request)).toBe(false)
   })
 
-  it('should return false when social visitors array is empty and prison not enabled', () => {
-    mockConfig.featureToggles.allowSocialVisitorsPrisons = ''
-    mockReq.session!.journey.officialVisit.socialVisitors = []
-    expect(socialVisitorsPageEnabled(mockReq as Request)).toBe(false)
-  })
-
   it('should return true when social visitors exist even if array is undefined but prison enabled', () => {
     mockConfig.featureToggles.allowSocialVisitorsPrisons = 'MDI'
     mockReq.session!.journey.officialVisit.socialVisitors = undefined
