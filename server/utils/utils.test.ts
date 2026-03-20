@@ -1,4 +1,5 @@
 import { addYears, isValid, parse, format, subYears } from 'date-fns'
+import { Request } from 'express'
 import {
   convertToTitleCase,
   initialiseName,
@@ -29,7 +30,10 @@ import {
   formatDateToLocalDateString,
   coerceInt,
   getTime,
+  socialVisitorsPageEnabled,
 } from './utils'
+import config from '../config'
+import { JourneyVisitor } from '../routes/journeys/manage/visit/journey'
 
 describe('convert to title case', () => {
   it.each([
@@ -499,5 +503,63 @@ describe('getTime', () => {
   it('returns correctly formatted times for double digits', () => {
     expect(getTime(12, 0)).toBe('12:00')
     expect(getTime(23, 59)).toBe('23:59')
+  })
+})
+
+describe('socialVisitorsPageEnabled', () => {
+  let mockReq: Partial<Request>
+  jest.mock('../config')
+  const mockConfig = config as jest.Mocked<typeof config>
+  beforeEach(() => {
+    mockReq = {
+      session: {
+        journey: {
+          officialVisit: {
+            prisonCode: 'MDI',
+          },
+        },
+      },
+    } as Partial<Request>
+  })
+
+  it('should return true when prison is enabled in feature toggle', () => {
+    mockConfig.featureToggles.allowSocialVisitorsPrisons = 'MDI'
+    expect(socialVisitorsPageEnabled(mockReq as Request)).toBe(true)
+  })
+
+  it('should return true when social visitors exist in journey data even if prison is not enabled', () => {
+    mockConfig.featureToggles.allowSocialVisitorsPrisons = ''
+    mockReq.session!.journey.officialVisit.socialVisitors = [
+      {
+        prisonerContactId: 1,
+        contactId: 123,
+        prisonerNumber: 'A1234',
+        firstName: 'John',
+        lastName: 'Doe',
+        relationshipTypeCode: 'S',
+        relationshipTypeDescription: 'Social',
+        relationshipToPrisonerCode: 'FRI',
+        relationshipToPrisonerDescription: 'Friend',
+      } as JourneyVisitor,
+    ]
+    expect(socialVisitorsPageEnabled(mockReq as Request)).toBe(true)
+  })
+
+  it('should return false when neither prison is enabled nor social visitors exist', () => {
+    mockConfig.featureToggles.allowSocialVisitorsPrisons = ''
+    mockReq.session!.journey.officialVisit.socialVisitors = []
+    expect(socialVisitorsPageEnabled(mockReq as Request)).toBe(false)
+  })
+
+  it('should return false when social visitors array is empty and prison not enabled', () => {
+    mockConfig.featureToggles.allowSocialVisitorsPrisons = ''
+    mockReq.session!.journey.officialVisit.socialVisitors = []
+    expect(socialVisitorsPageEnabled(mockReq as Request)).toBe(false)
+  })
+
+  it('should return true when social visitors exist even if array is undefined but prison enabled', () => {
+    mockConfig.featureToggles.allowSocialVisitorsPrisons = 'MDI'
+    mockReq.session!.journey.officialVisit.socialVisitors = undefined
+    expect(socialVisitorsPageEnabled(mockReq as Request)).toBe(true)
   })
 })

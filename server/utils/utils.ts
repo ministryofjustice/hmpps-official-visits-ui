@@ -219,9 +219,12 @@ export const getTimeDiff = (start: string, end: string): number => {
 }
 
 export const socialVisitorsPageEnabled = (req: Request) => {
-  return config.featureToggles.allowSocialVisitorsPrisons
+  const hasSocialVisitors = req.session.journey.officialVisit.socialVisitors?.length > 0
+  const prisonEnabled = config.featureToggles.allowSocialVisitorsPrisons
     .split(',')
     .includes(req.session.journey.officialVisit.prisonCode)
+
+  return hasSocialVisitors || prisonEnabled
 }
 
 export const addRemoveLinks = (

@@ -149,7 +149,7 @@ describe('Assistance required handler', () => {
         })
     })
 
-    it('should go back to official visitors page when social visitors is disabled for the prison', () => {
+    it('should go back to social visitors page when social visitors exist in journey data even if disabled for prison', () => {
       config.featureToggles.allowSocialVisitorsPrisons = ''
       return request(app)
         .get(URL)
@@ -159,7 +159,7 @@ describe('Assistance required handler', () => {
           const heading = getPageHeader($)
 
           expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
-          expect($('.govuk-back-link').attr('href')).toEqual('select-official-visitors')
+          expect($('.govuk-back-link').attr('href')).toEqual('select-social-visitors')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.ASSISTANCE_REQUIRED_PAGE, {
             who: user.username,
@@ -220,7 +220,7 @@ describe('Assistance required handler', () => {
         })
     })
 
-    it('should go back to official visitors page when social visitors is disabled for the prison', () => {
+    it('should go back to social visitors page when social visitors exist in journey data even if disabled for prison', () => {
       config.featureToggles.allowSocialVisitorsPrisons = ''
       return request(app)
         .get(URL)
@@ -230,7 +230,7 @@ describe('Assistance required handler', () => {
           const heading = getPageHeader($)
 
           expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
-          expect($('.govuk-back-link').attr('href')).toEqual('select-official-visitors')
+          expect($('.govuk-back-link').attr('href')).toEqual('select-social-visitors')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.ASSISTANCE_REQUIRED_PAGE, {
             who: user.username,
