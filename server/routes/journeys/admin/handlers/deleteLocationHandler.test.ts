@@ -42,7 +42,7 @@ describe('DeleteLocationHandler', () => {
       const res = await request(app).get('/admin/locations/time-slot/1/visit-slot/11/delete')
 
       expect(res.status).toBe(200)
-      expect(res.text).toContain('Are you sure you want to delete this location')
+      expect(res.text).toContain("Are you sure you want to delete this location from your prison's visiting schedule?")
       expect(res.text).toContain('Location 1')
       expect(res.text).toContain('Location')
       expect(res.text).toContain('Maximum Adults')
