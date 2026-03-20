@@ -5,7 +5,8 @@ import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import AuditService from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
-import { TimeSlot } from '../../../../@types/officialVisitsApi/types'
+import { TimeSlot, TimeSlotSummary } from '../../../../@types/officialVisitsApi/types'
+import { allSlots } from '../../../../testutils/mocks'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/officialVisitsService')
@@ -246,6 +247,208 @@ describe('NewTimeSlotHandler', () => {
         },
         adminUser,
       )
+    })
+
+    it('allows creating when candidate start is after existing expiry', async () => {
+      officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(allSlots)
+      officialVisitsService.createTimeSlot.mockResolvedValue({
+        prisonTimeSlotId: 999,
+        prisonCode: 'HEI',
+        dayCode: 'MON',
+        startTime: '09:00',
+        endTime: '10:00',
+        effectiveDate: '2057-01-01',
+        expiryDate: '2058-01-01',
+      } as unknown as TimeSlot)
+
+      await request(app)
+        .post('/admin/locations/time-slot/new?day=MON')
+        .send({
+          dayCode: 'MON',
+          startDate: '2057-01-01',
+          expiryDate: '2058-01-01',
+          'startTime-startHour': '09',
+          'startTime-startMinute': '00',
+          'endTime-endHour': '10',
+          'endTime-endMinute': '00',
+        })
+        .expect(302)
+        .expect('location', '/admin/days#monday')
+
+      expect(officialVisitsService.createTimeSlot).toHaveBeenCalled()
+    })
+
+    it('allows creating when candidate expiry is before existing effective date', async () => {
+      const futureExisting = {
+        prisonCode: '',
+        prisonName: '',
+        timeSlots: [
+          {
+            timeSlot: {
+              dayCode: 'MON',
+              prisonTimeSlotId: 50,
+              startTime: '09:00',
+              endTime: '10:00',
+              effectiveDate: '2050-01-01',
+              expiryDate: '2055-12-31',
+              prisonCode: 'MDI',
+              createdBy: 'BP',
+              createdTime: '2050-01-01T09:00:00',
+            },
+            visitSlots: [] as unknown as TimeSlot[],
+          },
+        ],
+      } as unknown as TimeSlotSummary
+      officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(futureExisting)
+      officialVisitsService.createTimeSlot.mockResolvedValue({
+        prisonTimeSlotId: 999,
+        prisonCode: 'HEI',
+        dayCode: 'MON',
+        startTime: '09:00',
+        endTime: '10:00',
+        effectiveDate: '2025-01-01',
+        expiryDate: '2049-12-31',
+      } as unknown as TimeSlot)
+
+      await request(app)
+        .post('/admin/locations/time-slot/new?day=MON')
+        .send({
+          dayCode: 'MON',
+          startDate: '2049-01-01',
+          expiryDate: '2049-12-31', // new expiry before existing effective date
+          'startTime-startHour': '09',
+          'startTime-startMinute': '00',
+          'endTime-endHour': '10',
+          'endTime-endMinute': '00',
+        })
+        .expect(302)
+        .expect('location', '/admin/days#monday')
+
+      expect(officialVisitsService.createTimeSlot).toHaveBeenCalled()
+    })
+
+    it('shows validation error when candidate encloses an existing slot (overlaps from both ends)', async () => {
+      const futureExisting = {
+        prisonCode: '',
+        prisonName: '',
+        timeSlots: [
+          {
+            timeSlot: {
+              dayCode: 'MON',
+              prisonTimeSlotId: 50,
+              startTime: '09:00',
+              endTime: '10:00',
+              effectiveDate: '2050-01-01',
+              expiryDate: '2055-12-31',
+              prisonCode: 'MDI',
+              createdBy: 'BP',
+              createdTime: '2050-01-01T09:00:00',
+            },
+            visitSlots: [] as unknown as TimeSlot[],
+          },
+        ],
+      } as unknown as TimeSlotSummary
+
+      officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(futureExisting)
+
+      // candidate encloses existing: starts before existing.effectiveDate and expires after existing.expiryDate
+      await request(app)
+        .post('/admin/locations/time-slot/new?day=MON')
+        .send({
+          dayCode: 'MON',
+          startDate: '2049-01-01',
+          expiryDate: '2056-01-01',
+          'startTime-startHour': '09',
+          'startTime-startMinute': '00',
+          'endTime-endHour': '10',
+          'endTime-endMinute': '00',
+        })
+        .expect(302)
+        .expect('location', '/')
+        .expect(() =>
+          expectErrorMessages([
+            {
+              fieldId: 'startTime',
+              href: '#startTime',
+              text: 'A time slot with the same day and time already exists for the provided date range',
+            },
+          ]),
+        )
+    })
+
+    it('shows validation error when existing slot has no expiry (open-ended) and would overlap', async () => {
+      const futureOpenEnded = {
+        prisonCode: '',
+        prisonName: '',
+        timeSlots: [
+          {
+            timeSlot: {
+              dayCode: 'MON',
+              prisonTimeSlotId: 99,
+              startTime: '09:00',
+              endTime: '10:00',
+              effectiveDate: '2050-01-01',
+              expiryDate: null, // no expiry date open-ended slot
+              prisonCode: 'MDI',
+              createdBy: 'BP',
+              createdTime: '2050-01-01T09:00:00',
+            } as unknown as TimeSlot,
+            visitSlots: [] as unknown as TimeSlot[],
+          },
+        ],
+      } as unknown as TimeSlotSummary
+
+      officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(futureOpenEnded)
+
+      await request(app)
+        .post('/admin/locations/time-slot/new?day=MON')
+        .send({
+          dayCode: 'MON',
+          startDate: '2051-01-01',
+          expiryDate: '2051-12-31',
+          'startTime-startHour': '09',
+          'startTime-startMinute': '00',
+          'endTime-endHour': '10',
+          'endTime-endMinute': '00',
+        })
+        .expect(302)
+        .expect('location', '/')
+        .expect(() =>
+          expectErrorMessages([
+            {
+              fieldId: 'startTime',
+              href: '#startTime',
+              text: 'A time slot with the same day and time already exists for the provided date range',
+            },
+          ]),
+        )
+    })
+
+    it('shows validation error when candidate start equals existing expiry (boundary equality considered overlapping)', async () => {
+      officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(allSlots)
+
+      await request(app)
+        .post('/admin/locations/time-slot/new?day=MON')
+        .send({
+          dayCode: 'MON',
+          startDate: '2056-12-31',
+          expiryDate: '2057-12-31',
+          'startTime-startHour': '09',
+          'startTime-startMinute': '00',
+          'endTime-endHour': '10',
+          'endTime-endMinute': '00',
+        })
+        .expect(302)
+        .expect('location', '/')
+        .expect(() =>
+          expectErrorMessages([
+            {
+              fieldId: 'startTime',
+              href: '#startTime',
+              text: 'A time slot with the same day and time already exists for the provided date range',
+            },
+          ]),
+        )
     })
 
     it('should handle service errors gracefully', async () => {
