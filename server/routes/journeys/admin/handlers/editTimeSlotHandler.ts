@@ -2,9 +2,10 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
-import { CreateTimeSlotRequest, TimeSlot } from '../../../../@types/officialVisitsApi/types'
+import { CreateTimeSlotRequest, TimeSlot, TimeSlotSummary } from '../../../../@types/officialVisitsApi/types'
 import { schema } from './timeSlotSchema'
 import { getTime, translateDay } from '../../../../utils/utils'
+import { dateRangeOverlap } from '../../../../utils/dateRangeOverlap'
 import logger from '../../../../../logger'
 
 export default class EditTimeSlotHandler implements PageHandler {
@@ -23,31 +24,29 @@ export default class EditTimeSlotHandler implements PageHandler {
     let existing: TimeSlot = null
     let prefill: Record<string, unknown> | null = null
 
-    if (editMode) {
-      // fetch existing time slot details to pre-populate the form
-      const id = Number(timeSlotId)
-      const { user } = res.locals
-      try {
-        existing = await this.officialVisitsService.getPrisonTimeSlotById(id, user)
+    const id = Number(timeSlotId)
+    const { user } = res.locals
+    try {
+      existing = await this.officialVisitsService.getPrisonTimeSlotById(id, user)
 
-        if (existing) {
-          const startParts = (existing.startTime || '').split(':')
-          const endParts = (existing.endTime || '').split(':')
-          prefill = {
-            startDate: existing.effectiveDate,
-            expiryDate: existing.expiryDate,
-            'startTime-startHour': startParts[0] || '',
-            'startTime-startMinute': startParts[1] || '',
-            'endTime-endHour': endParts[0] || '',
-            'endTime-endMinute': endParts[1] || '',
-            timeSlotId: existing.prisonTimeSlotId,
-          }
+      if (existing) {
+        const startParts = (existing.startTime || '').split(':')
+        const endParts = (existing.endTime || '').split(':')
+        prefill = {
+          startDate: existing.effectiveDate,
+          expiryDate: existing.expiryDate,
+          'startTime-startHour': startParts[0] || '',
+          'startTime-startMinute': startParts[1] || '',
+          'endTime-endHour': endParts[0] || '',
+          'endTime-endMinute': endParts[1] || '',
+          timeSlotId: existing.prisonTimeSlotId,
         }
-      } catch (err) {
-        logger.error('Error fetching existing time slot', err)
-        // TODO: if not found or error ?
       }
+    } catch (err) {
+      logger.error('Error fetching existing time slot', err)
+      throw new Error('createTimeSlot returned null or undefined')
     }
+
     const returnUrlSuffix = translateDay(dayCode).trim().toLowerCase()
     // Translate day code to readable label using existing partial if needed in template
     res.render('pages/admin/newTimeSlot', {
@@ -87,6 +86,29 @@ export default class EditTimeSlotHandler implements PageHandler {
 
     const id = Number(timeSlotIdParam)
     logger.info(`Updating time slot ${id}`)
+    // Check for duplicate/overlapping time slots at this prison (same dayCode, startTime and endTime, effective date, start date)
+    const allSlots = await this.officialVisitsService.getVisitSlotsAtPrison(prisonCode, user)
+    const newStartTime = getTime(startHour, startMinute)
+    const newEndTime = getTime(endHour, endMinute)
+
+    const duplicateOverlap = this.getDuplicateOverlap(
+      allSlots,
+      id,
+      dayCode as string,
+      newStartTime,
+      newEndTime,
+      startDate as string,
+      expiryDate as string,
+    )
+
+    if (duplicateOverlap) {
+      res.addValidationError(
+        'A time slot with the same day and time already exists for the provided date range',
+        'startTime',
+      )
+      return res.validationFailed()
+    }
+
     await this.officialVisitsService.updateTimeSlot(id, payload, user)
 
     res.addSuccessMessage('Time for visit updated', 'You have updated a visiting time in your prisons schedule.')
@@ -94,5 +116,23 @@ export default class EditTimeSlotHandler implements PageHandler {
       .trim()
       .toLowerCase()
     return res.redirect(`/admin/days#${returnUrlSuffix}`)
+  }
+
+  private getDuplicateOverlap(
+    allSlots: TimeSlotSummary,
+    id: number,
+    dayCode: string,
+    newStartTime: string,
+    newEndTime: string,
+    startDate: string,
+    expiryDate: string,
+  ) {
+    return (allSlots?.timeSlots || []).some(slot => {
+      const ts = slot.timeSlot
+      // exclude the slot we're editing
+      if (ts.prisonTimeSlotId === id) return false
+      if (ts.dayCode !== dayCode || ts.startTime !== newStartTime || ts.endTime !== newEndTime) return false
+      return dateRangeOverlap(ts.effectiveDate, ts.expiryDate, startDate, expiryDate)
+    })
   }
 }
