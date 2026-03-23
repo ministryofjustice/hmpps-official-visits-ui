@@ -66,7 +66,7 @@ test.describe('Admin: Delete a location', () => {
     await expect(page.getByText('Location for visit deleted')).toBeVisible()
     await expect(
       page.getByText(
-        'You have deleted a location for a visiting time in your prisons schedule. Return to DPS home page',
+        `You have deleted a location for a visiting time in your prison's schedule. Return to DPS home page`,
       ),
     ).toBeVisible()
   })

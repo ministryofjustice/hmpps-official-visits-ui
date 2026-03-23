@@ -41,7 +41,7 @@ export default class NewLocationHandler implements PageHandler {
 
     await this.officialVisitsService.createVisitSlot(timeSlotId, body, user)
     const header = 'New location for visit created'
-    const message = `You have created a new location for visiting time in your prisons schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
+    const message = `You have created a new location for visiting time in your prison's schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
     res.addSuccessMessage(header, message)
 
     return res.redirect(`/admin/locations/time-slot/${timeSlotId}/location`)

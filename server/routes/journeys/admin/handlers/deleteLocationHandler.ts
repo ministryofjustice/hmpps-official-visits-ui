@@ -34,7 +34,7 @@ export default class DeleteLocationHandler implements PageHandler {
 
     const backTo = `/admin/locations/time-slot/${timeSlotId}/location`
     const header = 'Location for visit deleted'
-    const message = `You have deleted a location for a visiting time in your prisons schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
+    const message = `You have deleted a location for a visiting time in your prison's schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
     res.addSuccessMessage(header, message)
     return res.redirect(backTo)
   }

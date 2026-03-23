@@ -48,7 +48,7 @@ export default class DeleteTimeSlotHandler implements PageHandler {
     await this.officialVisitsService.deleteTimeSlot(timeSlotId, user)
 
     const header = 'Visiting time deleted'
-    const message = `You have deleted a visiting time in your prisons schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
+    const message = `You have deleted a visiting time in your prison's schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
     res.addSuccessMessage(header, message)
     const returnUrlSuffix = translateDay(dayCode).trim().toLowerCase()
     return res.redirect(`/admin/days#${returnUrlSuffix}`)

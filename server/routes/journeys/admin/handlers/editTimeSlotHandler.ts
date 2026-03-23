@@ -111,7 +111,7 @@ export default class EditTimeSlotHandler implements PageHandler {
 
     await this.officialVisitsService.updateTimeSlot(id, payload, user)
 
-    res.addSuccessMessage('Time for visit updated', 'You have updated a visiting time in your prisons schedule.')
+    res.addSuccessMessage('Time for visit updated', `You have updated a visiting time in your prison's schedule.`)
     const returnUrlSuffix = translateDay(dayCode as string)
       .trim()
       .toLowerCase()

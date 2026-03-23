@@ -44,7 +44,7 @@ export default class EditLocationHandler implements PageHandler {
     // Redirect back to the time slot page with a success message
     const backTo = `/admin/locations/time-slot/${req.params.timeSlotId}/location`
     const header = 'Location for visit updated'
-    const message = `You have updated the location for visiting time in your prisons schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
+    const message = `You have updated the location for visiting time in your prison's schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
     res.addSuccessMessage(header, message)
     return res.redirect(backTo)
   }
