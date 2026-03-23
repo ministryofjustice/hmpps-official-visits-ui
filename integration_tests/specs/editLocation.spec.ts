@@ -59,7 +59,7 @@ test.describe('Admin: Edit a location', () => {
     await expect(page.getByText('Location for visit updated')).toBeVisible()
     await expect(
       page.getByText(
-        'You have updated the location for visiting time in your prisons schedule. Return to DPS home page',
+        `You have updated the location for visiting time in your prison's schedule. Return to DPS home page`,
       ),
     ).toBeVisible()
   })

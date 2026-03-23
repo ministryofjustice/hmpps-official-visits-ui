@@ -60,7 +60,7 @@ test.describe('Admin add time slot', () => {
     await expect(page.getByText('New time for visit created')).toBeVisible()
     await expect(
       page.getByText(
-        'You have created a new visiting time in your prisons schedule. To add locations and capacities for this visit select manage locations.',
+        `You have created a new visiting time in your prison's schedule. To add locations and capacities for this visit select manage locations.`,
       ),
     ).toBeVisible()
   })
