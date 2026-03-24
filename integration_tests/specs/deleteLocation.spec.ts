@@ -6,18 +6,18 @@ import prisonApi from '../mockApis/prisonApi'
 import manageUsersApi from '../mockApis/manageUsersApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
-import { TimeSlot, TimeSlotSummary, VisitLocation, VisitSlot } from '../../server/@types/officialVisitsApi/types'
+import { TimeSlot, TimeSlotSummaryItem, VisitLocation, VisitSlot } from '../../server/@types/officialVisitsApi/types'
 import {
-  timeSlotSummaryNoVisits,
-  timeSlotSummaryWithVisits,
   visitSlotNoVisits,
   visitSlotWithVisits,
   prisonTimeSlot,
   visitLocations,
+  timeSlotSummaryNoVisits,
+  timeSlotWithVisits,
 } from './mocks'
 
-const setupStubs = async (timeSlotSummary: TimeSlotSummary, visitSlot: VisitSlot) => {
-  await officialVisitsApi.stubGetAllTimeSlotsAndVisitSlots(timeSlotSummary)
+const setupStubs = async (timeSlotSummary: TimeSlotSummaryItem, visitSlot: VisitSlot) => {
+  await officialVisitsApi.stubGetPrisonTimeSlotSummaryById(1, timeSlotSummary)
   await officialVisitsApi.stubGetVisitSlot(1, visitSlot)
   await officialVisitsApi.stubGetPrisonTimeSlotById(1, prisonTimeSlot as TimeSlot)
   await officialVisitsApi.stubGetOfficialVisitLocationsAtPrison('LEI', visitLocations as VisitLocation[])
@@ -44,7 +44,7 @@ test.describe('Admin: Delete a location', () => {
       authSource: 'nomis',
     })
 
-    await setupStubs(timeSlotSummaryNoVisits as unknown as TimeSlotSummary, visitSlotNoVisits as unknown as VisitSlot)
+    await setupStubs(timeSlotSummaryNoVisits, visitSlotNoVisits)
 
     // Stub delete visit slot
     await officialVisitsApi.stubDeleteVisitSlot(1)
@@ -79,16 +79,15 @@ test.describe('Admin: Delete a location', () => {
       authSource: 'nomis',
     })
 
-    await setupStubs(
-      timeSlotSummaryWithVisits as unknown as TimeSlotSummary,
-      visitSlotWithVisits as unknown as VisitSlot,
-    )
+    await setupStubs(timeSlotWithVisits, visitSlotWithVisits)
 
-    // Stub delete visit slot (shouldn't be used in this scenario, but harmless)
     await officialVisitsApi.stubDeleteVisitSlot(1)
 
     await page.goto('/admin/locations/time-slot/1/location')
 
+    await expect(page.getByText('Room 1')).toBeVisible()
+
+    await expect(page.getByRole('link', { name: 'Edit' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Delete' })).not.toBeVisible()
   })
 })

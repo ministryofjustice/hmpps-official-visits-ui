@@ -37,7 +37,7 @@ describe('NewTimeSlotHandler', () => {
           // assert back link goes to days page
           const backLink = $('a.govuk-back-link')
           expect(backLink.text().trim()).toEqual('Back')
-          expect(backLink.attr('href')).toEqual('/admin/days#monday')
+          expect(backLink.attr('href')).toEqual('/admin/time-slots#monday')
           // assert date input fields are present
           expect($('input[name="startDate"]').length).toBe(1)
           expect($('input[name="expiryDate"]').length).toBe(1)
@@ -46,8 +46,8 @@ describe('NewTimeSlotHandler', () => {
           expect($('input[name="startTime-startMinute"]').length).toBe(1)
           expect($('input[name="endTime-endHour"]').length).toBe(1)
           expect($('input[name="endTime-endMinute"]').length).toBe(1)
-          expect(res.text).toContain('<a href="/admin/days#monday" class="govuk-back-link">Back</a>')
-          const cancelAnchor = $('a[href="/admin/days#monday"]').eq(1)
+          expect(res.text).toContain('<a href="/admin/time-slots#monday" class="govuk-back-link">Back</a>')
+          const cancelAnchor = $('a[href="/admin/time-slots#monday"]').eq(1)
           const cancelText = cancelAnchor.text().replace(/\s+/g, ' ').trim()
           expect(cancelText).toBe('Cancel and return to schedule')
         })
@@ -234,7 +234,7 @@ describe('NewTimeSlotHandler', () => {
           'endTime-endMinute': '00',
         })
         .expect(302)
-        .expect('location', '/admin/days#monday')
+        .expect('location', '/admin/time-slots#monday')
 
       expect(officialVisitsService.createTimeSlot).toHaveBeenCalledWith(
         {
@@ -273,7 +273,7 @@ describe('NewTimeSlotHandler', () => {
           'endTime-endMinute': '00',
         })
         .expect(302)
-        .expect('location', '/admin/days#monday')
+        .expect('location', '/admin/time-slots#monday')
 
       expect(officialVisitsService.createTimeSlot).toHaveBeenCalled()
     })
@@ -322,7 +322,7 @@ describe('NewTimeSlotHandler', () => {
           'endTime-endMinute': '00',
         })
         .expect(302)
-        .expect('location', '/admin/days#monday')
+        .expect('location', '/admin/time-slots#monday')
 
       expect(officialVisitsService.createTimeSlot).toHaveBeenCalled()
     })

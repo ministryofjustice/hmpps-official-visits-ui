@@ -52,7 +52,7 @@ export default class EditTimeSlotHandler implements PageHandler {
     res.render('pages/admin/newTimeSlot', {
       dayCode,
       dayLabel: dayCode, // template will use a helper to translate if necessary
-      backUrl: `/admin/days#${returnUrlSuffix}`,
+      backUrl: `/admin/time-slots#${returnUrlSuffix}`,
       editMode,
       existing,
       prefill,
@@ -115,7 +115,7 @@ export default class EditTimeSlotHandler implements PageHandler {
     const returnUrlSuffix = translateDay(dayCode as string)
       .trim()
       .toLowerCase()
-    return res.redirect(`/admin/days#${returnUrlSuffix}`)
+    return res.redirect(`/admin/time-slots#${returnUrlSuffix}`)
   }
 
   private getDuplicateOverlap(

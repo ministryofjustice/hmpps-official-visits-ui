@@ -7,8 +7,8 @@ import manageUsersApi from '../mockApis/manageUsersApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
 import { getMatchingRequests } from '../mockApis/wiremock'
-import { TimeSlot, TimeSlotSummary, VisitLocation } from '../../server/@types/officialVisitsApi/types'
-import { timeSlotSummaryNoVisits, prisonTimeSlot, visitLocations } from './mocks'
+import { TimeSlot, TimeSlotSummaryItem, VisitLocation } from '../../server/@types/officialVisitsApi/types'
+import { prisonTimeSlot, visitLocations, timeSlotSummaryNoVisits } from './mocks'
 
 test.describe('Admin: Add a new location', () => {
   test.beforeEach(async () => {
@@ -32,7 +32,10 @@ test.describe('Admin: Add a new location', () => {
     })
 
     // Provide a minimal time slot summary containing the time slot with id 1 and prison LEI
-    await officialVisitsApi.stubGetAllTimeSlotsAndVisitSlots(timeSlotSummaryNoVisits as TimeSlotSummary)
+    await officialVisitsApi.stubGetPrisonTimeSlotSummaryById(
+      1,
+      timeSlotSummaryNoVisits as unknown as TimeSlotSummaryItem,
+    )
     await officialVisitsApi.stubGetPrisonTimeSlotById(1, prisonTimeSlot as TimeSlot)
 
     // Stub create visit slot POST

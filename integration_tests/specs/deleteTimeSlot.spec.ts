@@ -44,14 +44,11 @@ test.describe('Admin: Delete a time slot', () => {
       authSource: 'nomis',
     })
 
-    await setupStubs(
-      timeSlotSummaryNoVisitSlots as unknown as TimeSlotSummary,
-      visitSlotNoVisits as unknown as VisitSlot,
-    )
+    await setupStubs(timeSlotSummaryNoVisitSlots, visitSlotNoVisits)
 
     await officialVisitsApi.stubDeleteTimeSlot(1)
 
-    await page.goto('/admin/days')
+    await page.goto('/admin/time-slots')
 
     await page.getByRole('link', { name: 'Delete' }).click()
 
@@ -63,7 +60,7 @@ test.describe('Admin: Delete a time slot', () => {
     // Submit the form to delete
     await page.getByRole('button', { name: 'Delete' }).click()
 
-    await expect(page).toHaveURL('/admin/days#monday')
+    await expect(page).toHaveURL('/admin/time-slots#monday')
 
     await expect(page.getByText('Visiting time deleted')).toBeVisible()
     await expect(
@@ -79,12 +76,9 @@ test.describe('Admin: Delete a time slot', () => {
       authSource: 'nomis',
     })
 
-    await setupStubs(
-      timeSlotSummaryWithVisits as unknown as TimeSlotSummary,
-      visitSlotWithVisits as unknown as VisitSlot,
-    )
+    await setupStubs(timeSlotSummaryWithVisits, visitSlotWithVisits)
 
-    await page.goto('/admin/days')
+    await page.goto('/admin/time-slots')
 
     await expect(page.getByRole('link', { name: 'Delete' })).not.toBeVisible()
   })

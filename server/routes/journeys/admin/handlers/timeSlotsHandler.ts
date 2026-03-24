@@ -3,7 +3,7 @@ import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 
-export default class DayHandler implements PageHandler {
+export default class TimeSlotsHandler implements PageHandler {
   public PAGE_NAME = Page.ADMIN_DAYS_PAGE
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
@@ -48,7 +48,7 @@ export default class DayHandler implements PageHandler {
       SUN: sunSlots,
     } = daySlots
 
-    res.render('pages/admin/days', {
+    res.render('pages/admin/timeSlots', {
       monSlots,
       tueSlots,
       wedSlots,

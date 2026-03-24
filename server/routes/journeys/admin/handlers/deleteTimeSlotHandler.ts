@@ -29,7 +29,7 @@ export default class DeleteTimeSlotHandler implements PageHandler {
     res.render('pages/admin/deleteTimeSlot', {
       timeSlot,
       dayCode,
-      backUrl: `/admin/days#${returnUrlSuffix}`,
+      backUrl: `/admin/time-slots#${returnUrlSuffix}`,
     })
   }
 
@@ -51,6 +51,6 @@ export default class DeleteTimeSlotHandler implements PageHandler {
     const message = `You have deleted a visiting time in your prison's schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
     res.addSuccessMessage(header, message)
     const returnUrlSuffix = translateDay(dayCode).trim().toLowerCase()
-    return res.redirect(`/admin/days#${returnUrlSuffix}`)
+    return res.redirect(`/admin/time-slots#${returnUrlSuffix}`)
   }
 }
