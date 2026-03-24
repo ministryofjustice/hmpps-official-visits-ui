@@ -79,8 +79,7 @@ export default class NewTimeSlotHandler implements PageHandler {
 
     const returnUrlSuffix = translateDay(timeSlot.dayCode).trim().toLowerCase()
     const header = 'New time for visit created'
-    const message =
-      'You have created a new visiting time in your prisons schedule. To add locations and capacities for this visit select manage locations.'
+    const message = `You have created a new visiting time in your prison's schedule. To add locations and capacities for this visit select manage locations.`
     res.addSuccessMessage(header, message)
     return res.redirect(`/admin/time-slots#${returnUrlSuffix}`)
   }

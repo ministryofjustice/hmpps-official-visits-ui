@@ -64,7 +64,7 @@ test.describe('Admin: Delete a time slot', () => {
 
     await expect(page.getByText('Visiting time deleted')).toBeVisible()
     await expect(
-      page.getByText('You have deleted a visiting time in your prisons schedule. Return to DPS home page'),
+      page.getByText(`You have deleted a visiting time in your prison's schedule. Return to DPS home page`),
     ).toBeVisible()
   })
 

@@ -80,7 +80,7 @@ test.describe('Admin: Add a new location', () => {
     await expect(page.getByText('New location for visit created')).toBeVisible()
     await expect(
       page.getByText(
-        'You have created a new location for visiting time in your prisons schedule. Return to DPS home page',
+        `You have created a new location for visiting time in your prison's schedule. Return to DPS home page`,
       ),
     ).toBeVisible()
   })
