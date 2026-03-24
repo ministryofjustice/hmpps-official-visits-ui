@@ -19,11 +19,11 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('DayHandler', () => {
+describe('TimeSlotsHandler', () => {
   it('should fetch all time slots and render the days page with slots split by day', async () => {
     officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(allSlots)
 
-    const res = await request(app).get(`/admin/days`)
+    const res = await request(app).get(`/admin/time-slots`)
 
     expect(officialVisitsService.getVisitSlotsAtPrison).toHaveBeenCalledWith('HEI', adminUser)
     expect(res.status).toBe(200)
@@ -113,7 +113,7 @@ describe('DayHandler', () => {
 
     officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(unsortedSlots)
 
-    const res = await request(app).get(`/admin/days`)
+    const res = await request(app).get(`/admin/time-slots`)
 
     expect(res.status).toBe(200)
 

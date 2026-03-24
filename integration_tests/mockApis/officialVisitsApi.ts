@@ -31,6 +31,8 @@ export default {
   stubRefData: (group: string, response: ReferenceDataItem[]) =>
     simpleApiMock(`/official-visits-api/reference-data/group/${group}`, response),
   stubAvailableSlots: (response: AvailableSlot[]) => simpleApiMock(`/official-visits-api/available-slots/.*`, response),
+  stubGetPrisonTimeSlotSummaryById: (prisonTimeSlotId: number, response: Record<string, unknown>) =>
+    simpleApiMock(`/official-visits-api/admin/time-slot/${prisonTimeSlotId}/summary`, response),
   stubTimeSlotSummary: (response: Record<string, unknown>) =>
     simpleApiMock(`/official-visits-api/admin/time-slots/prison/.*`, response),
   stubAllContacts: (response: components['schemas']['PrisonerContact'][]) => {

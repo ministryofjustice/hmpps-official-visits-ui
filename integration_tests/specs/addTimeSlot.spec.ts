@@ -32,7 +32,7 @@ test.describe('Admin add time slot', () => {
     })
 
     // Go to admin days page
-    await page.goto('/admin/days')
+    await page.goto('/admin/time-slots')
 
     const addMondayLink = page.getByRole('button', { name: 'Add a new time' })
     await expect(addMondayLink).toBeVisible()

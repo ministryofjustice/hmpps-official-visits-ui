@@ -128,6 +128,11 @@ export default class OfficialVisitsService {
     return this.officialVisitsApiClient.getAllTimeSlotsAndVisitSlots(prisonId, user)
   }
 
+  public async getPrisonTimeSlotSummaryById(prisonTimeSlotId: number, user: HmppsUser) {
+    logger.info(`Get time slot by id called by ${user.userId} ${user.displayName}`)
+    return this.officialVisitsApiClient.getPrisonTimeSlotSummaryById(prisonTimeSlotId, user)
+  }
+
   public async createTimeSlot(body: CreateTimeSlotRequest, user: HmppsUser) {
     logger.info(`create a time slot called by ${user.userId} ${user.displayName}`)
     return this.officialVisitsApiClient.createTimeSlot(body, user)

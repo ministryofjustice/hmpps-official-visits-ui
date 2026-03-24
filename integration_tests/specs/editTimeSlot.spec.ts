@@ -64,7 +64,7 @@ test.describe('Admin edit time slot', () => {
   test('should allow admin to edit an existing Monday time slot and show success banner', async ({ page }) => {
     await loginAsAdmin(page)
 
-    await page.goto('/admin/days')
+    await page.goto('/admin/time-slots')
 
     const mondayTab = page.getByRole('tab', { name: 'Monday' })
     if (await mondayTab.count()) {
@@ -83,14 +83,17 @@ test.describe('Admin edit time slot', () => {
     await page.fill('input[name="endTime-endHour"]', '12')
     await page.fill('input[name="endTime-endMinute"]', '30')
 
-    await Promise.all([page.waitForURL('**/admin/days#monday'), page.getByRole('button', { name: 'Save' }).click()])
+    await Promise.all([
+      page.waitForURL('**/admin/time-slots#monday'),
+      page.getByRole('button', { name: 'Save' }).click(),
+    ])
 
     await expect(page.getByText('You have updated a visiting time')).toBeVisible()
   })
 
   test('should show validation error when start date is in the past', async ({ page }) => {
     await loginAsAdmin(page)
-    await page.goto('/admin/days')
+    await page.goto('/admin/time-slots')
 
     const mondayTab = page.getByRole('tab', { name: 'Monday' })
     if (await mondayTab.count()) {

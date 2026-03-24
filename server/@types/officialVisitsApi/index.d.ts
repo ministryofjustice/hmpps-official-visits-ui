@@ -826,29 +826,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/admin/visit/visit-slot/{visitSlotId}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * Check whether any visits are associated with a prison visit slot
-     * @description Requires role: ROLE_OFFICIAL_VISITS_ADMIN. Returns true if there are any visits referencing the given prison visit slot id.
-     *
-     *     Requires one of the following roles:
-     *     * ROLE_OFFICIAL_VISITS_ADMIN
-     */
-    get: operations['hasVisitsForVisitSlot']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   '/admin/time-slots/prison/{prisonCode}': {
     parameters: {
       query?: never
@@ -866,6 +843,31 @@ export interface paths {
      *     * OFFICIAL_VISITS_ADMIN
      */
     get: operations['getAllTimeSlotsAndVisitSlots']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/admin/time-slot/{prisonTimeSlotId}/summary': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Returns the data for a prison time slot and its associated visit slots by ID
+     * @description Requires role: ROLE_OFFICIAL_VISITS_ADMIN.
+     *           Used to get the details for one prison time slot and its associated visit slots.
+     *
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     */
+    get: operations['getPrisonTimeSlotSummaryById']
     put?: never
     post?: never
     delete?: never
@@ -2050,6 +2052,13 @@ export interface components {
        * @example X999X
        */
       createUsername: string
+    }
+    DuplicateOffenderVisitIdErrorResponse: {
+      /** Format: int64 */
+      offenderVisitId: number
+      /** Format: int64 */
+      dpsOfficialVisitId: number
+      message: string
     }
     SyncCreateOfficialVisitorRequest: {
       /**
@@ -4349,7 +4358,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['DuplicateOffenderVisitIdErrorResponse']
         }
       }
     }
@@ -5415,47 +5424,6 @@ export interface operations {
       }
     }
   }
-  hasVisitsForVisitSlot: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The internal ID for the prison visit slot */
-        visitSlotId: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Boolean indicating whether visits exist for the visit slot */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': boolean
-        }
-      }
-      /** @description Unauthorised, requires a valid Oauth2 token */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden, requires an appropriate role */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
   getAllTimeSlotsAndVisitSlots: {
     parameters: {
       query?: {
@@ -5496,6 +5464,56 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getPrisonTimeSlotSummaryById: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description The internal ID for a prison time slot */
+        prisonTimeSlotId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The prison time slot and associated visit slots matching the ID provided in the request */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeSlotSummaryItem']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description No prison time slot with this ID was found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TimeSlotSummaryItem']
         }
       }
     }

@@ -3,7 +3,7 @@ import type { Services } from '../../../services'
 import { PageHandler } from '../../interfaces/pageHandler'
 import logPageViewMiddleware from '../../../middleware/logPageViewMiddleware'
 import validationMiddleware from '../../../middleware/validationMiddleware'
-import DayHandler from './handlers/dayHandler'
+import TimeSlotsHandler from './handlers/timeSlotsHandler'
 import LocationHandler from './handlers/locationHandler'
 import EditLocationHandler from './handlers/editLocationHandler'
 import NewTimeSlotHandler from './handlers/newTimeSlotHandler'
@@ -20,7 +20,7 @@ export default function Index({ auditService, officialVisitsService }: Services)
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
-  route('/days', new DayHandler(officialVisitsService))
+  route('/time-slots', new TimeSlotsHandler(officialVisitsService))
   route('/locations/time-slot/new', new NewTimeSlotHandler(officialVisitsService))
   route('/locations/time-slot/:timeSlotId/edit', new EditTimeSlotHandler(officialVisitsService))
   route('/locations/time-slot/:timeSlotId/location', new LocationHandler(officialVisitsService))

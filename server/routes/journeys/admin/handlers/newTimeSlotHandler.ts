@@ -22,7 +22,7 @@ export default class NewTimeSlotHandler implements PageHandler {
     res.render('pages/admin/newTimeSlot', {
       dayCode,
       dayLabel: dayCode,
-      backUrl: `/admin/days#${returnUrlSuffix}`,
+      backUrl: `/admin/time-slots#${returnUrlSuffix}`,
     })
   }
 
@@ -82,7 +82,7 @@ export default class NewTimeSlotHandler implements PageHandler {
     const message =
       'You have created a new visiting time in your prisons schedule. To add locations and capacities for this visit select manage locations.'
     res.addSuccessMessage(header, message)
-    return res.redirect(`/admin/days#${returnUrlSuffix}`)
+    return res.redirect(`/admin/time-slots#${returnUrlSuffix}`)
   }
 
   private getDuplicateOverlap(

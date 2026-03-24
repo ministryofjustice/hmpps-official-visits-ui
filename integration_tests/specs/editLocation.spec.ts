@@ -6,8 +6,8 @@ import prisonApi from '../mockApis/prisonApi'
 import manageUsersApi from '../mockApis/manageUsersApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
-import { TimeSlot, TimeSlotSummary, VisitLocation, VisitSlot } from '../../server/@types/officialVisitsApi/types'
-import { timeSlotSummaryNoVisits, visitSlotNoVisits, visitLocations, prisonTimeSlot } from './mocks'
+import { TimeSlot, TimeSlotSummaryItem, VisitLocation, VisitSlot } from '../../server/@types/officialVisitsApi/types'
+import { visitSlotNoVisits, visitLocations, prisonTimeSlot, timeSlotSummaryNoVisits } from './mocks'
 
 test.describe('Admin: Edit a location', () => {
   test.beforeEach(async () => {
@@ -30,7 +30,10 @@ test.describe('Admin: Edit a location', () => {
       authSource: 'nomis',
     })
 
-    await officialVisitsApi.stubGetAllTimeSlotsAndVisitSlots(timeSlotSummaryNoVisits as unknown as TimeSlotSummary)
+    await officialVisitsApi.stubGetPrisonTimeSlotSummaryById(
+      1,
+      timeSlotSummaryNoVisits as unknown as TimeSlotSummaryItem,
+    )
     await officialVisitsApi.stubGetVisitSlot(1, visitSlotNoVisits as unknown as VisitSlot)
     await officialVisitsApi.stubGetPrisonTimeSlotById(1, prisonTimeSlot as TimeSlot)
     await officialVisitsApi.stubGetOfficialVisitLocationsAtPrison('LEI', visitLocations as VisitLocation[])

@@ -21,6 +21,7 @@ import {
   ReferenceDataItem,
   TimeSlot,
   TimeSlotSummary,
+  TimeSlotSummaryItem,
   UpdateTimeSlotRequest,
   UpdateVisitSlotRequest,
   VisitLocation,
@@ -216,6 +217,13 @@ export default class OfficialVisitsApiClient extends RestClient {
   async cancelVisit(prisonCode: string, visitId: string, body: CancelTypeRequest, user: HmppsUser) {
     return this.post<CancelTypeRequest>(
       { path: `/official-visit/prison/${prisonCode}/id/${visitId}/cancel`, data: body },
+      asSystem(user.username),
+    )
+  }
+
+  async getPrisonTimeSlotSummaryById(prisonTimeSlotId: number, user: HmppsUser): Promise<TimeSlotSummaryItem> {
+    return this.get<TimeSlotSummaryItem>(
+      { path: `/admin/time-slot/${prisonTimeSlotId}/summary` },
       asSystem(user.username),
     )
   }
