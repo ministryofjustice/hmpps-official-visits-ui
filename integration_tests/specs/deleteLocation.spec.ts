@@ -49,11 +49,11 @@ test.describe('Admin: Delete a location', () => {
     // Stub delete visit slot
     await officialVisitsApi.stubDeleteVisitSlot(1)
 
-    await page.goto('/admin/locations/time-slot/1/location')
+    await page.goto('/admin/time-slot/1/locations')
 
     await page.getByRole('link', { name: 'Delete' }).click()
 
-    await expect(page).toHaveURL(/\/admin\/locations\/time-slot\/1\/visit-slot\/1\/delete/)
+    await expect(page).toHaveURL('/admin/time-slot/1/location/1/delete')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Are you sure you want to delete this location/)
 
     await expect(page.getByText('Room 1')).toBeVisible()
@@ -61,7 +61,7 @@ test.describe('Admin: Delete a location', () => {
     // Submit the form to delete
     await page.getByRole('button', { name: 'Delete' }).click()
 
-    await expect(page).toHaveURL('/admin/locations/time-slot/1/location')
+    await expect(page).toHaveURL('/admin/time-slot/1/location')
 
     await expect(page.getByText('Location for visit deleted')).toBeVisible()
     await expect(
@@ -83,7 +83,7 @@ test.describe('Admin: Delete a location', () => {
 
     await officialVisitsApi.stubDeleteVisitSlot(1)
 
-    await page.goto('/admin/locations/time-slot/1/location')
+    await page.goto('/admin/time-slot/1/locations')
 
     await expect(page.getByText('Room 1')).toBeVisible()
 

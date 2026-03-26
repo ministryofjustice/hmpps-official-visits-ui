@@ -39,7 +39,7 @@ describe('DeleteLocationHandler', () => {
     it('renders delete confirmation page', async () => {
       officialVisitsService.getVisitSlot.mockResolvedValue(visitSlot(false))
 
-      const res = await request(app).get('/admin/locations/time-slot/1/visit-slot/11/delete')
+      const res = await request(app).get('/admin/time-slot/1/location/11/delete')
 
       expect(res.status).toBe(200)
       expect(res.text).toContain("Are you sure you want to delete this location from your prison's visiting schedule?")
@@ -58,7 +58,7 @@ describe('DeleteLocationHandler', () => {
     it('throws error if visit slot has visits booked', async () => {
       officialVisitsService.getVisitSlot.mockResolvedValue(visitSlot(true))
 
-      await request(app).get('/admin/locations/time-slot/1/visit-slot/11/delete').expect(500)
+      await request(app).get('/admin/time-slot/1/location/11/delete').expect(500)
 
       expect(officialVisitsService.getVisitSlot).toHaveBeenCalledWith(11, adminUser)
     })
@@ -69,7 +69,7 @@ describe('DeleteLocationHandler', () => {
       officialVisitsService.getVisitSlot.mockResolvedValue(visitSlot(false))
       officialVisitsService.deleteVisitSlot.mockResolvedValue({})
 
-      await request(app).post('/admin/locations/time-slot/1/visit-slot/11/delete').send({}).expect(302)
+      await request(app).post('/admin/time-slot/1/location/11/delete').send({}).expect(302)
 
       expect(officialVisitsService.deleteVisitSlot).toHaveBeenCalledWith(11, adminUser)
     })
@@ -77,7 +77,7 @@ describe('DeleteLocationHandler', () => {
     it('throws error if visit slot has visits booked', async () => {
       officialVisitsService.getVisitSlot.mockResolvedValue(visitSlot(true))
 
-      await request(app).post('/admin/locations/time-slot/1/visit-slot/11/delete').send({}).expect(500)
+      await request(app).post('/admin/time-slot/1/location/11/delete').send({}).expect(500)
 
       expect(officialVisitsService.getVisitSlot).toHaveBeenCalledWith(11, adminUser)
     })

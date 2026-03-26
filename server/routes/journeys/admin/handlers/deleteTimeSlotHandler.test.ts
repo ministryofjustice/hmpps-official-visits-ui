@@ -51,7 +51,7 @@ describe('DeleteTimeSlotHandler', () => {
     it('renders delete confirmation page', async () => {
       officialVisitsService.getPrisonTimeSlotById.mockResolvedValue(prisonTimeSlot(1))
 
-      const res = await request(app).get('/admin/locations/time-slot/1/delete')
+      const res = await request(app).get('/admin/time-slot/1/delete')
 
       expect(res.status).toBe(200)
       expect(res.text).toContain('Are you sure you want to delete this visiting time')
@@ -66,7 +66,7 @@ describe('DeleteTimeSlotHandler', () => {
     it('throws error if getPrisonTimeSlotById fails', async () => {
       officialVisitsService.getPrisonTimeSlotById.mockRejectedValue(new Error('boom'))
 
-      await request(app).get('/admin/locations/time-slot/1/delete').expect(500)
+      await request(app).get('/admin/time-slot/1/delete').expect(500)
 
       expect(officialVisitsService.getPrisonTimeSlotById).toHaveBeenCalledWith(1, adminUser)
     })
@@ -82,7 +82,7 @@ describe('DeleteTimeSlotHandler', () => {
       officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(noVisitSlots)
       officialVisitsService.deleteTimeSlot.mockResolvedValue({} as unknown as TimeSlot)
 
-      await request(app).post('/admin/locations/time-slot/1/delete').send({}).expect(302)
+      await request(app).post('/admin/time-slot/1/delete').send({}).expect(302)
 
       expect(officialVisitsService.getVisitSlotsAtPrison).toHaveBeenCalledWith(expect.any(String), adminUser)
       expect(officialVisitsService.deleteTimeSlot).toHaveBeenCalledWith(1, adminUser)
@@ -96,7 +96,7 @@ describe('DeleteTimeSlotHandler', () => {
       }
       officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(withVisitSlots)
 
-      await request(app).post('/admin/locations/time-slot/1/delete').send({}).expect(500)
+      await request(app).post('/admin/time-slot/1/delete').send({}).expect(500)
 
       expect(officialVisitsService.getVisitSlotsAtPrison).toHaveBeenCalledWith(expect.any(String), adminUser)
     })

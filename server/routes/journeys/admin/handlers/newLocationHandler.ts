@@ -23,7 +23,7 @@ export default class NewLocationHandler implements PageHandler {
     res.render('pages/admin/newLocation', {
       timeSlot,
       locations,
-      backUrl: `/admin/locations/time-slot/${timeSlotId}/location`,
+      backUrl: `/admin/time-slot/${timeSlotId}/locations`,
     })
   }
 
@@ -44,6 +44,6 @@ export default class NewLocationHandler implements PageHandler {
     const message = `You have created a new location for visiting time in your prison's schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
     res.addSuccessMessage(header, message)
 
-    return res.redirect(`/admin/locations/time-slot/${timeSlotId}/location`)
+    return res.redirect(`/admin/time-slot/${timeSlotId}/locations`)
   }
 }

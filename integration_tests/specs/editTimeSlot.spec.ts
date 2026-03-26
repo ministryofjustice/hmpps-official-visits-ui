@@ -71,7 +71,7 @@ test.describe('Admin edit time slot', () => {
       await mondayTab.click()
     }
 
-    const editLink = page.locator('a[href*="/admin/locations/time-slot/3/edit"]')
+    const editLink = page.locator('a[href*="/admin/time-slot/3/edit"]')
     await expect(editLink).toBeVisible()
     await editLink.click()
 
@@ -100,7 +100,7 @@ test.describe('Admin edit time slot', () => {
       await mondayTab.click()
     }
 
-    const editLink = page.locator('a[href*="/admin/locations/time-slot/3/edit"]')
+    const editLink = page.locator('a[href*="/admin/time-slot/3/edit"]')
     await expect(editLink).toBeVisible()
     await editLink.click()
 

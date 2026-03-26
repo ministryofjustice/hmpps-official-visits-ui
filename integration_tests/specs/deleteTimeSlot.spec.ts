@@ -52,7 +52,7 @@ test.describe('Admin: Delete a time slot', () => {
 
     await page.getByRole('link', { name: 'Delete' }).click()
 
-    await expect(page).toHaveURL(/\/admin\/locations\/time-slot\/1\/delete/)
+    await expect(page).toHaveURL('/admin/time-slot/1/delete')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(
       /Are you sure you want to delete this visiting time/,
     )
