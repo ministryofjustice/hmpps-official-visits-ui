@@ -55,9 +55,9 @@
   {% set rows = [] %}
   {% if slots.length > 0 %}
     {% for slot in slots %}
-      {% set manageUrl = '/admin/locations/time-slot/' + slot.timeSlot.prisonTimeSlotId +'/location'%}
-      {% set editUrl = "/admin/locations/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/edit?day=" ~ dayCode %}
-      {% set deleteUrl = "/admin/locations/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/delete" %}
+      {% set manageUrl = '/admin/time-slot/' + slot.timeSlot.prisonTimeSlotId +'/locations'%}
+      {% set editUrl = "/admin/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/edit?day=" ~ dayCode %}
+      {% set deleteUrl = "/admin/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/delete" %}
       {% set actionLinks = '<span class="actions"><a href="' + manageUrl + '">Manage locations</a> <a href="' + editUrl + '">Edit</a>' %}
       {% if slot.visitSlots and slot.visitSlots.length == 0 %}
         {% set actionLinks = actionLinks + ' <a href="' + deleteUrl + '">Delete</a>' %}
@@ -97,7 +97,7 @@
       text: "Add a new time",
       preventDoubleClick: true,
       classes: "govuk-button",
-      href: "/admin/locations/time-slot/new?day=" ~ dayCode
+      href: "/admin/time-slot/new?day=" ~ dayCode
     }) }}
   </div>
 {% endmacro %}

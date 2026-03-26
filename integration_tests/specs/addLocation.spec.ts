@@ -49,13 +49,13 @@ test.describe('Admin: Add a new location', () => {
     await officialVisitsApi.stubGetOfficialVisitLocationsAtPrison('LEI', visitLocations as VisitLocation[])
 
     // Go to the locations page for time slot 1
-    await page.goto('/admin/locations/time-slot/1/location')
+    await page.goto('/admin/time-slot/1/locations')
 
     // Click the Add a new location button
     await page.getByRole('button', { name: 'Add a new location' }).click()
 
     // Verify we're on the add page
-    await expect(page).toHaveURL(/\/admin\/locations\/time-slot\/1\/visit-slot\/new/)
+    await expect(page).toHaveURL('/admin/time-slot/1/location/new')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Add new location/)
 
     // Select location and fill capacities
@@ -68,7 +68,7 @@ test.describe('Admin: Add a new location', () => {
     await page.getByRole('button', { name: 'Save' }).click()
 
     // After submit ensure we've returned to locations page
-    await expect(page).toHaveURL('/admin/locations/time-slot/1/location')
+    await expect(page).toHaveURL('/admin/time-slot/1/locations')
 
     // Verify wiremock saw the POST request
     const reqs = await getMatchingRequests({ method: 'POST', url: '/official-visits-api/admin/time-slot/1/visit-slot' })

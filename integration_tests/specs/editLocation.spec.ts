@@ -42,11 +42,11 @@ test.describe('Admin: Edit a location', () => {
     await officialVisitsApi.stubUpdateVisitSlot(1)
     await officialVisitsApi.stubGetOfficialVisitLocationsAtPrison('LEI', visitLocations as VisitLocation[])
 
-    await page.goto('/admin/locations/time-slot/1/location')
+    await page.goto('/admin/time-slot/1/locations')
 
     await page.getByRole('link', { name: 'Edit' }).click()
 
-    await expect(page).toHaveURL(/\/admin\/locations\/time-slot\/1\/visit-slot\/1/)
+    await expect(page).toHaveURL('/admin/time-slot/1/location/1/edit')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Edit location/)
 
     await expect(page.getByText('Visit location Room 1')).toBeVisible()
@@ -57,7 +57,7 @@ test.describe('Admin: Edit a location', () => {
     // Submit the form
     await page.getByRole('button', { name: 'Save' }).click()
 
-    await expect(page).toHaveURL('/admin/locations/time-slot/1/location')
+    await expect(page).toHaveURL('/admin/time-slot/1/locations')
 
     await expect(page.getByText('Location for visit updated')).toBeVisible()
     await expect(

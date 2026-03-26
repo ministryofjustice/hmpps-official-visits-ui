@@ -43,8 +43,8 @@ describe('TimeSlotsHandler', () => {
     expect(res.text).toContain('Manage locations')
     expect(res.text).toContain('Add a new time')
     // assert links
-    expect(res.text).toContain('href="/admin/locations/time-slot/1/location">Manage locations</a>')
-    expect(res.text).toContain('href="/admin/locations/time-slot/1/edit?day=MON">Edit</a>')
+    expect(res.text).toContain('href="/admin/time-slot/1/locations">Manage locations</a>')
+    expect(res.text).toContain('href="/admin/time-slot/1/edit?day=MON">Edit</a>')
   })
 
   it('should sort time slots by start time within each day', async () => {

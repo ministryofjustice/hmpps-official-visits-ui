@@ -50,7 +50,7 @@ describe('EditLocationHandler', () => {
         createdTime: '',
       } as VisitSlot)
 
-      const res = await request(app).get('/admin/locations/time-slot/1/visit-slot/11')
+      const res = await request(app).get('/admin/time-slot/1/location/11/edit')
 
       expect(res.status).toBe(200)
       expect(res.text).toContain('Edit location and location capacities')
@@ -71,9 +71,9 @@ describe('EditLocationHandler', () => {
       expect(res.text).toMatch(/id="maxAdults"[^>]*value="5"/)
       expect(res.text).toMatch(/id="maxGroups"[^>]*value="2"/)
       expect(res.text).toMatch(/id="maxVideo"[^>]*value="0"/)
-      expect(res.text).toContain('<a href="/admin/locations/time-slot/1/location" class="govuk-back-link">Back</a>')
+      expect(res.text).toContain('<a href="/admin/time-slot/1/locations" class="govuk-back-link">Back</a>')
       const $ = cheerio.load(res.text)
-      const cancelAnchor = $('a[href="/admin/locations/time-slot/1/location"]').eq(1)
+      const cancelAnchor = $('a[href="/admin/time-slot/1/locations"]').eq(1)
       const cancelText = cancelAnchor.text().replace(/\s+/g, ' ').trim()
       expect(cancelText).toBe('Cancel and return to schedule')
     })
@@ -81,7 +81,7 @@ describe('EditLocationHandler', () => {
 
   describe('POST', () => {
     it('validates input and shows errors when invalid', async () => {
-      await request(app).post('/admin/locations/time-slot/1/visit-slot/11').send({}).expect(302)
+      await request(app).post('/admin/time-slot/1/location/11/edit').send({}).expect(302)
       expectErrorMessages([{ fieldId: 'dpsLocationId', href: '#dpsLocationId', text: 'Select a location' }])
     })
 
@@ -89,7 +89,7 @@ describe('EditLocationHandler', () => {
       officialVisitsService.updateVisitSlot.mockResolvedValue({} as TimeSlot)
 
       await request(app)
-        .post('/admin/locations/time-slot/1/visit-slot/11')
+        .post('/admin/time-slot/1/location/11/edit')
         .send({ dpsLocationId: 'loc-1', maxAdults: '5', maxGroups: '2', maxVideo: '0' })
         .expect(302)
 

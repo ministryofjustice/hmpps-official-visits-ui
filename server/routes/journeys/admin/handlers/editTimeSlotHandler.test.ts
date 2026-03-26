@@ -37,7 +37,7 @@ describe('EditTimeSlotHandler', () => {
 
       officialVisitsService.getPrisonTimeSlotById.mockResolvedValue(existing as TimeSlot)
 
-      const res = await request(app).get('/admin/locations/time-slot/123/edit?day=MON').expect(200)
+      const res = await request(app).get('/admin/time-slot/123/edit?day=MON').expect(200)
       const $ = cheerio.load(res.text)
       const heading = $('h1.govuk-heading-l').text().trim()
       expect(heading).toEqual('Edit a time for Monday')
@@ -60,7 +60,7 @@ describe('EditTimeSlotHandler', () => {
   describe('POST', () => {
     it('shows errors when required fields missing', () => {
       return request(app)
-        .post('/admin/locations/time-slot/1/edit')
+        .post('/admin/time-slot/1/edit')
         .send({ dayCode: 'MON' })
         .expect(302)
         .expect('location', '/')
@@ -91,7 +91,7 @@ describe('EditTimeSlotHandler', () => {
       const yesterdayStr = yesterday.toISOString().split('T')[0]
 
       return request(app)
-        .post('/admin/locations/time-slot/1/edit')
+        .post('/admin/time-slot/1/edit')
         .send({
           dayCode: 'MON',
           startDate: yesterdayStr,
@@ -122,7 +122,7 @@ describe('EditTimeSlotHandler', () => {
 
     it('shows errors when day code is invalid', () => {
       return request(app)
-        .post('/admin/locations/time-slot/1/edit')
+        .post('/admin/time-slot/1/edit')
         .send({
           timeSlotId: 1,
           dayCode: 'DEN', // invalid day code
@@ -148,7 +148,7 @@ describe('EditTimeSlotHandler', () => {
 
     it('shows errors when date and time formats are invalid', () => {
       return request(app)
-        .post('/admin/locations/time-slot/1/edit')
+        .post('/admin/time-slot/1/edit')
         .send({
           timeSlotId: 1,
           dayCode: 'MON',
@@ -189,7 +189,7 @@ describe('EditTimeSlotHandler', () => {
 
     it('shows errors when time fields are out of allowed range', () => {
       return request(app)
-        .post('/admin/locations/time-slot/1/edit')
+        .post('/admin/time-slot/1/edit')
         .send({
           timeSlotId: 1,
           dayCode: 'MON',
@@ -220,7 +220,7 @@ describe('EditTimeSlotHandler', () => {
 
     it('calls updateTimeSlot', async () => {
       await request(app)
-        .post('/admin/locations/time-slot/123/edit?day=MON')
+        .post('/admin/time-slot/123/edit?day=MON')
         .send({
           dayCode: 'MON',
           timeSlotId: '123',
@@ -250,7 +250,7 @@ describe('EditTimeSlotHandler', () => {
       } as unknown as TimeSlot)
 
       await request(app)
-        .post('/admin/locations/time-slot/123/edit?day=MON')
+        .post('/admin/time-slot/123/edit?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2057-01-01',
@@ -299,7 +299,7 @@ describe('EditTimeSlotHandler', () => {
       } as unknown as TimeSlot)
 
       await request(app)
-        .post('/admin/locations/time-slot/123/edit?day=MON')
+        .post('/admin/time-slot/123/edit?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2049-01-01',
@@ -341,7 +341,7 @@ describe('EditTimeSlotHandler', () => {
 
       // candidate encloses existing: starts before existing.effectiveDate and expires after existing.expiryDate
       await request(app)
-        .post('/admin/locations/time-slot/123/edit?day=MON')
+        .post('/admin/time-slot/123/edit?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2049-01-01',
@@ -389,7 +389,7 @@ describe('EditTimeSlotHandler', () => {
       officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(futureOpenEnded)
 
       await request(app)
-        .post('/admin/locations/time-slot/123/edit?day=MON')
+        .post('/admin/time-slot/123/edit?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2051-01-01',
@@ -416,7 +416,7 @@ describe('EditTimeSlotHandler', () => {
       officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(allSlots)
 
       await request(app)
-        .post('/admin/locations/time-slot/123/edit?day=MON')
+        .post('/admin/time-slot/123/edit?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2056-12-31',

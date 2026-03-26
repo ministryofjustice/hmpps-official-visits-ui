@@ -14,21 +14,21 @@ export default class EditLocationHandler implements PageHandler {
   public GET = async (req: Request, res: Response) => {
     const { user } = res.locals
     const timeSlotId = Number(req.params.timeSlotId)
-    const visitSlotId = Number(req.params.visitSlotId)
+    const locationId = Number(req.params.locationId)
 
-    const visitSlot = await this.officialVisitsService.getVisitSlot(visitSlotId, user)
+    const visitSlot = await this.officialVisitsService.getVisitSlot(locationId, user)
     const timeSlot = await this.officialVisitsService.getPrisonTimeSlotById(timeSlotId, user)
 
     res.render('pages/admin/editLocation', {
       timeSlot,
       visitSlot,
-      backUrl: `/admin/locations/time-slot/${timeSlotId}/location`,
+      backUrl: `/admin/time-slot/${timeSlotId}/locations`,
     })
   }
 
   public POST = async (req: Request, res: Response) => {
     const { user, digitalPrisonServicesUrl } = res.locals
-    const visitSlotId = Number(req.params.visitSlotId)
+    const locationId = Number(req.params.locationId)
 
     const { dpsLocationId, maxAdults, maxGroups, maxVideo } = req.body as Record<string, unknown>
 
@@ -39,10 +39,10 @@ export default class EditLocationHandler implements PageHandler {
       maxVideo: typeof maxVideo !== 'undefined' ? Number(maxVideo) : undefined,
     }
 
-    await this.officialVisitsService.updateVisitSlot(visitSlotId, body, user)
+    await this.officialVisitsService.updateVisitSlot(locationId, body, user)
 
     // Redirect back to the time slot page with a success message
-    const backTo = `/admin/locations/time-slot/${req.params.timeSlotId}/location`
+    const backTo = `/admin/time-slot/${req.params.timeSlotId}/locations`
     const header = 'Location for visit updated'
     const message = `You have updated the location for visiting time in your prison's schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
     res.addSuccessMessage(header, message)

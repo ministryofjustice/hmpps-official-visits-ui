@@ -15,9 +15,9 @@
       {% set rows = [] %}
       {% if visitSlots.length > 0 %}
           {% for slot in visitSlots %}
-              {% set actionHtml = '<a href="/admin/locations/time-slot/' + timeSlot.prisonTimeSlotId + '/visit-slot/' + slot.visitSlotId + '">Edit</a>' %}
+              {% set actionHtml = '<a href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/edit">Edit</a>' %}
                 {% if slot.hasVisit == false %}
-                  {% set actionHtml = actionHtml + ' <a class="govuk-link govuk-!-margin-left-4" href="/admin/locations/time-slot/' + timeSlot.prisonTimeSlotId + '/visit-slot/' + slot.visitSlotId + '/delete">Delete</a>' %}
+                  {% set actionHtml = actionHtml + ' <a class="govuk-link govuk-!-margin-left-4" href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/delete">Delete</a>' %}
               {% endif %}
               {% set rows = (rows.push([
                   { text: slot.locationDescription },
@@ -52,7 +52,7 @@
       {{ govukButton({
         text: "Add a new location",
         preventDoubleClick: true,
-        href: "/admin/locations/time-slot/" ~ timeSlot.prisonTimeSlotId ~ "/visit-slot/new"
+        href: "/admin/time-slot/" ~ timeSlot.prisonTimeSlotId ~ "/location/new"
       }) }}
       <a href="{{ backUrl }}"
          class="govuk-link govuk-!-margin-left-4">
