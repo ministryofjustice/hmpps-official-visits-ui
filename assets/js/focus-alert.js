@@ -6,7 +6,7 @@
 
 ;(function () {
   function focusAlertOnLoad() {
-    var alertEl = document.querySelector('.moj-alert[role="alert"], .moj-alert')
+    var alertEl = document.querySelector('.moj-alert[role="alert"]')
     if (!alertEl) return
 
     // Ensure the alert is focusable but not in the tab order
