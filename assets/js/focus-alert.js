@@ -4,6 +4,8 @@
 // - Move keyboard focus to the alert and ensure the page scrolls to it, overriding default hash scrolling
 // - Only run this behavior on the initial load (not on subsequent user hash navigation)
 
+const SECONDARY_FOCUS_DELAY = 250
+const INITIAL_FOCUS_DELAY = 50
 ;(function () {
   function focusAlertOnLoad() {
     var alertEl = document.querySelector('.moj-alert[role="alert"]')
@@ -48,8 +50,21 @@
 
     // Schedule the focus/scroll to run after DOMContentLoaded so it overrides any
     // earlier hash-based scrolling. Run twice with small delays to be robust.
-    setTimeout(focusAndScroll, 50)
-    setTimeout(focusAndScroll, 250)
+    var hash = window.location.hash
+    var shouldOverrideHash = true
+    if (hash) {
+      var id = decodeURIComponent(hash.slice(1))
+      try {
+        var targetEl = document.getElementById(id) || document.querySelector('[name="' + id.replace(/"/g, '\\"') + '"]')
+        if (targetEl) shouldOverrideHash = false
+      } catch (e) {
+        // ignore selector errors and fall back to overriding
+      }
+    }
+    if (shouldOverrideHash) {
+      setTimeout(focusAndScroll, INITIAL_FOCUS_DELAY)
+      setTimeout(focusAndScroll, SECONDARY_FOCUS_DELAY)
+    }
   }
 
   if (document.readyState === 'loading') {
