@@ -16,9 +16,14 @@
       // ignore
     }
 
-    // Ensure polite live region if not already present
+    // Ensure appropriate live region if not already present
     if (!alertEl.hasAttribute('aria-live')) {
-      alertEl.setAttribute('aria-live', 'polite')
+      // For role="alert", rely on the default assertive politeness.
+      // For other alerts, default to a polite live region.
+      var role = alertEl.getAttribute('role')
+      if (role !== 'alert') {
+        alertEl.setAttribute('aria-live', 'polite')
+      }
     }
 
     // Function that scrolls to and focuses the alert. Run twice with delays to
