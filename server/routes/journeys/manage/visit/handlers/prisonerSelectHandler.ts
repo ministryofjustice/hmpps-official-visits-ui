@@ -4,7 +4,6 @@ import { PageHandler } from '../../../../interfaces/pageHandler'
 import PrisonerService from '../../../../../services/prisonerService'
 import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import { schema } from './prisonerSearchSchema'
-import logger from '../../../../../../logger'
 import { savePrisonerSelection } from '../createJourneyState'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 
@@ -62,7 +61,6 @@ export default class PrisonerSelectHandler implements PageHandler {
       alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
       restrictionsCount: activeRestrictions?.length ?? 0,
     })
-    logger.info(`Session journey officialVisit : ${JSON.stringify(req.session.journey.officialVisit, null, 2)}`)
 
     return res.redirect('visit-type')
   }
