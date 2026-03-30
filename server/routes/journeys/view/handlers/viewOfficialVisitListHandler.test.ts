@@ -98,7 +98,7 @@ describe('Search for an official visit', () => {
 
           expect($('.moj-pagination__results').text()).toContain('Showing 1 to 10 of 20 total results')
 
-          expect($('.govuk-table__header:nth-child(1)').text()).toEqual('Time and date')
+          expect($('.govuk-table__header:nth-child(1)').text()).toEqual('Date and time')
           expect($('.govuk-table__header:nth-child(2)').text()).toEqual('Location')
           expect($('.govuk-table__header:nth-child(3)').text()).toEqual('Visit type')
           expect($('.govuk-table__header:nth-child(4)').text()).toEqual('Prisoner')
