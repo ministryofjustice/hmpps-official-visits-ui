@@ -184,7 +184,7 @@ test.describe('Complete official visits', () => {
 
     expect(page.url()).toContain('http://localhost:3007/view/visit/1?backTo=')
     expect(page.getByRole('region', { name: 'success: Visit marked as' })).toBeVisible()
-
+    await expect(page.getByRole('link', { name: 'Remark visit completion' })).toBeVisible()
     await page.getByRole('link', { name: 'Return to search list' }).click()
 
     expect(page.url()).toBe(

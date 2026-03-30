@@ -99,5 +99,6 @@ test.describe('Cancel an official visit', () => {
     await expect(page.getByRole('region', { name: 'success: Visit marked as' })).toBeVisible()
     await expect(page.getByText('You have cancelled this visit.')).toBeVisible()
     await expect(page.getByRole('link', { name: 'Return to search list' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Remark visit cancellation' })).toBeVisible()
   })
 })

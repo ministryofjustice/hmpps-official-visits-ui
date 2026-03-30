@@ -106,12 +106,12 @@
     {% set visitActions = [
       {
         href: "/view/visit/" + visit.officialVisitId + "/cancel" + paramBackTo,
-        html: "Cancel visit",
+        html: "Remark visit cancellation" if updateVerb == 'cancelled' else "Cancel visit",
         classes: 'govuk-link--no-visited-state'
       },
       {
         href: "/view/visit/" + visit.officialVisitId + "/complete" + paramBackTo,
-        html: "Complete visit",
+          html: "Remark visit completion" if updateVerb == 'completed' else "Complete visit",
         classes: 'govuk-link--no-visited-state'
       }
     ] %}
@@ -340,14 +340,6 @@
       </div>
     </div>
   {% endfor %}
-
-  {% if mode != 'amend' %}
-    {{ govukButton ({
-      text: "Print attendance list (TODO)",
-      href: "#TODO",
-      classes: "govuk-button govuk-button--secondary"
-    }) }}
-  {% endif %}
 
   {% if mode == 'amend' %}
     <a href="/view/visit/{{visit.officialVisitId}}{{paramBackTo}}" class="govuk-link govuk-body govuk-link--no-visited-state">Cancel</a>
