@@ -4,7 +4,6 @@ import { PageHandler } from '../../../../interfaces/pageHandler'
 import PrisonerService from '../../../../../services/prisonerService'
 import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import { schema } from './prisonerSearchSchema'
-import logger from '../../../../../../logger'
 import { savePrisonerSelection } from '../createJourneyState'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 
