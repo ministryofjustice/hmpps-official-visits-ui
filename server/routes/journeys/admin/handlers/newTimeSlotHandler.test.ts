@@ -28,7 +28,7 @@ describe('NewTimeSlotHandler', () => {
   describe('GET', () => {
     it('renders the add new time page with day label', () => {
       return request(app)
-        .get('/admin/locations/time-slot/new?day=MON')
+        .get('/admin/time-slot/new?day=MON')
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
@@ -57,7 +57,7 @@ describe('NewTimeSlotHandler', () => {
   describe('POST', () => {
     it('shows errors when required fields missing', () => {
       return request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/time-slot/new')
         .send({ dayCode: 'MON' })
         .expect(302)
         .expect('location', '/')
@@ -88,7 +88,7 @@ describe('NewTimeSlotHandler', () => {
       const yesterdayStr = yesterday.toISOString().split('T')[0]
 
       return request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/time-slot/new')
         .send({
           dayCode: 'MON',
           startDate: yesterdayStr,
@@ -119,7 +119,7 @@ describe('NewTimeSlotHandler', () => {
     // test for valid day value
     it('shows errors when day code is invalid', () => {
       return request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/time-slot/new')
         .send({
           dayCode: 'DEN', // invalid day code
           startDate: '2055-12-25',
@@ -144,7 +144,7 @@ describe('NewTimeSlotHandler', () => {
 
     it('shows errors when date and time formats are invalid', () => {
       return request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/time-slot/new')
         .send({
           dayCode: 'MON',
           startDate: 'invalid-date',
@@ -184,7 +184,7 @@ describe('NewTimeSlotHandler', () => {
 
     it('shows errors when time fields are out of allowed range', () => {
       return request(app)
-        .post('/admin/locations/time-slot/new')
+        .post('/admin/time-slot/new')
         .send({
           dayCode: 'MON',
           startDate: '2055-12-25',
@@ -223,7 +223,7 @@ describe('NewTimeSlotHandler', () => {
         expiryDate: '2066-12-25',
       } as unknown as TimeSlot)
       await request(app)
-        .post('/admin/locations/time-slot/new?day=MON')
+        .post('/admin/time-slot/new?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2055-12-25',
@@ -262,7 +262,7 @@ describe('NewTimeSlotHandler', () => {
       } as unknown as TimeSlot)
 
       await request(app)
-        .post('/admin/locations/time-slot/new?day=MON')
+        .post('/admin/time-slot/new?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2057-01-01',
@@ -311,7 +311,7 @@ describe('NewTimeSlotHandler', () => {
       } as unknown as TimeSlot)
 
       await request(app)
-        .post('/admin/locations/time-slot/new?day=MON')
+        .post('/admin/time-slot/new?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2049-01-01',
@@ -353,7 +353,7 @@ describe('NewTimeSlotHandler', () => {
 
       // candidate encloses existing: starts before existing.effectiveDate and expires after existing.expiryDate
       await request(app)
-        .post('/admin/locations/time-slot/new?day=MON')
+        .post('/admin/time-slot/new?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2049-01-01',
@@ -401,7 +401,7 @@ describe('NewTimeSlotHandler', () => {
       officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(futureOpenEnded)
 
       await request(app)
-        .post('/admin/locations/time-slot/new?day=MON')
+        .post('/admin/time-slot/new?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2051-01-01',
@@ -428,7 +428,7 @@ describe('NewTimeSlotHandler', () => {
       officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue(allSlots)
 
       await request(app)
-        .post('/admin/locations/time-slot/new?day=MON')
+        .post('/admin/time-slot/new?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2056-12-31',
@@ -454,7 +454,7 @@ describe('NewTimeSlotHandler', () => {
     it('should handle service errors gracefully', async () => {
       officialVisitsService.createTimeSlot.mockRejectedValue(new Error('Service error'))
       await request(app)
-        .post('/admin/locations/time-slot/new?day=MON')
+        .post('/admin/time-slot/new?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2055-12-25',
@@ -470,7 +470,7 @@ describe('NewTimeSlotHandler', () => {
     it('should handle falsy timeSlot (null or undefined) gracefully', async () => {
       officialVisitsService.createTimeSlot.mockResolvedValue(null as unknown as TimeSlot)
       await request(app)
-        .post('/admin/locations/time-slot/new?day=MON')
+        .post('/admin/time-slot/new?day=MON')
         .send({
           dayCode: 'MON',
           startDate: '2055-12-25',

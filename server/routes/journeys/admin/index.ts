@@ -21,16 +21,13 @@ export default function Index({ auditService, officialVisitsService }: Services)
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
   route('/time-slots', new TimeSlotsHandler(officialVisitsService))
-  route('/locations/time-slot/new', new NewTimeSlotHandler(officialVisitsService))
-  route('/locations/time-slot/:timeSlotId/edit', new EditTimeSlotHandler(officialVisitsService))
-  route('/locations/time-slot/:timeSlotId/location', new LocationHandler(officialVisitsService))
-  route('/locations/time-slot/:timeSlotId/visit-slot/new', new NewLocationHandler(officialVisitsService))
-  route('/locations/time-slot/:timeSlotId/visit-slot/:visitSlotId', new EditLocationHandler(officialVisitsService))
-  route(
-    '/locations/time-slot/:timeSlotId/visit-slot/:visitSlotId/delete',
-    new DeleteLocationHandler(officialVisitsService),
-  )
-  route('/locations/time-slot/:timeSlotId/delete', new DeleteTimeSlotHandler(officialVisitsService))
+  route('/time-slot/new', new NewTimeSlotHandler(officialVisitsService))
+  route('/time-slot/:timeSlotId/edit', new EditTimeSlotHandler(officialVisitsService))
+  route('/time-slot/:timeSlotId/delete', new DeleteTimeSlotHandler(officialVisitsService))
+  route('/time-slot/:timeSlotId/locations', new LocationHandler(officialVisitsService))
+  route('/time-slot/:timeSlotId/location/new', new NewLocationHandler(officialVisitsService))
+  route('/time-slot/:timeSlotId/location/:locationId/edit', new EditLocationHandler(officialVisitsService))
+  route('/time-slot/:timeSlotId/location/:locationId/delete', new DeleteLocationHandler(officialVisitsService))
 
   return router
 }

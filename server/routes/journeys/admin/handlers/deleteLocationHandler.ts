@@ -11,28 +11,28 @@ export default class DeleteLocationHandler implements PageHandler {
 
   public GET = async (req: Request, res: Response) => {
     const { user } = res.locals
-    const visitSlotId = Number(req.params.visitSlotId)
+    const locationId = Number(req.params.locationId)
     const timeSlotId = Number(req.params.timeSlotId)
-    const visitSlot = await this.officialVisitsService.getVisitSlot(visitSlotId, user)
+    const visitSlot = await this.officialVisitsService.getVisitSlot(locationId, user)
     await this.isAllowedToDelete(visitSlot)
 
     res.render('pages/admin/deleteLocation', {
       visitSlot,
       timeSlotId,
-      backUrl: `/admin/locations/time-slot/${timeSlotId}/location`,
+      backUrl: `/admin/time-slot/${timeSlotId}/location`,
     })
   }
 
   public POST = async (req: Request, res: Response) => {
     const { user, digitalPrisonServicesUrl } = res.locals
-    const visitSlotId = Number(req.params.visitSlotId)
+    const locationId = Number(req.params.locationId)
     const timeSlotId = Number(req.params.timeSlotId)
-    const visitSlot = await this.officialVisitsService.getVisitSlot(visitSlotId, user)
+    const visitSlot = await this.officialVisitsService.getVisitSlot(locationId, user)
     await this.isAllowedToDelete(visitSlot)
 
-    await this.officialVisitsService.deleteVisitSlot(visitSlotId, user)
+    await this.officialVisitsService.deleteVisitSlot(locationId, user)
 
-    const backTo = `/admin/locations/time-slot/${timeSlotId}/location`
+    const backTo = `/admin/time-slot/${timeSlotId}/location`
     const header = 'Location for visit deleted'
     const message = `You have deleted a location for a visiting time in your prison's schedule. <a href="${digitalPrisonServicesUrl}">Return to DPS home page</a>`
     res.addSuccessMessage(header, message)

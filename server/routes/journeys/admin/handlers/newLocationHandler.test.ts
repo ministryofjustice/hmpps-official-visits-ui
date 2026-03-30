@@ -42,7 +42,7 @@ describe('NewVisitSlotHandler', () => {
       }
       officialVisitsService.getPrisonTimeSlotById.mockResolvedValue(existing as TimeSlot)
 
-      const res = await request(app).get('/admin/locations/time-slot/1/visit-slot/new')
+      const res = await request(app).get('/admin/time-slot/1/location/new')
 
       expect(res.status).toBe(200)
       expect(res.text).toContain('Add new location and location capacities')
@@ -60,8 +60,8 @@ describe('NewVisitSlotHandler', () => {
 
       const $ = cheerio.load(res.text)
       expect($('select#dpsLocationId').length).toBeGreaterThan(0)
-      expect(res.text).toContain('<a href="/admin/locations/time-slot/1/location" class="govuk-back-link">Back</a>')
-      const cancelAnchor = $('a[href="/admin/locations/time-slot/1/location"]').eq(1)
+      expect(res.text).toContain('<a href="/admin/time-slot/1/locations" class="govuk-back-link">Back</a>')
+      const cancelAnchor = $('a[href="/admin/time-slot/1/locations"]').eq(1)
       const cancelText = cancelAnchor.text().replace(/\s+/g, ' ').trim()
       expect(cancelText).toBe('Cancel and return to schedule')
     })
@@ -69,14 +69,14 @@ describe('NewVisitSlotHandler', () => {
 
   describe('POST', () => {
     it('shows validation error when no location selected', async () => {
-      await request(app).post('/admin/locations/time-slot/1/visit-slot/new').send({}).expect(302)
+      await request(app).post('/admin/time-slot/1/location/new').send({}).expect(302)
 
       expectErrorMessages([{ fieldId: 'dpsLocationId', href: '#dpsLocationId', text: 'Select a location' }])
     })
 
     it('should show validation error when maxAdults is not a number', async () => {
       await request(app)
-        .post('/admin/locations/time-slot/1/visit-slot/new')
+        .post('/admin/time-slot/1/location/new')
         .send({ dpsLocationId: 'loc-1', maxAdults: 'not-a-number' })
         .expect(302)
 
@@ -85,7 +85,7 @@ describe('NewVisitSlotHandler', () => {
 
     it('should show validation error when maxGroups is not a number', async () => {
       await request(app)
-        .post('/admin/locations/time-slot/1/visit-slot/new')
+        .post('/admin/time-slot/1/location/new')
         .send({ dpsLocationId: 'loc-1', maxGroups: 'not-a-number' })
         .expect(302)
 
@@ -94,7 +94,7 @@ describe('NewVisitSlotHandler', () => {
 
     it('should show validation error when maxVideo is not a number', async () => {
       await request(app)
-        .post('/admin/locations/time-slot/1/visit-slot/new')
+        .post('/admin/time-slot/1/location/new')
         .send({ dpsLocationId: 'loc-1', maxVideo: 'not-a-number' })
         .expect(302)
 
@@ -103,10 +103,10 @@ describe('NewVisitSlotHandler', () => {
 
     it('creates a visit slot and redirects on success', async () => {
       await request(app)
-        .post('/admin/locations/time-slot/1/visit-slot/new')
+        .post('/admin/time-slot/1/location/new')
         .send({ dpsLocationId: 'loc-1', maxAdults: '5', maxGroups: '2', maxVideo: '0' })
         .expect(302)
-        .expect('location', '/admin/locations/time-slot/1/location')
+        .expect('location', '/admin/time-slot/1/locations')
 
       expect(officialVisitsService.createVisitSlot).toHaveBeenCalledWith(
         1,
