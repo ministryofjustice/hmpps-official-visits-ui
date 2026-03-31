@@ -28,8 +28,7 @@
         "target": "_blank"    
       }
     }) }}
-
-    {% if user | hasPermission(PERMISSION.MANAGE) %}
+    {% if user | hasPermission(PERMISSION.MANAGE) and visit.visitStatus not in ['COMPLETED', 'CANCELLED'] %}
       {{ govukButton({
         text: "Amend visit",
         href: "/manage/amend/" + visit.officialVisitId + paramBackTo,

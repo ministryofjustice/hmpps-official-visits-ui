@@ -233,6 +233,8 @@ describe('View an official visit', () => {
           expect(getValueByKey($, 'Visit status')).toEqual('Completed')
           expect(getValueByKey($, 'Cancellation notes')).toBeNull()
           expect(getValueByKey($, 'Completion notes')).toEqual('Visit completed')
+          expect($('.govuk-button:contains("Amend visit")').length).toBe(0)
+          expect($('.govuk-button:contains("Cancel visit")').length).toBe(0)
         })
     })
 
@@ -255,6 +257,8 @@ describe('View an official visit', () => {
 
           expect(getValueByKey($, 'Visit status')).toEqual('Cancelled')
           expect(getValueByKey($, 'Cancellation notes')).toEqual('Cancelled for reasons')
+          expect($('.govuk-button:contains("Amend visit")').length).toBe(0)
+          expect($('.govuk-button:contains("Cancel visit")').length).toBe(0)
         })
     })
 
