@@ -8,12 +8,37 @@
 {% from "partials/continueCancel.njk" import continueCancel %}
 {% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set pageTitle = "Select date and time of official visit" %}
 
 {% block content %}
 
   {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
+
+  {% if hasOverlap %}
+    {{ mojAlert({
+      variant: "warning",
+      role: "alert",
+      title: "This prisoner already has a visit booked",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "The prisoner has another visit booked at this time.<br/>Choose a different date to continue.",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+
+  {% if flash.hasOverlap %}
+    {{ mojAlert({
+      variant: "warning",
+      role: "alert",
+      title: "A visitor already has a visit booked",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "A visitor has another visit booked at this time.<br/>Choose a different date to continue.",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">

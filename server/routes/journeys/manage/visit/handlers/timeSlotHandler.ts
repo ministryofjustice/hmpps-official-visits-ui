@@ -2,10 +2,10 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import { hasPrisonerOverlap, saveTimeSlot, filterAvailableSlots, hasVisitorOverlap } from '../createJourneyState'
 import ActivitiesService from '../../../../../services/activitiesService'
 import { getParsedDateFromQueryString, getWeekOfDatesStartingMonday } from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
-import { saveTimeSlot, filterAvailableSlots } from '../createJourneyState'
 import { getBackLink } from './utils'
 
 export default class TimeSlotHandler implements PageHandler {
@@ -45,6 +45,8 @@ export default class TimeSlotHandler implements PageHandler {
       user,
     )
 
+    const hasOverlap = req.flash('hasOverlap')[0] === 'true'
+
     res.render('pages/manage/timeSlot', {
       today: new Date().toISOString().substring(0, 10),
       selectedDate,
@@ -56,31 +58,47 @@ export default class TimeSlotHandler implements PageHandler {
       selectedTimeSlot: res.locals.formResponses?.['timeSlot'] || officialVisit?.selectedTimeSlot?.visitSlotId,
       backUrl: getBackLink(req, res, `visit-type`),
       prisoner: req.session.journey.officialVisit.prisoner,
+      hasOverlap,
     })
   }
 
   public POST = async (req: Request, res: Response) => {
-    if (res.locals.mode === 'amend') {
-      const selectedSlot = req.session.journey.officialVisit.availableSlots.find(
-        slot => slot.visitSlotId === req.body.visitSlotId,
-      )
+    const visit = req.session.journey.officialVisit
+    const selectedSlot = req.session.journey.officialVisit.availableSlots.find(
+      slot => slot.visitSlotId === req.body.visitSlotId,
+    )
 
-      if (selectedSlot) {
-        await this.officialVisitsService.updateVisitTypeAndSlot(
-          req.session.journey.officialVisit.prisonCode,
-          req.params.ovId,
-          {
-            prisonVisitSlotId: selectedSlot.visitSlotId,
-            visitDate: selectedSlot.visitDate,
-            startTime: selectedSlot.startTime,
-            endTime: selectedSlot.endTime,
-            dpsLocationId: selectedSlot.dpsLocationId,
-            visitTypeCode: req.session.journey.officialVisit.visitType,
-          },
-          res.locals.user,
-        )
-        req.flash('updateVerb', 'amended')
-      }
+    const overlapResult = await this.officialVisitsService.checkForOverlappingVisits(
+      visit.prisoner.prisonCode,
+      visit.prisoner.prisonerNumber,
+      selectedSlot.visitDate,
+      selectedSlot.startTime,
+      selectedSlot.endTime,
+      [...(visit.officialVisitors || []), ...(visit.socialVisitors || [])].map(v => v.contactId),
+      visit.officialVisitId || 0,
+      res.locals.user,
+    )
+
+    if (hasPrisonerOverlap(overlapResult) || hasVisitorOverlap(overlapResult)) {
+      req.flash('hasOverlap', 'true')
+      return res.redirect(req.get('Referrer') || req.originalUrl)
+    }
+
+    if (res.locals.mode === 'amend') {
+      await this.officialVisitsService.updateVisitTypeAndSlot(
+        visit.prisonCode,
+        req.params.ovId,
+        {
+          prisonVisitSlotId: selectedSlot.visitSlotId,
+          visitDate: selectedSlot.visitDate,
+          startTime: selectedSlot.startTime,
+          endTime: selectedSlot.endTime,
+          dpsLocationId: selectedSlot.dpsLocationId,
+          visitTypeCode: visit.visitType,
+        },
+        res.locals.user,
+      )
+      req.flash('updateVerb', 'amended')
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }
 

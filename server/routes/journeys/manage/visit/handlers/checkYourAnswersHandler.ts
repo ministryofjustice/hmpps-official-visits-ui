@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import { checkSlotCapacity } from '../createJourneyState'
+import { checkSlotCapacity, hasPrisonerOverlap, hasVisitorOverlap } from '../createJourneyState'
 import { ApprovedContact } from '../../../../../@types/officialVisitsApi/types'
 
 export default class CheckYourAnswersHandler implements PageHandler {
@@ -28,12 +28,31 @@ export default class CheckYourAnswersHandler implements PageHandler {
       officialVisit.socialVisitors || [],
     )
 
+    let prisonerOverlap = false
+    let visitorOverlap = false
+    if (officialVisit.selectedTimeSlot) {
+      const overlapResult = await this.officialVisitsService.checkForOverlappingVisits(
+        officialVisit.prisoner.prisonCode,
+        officialVisit.prisoner.prisonerNumber,
+        officialVisit.selectedTimeSlot.visitDate,
+        officialVisit.selectedTimeSlot.startTime,
+        officialVisit.selectedTimeSlot.endTime,
+        [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])].map(v => v.contactId),
+        0, // existingOfficialVisitId - 0 for new visits
+        res.locals.user,
+      )
+      prisonerOverlap = hasPrisonerOverlap(overlapResult)
+      visitorOverlap = hasVisitorOverlap(overlapResult)
+    }
+
     return res.render('pages/manage/checkYourAnswers', {
       visit: officialVisit,
       contacts: [...officialVisit.officialVisitors, ...officialVisit.socialVisitors],
       prisoner,
       capacityCheck: capacityCheckResult,
       hasDuplicateContactIds,
+      hasScheduleOverlap: prisonerOverlap,
+      hasVisitorOverlap: visitorOverlap,
     })
   }
 
@@ -48,6 +67,20 @@ export default class CheckYourAnswersHandler implements PageHandler {
       visit.socialVisitors || [],
     )
 
+    const overlapResult = await this.officialVisitsService.checkForOverlappingVisits(
+      visit.prisoner.prisonCode,
+      visit.prisoner.prisonerNumber,
+      visit.selectedTimeSlot.visitDate,
+      visit.selectedTimeSlot.startTime,
+      visit.selectedTimeSlot.endTime,
+      [...(visit.officialVisitors || []), ...(visit.socialVisitors || [])].map(v => v.contactId),
+      0,
+      res.locals.user,
+    )
+
+    const prisonerOverlap = hasPrisonerOverlap(overlapResult)
+    const visitorOverlap = hasVisitorOverlap(overlapResult)
+
     if (!capacityCheckResult) {
       return res.render('pages/manage/checkYourAnswers', {
         visit,
@@ -55,6 +88,8 @@ export default class CheckYourAnswersHandler implements PageHandler {
         prisoner: visit.prisoner,
         capacityCheck: capacityCheckResult,
         hasDuplicateContactIds,
+        hasScheduleOverlap: prisonerOverlap,
+        hasVisitorOverlap: visitorOverlap,
       })
     }
 
@@ -65,6 +100,20 @@ export default class CheckYourAnswersHandler implements PageHandler {
         prisoner: visit.prisoner,
         capacityCheck: capacityCheckResult,
         hasDuplicateContactIds,
+        hasScheduleOverlap: prisonerOverlap,
+        hasVisitorOverlap: visitorOverlap,
+      })
+    }
+
+    if (prisonerOverlap || visitorOverlap) {
+      return res.render('pages/manage/checkYourAnswers', {
+        visit,
+        contacts: [...visit.officialVisitors, ...visit.socialVisitors],
+        prisoner: visit.prisoner,
+        capacityCheck: capacityCheckResult,
+        hasDuplicateContactIds,
+        hasScheduleOverlap: prisonerOverlap,
+        hasVisitorOverlap: visitorOverlap,
       })
     }
 

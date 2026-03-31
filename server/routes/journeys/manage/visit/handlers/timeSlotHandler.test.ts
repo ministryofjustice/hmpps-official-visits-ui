@@ -47,8 +47,12 @@ beforeEach(() => {
   })
 
   officialVisitsService.getAvailableSlots.mockResolvedValue(mockTimeslots)
-
   activitiesService.getPrisonersSchedule.mockResolvedValue(sortedMockScheduleEvents)
+  officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+    prisonerNumber: 'G4793VF',
+    overlappingPrisonerVisits: [],
+    contacts: [],
+  })
 })
 
 afterEach(() => {
@@ -61,7 +65,7 @@ const URL = `/manage/create/${UUID}/time-slot`
 
 describe('Time slot handler', () => {
   describe('GET (create)', () => {
-    it('should render the correct view page', () => {
+    it('should render the correct view page', async () => {
       return request(app)
         .get(URL)
         .expect('Content-Type', /html/)
@@ -128,7 +132,7 @@ describe('Time slot handler', () => {
   })
 
   describe('GET (amend)', () => {
-    it('should render the correct view page', () => {
+    it('should render the correct view page', async () => {
       return request(app)
         .get(`/manage/amend/1/${UUID}/time-slot?change=true`)
         .expect('Content-Type', /html/)
@@ -238,6 +242,35 @@ describe('Time slot handler', () => {
 
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.selectedTimeSlot).toEqual({ visitSlotId: 1 })
+    })
+
+    it('should redirect back to time slot page if there are overlapping visits', async () => {
+      officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+        prisonerNumber: 'G4793VF',
+        overlappingPrisonerVisits: [123], // Has overlapping prisoner visits
+        contacts: [],
+      })
+
+      await request(app).post(URL).send({ visitSlot: '1' }).expect(302)
+
+      expectFlashMessage('hasOverlap', 'true')
+    })
+
+    it('should redirect back to time slot page if there are visitor overlaps', async () => {
+      officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+        prisonerNumber: 'G4793VF',
+        overlappingPrisonerVisits: [], // No prisoner overlap
+        contacts: [
+          {
+            contactId: 456,
+            overlappingContactVisits: [789], // Has visitor overlap
+          },
+        ],
+      })
+
+      await request(app).post(URL).send({ visitSlot: '1' }).expect(302)
+
+      expectFlashMessage('hasOverlap', 'true')
     })
 
     it('should accept a valid time slot in amend mode', async () => {

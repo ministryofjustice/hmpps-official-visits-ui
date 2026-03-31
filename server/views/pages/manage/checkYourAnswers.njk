@@ -42,6 +42,30 @@
     }) }}
   {% endif %}
 
+  {% if hasScheduleOverlap %}
+    {{ mojAlert({
+      variant: "warning",
+      role: "alert",
+      title: "This prisoner already has a visit booked",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "The prisoner has another visit booked at this time.<br/>Choose a different date to continue.",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+
+  {% if hasVisitorOverlap %}
+    {{ mojAlert({
+      variant: "warning",
+      role: "alert",
+      title: "A visitor already has a visit booked",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "A visitor has another visit booked at this time.<br/>Choose a different date to continue.",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+
   {% set activeRestrictions = prisoner.restrictions | rejectattr("expiryDate", "isDateAndInThePast") %}
   {% if activeRestrictions | length > 0 %}
     {% set badgeText = "ACTIVE RESTRICTION IN PLACE" if (activeRestrictions | length == 1) else "ACTIVE RESTRICTIONS IN PLACE" %}

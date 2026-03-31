@@ -3,6 +3,7 @@ import { Journey } from '../../../../@types/express'
 import {
   ApprovedContact,
   AvailableSlot,
+  OverlappingVisitsResponse,
   ReferenceDataItem,
   VisitType,
 } from '../../../../@types/officialVisitsApi/types'
@@ -110,4 +111,12 @@ export function filterAvailableSlots(
   visitorCount: number,
 ): AvailableSlot[] {
   return slots.filter(slot => checkSlotCapacity(slot, visitType, visitorCount))
+}
+
+export function hasPrisonerOverlap(overlapResponse: OverlappingVisitsResponse): boolean {
+  return overlapResponse.overlappingPrisonerVisits.length > 0
+}
+
+export function hasVisitorOverlap(overlapResponse: OverlappingVisitsResponse): boolean {
+  return overlapResponse.contacts.some(contact => contact.overlappingContactVisits.length > 0)
 }

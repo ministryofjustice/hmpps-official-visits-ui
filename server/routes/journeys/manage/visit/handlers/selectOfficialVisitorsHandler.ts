@@ -4,7 +4,7 @@ import { PageHandler } from '../../../../interfaces/pageHandler'
 import { schema, SchemaType } from './selectOfficialVisitorsSchema'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
-import { recallContacts, saveVisitors } from '../createJourneyState'
+import { hasPrisonerOverlap, recallContacts, saveVisitors } from '../createJourneyState'
 import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 import { getBackLink } from './utils'
 import { HmppsUser } from '../../../../../interfaces/hmppsUser'
@@ -51,6 +51,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       selectedContacts,
       backUrl: getBackLink(req, res, `time-slot`),
       prisoner: req.session.journey.officialVisit.prisoner,
+      hasVisitorOverlap: req.flash('hasVisitorOverlap')[0] === 'true',
     })
   }
 
@@ -63,7 +64,29 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
     const officialContacts = recallContacts(req.session.journey, 'O', selectableContacts)
 
-    // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Need to check against the time slot selected in the session
+    // Check for visitor overlaps if a time slot is selected
+    const { officialVisit } = req.session.journey
+
+    if (officialVisit.selectedTimeSlot) {
+      const allVisitors = [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])]
+      const contactIds = allVisitors.map(v => v.contactId)
+
+      const overlapResult = await this.officialVisitsService.checkForOverlappingVisits(
+        officialVisit.prisoner.prisonCode,
+        officialVisit.prisoner.prisonerNumber,
+        officialVisit.selectedTimeSlot.visitDate,
+        officialVisit.selectedTimeSlot.startTime,
+        officialVisit.selectedTimeSlot.endTime,
+        contactIds,
+        officialVisit.officialVisitId || 0,
+        res.locals.user,
+      )
+
+      if (hasPrisonerOverlap(overlapResult)) {
+        req.flash('hasVisitorOverlap', 'true')
+        return res.redirect(req.get('Referrer') || req.originalUrl)
+      }
+    }
 
     // Update the session journey with selected approved official contacts
     saveVisitors(

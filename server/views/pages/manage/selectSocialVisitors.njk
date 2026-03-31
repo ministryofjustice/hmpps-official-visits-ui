@@ -8,12 +8,25 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "partials/continueCancel.njk" import continueCancel %}
 {% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set pageTitle = "Select social visitors from the prisoner's approved contact list (optional)" %}
 
 {% block content %}
 
   {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
+
+  {% if hasVisitorOverlap %}
+    {{ mojAlert({
+      variant: "warning",
+      role: "alert",
+      title: "A visitor already has a visit booked",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "A visitor has another visit booked at this time.<br/>Choose a different date to continue.",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">

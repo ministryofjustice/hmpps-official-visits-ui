@@ -10,7 +10,6 @@ import PrisonerSearchHandler from './handlers/prisonerSearchHandler'
 import PrisonerSearchResultsHandler from './handlers/prisonerSearchResultsHandler'
 import PrisonerSelectHandler from './handlers/prisonerSelectHandler'
 import VisitTypeHandler from './handlers/visitTypeHandler'
-import ReviewScheduledEventsHandler from './handlers/reviewScheduledEventsHandler'
 import SelectOfficialVisitorsHandler from './handlers/selectOfficialVisitorsHandler'
 import SelectSocialVisitorsHandler from './handlers/selectSocialVisitorsHandler'
 import AssistanceRequiredHandler from './handlers/assistanceRequiredHandler'
@@ -70,7 +69,6 @@ export default function CreateRoutes({
   // These are the subsequent steps in the journey to create an official visit
   route(`/visit-type`, new VisitTypeHandler(officialVisitsService))
   route(`/time-slot`, new TimeSlotHandler(officialVisitsService, activitiesService))
-  route(`/review-scheduled-events`, new ReviewScheduledEventsHandler(officialVisitsService))
   route(`/select-official-visitors`, new SelectOfficialVisitorsHandler(officialVisitsService))
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService))
   route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))

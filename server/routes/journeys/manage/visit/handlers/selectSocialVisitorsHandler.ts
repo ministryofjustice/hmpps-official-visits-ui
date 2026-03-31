@@ -3,7 +3,7 @@ import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
-import { recallContacts, saveVisitors } from '../createJourneyState'
+import { hasPrisonerOverlap, recallContacts, saveVisitors } from '../createJourneyState'
 import { getBackLink } from './utils'
 import { HmppsUser } from '../../../../../interfaces/hmppsUser'
 
@@ -39,12 +39,14 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
       res.locals.formResponses?.selected ||
       journeyVisitors?.map(v => `${v.contactId}-${v.relationshipToPrisonerCode}`) ||
       []
+
     // Show the list and prefill the checkboxes for the selected social visitors
     res.render('pages/manage/selectSocialVisitors', {
       contacts: recallContacts(req.session.journey, 'S', selectableContacts),
       selectedContacts,
       backUrl: getBackLink(req, res, `select-official-visitors`),
       prisoner: req.session.journey.officialVisit.prisoner,
+      hasVisitorOverlap: req.flash('hasVisitorOverlap')[0] === 'true',
     })
   }
 
@@ -57,7 +59,29 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
     const socialContacts = recallContacts(req.session.journey, 'S', selectableContacts)
 
-    // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Validation here.
+    // Check for visitor overlaps if a time slot is selected
+    const { officialVisit } = req.session.journey
+
+    if (officialVisit.selectedTimeSlot) {
+      const allVisitors = [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])]
+      const contactIds = allVisitors.map(v => v.contactId)
+
+      const overlapResult = await this.officialVisitsService.checkForOverlappingVisits(
+        officialVisit.prisoner.prisonCode,
+        officialVisit.prisoner.prisonerNumber,
+        officialVisit.selectedTimeSlot.visitDate,
+        officialVisit.selectedTimeSlot.startTime,
+        officialVisit.selectedTimeSlot.endTime,
+        contactIds,
+        officialVisit.officialVisitId || 0,
+        res.locals.user,
+      )
+
+      if (hasPrisonerOverlap(overlapResult)) {
+        req.flash('hasVisitorOverlap', 'true')
+        return res.redirect(req.get('Referrer') || req.originalUrl)
+      }
+    }
 
     // Update the session with the selected approved social visitors, or an empty list if none
     saveVisitors(

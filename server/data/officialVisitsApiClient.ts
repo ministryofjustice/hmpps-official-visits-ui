@@ -18,6 +18,7 @@ import {
   OfficialVisitUpdateCommentRequest,
   OfficialVisitUpdateSlotRequest,
   OfficialVisitUpdateVisitorsRequest,
+  OverlappingVisitsResponse,
   ReferenceDataItem,
   TimeSlot,
   TimeSlotSummary,
@@ -301,5 +302,31 @@ export default class OfficialVisitsApiClient extends RestClient {
 
   async deleteTimeSlot(timeSlotId: number, user: HmppsUser) {
     return this.delete({ path: `/admin/time-slot/${timeSlotId}` }, asSystem(user.username))
+  }
+
+  async checkForOverlappingVisits(
+    prisonCode: string,
+    prisonerNumber: string,
+    visitDate: string,
+    startTime: string,
+    endTime: string,
+    contactIds?: number[],
+    existingOfficialVisitId?: number,
+    user?: HmppsUser,
+  ): Promise<OverlappingVisitsResponse> {
+    return this.post<OverlappingVisitsResponse>(
+      {
+        path: `/official-visit/prison/${prisonCode}/overlapping`,
+        data: {
+          prisonerNumber,
+          visitDate,
+          startTime,
+          endTime,
+          contactIds: contactIds || [],
+          existingOfficialVisitId: existingOfficialVisitId || 0,
+        },
+      },
+      asSystem(user?.username),
+    )
   }
 }
