@@ -220,6 +220,8 @@ describe('View an official visit', () => {
         visitStatus: 'COMPLETED',
         visitStatusDescription: 'Completed',
         completionNotes: 'Visit completed',
+        completionDescription: 'Normal completion',
+        searchTypeDescription: 'Full search',
       })
       return request(app)
         .get(URL)
@@ -233,6 +235,8 @@ describe('View an official visit', () => {
           expect(getValueByKey($, 'Visit status')).toEqual('Completed')
           expect(getValueByKey($, 'Cancellation notes')).toBeNull()
           expect(getValueByKey($, 'Completion notes')).toEqual('Visit completed')
+          expect(getValueByKey($, 'Completion reason')).toEqual('Normal completion')
+          expect(getValueByKey($, 'Search type')).toEqual('Full search')
           expect($('.govuk-button:contains("Amend visit")').length).toBe(0)
           expect($('.govuk-button:contains("Cancel visit")').length).toBe(0)
         })
@@ -259,6 +263,8 @@ describe('View an official visit', () => {
           expect(getValueByKey($, 'Cancellation notes')).toEqual('Cancelled for reasons')
           expect($('.govuk-button:contains("Amend visit")').length).toBe(0)
           expect($('.govuk-button:contains("Cancel visit")').length).toBe(0)
+          expect(getValueByKey($, 'Completion reason')).toBeNull()
+          expect(getValueByKey($, 'Search type')).toBeNull()
         })
     })
 
