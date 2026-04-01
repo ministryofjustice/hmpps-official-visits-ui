@@ -348,14 +348,6 @@
     </div>
   {% endfor %}
 
-  {% if mode != 'amend' %}
-    {{ govukButton ({
-      text: "Print attendance list (TODO)",
-      href: "#TODO",
-      classes: "govuk-button govuk-button--secondary"
-    }) }}
-  {% endif %}
-
   {% if mode == 'amend' %}
     <a href="/view/visit/{{visit.officialVisitId}}{{paramBackTo}}" class="govuk-link govuk-body govuk-link--no-visited-state">Cancel</a>
   {% endif %}
