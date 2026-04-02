@@ -31,7 +31,6 @@ generic-service:
       - prisons
       - private_prisons
       - accessibility-testing-1
-      - 195.68.59.74
 
 generic-prometheus-alerts:
   alertSeverity: move-and-improve-alerts-non-prod
