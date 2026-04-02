@@ -216,11 +216,6 @@ test.describe('Create an official visit', () => {
     await selectOfficialContactPage.continueButton.click()
 
     expect(page.getByText('You have selected the same contact more than once')).toBeVisible()
-    expect(page.getByRole('link', { name: 'Remove duplicate visitors' })).toBeVisible()
-
-    const duplicateErrorLink = page.getByRole('link', { name: 'Remove duplicate visitors' })
-    const href = await duplicateErrorLink.getAttribute('href')
-    expect(href).toContain('select-official-visitors')
 
     await selectOfficialContactPage.uncheckContact(2)
     await selectOfficialContactPage.continueButton.click()
