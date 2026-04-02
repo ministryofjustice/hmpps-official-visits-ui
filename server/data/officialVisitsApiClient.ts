@@ -109,9 +109,16 @@ export default class OfficialVisitsApiClient extends RestClient {
     existingOfficialVisitId: number,
     user: HmppsUser,
   ): Promise<AvailableSlot[]> {
+    const query = {
+      fromDate: startDate,
+      toDate: endDate,
+      videoOnly,
+      ...(existingOfficialVisitId ? { existingOfficialVisitId } : {}),
+    }
     return this.get<AvailableSlot[]>(
       {
-        path: `/available-slots/${prisonId}?fromDate=${startDate}&toDate=${endDate}&videoOnly=${videoOnly}${existingOfficialVisitId ? `&existingOfficialVisitId=${existingOfficialVisitId}` : ''}`,
+        path: `/available-slots/${prisonId}`,
+        query,
       },
       asSystem(user.username),
     )
