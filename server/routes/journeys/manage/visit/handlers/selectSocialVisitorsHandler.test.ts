@@ -362,7 +362,7 @@ describe('Select social visitors', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
           // Verify the duplicate contact error alert is displayed
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
         })

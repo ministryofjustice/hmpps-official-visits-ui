@@ -349,7 +349,7 @@ describe('check your answers handler', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
           expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
@@ -381,7 +381,7 @@ describe('check your answers handler', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
           expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
@@ -401,7 +401,7 @@ describe('check your answers handler', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('This prisoner already has a visit booked')
           expect($('.moj-alert__content').text()).toContain('The prisoner has another visit booked at this time')
         })
@@ -424,7 +424,7 @@ describe('check your answers handler', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('A visitor already has a visit booked')
           expect($('.moj-alert__content').text()).toContain('A visitor has another visit booked at this time')
         })
@@ -447,7 +447,7 @@ describe('check your answers handler', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(2)
+          expect($('.moj-alert--error').length).toBe(2)
           expect($('.moj-alert__heading').eq(0).text()).toContain('This prisoner already has a visit booked')
           expect($('.moj-alert__heading').eq(1).text()).toContain('A visitor already has a visit booked')
         })
@@ -470,7 +470,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
           expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
           expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
@@ -517,7 +517,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
           expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
           expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
@@ -548,7 +548,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
           expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
           expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
@@ -592,7 +592,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
           expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
@@ -627,7 +627,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
           expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
@@ -650,7 +650,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('This prisoner already has a visit booked')
           expect($('.moj-alert__content').text()).toContain('The prisoner has another visit booked at this time')
         })
@@ -676,7 +676,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('A visitor already has a visit booked')
           expect($('.moj-alert__content').text()).toContain('A visitor has another visit booked at this time')
         })
@@ -702,7 +702,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(2)
+          expect($('.moj-alert--error').length).toBe(2)
           expect($('.moj-alert__heading').eq(0).text()).toContain('This prisoner already has a visit booked')
           expect($('.moj-alert__heading').eq(1).text()).toContain('A visitor already has a visit booked')
         })

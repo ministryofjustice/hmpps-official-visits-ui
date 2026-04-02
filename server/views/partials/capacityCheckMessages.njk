@@ -2,7 +2,7 @@
 {% macro capacityCheckMessages(opts) %}
   {% if opts.noCapacity %}
     {{ mojAlert({
-      variant: "warning",
+      variant: "error",
       role: "alert",
       title: "Capacity for visit slot selected is exceeded",
       showTitleAsHeading: true,
@@ -14,7 +14,7 @@
 
   {% if opts.hasDuplicateContactIds %}
     {{ mojAlert({
-      variant: "warning",
+      variant: "error",
       role: "alert",
       title: "Duplicate visitors selected",
       showTitleAsHeading: true,
@@ -26,7 +26,7 @@
 
   {% if opts.hasPrisonerOverlap %}
     {{ mojAlert({
-      variant: "warning",
+      variant: "error",
       role: "alert",
       title: "This prisoner already has a visit booked",
       showTitleAsHeading: true,
@@ -38,7 +38,7 @@
 
   {% if opts.hasVisitorOverlap %}
     {{ mojAlert({
-      variant: "warning",
+      variant: "error",
       role: "alert",
       title: "A visitor already has a visit booked",
       showTitleAsHeading: true,

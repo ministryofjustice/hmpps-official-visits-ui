@@ -293,7 +293,7 @@ describe('Time slot handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
           // Verify the duplicate contact error alert is displayed
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('This prisoner already has a visit booked')
         })
     })
@@ -318,7 +318,7 @@ describe('Time slot handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
           // Verify the duplicate contact error alert is displayed
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('A visitor already has a visit booked')
         })
     })
