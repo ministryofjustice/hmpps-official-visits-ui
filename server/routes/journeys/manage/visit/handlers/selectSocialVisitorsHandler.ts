@@ -1,9 +1,9 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
-import { recallContacts, saveVisitors } from '../createJourneyState'
+import { cyaGuard, recallContacts, saveVisitors } from '../createJourneyState'
 import { getBackLink } from './utils'
 import { HmppsUser } from '../../../../../interfaces/hmppsUser'
 
@@ -28,7 +28,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     )
   }
 
-  public GET = async (req: Request, res: Response) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonerNumber } = req.session.journey.officialVisit.prisoner
     const journeyVisitors = req.session.journey.officialVisit.socialVisitors || []
@@ -39,12 +39,15 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
       res.locals.formResponses?.selected ||
       journeyVisitors?.map(v => `${v.contactId}-${v.relationshipToPrisonerCode}`) ||
       []
+
     // Show the list and prefill the checkboxes for the selected social visitors
     res.render('pages/manage/selectSocialVisitors', {
       contacts: recallContacts(req.session.journey, 'S', selectableContacts),
       selectedContacts,
       backUrl: getBackLink(req, res, `select-official-visitors`),
       prisoner: req.session.journey.officialVisit.prisoner,
+      hasVisitorOverlap: req.flash('hasVisitorOverlap')[0] === 'true',
+      checks: errors,
     })
   }
 
@@ -56,8 +59,6 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     const journeyVisitors = req.session.journey.officialVisit.socialVisitors || []
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
     const socialContacts = recallContacts(req.session.journey, 'S', selectableContacts)
-
-    // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Validation here.
 
     // Update the session with the selected approved social visitors, or an empty list if none
     saveVisitors(
@@ -72,6 +73,12 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
         })
         .filter((o: JourneyVisitor) => o),
     )
+
+    const errors = await cyaGuard(req as Request, res, this.officialVisitsService)
+
+    if (Object.keys(errors).length > 0) {
+      return this.GET(req as Request, res, undefined, errors)
+    }
 
     req.session.journey.officialVisit.socialVisitorsPageCompleted = true
     return res.redirect(`assistance-required`)

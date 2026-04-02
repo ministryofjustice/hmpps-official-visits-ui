@@ -390,3 +390,28 @@ export const translateDay = (dayCode: string) => {
       return ''
   }
 }
+
+export const timeRangesOverlap = (
+  startTime1: string,
+  endTime1: string,
+  startTime2: string,
+  endTime2: string,
+): boolean => {
+  const toMinutes = (time: string): number => {
+    if (!time) return -1
+    const [h, m] = time.split(':').map(Number)
+    if (Number.isNaN(h) || Number.isNaN(m)) return -1
+    return h * 60 + m
+  }
+
+  const start1 = toMinutes(startTime1)
+  const end1 = toMinutes(endTime1)
+  const start2 = toMinutes(startTime2)
+  const end2 = toMinutes(endTime2)
+
+  if (start1 === -1 || end1 === -1 || start2 === -1 || end2 === -1) {
+    return true
+  }
+
+  return start1 < end2 && start2 < end1
+}

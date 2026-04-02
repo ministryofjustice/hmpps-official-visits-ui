@@ -1,11 +1,11 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import { saveTimeSlot, filterAvailableSlots, cyaGuard } from '../createJourneyState'
 import ActivitiesService from '../../../../../services/activitiesService'
 import { getParsedDateFromQueryString, getWeekOfDatesStartingMonday } from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
-import { saveTimeSlot, filterAvailableSlots } from '../createJourneyState'
 import { getBackLink } from './utils'
 
 export default class TimeSlotHandler implements PageHandler {
@@ -18,7 +18,7 @@ export default class TimeSlotHandler implements PageHandler {
 
   BODY = schema
 
-  public GET = async (req: Request, res: Response) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
     const { date = '' } = req.query
     const selectedDate = getParsedDateFromQueryString(date.toString(), new Date())
     const { weekOfDates, previousWeek, nextWeek } = getWeekOfDatesStartingMonday(selectedDate)
@@ -32,6 +32,7 @@ export default class TimeSlotHandler implements PageHandler {
       selectedDate,
       selectedDate,
       officialVisit.visitType === 'VIDEO',
+      officialVisit.officialVisitId,
     )
 
     const filteredSlots = filterAvailableSlots(availableSlots, officialVisit.visitType, 1)
@@ -56,36 +57,43 @@ export default class TimeSlotHandler implements PageHandler {
       selectedTimeSlot: res.locals.formResponses?.['timeSlot'] || officialVisit?.selectedTimeSlot?.visitSlotId,
       backUrl: getBackLink(req, res, `visit-type`),
       prisoner: req.session.journey.officialVisit.prisoner,
+      checks: errors,
     })
   }
 
   public POST = async (req: Request, res: Response) => {
-    if (res.locals.mode === 'amend') {
-      const selectedSlot = req.session.journey.officialVisit.availableSlots.find(
-        slot => slot.visitSlotId === req.body.visitSlotId,
-      )
+    const visit = req.session.journey.officialVisit
+    const selectedSlot = req.session.journey.officialVisit.availableSlots.find(
+      slot => slot.visitSlotId === req.body.visitSlotId,
+    )
 
-      if (selectedSlot) {
-        await this.officialVisitsService.updateVisitTypeAndSlot(
-          req.session.journey.officialVisit.prisonCode,
-          req.params.ovId,
-          {
-            prisonVisitSlotId: selectedSlot.visitSlotId,
-            visitDate: selectedSlot.visitDate,
-            startTime: selectedSlot.startTime,
-            endTime: selectedSlot.endTime,
-            dpsLocationId: selectedSlot.dpsLocationId,
-            visitTypeCode: req.session.journey.officialVisit.visitType,
-          },
-          res.locals.user,
-        )
-        req.flash('updateVerb', 'amended')
-      }
+    req.session.journey.officialVisit.selectedTimeSlot = selectedSlot
+
+    const errors = await cyaGuard(req, res, this.officialVisitsService)
+
+    if (Object.keys(errors).length > 0) {
+      return this.GET(req, res, undefined, errors)
+    }
+
+    if (res.locals.mode === 'amend') {
+      await this.officialVisitsService.updateVisitTypeAndSlot(
+        visit.prisonCode,
+        req.params.ovId,
+        {
+          prisonVisitSlotId: selectedSlot.visitSlotId,
+          visitDate: selectedSlot.visitDate,
+          startTime: selectedSlot.startTime,
+          endTime: selectedSlot.endTime,
+          dpsLocationId: selectedSlot.dpsLocationId,
+          visitTypeCode: visit.visitType,
+        },
+        res.locals.user,
+      )
+      req.flash('updateVerb', 'amended')
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }
 
-    req.session.journey.officialVisit.selectedTimeSlot = req.body
-    saveTimeSlot(req.session.journey, req.body)
+    saveTimeSlot(req.session.journey, selectedSlot)
     return res.redirect(`select-official-visitors`)
   }
 }

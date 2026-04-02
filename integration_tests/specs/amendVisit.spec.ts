@@ -161,6 +161,11 @@ test.describe('Amend official visits', () => {
     await officialVisitsApi.stubUpdateVisitors('LEI', '1')
     await officialVisitsApi.stubUpdateVisitTypeAndSlot('LEI', '1')
     await officialVisitsApi.stubUpdateComments('LEI', '1')
+    await officialVisitsApi.stubCheckForOverlappingVisits({
+      prisonerNumber: 'G4793VF',
+      overlappingPrisonerVisits: [],
+      contacts: [],
+    })
   })
 
   test.afterEach(async () => {
@@ -374,6 +379,26 @@ test.describe('Amend official visits', () => {
   test('should navigate to official visitors and show all related pages when "add or remove visitors" is clicked', async ({
     page,
   }) => {
+    await officialVisitsApi.stubAvailableSlots(
+      locations.map((o, i) => {
+        return {
+          visitSlotId: i + 1,
+          timeSlotId: i + 1,
+          prisonCode: 'MDI',
+          dayCode: 'WED',
+          dayDescription: 'Wednesday',
+          startTime: '08:00',
+          endTime: '17:00',
+          dpsLocationId: o.code,
+          locationDescription: o.description,
+          availableAdults: 999,
+          availableGroups: 1,
+          availableVideoSessions: 1,
+          visitDate: format(new Date(), 'yyyy-MM-dd'),
+        }
+      }),
+    )
+
     // Force IN_PERSON visit type to test conditional equipment page
     await officialVisitsApi.stubGetOfficialVisitById({ ...getMockVisit(), visitTypeCode: 'IN_PERSON' } as OfficialVisit)
     await login(page)

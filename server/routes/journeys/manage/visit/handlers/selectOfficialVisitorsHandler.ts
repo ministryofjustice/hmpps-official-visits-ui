@@ -1,10 +1,10 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import { schema, SchemaType } from './selectOfficialVisitorsSchema'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
-import { recallContacts, saveVisitors } from '../createJourneyState'
+import { cyaGuard, recallContacts, saveVisitors } from '../createJourneyState'
 import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 import { getBackLink } from './utils'
 import { HmppsUser } from '../../../../../interfaces/hmppsUser'
@@ -32,7 +32,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     )
   }
 
-  public GET = async (req: Request, res: Response) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonerNumber } = req.session.journey.officialVisit.prisoner
 
@@ -46,11 +46,14 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       []
 
     // Show the list and prefill the selected checkboxes for official visitors
+    const previousDate = req.session.journey.officialVisit?.selectedTimeSlot?.visitDate
     res.render('pages/manage/selectOfficialVisitors', {
       contacts: recallContacts(req.session.journey, 'O', selectableContacts),
       selectedContacts,
-      backUrl: getBackLink(req, res, `time-slot`),
+      backUrl: getBackLink(req, res, `time-slot${previousDate ? `?date=${previousDate}` : ''}`),
       prisoner: req.session.journey.officialVisit.prisoner,
+      hasVisitorOverlap: req.flash('hasVisitorOverlap')[0] === 'true',
+      checks: errors,
     })
   }
 
@@ -62,8 +65,6 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const journeyVisitors = req.session.journey.officialVisit.officialVisitors || []
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
     const officialContacts = recallContacts(req.session.journey, 'O', selectableContacts)
-
-    // TODO: Does this number of visitors exceed the capacity limits of the time slot selected? Need to check against the time slot selected in the session
 
     // Update the session journey with selected approved official contacts
     saveVisitors(
@@ -78,6 +79,13 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
         })
         .filter((o: JourneyVisitor) => o),
     )
+
+    const errors = await cyaGuard(req as Request, res, this.officialVisitsService)
+
+    if (Object.keys(errors).length > 0) {
+      return this.GET(req as Request, res, undefined, errors)
+    }
+
     return res.redirect(socialVisitorsPageEnabled(req as Request) ? `select-social-visitors` : `assistance-required`)
   }
 }

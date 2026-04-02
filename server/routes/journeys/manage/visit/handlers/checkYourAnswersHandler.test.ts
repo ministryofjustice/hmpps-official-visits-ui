@@ -13,6 +13,7 @@ import { AvailableSlot, RestrictionSummary } from '../../../../../@types/officia
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
 jest.mock('../../../../../services/officialVisitsService')
+jest.mock('../../../../../services/activitiesService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerService = new PrisonerService(null) as jest.Mocked<PrisonerService>
@@ -131,6 +132,11 @@ beforeEach(() => {
   officialVisitsService.getAvailableSlots.mockResolvedValue([
     mockOfficialVisitJourney.selectedTimeSlot as AvailableSlot,
   ])
+  officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+    prisonerNumber: 'G4793VF',
+    overlappingPrisonerVisits: [],
+    contacts: [],
+  })
 })
 
 afterEach(() => {
@@ -320,10 +326,10 @@ describe('check your answers handler', () => {
             prisonerNumber: 'G4793VF',
             lastName: 'Malicious',
             firstName: 'Peter',
-            relationshipTypeCode: 'S',
-            relationshipTypeDescription: 'Social',
-            relationshipToPrisonerCode: 'FRI',
-            relationshipToPrisonerDescription: 'Friend',
+            relationshipTypeCode: 'O',
+            relationshipTypeDescription: 'Official',
+            relationshipToPrisonerCode: 'SOL', // Same relationship code as official visitor
+            relationshipToPrisonerDescription: 'Solicitor',
             assistanceNotes: '',
             assistedVisit: false,
             equipmentNotes: '',
@@ -339,15 +345,14 @@ describe('check your answers handler', () => {
       appSetup(journeyWithDuplicateContact())
 
       return request(app)
-        .get(URL)
+        .post(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
-          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
         })
     })
 
@@ -359,26 +364,7 @@ describe('check your answers handler', () => {
             ...mockOfficialVisitJourney.officialVisitors[0],
           },
           {
-            prisonerContactId: 7332365,
-            contactId: 20085647,
-            prisonerNumber: 'G4793VF',
-            lastName: 'Malicious',
-            firstName: 'Peter',
-            relationshipTypeCode: 'O',
-            relationshipTypeDescription: 'Official',
-            relationshipToPrisonerCode: 'POL',
-            relationshipToPrisonerDescription: 'Police Officer',
-            assistanceNotes: '',
-            assistedVisit: false,
-            equipmentNotes: '',
-            equipment: false,
-            isApprovedVisitor: true,
-            isNextOfKin: false,
-            isEmergencyContact: false,
-            isRelationshipActive: true,
-            restrictionSummary: {
-              active: [] as RestrictionSummary[],
-            },
+            ...mockOfficialVisitJourney.officialVisitors[0], // Exact duplicate
           },
         ],
       }
@@ -390,15 +376,78 @@ describe('check your answers handler', () => {
       appSetup(journeyWithDuplicateOfficialContact())
 
       return request(app)
-        .get(URL)
+        .post(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
-          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
+        })
+    })
+
+    it('should display prisoner overlap error on GET when prisoner has conflicting visit', () => {
+      officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+        prisonerNumber: 'G4793VF',
+        overlappingPrisonerVisits: [123], // Has prisoner overlap
+        contacts: [],
+      })
+
+      return request(app)
+        .post(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--error').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('This prisoner already has a visit booked')
+          expect($('.moj-alert__content').text()).toContain('The prisoner has another visit booked at this time')
+        })
+    })
+
+    it('should display visitor overlap error on GET when visitor has conflicting visit', () => {
+      officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+        prisonerNumber: 'G4793VF',
+        overlappingPrisonerVisits: [], // No prisoner overlap
+        contacts: [
+          {
+            contactId: 456,
+            overlappingContactVisits: [789], // Has visitor overlap
+          },
+        ],
+      })
+
+      return request(app)
+        .post(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--error').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('A visitor already has a visit booked')
+          expect($('.moj-alert__content').text()).toContain('A visitor has another visit booked at this time')
+        })
+    })
+
+    it('should display both prisoner and visitor overlap errors on GET when both have conflicts', () => {
+      officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+        prisonerNumber: 'G4793VF',
+        overlappingPrisonerVisits: [123], // Has prisoner overlap
+        contacts: [
+          {
+            contactId: 456,
+            overlappingContactVisits: [789], // Has visitor overlap
+          },
+        ],
+      })
+
+      return request(app)
+        .post(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--error').length).toBe(2)
+          expect($('.moj-alert__heading').eq(0).text()).toContain('This prisoner already has a visit booked')
+          expect($('.moj-alert__heading').eq(1).text()).toContain('A visitor already has a visit booked')
         })
     })
   })
@@ -419,7 +468,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
           expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
           expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
@@ -466,7 +515,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
           expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
           expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
@@ -497,7 +546,7 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
           expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
           expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
@@ -517,10 +566,10 @@ describe('check your answers handler', () => {
             prisonerNumber: 'G4793VF',
             lastName: 'Malicious',
             firstName: 'Peter',
-            relationshipTypeCode: 'S',
-            relationshipTypeDescription: 'Social',
-            relationshipToPrisonerCode: 'FRI',
-            relationshipToPrisonerDescription: 'Friend',
+            relationshipTypeCode: 'O',
+            relationshipTypeDescription: 'Official',
+            relationshipToPrisonerCode: 'SOL', // Same relationship code as official visitor
+            relationshipToPrisonerDescription: 'Solicitor',
             assistanceNotes: '',
             assistedVisit: false,
             equipmentNotes: '',
@@ -541,11 +590,10 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
-          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
         })
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
@@ -559,26 +607,7 @@ describe('check your answers handler', () => {
             ...mockOfficialVisitJourney.officialVisitors[0],
           },
           {
-            prisonerContactId: 7332365,
-            contactId: 20085647,
-            prisonerNumber: 'G4793VF',
-            lastName: 'Malicious',
-            firstName: 'Peter',
-            relationshipTypeCode: 'O',
-            relationshipTypeDescription: 'Official',
-            relationshipToPrisonerCode: 'POL',
-            relationshipToPrisonerDescription: 'Police Officer',
-            assistanceNotes: '',
-            assistedVisit: false,
-            equipmentNotes: '',
-            equipment: false,
-            isApprovedVisitor: true,
-            isNextOfKin: false,
-            isEmergencyContact: false,
-            isRelationshipActive: true,
-            restrictionSummary: {
-              active: [] as RestrictionSummary[],
-            },
+            ...mockOfficialVisitJourney.officialVisitors[0], // Exact duplicate
           },
         ],
       }
@@ -595,11 +624,83 @@ describe('check your answers handler', () => {
         .expect(200)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
-          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
+        })
+
+      expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
+    })
+
+    it('should show prisoner overlap error when prisoner has conflicting visit on POST', async () => {
+      officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+        prisonerNumber: 'G4793VF',
+        overlappingPrisonerVisits: [123], // Has prisoner overlap
+        contacts: [],
+      })
+
+      await request(app)
+        .post(URL)
+        .send()
+        .expect(200)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--error').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('This prisoner already has a visit booked')
+          expect($('.moj-alert__content').text()).toContain('The prisoner has another visit booked at this time')
+        })
+
+      expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
+    })
+
+    it('should show visitor overlap error when visitor has conflicting visit on POST', async () => {
+      officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+        prisonerNumber: 'G4793VF',
+        overlappingPrisonerVisits: [], // No prisoner overlap
+        contacts: [
+          {
+            contactId: 456,
+            overlappingContactVisits: [789], // Has visitor overlap
+          },
+        ],
+      })
+
+      await request(app)
+        .post(URL)
+        .send()
+        .expect(200)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--error').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('A visitor already has a visit booked')
+          expect($('.moj-alert__content').text()).toContain('A visitor has another visit booked at this time')
+        })
+
+      expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
+    })
+
+    it('should show both prisoner and visitor overlap errors when both have conflicts on POST', async () => {
+      officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+        prisonerNumber: 'G4793VF',
+        overlappingPrisonerVisits: [123], // Has prisoner overlap
+        contacts: [
+          {
+            contactId: 456,
+            overlappingContactVisits: [789], // Has visitor overlap
+          },
+        ],
+      })
+
+      await request(app)
+        .post(URL)
+        .send()
+        .expect(200)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--error').length).toBe(2)
+          expect($('.moj-alert__heading').eq(0).text()).toContain('This prisoner already has a visit booked')
+          expect($('.moj-alert__heading').eq(1).text()).toContain('A visitor already has a visit booked')
         })
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()

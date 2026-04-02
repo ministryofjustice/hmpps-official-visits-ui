@@ -8,11 +8,14 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "partials/continueCancel.njk" import continueCancel %}
 {% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+{% from "partials/capacityCheckMessages.njk" import capacityCheckMessages %}
 
 {% set pageTitle = "Select official visitors from the prisoner's approved contact list" %}
 
 {% block content %}
 
+  {{ capacityCheckMessages(checks)}}
   {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
 
   <div class="govuk-grid-row govuk-body">

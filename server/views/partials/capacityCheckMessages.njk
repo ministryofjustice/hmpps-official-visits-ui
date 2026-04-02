@@ -1,0 +1,50 @@
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+{% macro capacityCheckMessages(opts) %}
+  {% if opts.noCapacity %}
+    {{ mojAlert({
+      variant: "error",
+      role: "alert",
+      title: "Capacity for visit slot selected is exceeded",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "The visit slot has exceeded maximum visitor capacity. <a href=\"time-slot\" class=\"govuk-link\">Choose another time slot</a>",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+
+  {% if opts.hasDuplicateContactIds %}
+    {{ mojAlert({
+      variant: "error",
+      role: "alert",
+      title: "Duplicate visitors selected",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "You have selected the same contact more than once. Remove duplicate visitors to continue.",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+
+  {% if opts.hasPrisonerOverlap %}
+    {{ mojAlert({
+      variant: "error",
+      role: "alert",
+      title: "This prisoner already has a visit booked",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "The prisoner has another visit booked at this time.<br/>Choose a different time slot to continue.",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+
+  {% if opts.hasVisitorOverlap %}
+    {{ mojAlert({
+      variant: "error",
+      role: "alert",
+      title: "A visitor already has a visit booked",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "A visitor has another visit booked at this time.<br/>Choose a different time slot to continue.",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+{% endmacro %}

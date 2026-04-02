@@ -143,4 +143,12 @@ export default {
         status: 204,
       },
     }),
+  stubCheckForOverlappingVisits: (response: {
+    prisonerNumber: string
+    overlappingPrisonerVisits: number[]
+    contacts: Array<{
+      contactId: number
+      overlappingContactVisits: number[]
+    }>
+  }) => simplePostApiMock(`/official-visits-api/official-visit/prison/.*/overlapping`, response),
 }

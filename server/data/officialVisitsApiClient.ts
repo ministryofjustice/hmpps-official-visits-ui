@@ -18,6 +18,7 @@ import {
   OfficialVisitUpdateCommentRequest,
   OfficialVisitUpdateSlotRequest,
   OfficialVisitUpdateVisitorsRequest,
+  OverlappingVisitsResponse,
   ReferenceDataItem,
   TimeSlot,
   TimeSlotSummary,
@@ -105,10 +106,20 @@ export default class OfficialVisitsApiClient extends RestClient {
     startDate: string,
     endDate: string,
     videoOnly: boolean,
+    existingOfficialVisitId: number,
     user: HmppsUser,
   ): Promise<AvailableSlot[]> {
+    const query = {
+      fromDate: startDate,
+      toDate: endDate,
+      videoOnly,
+      ...(existingOfficialVisitId ? { existingOfficialVisitId } : {}),
+    }
     return this.get<AvailableSlot[]>(
-      { path: `/available-slots/${prisonId}`, query: { fromDate: startDate, toDate: endDate, videoOnly } },
+      {
+        path: `/available-slots/${prisonId}`,
+        query,
+      },
       asSystem(user.username),
     )
   }
@@ -291,5 +302,31 @@ export default class OfficialVisitsApiClient extends RestClient {
 
   async deleteTimeSlot(timeSlotId: number, user: HmppsUser) {
     return this.delete({ path: `/admin/time-slot/${timeSlotId}` }, asSystem(user.username))
+  }
+
+  async checkForOverlappingVisits(
+    prisonCode: string,
+    prisonerNumber: string,
+    visitDate: string,
+    startTime: string,
+    endTime: string,
+    contactIds?: number[],
+    existingOfficialVisitId?: number,
+    user?: HmppsUser,
+  ): Promise<OverlappingVisitsResponse> {
+    return this.post<OverlappingVisitsResponse>(
+      {
+        path: `/official-visit/prison/${prisonCode}/overlapping`,
+        data: {
+          prisonerNumber,
+          visitDate,
+          startTime,
+          endTime,
+          contactIds: contactIds || [],
+          existingOfficialVisitId: existingOfficialVisitId || 0,
+        },
+      },
+      asSystem(user?.username),
+    )
   }
 }

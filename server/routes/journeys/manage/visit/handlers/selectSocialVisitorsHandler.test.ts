@@ -37,6 +37,17 @@ const appSetup = (
         restrictions: mockPrisonerRestrictions,
       },
       availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+      selectedTimeSlot: {
+        timeSlotId: 1,
+        visitSlotId: 1,
+        visitDate: '2026-01-26',
+        startTime: '13:30',
+        endTime: '16:00',
+        availableVideoSessions: 2,
+        availableAdults: 3,
+        availableGroups: 2,
+      },
+      visitType: 'IN_PERSON',
     },
   },
 ) => {
@@ -50,6 +61,27 @@ const appSetup = (
 beforeEach(() => {
   appSetup()
   officialVisitsService.getAllSocialContacts.mockResolvedValue(mockSocialVisitors)
+  officialVisitsService.getAvailableSlots.mockResolvedValue([
+    {
+      timeSlotId: 1,
+      visitSlotId: 1,
+      prisonCode: 'MDI',
+      dayCode: 'MON',
+      dayDescription: 'Monday',
+      visitDate: '2026-01-26',
+      startTime: '13:30',
+      endTime: '16:00',
+      dpsLocationId: 'loc1',
+      availableVideoSessions: 2,
+      availableAdults: 3,
+      availableGroups: 2,
+    },
+  ])
+  officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+    prisonerNumber: 'G4793VF',
+    overlappingPrisonerVisits: [],
+    contacts: [],
+  })
 })
 
 afterEach(() => {
@@ -325,13 +357,21 @@ describe('Select social visitors', () => {
       await request(app)
         .post(URL)
         .send({ selected: ['201-BRO', '201-FRI'] })
-        .expect(302)
-        .expect('location', 'assistance-required')
-        .expect(() => expectNoErrorMessages())
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          // Verify the duplicate contact error alert is displayed
+          expect($('.moj-alert--error').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
+          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
+        })
 
+      // Verify the visitors are saved to session but validation error prevents progression
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.socialVisitors).toHaveLength(2)
 
+      // Verify both visitors have the same contact ID but different relationship codes
       const visitors = journeySession.socialVisitors
       const brotherVisitor = visitors.find((v: JourneyVisitor) => v.relationshipToPrisonerCode === 'BRO')
       const friendVisitor = visitors.find((v: JourneyVisitor) => v.relationshipToPrisonerCode === 'FRI')
