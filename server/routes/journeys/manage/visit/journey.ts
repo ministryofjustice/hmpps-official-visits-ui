@@ -50,6 +50,7 @@ export type JourneyVisitor = ApprovedContact & {
   assistanceNotes?: string
   leadVisitor?: boolean
   notes?: string
+  alreadyOnVisit?: boolean
 }
 
 export type JourneyPrisoner = {

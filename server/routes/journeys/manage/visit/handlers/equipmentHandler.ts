@@ -1,17 +1,18 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { ApprovedContact, ContactRelationship, OfficialVisitor } from '../../../../../@types/officialVisitsApi/types'
 import { getBackLink } from './utils'
 import { schema } from './equipmentSchema'
+import { cyaGuard } from '../createJourneyState'
 
 export default class EquipmentHandler implements PageHandler {
   public PAGE_NAME = Page.EQUIPMENT_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
 
-  public GET = async (req: Request, res: Response) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
     const contacts = [
       ...req.session.journey.officialVisit.officialVisitors,
       ...(req.session.journey.officialVisit.socialVisitors || []),
@@ -21,6 +22,7 @@ export default class EquipmentHandler implements PageHandler {
       contacts,
       backUrl: getBackLink(req, res, `assistance-required`),
       prisoner: req.session.journey.officialVisit.prisoner,
+      checks: errors
     })
   }
 
@@ -34,6 +36,11 @@ export default class EquipmentHandler implements PageHandler {
     req.session.journey.officialVisit.equipmentPageCompleted = true
 
     if (res.locals.mode === 'amend') {
+      const errors = await cyaGuard(req, res, this.officialVisitsService)
+
+      if (Object.keys(errors).length > 0) {
+        return this.GET(req, res, undefined, errors)
+      }
       const allVisitors = [...officialVisit.officialVisitors, ...(officialVisit.socialVisitors || [])]
       const officialVisitors: OfficialVisitor[] = allVisitors.map(visitor => ({
         officialVisitorId: visitor.officialVisitorId,

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
@@ -7,15 +7,16 @@ import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 import { getBackLink } from './utils'
 import { schema } from './assistanceRequiredSchema'
 import { OfficialVisitJourney } from '../journey'
+import { cyaGuard } from '../createJourneyState'
 
 export default class AssistanceRequiredHandler implements PageHandler {
   public PAGE_NAME = Page.ASSISTANCE_REQUIRED_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
 
   BODY = schema
 
-  public GET = async (req: Request, res: Response) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
     const contacts = [
       ...req.session.journey.officialVisit.officialVisitors,
       ...(req.session.journey.officialVisit.socialVisitors || []),
@@ -34,6 +35,7 @@ export default class AssistanceRequiredHandler implements PageHandler {
       prisoner: req.session.journey.officialVisit.prisoner,
       submitAction:
         res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit)) ? 'Save' : 'Continue',
+      checks: errors,
     })
   }
 
@@ -46,6 +48,11 @@ export default class AssistanceRequiredHandler implements PageHandler {
     const changeThisPage = req.session.journey.amendVisit?.changePage === 'assistance-required'
 
     if (res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit))) {
+      const errors = await cyaGuard(req, res, this.officialVisitsService)
+      if (Object.keys(errors).length > 0) {
+        return this.GET(req, res, undefined, errors)
+      }
+
       const allVisitors = [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])]
       const officialVisitors = allVisitors.map(visitor => ({
         officialVisitorId: visitor.officialVisitorId || 0,

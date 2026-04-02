@@ -11,61 +11,15 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {%- from "moj/components/badge/macro.njk" import mojBadge -%}
 {% from "partials/restriction-summary.njk" import restrictionSummary %}
+{% from "partials/capacityCheckMessages.njk" import capacityCheckMessages %}
 
 {% set pageTitle = "Check and confirm the official visit details" %}
 
 {% block content %}
 
+  {{ capacityCheckMessages(checks)}}
   {{ createJourneyHeader(prisoner, stepsChecked)}}
-
-  {% if not capacityCheck %}
-    {{ mojAlert({
-      variant: "warning",
-      role: "alert",
-      title: "Capacity for visit slot selected is exceeded",
-      showTitleAsHeading: true,
-      dismissible: false,
-      html: "The visit slot has exceeded maximum visitor capacity. <a href=\"time-slot\" class=\"govuk-link\">Choose another time slot</a>",
-      classes: 'govuk-!-margin-bottom-6'
-    }) }}
-  {% endif %}
-
-  {% if hasDuplicateContactIds %}
-    {{ mojAlert({
-      variant: "warning",
-      role: "alert",
-      title: "Duplicate visitors selected",
-      showTitleAsHeading: true,
-      dismissible: false,
-      html: "You have selected the same contact more than once. <a href=\"select-official-visitors\" class=\"govuk-link\">Remove duplicate visitors</a>",
-      classes: 'govuk-!-margin-bottom-6'
-    }) }}
-  {% endif %}
-
-  {% if hasScheduleOverlap %}
-    {{ mojAlert({
-      variant: "warning",
-      role: "alert",
-      title: "This prisoner already has a visit booked",
-      showTitleAsHeading: true,
-      dismissible: false,
-      html: "The prisoner has another visit booked at this time.<br/>Choose a different date to continue.",
-      classes: 'govuk-!-margin-bottom-6'
-    }) }}
-  {% endif %}
-
-  {% if hasVisitorOverlap %}
-    {{ mojAlert({
-      variant: "warning",
-      role: "alert",
-      title: "A visitor already has a visit booked",
-      showTitleAsHeading: true,
-      dismissible: false,
-      html: "A visitor has another visit booked at this time.<br/>Choose a different date to continue.",
-      classes: 'govuk-!-margin-bottom-6'
-    }) }}
-  {% endif %}
-
+ 
   {% set activeRestrictions = prisoner.restrictions | rejectattr("expiryDate", "isDateAndInThePast") %}
   {% if activeRestrictions | length > 0 %}
     {% set badgeText = "ACTIVE RESTRICTION IN PLACE" if (activeRestrictions | length == 1) else "ACTIVE RESTRICTIONS IN PLACE" %}

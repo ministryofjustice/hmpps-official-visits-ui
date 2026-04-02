@@ -1,16 +1,16 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
-import { hasPrisonerOverlap, recallContacts, saveVisitors } from '../createJourneyState'
+import { cyaGuard, recallContacts, saveVisitors } from '../createJourneyState'
 import { getBackLink } from './utils'
 import { HmppsUser } from '../../../../../interfaces/hmppsUser'
 
 export default class SelectSocialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_SOCIAL_VISITORS_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
 
   private getSelectableContacts = async (
     prisonerNumber: string,
@@ -28,7 +28,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     )
   }
 
-  public GET = async (req: Request, res: Response) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonerNumber } = req.session.journey.officialVisit.prisoner
     const journeyVisitors = req.session.journey.officialVisit.socialVisitors || []
@@ -47,6 +47,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
       backUrl: getBackLink(req, res, `select-official-visitors`),
       prisoner: req.session.journey.officialVisit.prisoner,
       hasVisitorOverlap: req.flash('hasVisitorOverlap')[0] === 'true',
+      checks: errors,
     })
   }
 
@@ -59,31 +60,8 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
     const socialContacts = recallContacts(req.session.journey, 'S', selectableContacts)
 
-    // Check for visitor overlaps if a time slot is selected
-    const { officialVisit } = req.session.journey
-
-    if (officialVisit.selectedTimeSlot) {
-      const allVisitors = [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])]
-      const contactIds = allVisitors.map(v => v.contactId)
-
-      const overlapResult = await this.officialVisitsService.checkForOverlappingVisits(
-        officialVisit.prisoner.prisonCode,
-        officialVisit.prisoner.prisonerNumber,
-        officialVisit.selectedTimeSlot.visitDate,
-        officialVisit.selectedTimeSlot.startTime,
-        officialVisit.selectedTimeSlot.endTime,
-        contactIds,
-        officialVisit.officialVisitId || 0,
-        res.locals.user,
-      )
-
-      if (hasPrisonerOverlap(overlapResult)) {
-        req.flash('hasVisitorOverlap', 'true')
-        return res.redirect(req.get('Referrer') || req.originalUrl)
-      }
-    }
-
     // Update the session with the selected approved social visitors, or an empty list if none
+    const originalVisitors = [...journeyVisitors]
     saveVisitors(
       req.session.journey,
       'S',
@@ -96,6 +74,14 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
         })
         .filter((o: JourneyVisitor) => o),
     )
+
+    const errors = await cyaGuard(req as Request, res, this.officialVisitsService)
+
+    if (Object.keys(errors).length > 0) {
+      // // Revert changes
+      // saveVisitors(req.session.journey, 'S', originalVisitors)
+      return this.GET(req as Request, res, undefined, errors)
+    }
 
     req.session.journey.officialVisit.socialVisitorsPageCompleted = true
     return res.redirect(`assistance-required`)

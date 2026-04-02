@@ -1,8 +1,8 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import { hasPrisonerOverlap, saveTimeSlot, filterAvailableSlots, hasVisitorOverlap } from '../createJourneyState'
+import { saveTimeSlot, filterAvailableSlots, cyaGuard } from '../createJourneyState'
 import ActivitiesService from '../../../../../services/activitiesService'
 import { getParsedDateFromQueryString, getWeekOfDatesStartingMonday } from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
@@ -14,11 +14,11 @@ export default class TimeSlotHandler implements PageHandler {
   constructor(
     private readonly officialVisitsService: OfficialVisitsService,
     private readonly activitiesService: ActivitiesService,
-  ) {}
+  ) { }
 
   BODY = schema
 
-  public GET = async (req: Request, res: Response) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
     const { date = '' } = req.query
     const selectedDate = getParsedDateFromQueryString(date.toString(), new Date())
     const { weekOfDates, previousWeek, nextWeek } = getWeekOfDatesStartingMonday(selectedDate)
@@ -32,6 +32,7 @@ export default class TimeSlotHandler implements PageHandler {
       selectedDate,
       selectedDate,
       officialVisit.visitType === 'VIDEO',
+      officialVisit.officialVisitId,
     )
 
     const filteredSlots = filterAvailableSlots(availableSlots, officialVisit.visitType, 1)
@@ -45,8 +46,6 @@ export default class TimeSlotHandler implements PageHandler {
       user,
     )
 
-    const hasOverlap = req.flash('hasOverlap')[0] === 'true'
-
     res.render('pages/manage/timeSlot', {
       today: new Date().toISOString().substring(0, 10),
       selectedDate,
@@ -58,7 +57,7 @@ export default class TimeSlotHandler implements PageHandler {
       selectedTimeSlot: res.locals.formResponses?.['timeSlot'] || officialVisit?.selectedTimeSlot?.visitSlotId,
       backUrl: getBackLink(req, res, `visit-type`),
       prisoner: req.session.journey.officialVisit.prisoner,
-      hasOverlap,
+      checks: errors,
     })
   }
 
@@ -68,20 +67,12 @@ export default class TimeSlotHandler implements PageHandler {
       slot => slot.visitSlotId === req.body.visitSlotId,
     )
 
-    const overlapResult = await this.officialVisitsService.checkForOverlappingVisits(
-      visit.prisoner.prisonCode,
-      visit.prisoner.prisonerNumber,
-      selectedSlot.visitDate,
-      selectedSlot.startTime,
-      selectedSlot.endTime,
-      [...(visit.officialVisitors || []), ...(visit.socialVisitors || [])].map(v => v.contactId),
-      visit.officialVisitId || 0,
-      res.locals.user,
-    )
+    req.session.journey.officialVisit.selectedTimeSlot = req.body
 
-    if (hasPrisonerOverlap(overlapResult) || hasVisitorOverlap(overlapResult)) {
-      req.flash('hasOverlap', 'true')
-      return res.redirect(req.get('Referrer') || req.originalUrl)
+    const errors = await cyaGuard(req, res, this.officialVisitsService)
+
+    if (Object.keys(errors).length > 0) {
+      return this.GET(req, res, undefined, errors)
     }
 
     if (res.locals.mode === 'amend') {
@@ -102,7 +93,6 @@ export default class TimeSlotHandler implements PageHandler {
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }
 
-    req.session.journey.officialVisit.selectedTimeSlot = req.body
     saveTimeSlot(req.session.journey, req.body)
     return res.redirect(`select-official-visitors`)
   }
