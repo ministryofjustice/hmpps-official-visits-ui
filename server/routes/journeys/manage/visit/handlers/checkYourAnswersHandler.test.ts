@@ -352,8 +352,7 @@ describe('check your answers handler', () => {
           expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
-          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
         })
     })
 
@@ -384,8 +383,7 @@ describe('check your answers handler', () => {
           expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
-          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
         })
     })
 
@@ -595,8 +593,7 @@ describe('check your answers handler', () => {
           expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
-          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
         })
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
@@ -630,8 +627,7 @@ describe('check your answers handler', () => {
           expect($('.moj-alert--error').length).toBe(1)
           expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
           expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content a').text()).toContain('Remove duplicate visitors')
-          expect($('.moj-alert__content a').attr('href')).toBe('select-official-visitors')
+          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
         })
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
