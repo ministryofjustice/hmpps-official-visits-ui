@@ -14,7 +14,7 @@ export default class TimeSlotHandler implements PageHandler {
   constructor(
     private readonly officialVisitsService: OfficialVisitsService,
     private readonly activitiesService: ActivitiesService,
-  ) { }
+  ) {}
 
   BODY = schema
 
@@ -67,7 +67,7 @@ export default class TimeSlotHandler implements PageHandler {
       slot => slot.visitSlotId === req.body.visitSlotId,
     )
 
-    req.session.journey.officialVisit.selectedTimeSlot = req.body
+    req.session.journey.officialVisit.selectedTimeSlot = selectedSlot
 
     const errors = await cyaGuard(req, res, this.officialVisitsService)
 
@@ -93,7 +93,7 @@ export default class TimeSlotHandler implements PageHandler {
       return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
     }
 
-    saveTimeSlot(req.session.journey, req.body)
+    saveTimeSlot(req.session.journey, selectedSlot)
     return res.redirect(`select-official-visitors`)
   }
 }

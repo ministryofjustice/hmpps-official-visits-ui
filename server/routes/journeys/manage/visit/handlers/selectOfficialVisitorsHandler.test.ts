@@ -39,6 +39,17 @@ const appSetup = (
       },
       prisonCode: 'MDI',
       availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+      selectedTimeSlot: {
+        timeSlotId: 1,
+        visitSlotId: 1,
+        visitDate: '2026-01-26',
+        startTime: '13:30',
+        endTime: '16:00',
+        availableVideoSessions: 2,
+        availableAdults: 3,
+        availableGroups: 2,
+      },
+      visitType: 'IN_PERSON',
     } as OfficialVisitJourney,
   },
 ) => {
@@ -53,6 +64,27 @@ const appSetup = (
 beforeEach(() => {
   appSetup()
   officialVisitsService.getAllOfficialContacts.mockResolvedValue(mockOfficialVisitors)
+  officialVisitsService.getAvailableSlots.mockResolvedValue([
+    {
+      timeSlotId: 1,
+      visitSlotId: 1,
+      prisonCode: 'MDI',
+      dayCode: 'MON',
+      dayDescription: 'Monday',
+      visitDate: '2026-01-26',
+      startTime: '13:30',
+      endTime: '16:00',
+      dpsLocationId: 'loc1',
+      availableVideoSessions: 2,
+      availableAdults: 3,
+      availableGroups: 2,
+    },
+  ])
+  officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
+    prisonerNumber: 'G4793VF',
+    overlappingPrisonerVisits: [],
+    contacts: [],
+  })
 })
 
 afterEach(() => {
@@ -145,7 +177,7 @@ describe('Select official visitors', () => {
           expect(visitorRows.eq(8).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(9).text().trim()).toBeDefined() // Restrictions
 
-          expect($('.govuk-back-link').attr('href')).toEqual(`time-slot`)
+          expect($('.govuk-back-link').attr('href')).toEqual(`time-slot?date=2026-01-26`)
           expect($('.govuk-button').text()).toContain('Continue')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
           expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=2`)
@@ -493,10 +525,17 @@ describe('Select official visitors', () => {
       await request(app)
         .post(URL)
         .send({ selected: ['101-SOL', '101-JUD'] })
-        .expect(302)
-        .expect('location', 'select-social-visitors')
-        .expect(() => expectNoErrorMessages())
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          // Verify the duplicate contact error alert is displayed
+          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
+          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
+        })
 
+      // Verify the visitors are saved to session but validation error prevents progression
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.officialVisitors).toHaveLength(2)
 

@@ -15,6 +15,7 @@ import {
   expectNoErrorMessages,
 } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
+import { OfficialVisitJourney } from '../journey'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -28,8 +29,26 @@ const activitiesService = new ActivitiesService(null) as jest.Mocked<ActivitiesS
 
 let app: Express
 
+const mockTimeslot = {
+  timeSlotId: 1,
+  visitSlotId: 1,
+  visitDate: '2026-01-26',
+  startTime: '13:30',
+  endTime: '16:00',
+  availableVideoSessions: 2,
+  availableAdults: 3,
+  availableGroups: 2,
+}
+
 const appSetup = (
-  journeySession = { officialVisit: { prisoner: mockPrisoner, availableSlots: [{ visitSlotId: 1 }] } },
+  journeySession = {
+    officialVisit: {
+      prisoner: mockPrisoner,
+      availableSlots: [mockTimeslot],
+      visitType: 'IN_PERSON',
+      selectedTimeSlot: mockTimeslot,
+    } as Partial<OfficialVisitJourney>,
+  },
 ) => {
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService, activitiesService },
@@ -46,7 +65,23 @@ beforeEach(() => {
     doNotFake: ['nextTick', 'setImmediate'],
   })
 
-  officialVisitsService.getAvailableSlots.mockResolvedValue(mockTimeslots)
+  officialVisitsService.getAvailableSlots.mockResolvedValue([
+    {
+      timeSlotId: 1,
+      visitSlotId: 1,
+      prisonCode: 'MDI',
+      dayCode: 'MON',
+      dayDescription: 'Monday',
+      visitDate: '2026-01-26',
+      startTime: '13:30',
+      endTime: '16:00',
+      dpsLocationId: 'loc1',
+      availableVideoSessions: 2,
+      availableAdults: 3,
+      availableGroups: 2,
+      locationDescription: 'Mock Location',
+    },
+  ])
   activitiesService.getPrisonersSchedule.mockResolvedValue(sortedMockScheduleEvents)
   officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
     prisonerNumber: 'G4793VF',
@@ -114,7 +149,7 @@ describe('Time slot handler', () => {
 
           expect($('.govuk-radios__item').length).toEqual(1)
           expect($('.govuk-radios__item').eq(0).text()).toMatch(
-            /8am to 5pm\s+Mock Location\s+Groups 1, people 1, video 1/,
+            /1:30pm to 4pm\s+Mock Location\s+Groups 2, people 3, video 2/,
           )
           expect($('.govuk-radios__input').eq(0).attr('value')).toEqual('1')
 
@@ -184,7 +219,7 @@ describe('Time slot handler', () => {
 
           expect($('.govuk-radios__item').length).toEqual(1)
           expect($('.govuk-radios__item').eq(0).text()).toMatch(
-            /8am to 5pm\s+Mock Location\s+Groups 1, people 1, video 1/,
+            /1:30pm to 4pm\s+Mock Location\s+Groups 2, people 3, video 2/,
           )
           expect($('.govuk-radios__input').eq(0).attr('value')).toEqual('1')
 
@@ -241,7 +276,7 @@ describe('Time slot handler', () => {
         .expect(() => expectNoErrorMessages())
 
       const journeySession = await getJourneySession(app, 'officialVisit')
-      expect(journeySession.selectedTimeSlot).toEqual({ visitSlotId: 1 })
+      expect(journeySession.selectedTimeSlot).toEqual(mockTimeslot)
     })
 
     it('should redirect back to time slot page if there are overlapping visits', async () => {
@@ -251,9 +286,16 @@ describe('Time slot handler', () => {
         contacts: [],
       })
 
-      await request(app).post(URL).send({ visitSlot: '1' }).expect(302)
-
-      expectFlashMessage('hasOverlap', 'true')
+      await request(app)
+        .post(URL)
+        .send({ visitSlot: '1' })
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          // Verify the duplicate contact error alert is displayed
+          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('This prisoner already has a visit booked')
+        })
     })
 
     it('should redirect back to time slot page if there are visitor overlaps', async () => {
@@ -268,20 +310,29 @@ describe('Time slot handler', () => {
         ],
       })
 
-      await request(app).post(URL).send({ visitSlot: '1' }).expect(302)
-
-      expectFlashMessage('hasOverlap', 'true')
+      await request(app)
+        .post(URL)
+        .send({ visitSlot: '1' })
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          // Verify the duplicate contact error alert is displayed
+          expect($('.moj-alert--warning').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('A visitor already has a visit booked')
+        })
     })
 
     it('should accept a valid time slot in amend mode', async () => {
       await request(app)
-        .post(`/manage/amend/1/${journeyId()}/time-slot`)
+        .post(`/manage/amend/1/${UUID}/time-slot`)
         .send({ visitSlot: '1' })
         .expect(302)
         .expect('location', `/manage/amend/1/${journeyId()}`)
         .expect(() => expectFlashMessage('updateVerb', 'amended'))
     })
 
+    // ... (rest of the code remains the same)
     it('should call updateVisitTypeAndSlot service when in amend mode', async () => {
       const amendJourneySession = () => ({
         officialVisit: {
@@ -297,10 +348,20 @@ describe('Time slot handler', () => {
           ],
           visitType: 'IN_PERSON',
           prisonCode: 'MDI',
+          selectedTimeSlot: {
+            timeSlotId: 1,
+            visitSlotId: 1,
+            visitDate: '2026-01-26',
+            startTime: '13:30',
+            endTime: '16:00',
+            availableVideoSessions: 2,
+            availableAdults: 3,
+            availableGroups: 2,
+          },
         },
       })
 
-      appSetup(amendJourneySession())
+      appSetup(amendJourneySession() as { officialVisit: OfficialVisitJourney })
 
       await request(app)
         .post(`/manage/amend/1/${journeyId()}/time-slot`)

@@ -6,11 +6,11 @@ import {
   saveVisitors,
   saveVisitType,
   saveTimeSlot,
-  checkVideoCapacity,
-  checkTelephoneCapacity,
-  checkInPersonCapacity,
   checkSlotCapacity,
   filterAvailableSlots,
+  hasPrisonerOverlap,
+  hasVisitorOverlap,
+  checkForDuplicateContactIds,
 } from './createJourneyState'
 
 describe('Create Journey Guard', () => {
@@ -172,6 +172,8 @@ describe('Create Journey Guard', () => {
         equipment: true,
         equipmentNotes: 'equipment notes (official)',
         assistanceNotes: 'assistance (official)',
+        alreadyOnVisit: false,
+        officialVisitorId: undefined,
       },
     ])
   })
@@ -187,6 +189,8 @@ describe('Create Journey Guard', () => {
         equipment: true,
         equipmentNotes: 'equipment notes (social)',
         assistanceNotes: 'assistance (social)',
+        alreadyOnVisit: false,
+        officialVisitorId: undefined,
       },
     ])
   })
@@ -208,60 +212,60 @@ describe('Capacity Check Functions', () => {
     availableGroups: 2,
   }
 
-  describe('checkVideoCapacity', () => {
+  describe('checkSlotCapacity for VIDEO visits', () => {
     it('should return true when video sessions are available', () => {
-      expect(checkVideoCapacity(mockSlot)).toBe(true)
+      expect(checkSlotCapacity(mockSlot, 'VIDEO', 1)).toBe(true)
     })
 
     it('should return false when no video sessions are available', () => {
       const slotWithNoVideo = { ...mockSlot, availableVideoSessions: 0 }
-      expect(checkVideoCapacity(slotWithNoVideo)).toBe(false)
+      expect(checkSlotCapacity(slotWithNoVideo, 'VIDEO', 1)).toBe(false)
     })
   })
 
-  describe('checkTelephoneCapacity', () => {
+  describe('checkSlotCapacity for TELEPHONE visits', () => {
     it('should return true when both groups and adults are available', () => {
-      expect(checkTelephoneCapacity(mockSlot)).toBe(true)
+      expect(checkSlotCapacity(mockSlot, 'TELEPHONE', 1)).toBe(true)
     })
 
     it('should return false when no groups are available', () => {
       const slotWithNoGroups = { ...mockSlot, availableGroups: 0 }
-      expect(checkTelephoneCapacity(slotWithNoGroups)).toBe(false)
+      expect(checkSlotCapacity(slotWithNoGroups, 'TELEPHONE', 1)).toBe(false)
     })
 
     it('should return false when no adults are available', () => {
       const slotWithNoAdults = { ...mockSlot, availableAdults: 0 }
-      expect(checkTelephoneCapacity(slotWithNoAdults)).toBe(false)
+      expect(checkSlotCapacity(slotWithNoAdults, 'TELEPHONE', 1)).toBe(false)
     })
 
     it('should return false when neither groups nor adults are available', () => {
       const slotWithNoCapacity = { ...mockSlot, availableGroups: 0, availableAdults: 0 }
-      expect(checkTelephoneCapacity(slotWithNoCapacity)).toBe(false)
+      expect(checkSlotCapacity(slotWithNoCapacity, 'TELEPHONE', 1)).toBe(false)
     })
   })
 
-  describe('checkInPersonCapacity', () => {
+  describe('checkSlotCapacity for IN_PERSON visits', () => {
     it('should return true when enough adults and groups are available', () => {
-      expect(checkInPersonCapacity(mockSlot, 2)).toBe(true)
+      expect(checkSlotCapacity(mockSlot, 'IN_PERSON', 2)).toBe(true)
     })
 
     it('should return true when exactly enough adults are available', () => {
       const slotWithExactAdults = { ...mockSlot, availableAdults: 2 }
-      expect(checkInPersonCapacity(slotWithExactAdults, 2)).toBe(true)
+      expect(checkSlotCapacity(slotWithExactAdults, 'IN_PERSON', 2)).toBe(true)
     })
 
     it('should return false when not enough adults are available', () => {
-      expect(checkInPersonCapacity(mockSlot, 4)).toBe(false)
+      expect(checkSlotCapacity(mockSlot, 'IN_PERSON', 4)).toBe(false)
     })
 
     it('should return false when no groups are available', () => {
       const slotWithNoGroups = { ...mockSlot, availableGroups: 0 }
-      expect(checkInPersonCapacity(slotWithNoGroups, 2)).toBe(false)
+      expect(checkSlotCapacity(slotWithNoGroups, 'IN_PERSON', 2)).toBe(false)
     })
 
     it('should return false when neither adults nor groups are sufficient', () => {
       const slotWithNoCapacity = { ...mockSlot, availableAdults: 1, availableGroups: 0 }
-      expect(checkInPersonCapacity(slotWithNoCapacity, 2)).toBe(false)
+      expect(checkSlotCapacity(slotWithNoCapacity, 'IN_PERSON', 2)).toBe(false)
     })
   })
 
@@ -332,6 +336,79 @@ describe('Capacity Check Functions', () => {
       const filtered = filterAvailableSlots(slots, 'IN_PERSON', 1)
       expect(filtered).toHaveLength(3) // All except slot 3 which has no groups
       expect(filtered.map(s => s.visitSlotId)).toEqual([1, 2, 4])
+    })
+  })
+})
+
+describe('Overlap Check Functions', () => {
+  const mockOverlapResponse = {
+    prisonerNumber: 'A1234AA',
+    overlappingPrisonerVisits: [1, 2],
+    contacts: [
+      {
+        contactId: 1,
+        overlappingContactVisits: [3, 4],
+      },
+      {
+        contactId: 2,
+        overlappingContactVisits: [],
+      },
+    ],
+  }
+
+  describe('hasPrisonerOverlap', () => {
+    it('should return true when prisoner has overlapping visits', () => {
+      expect(hasPrisonerOverlap(mockOverlapResponse)).toBe(true)
+    })
+
+    it('should return false when prisoner has no overlapping visits', () => {
+      const noOverlap = { ...mockOverlapResponse, overlappingPrisonerVisits: [] as number[] }
+      expect(hasPrisonerOverlap(noOverlap)).toBe(false)
+    })
+  })
+
+  describe('hasVisitorOverlap', () => {
+    it('should return true when any visitor has overlapping visits', () => {
+      expect(hasVisitorOverlap(mockOverlapResponse)).toBe(true)
+    })
+
+    it('should return false when no visitors have overlapping visits', () => {
+      const noOverlap = {
+        ...mockOverlapResponse,
+        contacts: [
+          { contactId: 1, overlappingContactVisits: [] as number[] },
+          { contactId: 2, overlappingContactVisits: [] as number[] },
+        ],
+      }
+      expect(hasVisitorOverlap(noOverlap)).toBe(false)
+    })
+  })
+})
+
+describe('Duplicate Contact Check Functions', () => {
+  describe('checkForDuplicateContactIds', () => {
+    it('should return true when there are duplicate contact IDs', () => {
+      const officialVisitors = [{ contactId: 1 }, { contactId: 2 }] as ApprovedContact[]
+      const socialVisitors = [{ contactId: 1 }, { contactId: 3 }] as ApprovedContact[]
+      expect(checkForDuplicateContactIds(officialVisitors, socialVisitors)).toBe(true)
+    })
+
+    it('should return false when there are no duplicate contact IDs', () => {
+      const officialVisitors = [{ contactId: 1 }, { contactId: 2 }] as ApprovedContact[]
+      const socialVisitors = [{ contactId: 3 }, { contactId: 4 }] as ApprovedContact[]
+      expect(checkForDuplicateContactIds(officialVisitors, socialVisitors)).toBe(false)
+    })
+
+    it('should return false when one array is empty', () => {
+      const officialVisitors = [{ contactId: 1 }, { contactId: 2 }] as ApprovedContact[]
+      const socialVisitors: ApprovedContact[] = []
+      expect(checkForDuplicateContactIds(officialVisitors, socialVisitors)).toBe(false)
+    })
+
+    it('should return false when both arrays are empty', () => {
+      const officialVisitors: ApprovedContact[] = []
+      const socialVisitors: ApprovedContact[] = []
+      expect(checkForDuplicateContactIds(officialVisitors, socialVisitors)).toBe(false)
     })
   })
 })

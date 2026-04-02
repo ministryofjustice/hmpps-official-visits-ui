@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import { Request, Response } from 'express'
 import { Journey } from '../../../../@types/express'
 import {
   ApprovedContact,
@@ -10,7 +11,6 @@ import {
 import { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { JourneyPrisoner, JourneyVisitor } from './journey'
-import { Request, Response } from 'express'
 
 const progressTrackerPages: Record<string, number> = {
   [Page.PRISONER_SEARCH_PAGE]: 0,
@@ -96,7 +96,11 @@ export function checkSlotCapacity(slot: AvailableSlot, visitType: VisitType, vis
   return true // Skip check if unknown visit type
 }
 
-export function filterAvailableSlots(slots: AvailableSlot[], visitType: VisitType, visitorCount: number): AvailableSlot[] {
+export function filterAvailableSlots(
+  slots: AvailableSlot[],
+  visitType: VisitType,
+  visitorCount: number,
+): AvailableSlot[] {
   return slots.filter(slot => checkSlotCapacity(slot, visitType, visitorCount))
 }
 
@@ -131,14 +135,15 @@ export async function checkTimeSlotCapacity(req: Request, res: Response, ovServi
     return false
   }
 
-  const totalVisitors = [
-    ...(officialVisit.officialVisitors || []),
-    ...(officialVisit.socialVisitors || [])].length
+  const totalVisitors = [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])].length
 
   return checkSlotCapacity(currentSlot, officialVisit.visitType, totalVisitors)
 }
 
-export function checkForDuplicateContactIds(officialVisitors: ApprovedContact[], socialVisitors: ApprovedContact[]): boolean {
+export function checkForDuplicateContactIds(
+  officialVisitors: ApprovedContact[],
+  socialVisitors: ApprovedContact[],
+): boolean {
   const allContactIds = [...officialVisitors, ...socialVisitors].map(visitor => visitor.contactId)
   const uniqueContactIds = new Set(allContactIds)
   return allContactIds.length !== uniqueContactIds.size
@@ -147,11 +152,21 @@ export function checkForDuplicateContactIds(officialVisitors: ApprovedContact[],
 export async function cyaGuard(req: Request, res: Response, ovService: OfficialVisitsService) {
   const visit = req.session.journey.officialVisit
 
+  // If no time slot selected, skip capacity and overlap checks
+  if (!visit.selectedTimeSlot) {
+    const hasDuplicateContactIds = checkForDuplicateContactIds(visit.officialVisitors || [], visit.socialVisitors || [])
+
+    const errors: Record<string, boolean> = {}
+
+    if (hasDuplicateContactIds) {
+      errors['hasDuplicateContactIds'] = true
+    }
+
+    return errors
+  }
+
   const capacityCheckResult = await checkTimeSlotCapacity(req, res, ovService)
-  const hasDuplicateContactIds = checkForDuplicateContactIds(
-    visit.officialVisitors || [],
-    visit.socialVisitors || [],
-  )
+  const hasDuplicateContactIds = checkForDuplicateContactIds(visit.officialVisitors || [], visit.socialVisitors || [])
 
   const overlapResult = await ovService.checkForOverlappingVisits(
     visit.prisoner.prisonCode,

@@ -327,10 +327,10 @@ describe('check your answers handler', () => {
             prisonerNumber: 'G4793VF',
             lastName: 'Malicious',
             firstName: 'Peter',
-            relationshipTypeCode: 'S',
-            relationshipTypeDescription: 'Social',
-            relationshipToPrisonerCode: 'FRI',
-            relationshipToPrisonerDescription: 'Friend',
+            relationshipTypeCode: 'O',
+            relationshipTypeDescription: 'Official',
+            relationshipToPrisonerCode: 'SOL', // Same relationship code as official visitor
+            relationshipToPrisonerDescription: 'Solicitor',
             assistanceNotes: '',
             assistedVisit: false,
             equipmentNotes: '',
@@ -346,7 +346,7 @@ describe('check your answers handler', () => {
       appSetup(journeyWithDuplicateContact())
 
       return request(app)
-        .get(URL)
+        .post(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
@@ -366,26 +366,7 @@ describe('check your answers handler', () => {
             ...mockOfficialVisitJourney.officialVisitors[0],
           },
           {
-            prisonerContactId: 7332365,
-            contactId: 20085647,
-            prisonerNumber: 'G4793VF',
-            lastName: 'Malicious',
-            firstName: 'Peter',
-            relationshipTypeCode: 'O',
-            relationshipTypeDescription: 'Official',
-            relationshipToPrisonerCode: 'POL',
-            relationshipToPrisonerDescription: 'Police Officer',
-            assistanceNotes: '',
-            assistedVisit: false,
-            equipmentNotes: '',
-            equipment: false,
-            isApprovedVisitor: true,
-            isNextOfKin: false,
-            isEmergencyContact: false,
-            isRelationshipActive: true,
-            restrictionSummary: {
-              active: [] as RestrictionSummary[],
-            },
+            ...mockOfficialVisitJourney.officialVisitors[0], // Exact duplicate
           },
         ],
       }
@@ -397,7 +378,7 @@ describe('check your answers handler', () => {
       appSetup(journeyWithDuplicateOfficialContact())
 
       return request(app)
-        .get(URL)
+        .post(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
@@ -417,7 +398,7 @@ describe('check your answers handler', () => {
       })
 
       return request(app)
-        .get(URL)
+        .post(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
@@ -440,7 +421,7 @@ describe('check your answers handler', () => {
       })
 
       return request(app)
-        .get(URL)
+        .post(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
@@ -463,7 +444,7 @@ describe('check your answers handler', () => {
       })
 
       return request(app)
-        .get(URL)
+        .post(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
@@ -588,10 +569,10 @@ describe('check your answers handler', () => {
             prisonerNumber: 'G4793VF',
             lastName: 'Malicious',
             firstName: 'Peter',
-            relationshipTypeCode: 'S',
-            relationshipTypeDescription: 'Social',
-            relationshipToPrisonerCode: 'FRI',
-            relationshipToPrisonerDescription: 'Friend',
+            relationshipTypeCode: 'O',
+            relationshipTypeDescription: 'Official',
+            relationshipToPrisonerCode: 'SOL', // Same relationship code as official visitor
+            relationshipToPrisonerDescription: 'Solicitor',
             assistanceNotes: '',
             assistedVisit: false,
             equipmentNotes: '',
@@ -630,26 +611,7 @@ describe('check your answers handler', () => {
             ...mockOfficialVisitJourney.officialVisitors[0],
           },
           {
-            prisonerContactId: 7332365,
-            contactId: 20085647,
-            prisonerNumber: 'G4793VF',
-            lastName: 'Malicious',
-            firstName: 'Peter',
-            relationshipTypeCode: 'O',
-            relationshipTypeDescription: 'Official',
-            relationshipToPrisonerCode: 'POL',
-            relationshipToPrisonerDescription: 'Police Officer',
-            assistanceNotes: '',
-            assistedVisit: false,
-            equipmentNotes: '',
-            equipment: false,
-            isApprovedVisitor: true,
-            isNextOfKin: false,
-            isEmergencyContact: false,
-            isRelationshipActive: true,
-            restrictionSummary: {
-              active: [] as RestrictionSummary[],
-            },
+            ...mockOfficialVisitJourney.officialVisitors[0], // Exact duplicate
           },
         ],
       }
