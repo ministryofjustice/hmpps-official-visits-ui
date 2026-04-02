@@ -7,7 +7,7 @@ import { cyaGuard } from '../createJourneyState'
 export default class CheckYourAnswersHandler implements PageHandler {
   public PAGE_NAME = Page.CHECK_YOUR_ANSWERS_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
+  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
     const { officialVisit } = req.session.journey
@@ -18,7 +18,7 @@ export default class CheckYourAnswersHandler implements PageHandler {
       visit: officialVisit,
       contacts: [...officialVisit.officialVisitors, ...officialVisit.socialVisitors],
       prisoner,
-      checks: errors
+      checks: errors,
     })
   }
 

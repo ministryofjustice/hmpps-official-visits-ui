@@ -8,7 +8,7 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import ActivitiesService from '../../../../../services/activitiesService'
 import { getPageHeader, getTextById } from '../../../../testutils/cheerio'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { mockTimeslots, sortedMockScheduleEvents, mockPrisoner } from '../../../../../testutils/mocks'
+import { sortedMockScheduleEvents, mockPrisoner } from '../../../../../testutils/mocks'
 import {
   expectErrorMessages,
   expectFlashMessage,

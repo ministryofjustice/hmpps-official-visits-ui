@@ -36,7 +36,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
       relationshipTypeCode: visitor.relationshipTypeCode,
       leadVisitor: visitor.leadVisitor,
       notes: visitor.visitorNotes,
-      alreadyOnVisit: true
+      alreadyOnVisit: true,
     } as Partial<JourneyVisitor>
   }
 

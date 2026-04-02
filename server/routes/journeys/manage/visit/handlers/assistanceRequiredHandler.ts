@@ -12,7 +12,7 @@ import { cyaGuard } from '../createJourneyState'
 export default class AssistanceRequiredHandler implements PageHandler {
   public PAGE_NAME = Page.ASSISTANCE_REQUIRED_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
+  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   BODY = schema
 

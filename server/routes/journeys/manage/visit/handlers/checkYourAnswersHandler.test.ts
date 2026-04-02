@@ -5,7 +5,6 @@ import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetu
 import AuditService, { Page } from '../../../../../services/auditService'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import ActivitiesService from '../../../../../services/activitiesService'
 import { getPageHeader, getValueByKey } from '../../../../testutils/cheerio'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'

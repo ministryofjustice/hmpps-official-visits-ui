@@ -25,7 +25,7 @@ import logger from '../../logger'
 import { components } from '../@types/officialVisitsApi'
 
 export default class OfficialVisitsService {
-  constructor(private readonly officialVisitsApiClient: OfficialVisitsApiClient) { }
+  constructor(private readonly officialVisitsApiClient: OfficialVisitsApiClient) {}
 
   public async getOfficialVisitById(prisonCode: string, visitId: number, user: HmppsUser): Promise<OfficialVisit> {
     return this.officialVisitsApiClient.getOfficialVisitById(prisonCode, visitId, user)
@@ -101,9 +101,16 @@ export default class OfficialVisitsService {
     startDate: string,
     endDate: string,
     videoOnly: boolean,
-    existingVisitId?: number
+    existingVisitId?: number,
   ) {
-    return this.officialVisitsApiClient.getAvailableTimeSlots(prisonId, startDate, endDate, videoOnly, existingVisitId, res.locals.user)
+    return this.officialVisitsApiClient.getAvailableTimeSlots(
+      prisonId,
+      startDate,
+      endDate,
+      videoOnly,
+      existingVisitId || 0,
+      res.locals.user,
+    )
   }
 
   public async getSchedule(res: Response, prisonId: string, date: string) {

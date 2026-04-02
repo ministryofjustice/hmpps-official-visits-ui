@@ -10,7 +10,7 @@ import { HmppsUser } from '../../../../../interfaces/hmppsUser'
 export default class SelectSocialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_SOCIAL_VISITORS_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
+  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   private getSelectableContacts = async (
     prisonerNumber: string,
@@ -61,7 +61,6 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     const socialContacts = recallContacts(req.session.journey, 'S', selectableContacts)
 
     // Update the session with the selected approved social visitors, or an empty list if none
-    const originalVisitors = [...journeyVisitors]
     saveVisitors(
       req.session.journey,
       'S',

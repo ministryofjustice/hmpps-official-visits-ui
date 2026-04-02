@@ -12,7 +12,7 @@ import { HmppsUser } from '../../../../../interfaces/hmppsUser'
 export default class SelectOfficialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_OFFICIAL_VISITORS_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
+  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   BODY = schema
 
@@ -66,7 +66,6 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
     const officialContacts = recallContacts(req.session.journey, 'O', selectableContacts)
 
-    const originalVisitors = [...journeyVisitors]
     // Update the session journey with selected approved official contacts
     saveVisitors(
       req.session.journey,

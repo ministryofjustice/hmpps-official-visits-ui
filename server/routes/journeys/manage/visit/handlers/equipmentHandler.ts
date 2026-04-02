@@ -10,7 +10,7 @@ import { cyaGuard } from '../createJourneyState'
 export default class EquipmentHandler implements PageHandler {
   public PAGE_NAME = Page.EQUIPMENT_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
+  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
     const contacts = [
@@ -22,7 +22,7 @@ export default class EquipmentHandler implements PageHandler {
       contacts,
       backUrl: getBackLink(req, res, `assistance-required`),
       prisoner: req.session.journey.officialVisit.prisoner,
-      checks: errors
+      checks: errors,
     })
   }
 
