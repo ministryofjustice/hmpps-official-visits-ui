@@ -164,6 +164,14 @@
         value: { text: visit.completionNotes or 'None' }
       } if visit.visitStatus == 'COMPLETED' or visit.visitStatus == 'CANCELLED',
       {
+          key: { text: "Completion reason" },
+          value: { text: visit.completionDescription or 'None' }
+      } if visit.visitStatus == 'COMPLETED',
+      {
+          key: { text: "Search type" },
+          value: { text: visit.searchTypeDescription or 'None' }
+      } if visit.visitStatus == 'COMPLETED',
+      {
         key: { text: "Visit reference number" },
         value: { text: visit.officialVisitId }
       },
