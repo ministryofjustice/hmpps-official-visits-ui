@@ -20,7 +20,8 @@ export default class PersonalRelationshipsApiClient extends RestClient {
   ): Promise<PagedModelPrisonerRestrictionDetails> {
     return this.get<PagedModelPrisonerRestrictionDetails>(
       {
-        path: `/prisoner-restrictions/${prisonerNumber}?page=${page}&size=${size}&currentTerm=${currentTerm}&paged=${paged}`,
+        path: `/prisoner-restrictions/${prisonerNumber}`,
+        query: { page, size, currentTerm, paged },
       },
       asSystem(user.username),
     )

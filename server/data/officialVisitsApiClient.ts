@@ -156,9 +156,7 @@ export default class OfficialVisitsApiClient extends RestClient {
     user: HmppsUser,
   ): Promise<ApprovedContact[]> {
     return this.get<ApprovedContact[]>(
-      {
-        path: `/prisoner/${prisonerNumber}/approved-relationships?relationshipType=O`,
-      },
+      { path: `/prisoner/${prisonerNumber}/approved-relationships`, query: { relationshipType: 'O' } },
       asSystem(user.username),
     )
   }
@@ -169,9 +167,7 @@ export default class OfficialVisitsApiClient extends RestClient {
     user: HmppsUser,
   ): Promise<ApprovedContact[]> {
     return this.get<ApprovedContact[]>(
-      {
-        path: `/prisoner/${prisonerNumber}/approved-relationships?relationshipType=S`,
-      },
+      { path: `/prisoner/${prisonerNumber}/approved-relationships`, query: { relationshipType: 'S' } },
       asSystem(user.username),
     )
   }
@@ -182,20 +178,14 @@ export default class OfficialVisitsApiClient extends RestClient {
     approved?: boolean,
     currentTerm?: boolean,
   ): Promise<components['schemas']['PrisonerContact'][]> {
-    const queryParams = new URLSearchParams()
-    if (approved !== undefined) {
-      queryParams.append('approved', approved.toString())
-    }
-    if (currentTerm !== undefined) {
-      queryParams.append('currentTerm', currentTerm.toString())
-    }
+    const query: Record<string, string | boolean> = {}
+    if (approved !== undefined) query.approved = approved
+    if (currentTerm !== undefined) query.currentTerm = currentTerm
 
-    const queryString = queryParams.toString()
-    const path = queryString
-      ? `/prisoner/${prisonerNumber}/all-contacts?${queryString}`
-      : `/prisoner/${prisonerNumber}/all-contacts`
-
-    return this.get<components['schemas']['PrisonerContact'][]>({ path }, asSystem(user.username))
+    return this.get<components['schemas']['PrisonerContact'][]>(
+      { path: `/prisoner/${prisonerNumber}/all-contacts`, query },
+      asSystem(user.username),
+    )
   }
 
   async getVisits(
@@ -206,7 +196,7 @@ export default class OfficialVisitsApiClient extends RestClient {
     user: HmppsUser,
   ): Promise<FindByCriteriaResults> {
     return this.post<FindByCriteriaResults>(
-      { path: `/official-visit/prison/${prisonId}/find-by-criteria?page=${page}&size=${size}`, data: criteria },
+      { path: `/official-visit/prison/${prisonId}/find-by-criteria`, query: { page, size }, data: criteria },
       asSystem(user.username),
     )
   }
@@ -234,7 +224,7 @@ export default class OfficialVisitsApiClient extends RestClient {
 
   async getAllTimeSlotsAndVisitSlots(prisonCode: string, user: HmppsUser): Promise<TimeSlotSummary> {
     return this.get<TimeSlotSummary>(
-      { path: `/admin/time-slots/prison/${prisonCode}?activeOnly=false` },
+      { path: `/admin/time-slots/prison/${prisonCode}`, query: { activeOnly: false } },
       asSystem(user.username),
     )
   }
