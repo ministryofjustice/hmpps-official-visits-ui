@@ -149,6 +149,11 @@ test.describe('Create an official visit', () => {
 
     await officialVisitsApi.stubCreateVisit({ officialVisitId: 1 } as OfficialVisit)
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
+    await officialVisitsApi.stubCheckForOverlappingVisits({
+      prisonerNumber: 'G4793VF',
+      overlappingPrisonerVisits: [],
+      contacts: [],
+    })
   })
 
   test.afterEach(async () => {
@@ -210,6 +215,16 @@ test.describe('Create an official visit', () => {
     await selectOfficialContactPage.checkContact(2)
     await selectOfficialContactPage.continueButton.click()
 
+    expect(page.getByText('You have selected the same contact more than once')).toBeVisible()
+    expect(page.getByRole('link', { name: 'Remove duplicate visitors' })).toBeVisible()
+
+    const duplicateErrorLink = page.getByRole('link', { name: 'Remove duplicate visitors' })
+    const href = await duplicateErrorLink.getAttribute('href')
+    expect(href).toContain('select-official-visitors')
+
+    await selectOfficialContactPage.uncheckContact(2)
+    await selectOfficialContactPage.continueButton.click()
+
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-social-visitors/)
     await page.goto(`/manage/create/${uuid}/check-your-answers`)
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-social-visitors/)
@@ -258,7 +273,7 @@ test.describe('Create an official visit', () => {
     await equipmentPage.selectCheckbox(
       `${mockSocialVisitors[1].firstName} ${mockSocialVisitors[1].lastName} (${mockSocialVisitors[1].relationshipToPrisonerDescription})`,
     )
-    await equipmentPage.fillBoxForContact(2, 'Equipment required (social)')
+    await equipmentPage.fillBoxForContact(1, 'Equipment required (social)')
 
     await equipmentPage.continueButton.click()
 
@@ -273,17 +288,6 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/check-your-answers/)
     const cyaPage = await CheckYourAnswersPage.verifyOnPage(page)
 
-    expect(page.getByText('You have selected the same contact more than once')).toBeVisible()
-    expect(page.getByRole('link', { name: 'Remove duplicate visitors' })).toBeVisible()
-
-    const duplicateErrorLink = page.getByRole('link', { name: 'Remove duplicate visitors' })
-    const href = await duplicateErrorLink.getAttribute('href')
-    expect(href).toContain('select-official-visitors')
-
-    await duplicateErrorLink.click()
-
-    await selectOfficialContactPage.uncheckContact(2)
-    await selectOfficialContactPage.continueButton.click()
     await page.goto(`/manage/create/${uuid}/check-your-answers`)
 
     await checkCancelPage(cyaPage, CheckYourAnswersPage.verifyOnPage, 4)
