@@ -77,8 +77,6 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     const errors = await cyaGuard(req as Request, res, this.officialVisitsService)
 
     if (Object.keys(errors).length > 0) {
-      // // Revert changes
-      // saveVisitors(req.session.journey, 'S', originalVisitors)
       return this.GET(req as Request, res, undefined, errors)
     }
 
