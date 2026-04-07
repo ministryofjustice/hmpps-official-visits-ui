@@ -1,5 +1,17 @@
 {% from "moj/components/alert/macro.njk" import mojAlert %}
-{% macro capacityCheckMessages(opts) %}
+{% macro capacityCheckMessages(opts, visitId) %}
+  {% if opts.empty %}
+    {{ mojAlert({
+      variant: "error",
+      role: "alert",
+      title: "You cannot remove all visitors from an official visit",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "A visit must have at least one official visitor. Add new visitors or <a href=\"/view/visit/" + visitId + "/cancel\" class=\"govuk-link\">cancel this visit</a>",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+
   {% if opts.noCapacity %}
     {{ mojAlert({
       variant: "error",

@@ -55,7 +55,6 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     // Use the prison and prisoner details from the session
     const { prisonerNumber } = req.session.journey.officialVisit.prisoner
     const selected = Array.isArray(req.body.selected) ? req.body.selected : []
-
     const journeyVisitors = req.session.journey.officialVisit.socialVisitors || []
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
     const socialContacts = recallContacts(req.session.journey, 'S', selectableContacts)
