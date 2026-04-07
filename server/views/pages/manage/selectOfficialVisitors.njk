@@ -15,7 +15,7 @@
 
 {% block content %}
 
-  {{ capacityCheckMessages(checks)}}
+  {{ capacityCheckMessages(checks, visitId) }}
   {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
 
   <div class="govuk-grid-row govuk-body">

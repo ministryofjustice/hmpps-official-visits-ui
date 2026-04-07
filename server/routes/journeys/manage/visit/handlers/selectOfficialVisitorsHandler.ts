@@ -1,20 +1,30 @@
 import { NextFunction, Request, Response } from 'express'
+import { ZodType } from 'zod'
+import { $ZodTypeInternals } from 'zod/v4/core'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
-import { schema, SchemaType } from './selectOfficialVisitorsSchema'
+import { schema } from './selectOfficialVisitorsSchema'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { JourneyVisitor } from '../journey'
 import { cyaGuard, recallContacts, saveVisitors } from '../createJourneyState'
 import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 import { getBackLink } from './utils'
 import { HmppsUser } from '../../../../../interfaces/hmppsUser'
+import { SchemaFactory } from '../../../../../middleware/validationMiddleware'
 
 export default class SelectOfficialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_OFFICIAL_VISITORS_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor(
+    private readonly officialVisitsService: OfficialVisitsService,
+    useSchema: boolean = true,
+  ) {
+    if (useSchema) {
+      this.BODY = schema
+    }
+  }
 
-  BODY = schema
+  BODY: ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>> | SchemaFactory | undefined = undefined
 
   private getSelectableContacts = async (
     prisonerNumber: string,
@@ -54,13 +64,18 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       prisoner: req.session.journey.officialVisit.prisoner,
       hasVisitorOverlap: req.flash('hasVisitorOverlap')[0] === 'true',
       checks: errors,
+      visitId: req.session.journey.officialVisit.officialVisitId,
     })
   }
 
-  public POST = async (req: Request<unknown, SchemaType>, res: Response) => {
+  public POST = async (req: Request, res: Response) => {
     // Use the prison and prisoner details from the session
     const { prisonerNumber } = req.session.journey.officialVisit.prisoner
     const selected: string[] = Array.isArray(req.body.selected) ? req.body.selected : []
+
+    if (!selected.length) {
+      return this.GET(req, res, undefined, { empty: true })
+    }
 
     const journeyVisitors = req.session.journey.officialVisit.officialVisitors || []
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
@@ -80,12 +95,12 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
         .filter((o: JourneyVisitor) => o),
     )
 
-    const errors = await cyaGuard(req as Request, res, this.officialVisitsService)
+    const errors = await cyaGuard(req, res, this.officialVisitsService)
 
     if (Object.keys(errors).length > 0) {
-      return this.GET(req as Request, res, undefined, errors)
+      return this.GET(req, res, undefined, errors)
     }
 
-    return res.redirect(socialVisitorsPageEnabled(req as Request) ? `select-social-visitors` : `assistance-required`)
+    return res.redirect(socialVisitorsPageEnabled(req) ? `select-social-visitors` : `assistance-required`)
   }
 }

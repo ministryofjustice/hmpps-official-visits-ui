@@ -408,7 +408,7 @@ describe('Select official visitors', () => {
   })
 
   describe('POST', () => {
-    it('should error if no official visitors are selected', () => {
+    it('should error if no official visitors are selected (create journey)', () => {
       return request(app)
         .post(URL)
         .send({})
@@ -421,6 +421,48 @@ describe('Select official visitors', () => {
             },
           ]),
         )
+    })
+
+    it('should show bespoke error when removing all visitors on amend journey', async () => {
+      // Set up an existing visit with a visitor already selected
+      const existingVisitor = {
+        prisonerContactId: 1,
+        contactId: 101,
+        prisonerNumber: 'G4793VF',
+        firstName: 'John',
+        lastName: 'Doe',
+        relationshipTypeCode: 'O',
+        relationshipTypeDescription: 'Official',
+        relationshipToPrisonerCode: 'SOL',
+        relationshipToPrisonerDescription: 'Solicitor',
+      }
+
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: mockPrisonerRestrictions,
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          officialVisitors: [existingVisitor],
+          officialVisitId: 123,
+          socialVisitors: [],
+        } as OfficialVisitJourney,
+      })
+
+      return request(app)
+        .post(`/manage/amend/123/${journeyId()}/select-official-visitors`)
+        .send({})
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-alert--error').length).toBe(1)
+          expect($('.moj-alert__heading').text()).toContain('You cannot remove all visitors from an official visit')
+          expect($('.moj-alert__content').text()).toContain('A visit must have at least one official visitor')
+          expect($('.moj-alert__content a').attr('href')).toContain('/view/visit/123/cancel')
+        })
     })
 
     it('should accept the selection of one official visitor and redirect to social visitors page', async () => {
