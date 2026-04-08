@@ -70,6 +70,10 @@ test.describe('Admin: Add a new location', () => {
     // After submit ensure we've returned to locations page
     await expect(page).toHaveURL('/admin/time-slot/1/locations')
 
+    // The page renders a success alert; client-side behaviour should move focus to that alert on page load
+    // Assert the alert receives focus to cover accessibility regression risk
+    await expect(page.getByRole('alert')).toBeFocused()
+
     // Verify wiremock saw the POST request
     const reqs = await getMatchingRequests({ method: 'POST', url: '/official-visits-api/admin/time-slot/1/visit-slot' })
     // Expect at least one request matching
