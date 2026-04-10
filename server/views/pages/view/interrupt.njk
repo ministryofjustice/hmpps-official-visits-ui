@@ -1,0 +1,29 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/miniProfile/macro.njk" import miniProfile %}
+{%- from "moj/components/interruption-card/macro.njk" import interruptionCard -%}
+
+{% set pageTitle = "Official visit with " + prisoner | firstNameSpaceLastName %}
+{% set paramBackTo = ("?backTo=" + b64BackTo)if b64BackTo %}
+
+{% block content %}
+  <span class="govuk-hint">Manage existing official visits</span>
+
+  <h1 class="govuk-heading-l">Official visit</h1>
+  {{ miniProfile(prisoner) }}
+
+  {% call interruptionCard({
+    heading: "There’s a problem with this visit",
+    primaryAction: { text: "Continue", href: "/view/visit/" + visitId + '?continue=true&backTo=' + b64BackTo }
+  }) -%}
+    <p>One or more visitors included in this visit do not meet the requirements for a visit.</p>
+    <p>What you can do</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Review the visitors you’ve selected</li>
+      <li>Make sure all visitors are approved and have a recorded relationship</li>
+      <li>Try booking again with eligible visitors only</li>
+    </ul>
+  {%- endcall %}
+  
+{% endblock %}

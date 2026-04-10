@@ -644,6 +644,7 @@ test.describe('Amend official visits', () => {
     await amendVisitPage.getCancelButton().click()
 
     expect(page.url()).toContain('/view/visit/1')
+    await page.getByRole('button', { name: 'Continue', exact: true }).click()
     await ViewVisitPage.verifyOnPage(page)
   })
 })

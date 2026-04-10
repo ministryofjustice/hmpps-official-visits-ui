@@ -1,6 +1,6 @@
 import Root = cheerio.Root
 
-export const getPageHeader = ($: Root) => $('h1').text().trim()
+export const getPageHeader = ($: Root) => $('h1').first().text().trim()
 export const getByDataQa = ($: Root, dataQa: string) => $(`[data-qa=${dataQa}]`)
 export const existsByDataQa = ($: Root, dataQa: string) => getByDataQa($, dataQa).length > 0
 export const getByName = ($: Root, name: string) => $(`[name=${name}]`)
