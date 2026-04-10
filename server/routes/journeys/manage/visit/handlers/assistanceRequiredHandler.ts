@@ -16,7 +16,7 @@ export default class AssistanceRequiredHandler implements PageHandler {
 
   BODY = schema
 
-  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction) => {
     const contacts = [
       ...req.session.journey.officialVisit.officialVisitors,
       ...(req.session.journey.officialVisit.socialVisitors || []),
@@ -24,6 +24,9 @@ export default class AssistanceRequiredHandler implements PageHandler {
 
     const { officialVisit } = req.session.journey
     const changeThisPage = req.session.journey.amendVisit?.changePage === 'assistance-required'
+
+    const rawErrors = req.flash('alertErrors')[0]
+    const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
     res.render('pages/manage/assistanceRequired', {
       contacts,
@@ -50,7 +53,7 @@ export default class AssistanceRequiredHandler implements PageHandler {
     if (res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit))) {
       const errors = await cyaGuard(req, res, this.officialVisitsService)
       if (Object.keys(errors).length > 0) {
-        return this.GET(req, res, undefined, errors)
+        return res.alertValidationError(errors)
       }
 
       const allVisitors = [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])]

@@ -42,7 +42,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     )
   }
 
-  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction) => {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonerNumber } = req.session.journey.officialVisit.prisoner
 
@@ -54,6 +54,9 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       res.locals.formResponses?.selected ||
       journeyVisitors?.map(v => `${v.contactId}-${v.relationshipToPrisonerCode}`) ||
       []
+
+    const rawErrors = req.flash('alertErrors')[0]
+    const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
     // Show the list and prefill the selected checkboxes for official visitors
     const previousDate = req.session.journey.officialVisit?.selectedTimeSlot?.visitDate
@@ -74,7 +77,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const selected: string[] = Array.isArray(req.body.selected) ? req.body.selected : []
 
     if (!selected.length) {
-      return this.GET(req, res, undefined, { empty: true })
+      return res.alertValidationError({ empty: true })
     }
 
     const journeyVisitors = req.session.journey.officialVisit.officialVisitors || []
@@ -98,7 +101,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const errors = await cyaGuard(req, res, this.officialVisitsService)
 
     if (Object.keys(errors).length > 0) {
-      return this.GET(req, res, undefined, errors)
+      return res.alertValidationError(errors)
     }
 
     return res.redirect(socialVisitorsPageEnabled(req) ? `select-social-visitors` : `assistance-required`)

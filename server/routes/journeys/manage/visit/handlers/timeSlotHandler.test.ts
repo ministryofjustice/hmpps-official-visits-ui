@@ -13,6 +13,7 @@ import {
   expectErrorMessages,
   expectFlashMessage,
   expectNoErrorMessages,
+  expectAlertErrors,
 } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
@@ -288,14 +289,15 @@ describe('Time slot handler', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send({ visitSlot: '1' })
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          // Verify the duplicate contact error alert is displayed
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('This prisoner already has a visit booked')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasPrisonerOverlap: true,
+          }),
+        )
     })
 
     it('should redirect back to time slot page if there are visitor overlaps', async () => {
@@ -312,15 +314,15 @@ describe('Time slot handler', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send({ visitSlot: '1' })
-        .expect(200)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          // Verify the duplicate contact error alert is displayed
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('A visitor already has a visit booked')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasVisitorOverlap: true,
+          }),
+        )
     })
 
     it('should accept a valid time slot in amend mode', async () => {

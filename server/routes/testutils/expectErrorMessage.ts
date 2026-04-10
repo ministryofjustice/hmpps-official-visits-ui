@@ -14,3 +14,7 @@ export function expectNoErrorMessages() {
 export function expectFlashMessage(name: string, message: string, nth: number = 1) {
   expect(flashProvider).toHaveBeenNthCalledWith(nth, name, message)
 }
+
+export function expectAlertErrors(errors: Record<string, boolean>, nth: number = 1) {
+  expect(flashProvider).toHaveBeenNthCalledWith(nth, 'alertErrors', JSON.stringify(errors))
+}

@@ -34,6 +34,7 @@ declare module 'express-serve-static-core' {
     addSuccessMessage?(heading: string, message?: string): void
     addValidationError?(message: string, field?: string): void
     validationFailed?(message?: string, field?: string): void
+    alertValidationError?(errors: Record<string, boolean>, redirectUrl?: string): void
   }
 }
 
