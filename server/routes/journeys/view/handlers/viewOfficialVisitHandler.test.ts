@@ -363,9 +363,6 @@ describe('View an official visit', () => {
 
     it('should show interruption card when visitor has no relationship with prisoner (contact not found)', async () => {
       officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
-      personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
-      prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
-      manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
       officialVisitsService.getAllContacts.mockResolvedValue([])
 
       const res = await request(app).get(URL)
@@ -379,9 +376,6 @@ describe('View an official visit', () => {
 
     it('should show interruption card when visitor is not approved', async () => {
       officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
-      personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
-      prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
-      manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
       officialVisitsService.getAllContacts.mockResolvedValue([{ ...baseMockContact, isApprovedVisitor: false }])
 
       const res = await request(app).get(URL)
@@ -403,9 +397,6 @@ describe('View an official visit', () => {
         ],
       }
       officialVisitsService.getOfficialVisitById.mockResolvedValue(socialVisitMock)
-      personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
-      prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
-      manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
       officialVisitsService.getAllContacts.mockResolvedValue([
         {
           ...baseMockContact,
@@ -423,9 +414,6 @@ describe('View an official visit', () => {
 
     it('should not show interruption card when continue=true query param is present', async () => {
       officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
-      personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
-      prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
-      manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
       officialVisitsService.getAllContacts.mockResolvedValue([])
 
       const res = await request(app).get(`${URL}?continue=true`)
