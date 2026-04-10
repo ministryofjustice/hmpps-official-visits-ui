@@ -28,8 +28,7 @@
         "target": "_blank"    
       }
     }) }}
-
-    {% if user | hasPermission(PERMISSION.MANAGE) %}
+    {% if user | hasPermission(PERMISSION.MANAGE) and visit.visitStatus not in ['COMPLETED', 'CANCELLED'] %}
       {{ govukButton({
         text: "Amend visit",
         href: "/manage/amend/" + visit.officialVisitId + paramBackTo,
@@ -164,6 +163,14 @@
         key: { text: "Completion notes" if visit.visitStatus == 'COMPLETED' else "Cancellation notes" },
         value: { text: visit.completionNotes or 'None' }
       } if visit.visitStatus == 'COMPLETED' or visit.visitStatus == 'CANCELLED',
+      {
+          key: { text: "Completion reason" },
+          value: { text: visit.completionDescription or 'None' }
+      } if visit.visitStatus == 'COMPLETED',
+      {
+          key: { text: "Search type" },
+          value: { text: visit.searchTypeDescription or 'None' }
+      } if visit.visitStatus == 'COMPLETED',
       {
         key: { text: "Visit reference number" },
         value: { text: visit.officialVisitId }
@@ -340,14 +347,6 @@
       </div>
     </div>
   {% endfor %}
-
-  {% if mode != 'amend' %}
-    {{ govukButton ({
-      text: "Print attendance list (TODO)",
-      href: "#TODO",
-      classes: "govuk-button govuk-button--secondary"
-    }) }}
-  {% endif %}
 
   {% if mode == 'amend' %}
     <a href="/view/visit/{{visit.officialVisitId}}{{paramBackTo}}" class="govuk-link govuk-body govuk-link--no-visited-state">Cancel</a>

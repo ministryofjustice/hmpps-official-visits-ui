@@ -131,6 +131,62 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/queue-admin/retry-dlq/{dlqName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    put: operations['retryDlq']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/queue-admin/retry-all-dlqs': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put: operations['retryAllDlqs']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/queue-admin/purge-queue/{queueName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    put: operations['purgeQueue']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/official-visit/prison/{prisonCode}/id/{officialVisitId}/visitors': {
     parameters: {
       query?: never
@@ -375,6 +431,30 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/repair/prisoner-visits/{prisonerNumber}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Replace all official visits for a single prisoner with the data from NOMIS
+     * @description This replaces all official visits for one prisoner with their visits as they exist in NOMIS
+     *
+     *     Requires one of the following roles:
+     *     * OFFICIAL_VISITS_MIGRATION
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    post: operations['repairPrisonerVisits']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/official-visit/prison/{prisonCode}': {
     parameters: {
       query?: never
@@ -391,6 +471,28 @@ export interface paths {
      *     * ROLE_OFFICIAL_VISITS__RW
      */
     post: operations['createOfficialVisit']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/official-visit/prison/{prisonCode}/overlapping': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Check for overlapping scheduled visits that fall within the given criteria.
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS_RW
+     */
+    post: operations['checkOverlappingVisits']
     delete?: never
     options?: never
     head?: never
@@ -723,6 +825,26 @@ export interface paths {
      *     * OFFICIAL_VISITS_ADMIN
      */
     get: operations['getOfficialVisitById_1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/queue-admin/get-dlq-messages/{dlqName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    get: operations['getDlqMessages']
     put?: never
     post?: never
     delete?: never
@@ -1562,6 +1684,14 @@ export interface components {
        */
       updateUsername: string
     }
+    RetryDlqResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+    }
+    PurgeQueueResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+    }
     /** @description The request body for updating  visitors details for an official visit */
     OfficialVisitUpdateVisitorsRequest: {
       officialVisitors: components['schemas']['OfficialVisitor'][]
@@ -2125,6 +2255,246 @@ export interface components {
        */
       createUsername: string
     }
+    MigrateVisitRequest: {
+      /**
+       * Format: int64
+       * @description The NOMIS offender visit ID
+       * @example 133232
+       */
+      offenderVisitId: number
+      /**
+       * Format: int64
+       * @description The DPS visit slot ID - this provides the location, start time and end time via configuration data
+       * @example 123132
+       */
+      prisonVisitSlotId: number
+      /**
+       * @description The prison code where the visit takes place
+       * @example PVI
+       */
+      prisonCode: string
+      /**
+       * Format: int64
+       * @description The offender book ID to echo back. It will be stored in DPS against the visit.
+       * @example 74748
+       */
+      offenderBookId: number
+      /**
+       * @description The prisoner number (NOMS ID)
+       * @example A1234AA
+       */
+      prisonerNumber: string
+      /**
+       * @description If this visits relates to the current or latest term (booking) in prison true, else false.
+       * @example true
+       */
+      currentTerm: boolean
+      /**
+       * Format: date
+       * @description The date the official visit will take place
+       * @example 2022-12-23
+       */
+      visitDate: string
+      /**
+       * @description The start time for this official visit
+       * @example 09:15
+       */
+      startTime: string
+      /**
+       * @description The end time for this official visit
+       * @example 10:15
+       */
+      endTime: string
+      /**
+       * Format: uuid
+       * @description The DPS location where the visit takes place.
+       * @example aaaa-bbbb-xxxxxxxx-yyyyyyyy
+       */
+      dpsLocationId: string
+      /**
+       * @description The DPS visit status code. The Syscon migration service will map the NOMIS state to a value in this enumerated type.
+       * @example SCHEDULED
+       */
+      visitStatusCode: components['schemas']['VisitStatusType']
+      /**
+       * @description The DPS visit type code. For migrated NOMIS visits this will default to type UNKNOWN. Other values are IN_PERSON, VIDEO, or TELEPHONE.
+       * @example UNKNOWN
+       */
+      visitTypeCode?: components['schemas']['VisitType']
+      /**
+       * @description The visit comment text
+       * @example This is a comment
+       */
+      commentText?: string
+      /**
+       * @description The prisoner search type code. Maps to the same reference code values in both NOMIS and DPS.
+       * @example RUB_A
+       */
+      searchTypeCode?: components['schemas']['SearchLevelType']
+      /**
+       * @description The DPS visit completion code. Default is NORMAL if not supplied.
+       * @example NORMAL
+       */
+      visitCompletionCode?: components['schemas']['VisitCompletionType']
+      /**
+       * @description Visit concern text from NOMIS
+       * @example I am concerned
+       */
+      visitorConcernText?: string
+      /**
+       * @description The staff username who authorised an override for a ban for this visit
+       * @example X3243H
+       */
+      overrideBanStaffUsername?: string
+      /**
+       * Format: int64
+       * @description The visit order number (if present) for the official visit
+       * @example 12344
+       */
+      visitOrderNumber?: number
+      /**
+       * Format: date-time
+       * @description The data and time the record was created
+       * @example 2022-10-01T16:45:45
+       */
+      createDateTime: string
+      /**
+       * @description The username who created the row
+       * @example X999X
+       */
+      createUsername: string
+      /**
+       * Format: date-time
+       * @description The date and time the record was last amended
+       * @example 2022-10-01T16:45:45
+       */
+      modifyDateTime?: string
+      /**
+       * @description The username who last modified the row
+       * @example X999X
+       */
+      modifyUsername?: string
+      visitors: components['schemas']['MigrateVisitor'][]
+    }
+    /** @description The details of an official visitor */
+    MigrateVisitor: {
+      /**
+       * Format: int64
+       * @description The NOMIS offender visit visitor ID
+       * @example 133232
+       */
+      offenderVisitVisitorId: number
+      /**
+       * Format: int64
+       * @description The NOMIS person ID (same as contactId) for this visitor
+       * @example 13989898
+       */
+      personId: number
+      /**
+       * @description The first name of the visitor
+       * @example Bob
+       */
+      firstName?: string
+      /**
+       * @description The last name of the visitor
+       * @example Harris
+       */
+      lastName?: string
+      /**
+       * @description The relationship type OFFICIAL or SOCIAL. Default is null if not known.
+       * @example OFFICIAL
+       */
+      relationshipTypeCode?: components['schemas']['RelationshipType']
+      /**
+       * @description The relationship code between visitor and prisoner, from NOMIS reference data. A null value will indicate no relationship.
+       * @example POL
+       */
+      relationshipToPrisoner?: string
+      /**
+       * @description Set to true if this person is the lead visitor. Defaults to false if not supplied.
+       * @example true
+       */
+      groupLeaderFlag?: boolean
+      /**
+       * @description Set to true if this person requires assistance at the visit. Defaults to false if not supplied.
+       * @example true
+       */
+      assistedVisitFlag?: boolean
+      /**
+       * @description The visitor comment text from NOMIS
+       * @example Some comments
+       */
+      commentText?: string
+      /**
+       * @description The visitor attendance code (ATTENDED or ABSENT). A null indicates no attendance was added.
+       * @example ATTENDED
+       */
+      attendanceCode?: components['schemas']['AttendanceType']
+      /**
+       * Format: date-time
+       * @description The data and time the record was created
+       * @example 2022-10-01T16:45:45
+       */
+      createDateTime: string
+      /**
+       * @description The username who created the row
+       * @example X999X
+       */
+      createUsername: string
+      /**
+       * Format: date-time
+       * @description The date and time the record was last amended
+       * @example 2022-10-01T16:45:45
+       */
+      modifyDateTime?: string
+      /**
+       * @description The username who last modified the row
+       * @example X999X
+       */
+      modifyUsername?: string
+    }
+    RepairPrisonerVisitsRequest: {
+      /** @description A list of visits to create for the prisoner */
+      visits: components['schemas']['MigrateVisitRequest'][]
+    }
+    IdPair: {
+      /**
+       * @description The category of information returned
+       * @example PRISON_VISIT_SLOT
+       * @enum {string}
+       */
+      elementType: 'PRISON_VISIT_SLOT' | 'OFFICIAL_VISIT' | 'OFFICIAL_VISITOR' | 'PRISONER_VISITED'
+      /**
+       * Format: int64
+       * @description The unique ID for this data item provided in the request
+       * @example 123435
+       */
+      nomisId: number
+      /**
+       * Format: int64
+       * @description The unique ID created in the DPS official visits service
+       * @example 1234
+       */
+      dpsId: number
+    }
+    /** @description The migration response for an official visit and the visitors attending */
+    MigrateVisitResponse: {
+      /** @description The pair of IDs for this visit */
+      visit: components['schemas']['IdPair']
+      /** @description The list of ID pairs for each visitor on this visit */
+      visitors: components['schemas']['IdPair'][]
+      /** @description The pair of IDs for the prisoner on this visit. NOMS ID is used as the NOMIS ID, as it has no other ID */
+      prisoner: components['schemas']['IdPair']
+    }
+    RepairPrisonerVisitsResponse: {
+      /**
+       * @description The prisoner number for whom visits were replaced
+       * @example A1234AA
+       */
+      prisonerNumber: string
+      /** @description The list of identifiers for the new visits created */
+      visits: components['schemas']['MigrateVisitResponse'][]
+    }
     /** @description The request with the official visit details */
     CreateOfficialVisitRequest: {
       /** Format: int64 */
@@ -2190,6 +2560,54 @@ export interface components {
       first: number
       /** Format: int64 */
       second: number
+    }
+    /** @description The request with the overlapping criteria to check against */
+    OverlappingVisitsCriteriaRequest: {
+      /**
+       * @description The prisoner number (NOMIS ID) to check for overlapping
+       * @example A1234AA
+       */
+      prisonerNumber: string
+      /**
+       * Format: date
+       * @description The date on which to check for overlapping
+       * @example 2022-12-23
+       */
+      visitDate: string
+      /**
+       * @description The start time on which to check for overlapping
+       * @example 10:00
+       */
+      startTime: string
+      /**
+       * @description The end time on which to check for overlapping
+       * @example 11:00
+       */
+      endTime: string
+      /** @description One or more unique identifier for the prisoner contacts, can be null */
+      contactIds?: number[]
+      /**
+       * Format: int64
+       * @description The unique identifier of the official visit to exclude from the check. Would be provided for an amend check, otherwise null
+       */
+      existingOfficialVisitId?: number
+    }
+    OverlappingContact: {
+      /**
+       * Format: int64
+       * @description The unique identifier for the prisoner contact from the initial criteria request
+       */
+      contactId: number
+      /** @description The unique identifiers of any scheduled official visits that overlap with the contact, empty if there are none */
+      overlappingContactVisits: number[]
+    }
+    OverlappingVisitsResponse: {
+      /** @description The prisoner number from the initial criteria request */
+      prisonerNumber: string
+      /** @description The unique identifiers of any scheduled official visits that overlap with the prisoner, empty if there are none */
+      overlappingPrisonerVisits: number[]
+      /** @description The contacts from the initial request criteria, with any overlapping visits if there are any */
+      contacts: components['schemas']['OverlappingContact'][]
     }
     /** @description The request with the official visit completion details */
     OfficialVisitCompletionRequest: {
@@ -2439,233 +2857,6 @@ export interface components {
       attendanceCode?: string
       /** @description Prisoner attendance code description */
       attendanceCodeDescription?: string
-    }
-    MigrateVisitRequest: {
-      /**
-       * Format: int64
-       * @description The NOMIS offender visit ID
-       * @example 133232
-       */
-      offenderVisitId: number
-      /**
-       * Format: int64
-       * @description The DPS visit slot ID - this provides the location, start time and end time via configuration data
-       * @example 123132
-       */
-      prisonVisitSlotId: number
-      /**
-       * @description The prison code where the visit takes place
-       * @example PVI
-       */
-      prisonCode: string
-      /**
-       * Format: int64
-       * @description The offender book ID to echo back. It will be stored in DPS against the visit.
-       * @example 74748
-       */
-      offenderBookId: number
-      /**
-       * @description The prisoner number (NOMS ID)
-       * @example A1234AA
-       */
-      prisonerNumber: string
-      /**
-       * @description If this visits relates to the current or latest term (booking) in prison true, else false.
-       * @example true
-       */
-      currentTerm: boolean
-      /**
-       * Format: date
-       * @description The date the official visit will take place
-       * @example 2022-12-23
-       */
-      visitDate: string
-      /**
-       * @description The start time for this official visit
-       * @example 09:15
-       */
-      startTime: string
-      /**
-       * @description The end time for this official visit
-       * @example 10:15
-       */
-      endTime: string
-      /**
-       * Format: uuid
-       * @description The DPS location where the visit takes place.
-       * @example aaaa-bbbb-xxxxxxxx-yyyyyyyy
-       */
-      dpsLocationId: string
-      /**
-       * @description The DPS visit status code. The Syscon migration service will map the NOMIS state to a value in this enumerated type.
-       * @example SCHEDULED
-       */
-      visitStatusCode: components['schemas']['VisitStatusType']
-      /**
-       * @description The DPS visit type code. For migrated NOMIS visits this will default to type UNKNOWN. Other values are IN_PERSON, VIDEO, or TELEPHONE.
-       * @example UNKNOWN
-       */
-      visitTypeCode?: components['schemas']['VisitType']
-      /**
-       * @description The visit comment text
-       * @example This is a comment
-       */
-      commentText?: string
-      /**
-       * @description The prisoner search type code. Maps to the same reference code values in both NOMIS and DPS.
-       * @example RUB_A
-       */
-      searchTypeCode?: components['schemas']['SearchLevelType']
-      /**
-       * @description The DPS visit completion code. Default is NORMAL if not supplied.
-       * @example NORMAL
-       */
-      visitCompletionCode?: components['schemas']['VisitCompletionType']
-      /**
-       * @description Visit concern text from NOMIS
-       * @example I am concerned
-       */
-      visitorConcernText?: string
-      /**
-       * @description The staff username who authorised an override for a ban for this visit
-       * @example X3243H
-       */
-      overrideBanStaffUsername?: string
-      /**
-       * Format: int64
-       * @description The visit order number (if present) for the official visit
-       * @example 12344
-       */
-      visitOrderNumber?: number
-      /**
-       * Format: date-time
-       * @description The data and time the record was created
-       * @example 2022-10-01T16:45:45
-       */
-      createDateTime: string
-      /**
-       * @description The username who created the row
-       * @example X999X
-       */
-      createUsername: string
-      /**
-       * Format: date-time
-       * @description The date and time the record was last amended
-       * @example 2022-10-01T16:45:45
-       */
-      modifyDateTime?: string
-      /**
-       * @description The username who last modified the row
-       * @example X999X
-       */
-      modifyUsername?: string
-      visitors: components['schemas']['MigrateVisitor'][]
-    }
-    /** @description The details of an official visitor */
-    MigrateVisitor: {
-      /**
-       * Format: int64
-       * @description The NOMIS offender visit visitor ID
-       * @example 133232
-       */
-      offenderVisitVisitorId: number
-      /**
-       * Format: int64
-       * @description The NOMIS person ID (same as contactId) for this visitor
-       * @example 13989898
-       */
-      personId: number
-      /**
-       * @description The first name of the visitor
-       * @example Bob
-       */
-      firstName?: string
-      /**
-       * @description The last name of the visitor
-       * @example Harris
-       */
-      lastName?: string
-      /**
-       * @description The relationship type OFFICIAL or SOCIAL. Default is null if not known.
-       * @example OFFICIAL
-       */
-      relationshipTypeCode?: components['schemas']['RelationshipType']
-      /**
-       * @description The relationship code between visitor and prisoner, from NOMIS reference data. A null value will indicate no relationship.
-       * @example POL
-       */
-      relationshipToPrisoner?: string
-      /**
-       * @description Set to true if this person is the lead visitor. Defaults to false if not supplied.
-       * @example true
-       */
-      groupLeaderFlag?: boolean
-      /**
-       * @description Set to true if this person requires assistance at the visit. Defaults to false if not supplied.
-       * @example true
-       */
-      assistedVisitFlag?: boolean
-      /**
-       * @description The visitor comment text from NOMIS
-       * @example Some comments
-       */
-      commentText?: string
-      /**
-       * @description The visitor attendance code (ATTENDED or ABSENT). A null indicates no attendance was added.
-       * @example ATTENDED
-       */
-      attendanceCode?: components['schemas']['AttendanceType']
-      /**
-       * Format: date-time
-       * @description The data and time the record was created
-       * @example 2022-10-01T16:45:45
-       */
-      createDateTime: string
-      /**
-       * @description The username who created the row
-       * @example X999X
-       */
-      createUsername: string
-      /**
-       * Format: date-time
-       * @description The date and time the record was last amended
-       * @example 2022-10-01T16:45:45
-       */
-      modifyDateTime?: string
-      /**
-       * @description The username who last modified the row
-       * @example X999X
-       */
-      modifyUsername?: string
-    }
-    IdPair: {
-      /**
-       * @description The category of information returned
-       * @example PRISON_VISIT_SLOT
-       * @enum {string}
-       */
-      elementType: 'PRISON_VISIT_SLOT' | 'OFFICIAL_VISIT' | 'OFFICIAL_VISITOR' | 'PRISONER_VISITED'
-      /**
-       * Format: int64
-       * @description The unique ID for this data item provided in the request
-       * @example 123435
-       */
-      nomisId: number
-      /**
-       * Format: int64
-       * @description The unique ID created in the DPS official visits service
-       * @example 1234
-       */
-      dpsId: number
-    }
-    /** @description The migration response for an official visit and the visitors attending */
-    MigrateVisitResponse: {
-      /** @description The pair of IDs for this visit */
-      visit: components['schemas']['IdPair']
-      /** @description The list of ID pairs for each visitor on this visit */
-      visitors: components['schemas']['IdPair'][]
-      /** @description The pair of IDs for the prisoner on this visit. NOMS ID is used as the NOMIS ID, as it has no other ID */
-      prisoner: components['schemas']['IdPair']
     }
     /** @description Request to migrate a day and time slot for a prison and its associated visit slots from NOMIS */
     MigrateVisitConfigRequest: {
@@ -2984,6 +3175,19 @@ export interface components {
        * @example 111111
        */
       officialVisitId: number
+    }
+    DlqMessage: {
+      body: {
+        [key: string]: unknown
+      }
+      messageId: string
+    }
+    GetDlqResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+      /** Format: int32 */
+      messagesReturnedCount: number
+      messages: components['schemas']['DlqMessage'][]
     }
     ApprovedContact: {
       /**
@@ -3765,6 +3969,70 @@ export interface operations {
       }
     }
   }
+  retryDlq: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        dlqName: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['RetryDlqResult']
+        }
+      }
+    }
+  }
+  retryAllDlqs: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['RetryDlqResult'][]
+        }
+      }
+    }
+  }
+  purgeQueue: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        queueName: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['PurgeQueueResult']
+        }
+      }
+    }
+  }
   updateVisitors: {
     parameters: {
       query?: never
@@ -4425,6 +4693,59 @@ export interface operations {
       }
     }
   }
+  repairPrisonerVisits: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        prisonerNumber: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RepairPrisonerVisitsRequest']
+      }
+    }
+    responses: {
+      /** @description A list of the visit and visitor ID mappings */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RepairPrisonerVisitsResponse']
+        }
+      }
+      /** @description The request failed validation with invalid or missing data */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   createOfficialVisit: {
     parameters: {
       query?: never
@@ -4473,6 +4794,54 @@ export interface operations {
       }
       /** @description Conflict, requires users active caseload to match that of the prison */
       409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  checkOverlappingVisits: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['OverlappingVisitsCriteriaRequest']
+      }
+    }
+    responses: {
+      /** @description Details of the prisoner and contacts that have overlapping scheduled visits if there are any. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OverlappingVisitsResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
         headers: {
           [name: string]: unknown
         }
@@ -5218,6 +5587,30 @@ export interface operations {
       }
     }
   }
+  getDlqMessages: {
+    parameters: {
+      query?: {
+        maxMessages?: number
+      }
+      header?: never
+      path: {
+        dlqName: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['GetDlqResult']
+        }
+      }
+    }
+  }
   getApprovedContacts: {
     parameters: {
       query?: {
@@ -5382,6 +5775,8 @@ export interface operations {
         toDate: string
         /** @description Boolean flag. A value of 'true' will only return video reservable slots. */
         videoOnly?: boolean
+        /** @description The unique identifier of the official visit to exclude from availability calculations. Would be provided for an amend check, otherwise null */
+        existingOfficialVisitId?: number
       }
       header?: never
       path: {

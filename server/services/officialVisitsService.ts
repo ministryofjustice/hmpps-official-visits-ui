@@ -18,6 +18,7 @@ import {
   VisitorEquipment,
   VisitorType,
   CreateVisitSlotRequest,
+  OverlappingVisitsResponse,
 } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
@@ -100,8 +101,16 @@ export default class OfficialVisitsService {
     startDate: string,
     endDate: string,
     videoOnly: boolean,
+    existingVisitId?: number,
   ) {
-    return this.officialVisitsApiClient.getAvailableTimeSlots(prisonId, startDate, endDate, videoOnly, res.locals.user)
+    return this.officialVisitsApiClient.getAvailableTimeSlots(
+      prisonId,
+      startDate,
+      endDate,
+      videoOnly,
+      existingVisitId || 0,
+      res.locals.user,
+    )
   }
 
   public async getSchedule(res: Response, prisonId: string, date: string) {
@@ -212,5 +221,30 @@ export default class OfficialVisitsService {
   public async deleteTimeSlot(timeSlotId: number, user: HmppsUser) {
     logger.info(`Delete time slot ${timeSlotId} called by ${user.userId}`)
     return this.officialVisitsApiClient.deleteTimeSlot(timeSlotId, user)
+  }
+
+  public async checkForOverlappingVisits(
+    prisonCode: string,
+    prisonerNumber: string,
+    visitDate: string,
+    startTime: string,
+    endTime: string,
+    contactIds?: number[],
+    existingOfficialVisitId?: number,
+    user?: HmppsUser,
+  ): Promise<OverlappingVisitsResponse> {
+    logger.info(
+      `Check for overlapping visits for prisoner ${prisonerNumber} at ${visitDate} ${startTime}-${endTime} called by ${user?.userId}`,
+    )
+    return this.officialVisitsApiClient.checkForOverlappingVisits(
+      prisonCode,
+      prisonerNumber,
+      visitDate,
+      startTime,
+      endTime,
+      contactIds,
+      existingOfficialVisitId,
+      user,
+    )
   }
 }

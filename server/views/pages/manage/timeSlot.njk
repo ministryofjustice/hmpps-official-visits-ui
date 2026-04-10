@@ -8,11 +8,14 @@
 {% from "partials/continueCancel.njk" import continueCancel %}
 {% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+{% from "partials/capacityCheckMessages.njk" import capacityCheckMessages %}
 
 {% set pageTitle = "Select date and time of official visit" %}
 
 {% block content %}
 
+  {{ capacityCheckMessages(checks)}}
   {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
 
   <div class="govuk-grid-row govuk-body">
