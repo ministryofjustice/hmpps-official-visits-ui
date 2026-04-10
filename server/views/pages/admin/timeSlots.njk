@@ -8,6 +8,19 @@
 {% set pageTitle = "Time slots for official visits" %}
 {% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
 
+{% block pageScripts %}
+  <script type="text/javascript" nonce="{{ cspNonce }}">
+    window.addEventListener('load', function () {
+      const alert = document.querySelector('.moj-alert')
+      if (!alert) {
+        return
+      }
+
+      setTimeout(() => alert.focus(), 1)
+    })
+  </script>
+{% endblock %}
+
 {% block content %}
   <div>
     <span class="govuk-hint">Admin</span>
