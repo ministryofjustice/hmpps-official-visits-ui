@@ -7,6 +7,7 @@ import PersonalRelationshipsService from '../../../../services/personalRelations
 import ManageUserService from '../../../../services/manageUsersService'
 import TelemetryService from '../../../../services/telemetryService'
 import { RestrictionSummary } from '../../../../@types/officialVisitsApi/types'
+import { prisonAllowsSocialVisitors, socialVisitorsPageEnabled } from '../../../../utils/utils'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_PAGE
@@ -37,13 +38,22 @@ export default class ViewOfficialVisitHandler implements PageHandler {
         false,
       ),
       this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerVisited.prisonerNumber, user),
-      this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user, true, true),
+      this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user),
     ])
 
+    let hasIssueVisitors = false
     const enrichedVisitors = (visit.officialVisitors || []).map(visitor => {
       const contact = contacts?.find(
         c => c.contactId === visitor.contactId && c.relationshipToPrisonerCode === visitor.relationshipCode,
       )
+
+      if (
+        !contact ||
+        !contact?.isApprovedVisitor ||
+        (!prisonAllowsSocialVisitors(req) && visitor.relationshipTypeCode === 'SOCIAL')
+      ) {
+        hasIssueVisitors = true
+      }
       return {
         ...visitor,
         restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
@@ -62,6 +72,20 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       } catch {
         return null
       }
+    }
+
+    if (hasIssueVisitors && !req.query.continue) {
+      return res.render('pages/view/interrupt', {
+        visitId: visit.officialVisitId,
+        b64BackTo,
+        backUrl: tryDecodeB64(b64BackTo) || '/view/list',
+        prisoner: {
+          ...prisoner,
+          restrictions: restrictions?.content || [],
+          alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
+          restrictionsCount: restrictions?.content?.length ?? 0,
+        },
+      })
     }
 
     const updateVerb = req.flash('updateVerb')[0]

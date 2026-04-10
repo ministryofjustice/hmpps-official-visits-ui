@@ -44,6 +44,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetAllMocks()
+  jest.clearAllMocks()
 })
 
 const URL = `/manage/create/${journeyId()}/comments`

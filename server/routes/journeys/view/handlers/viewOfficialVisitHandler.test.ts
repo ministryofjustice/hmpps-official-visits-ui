@@ -45,7 +45,26 @@ beforeEach(() => {
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
   manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
-  officialVisitsService.getAllContacts.mockResolvedValue([])
+  officialVisitsService.getAllContacts.mockResolvedValue([
+    {
+      prisonerContactId: 7332364,
+      contactId: 20085647,
+      prisonerNumber: 'G4793VF',
+      lastName: 'Malicious',
+      firstName: 'Peter',
+      relationshipTypeCode: 'OFFICIAL',
+      relationshipTypeDescription: 'Official',
+      relationshipToPrisonerCode: 'SOL',
+      relationshipToPrisonerDescription: 'Solicitor',
+      isApprovedVisitor: true,
+      isNextOfKin: false,
+      isEmergencyContact: false,
+      isRelationshipActive: true,
+      currentTerm: true,
+      isStaff: false,
+      restrictionSummary: { active: [], totalActive: 0, totalExpired: 0 },
+    },
+  ])
 })
 
 afterEach(() => {

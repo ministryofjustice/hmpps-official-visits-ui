@@ -218,11 +218,15 @@ export const getTimeDiff = (start: string, end: string): number => {
   return d2.getTime() - d1.getTime()
 }
 
+export const prisonAllowsSocialVisitors = (req: Request) => {
+  return config.featureToggles.allowSocialVisitorsPrisons
+    .split(',')
+    .includes(req.session.journey?.officialVisit?.prisonCode)
+}
+
 export const socialVisitorsPageEnabled = (req: Request) => {
   const hasSocialVisitors = req.session.journey.officialVisit.socialVisitors?.length > 0
-  const prisonEnabled = config.featureToggles.allowSocialVisitorsPrisons
-    .split(',')
-    .includes(req.session.journey.officialVisit.prisonCode)
+  const prisonEnabled = prisonAllowsSocialVisitors(req)
 
   return hasSocialVisitors || prisonEnabled
 }
