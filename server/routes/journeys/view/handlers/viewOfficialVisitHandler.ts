@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { isFuture } from 'date-fns'
 import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
@@ -6,7 +7,7 @@ import PrisonerService from '../../../../services/prisonerService'
 import PersonalRelationshipsService from '../../../../services/personalRelationshipsService'
 import ManageUserService from '../../../../services/manageUsersService'
 import TelemetryService from '../../../../services/telemetryService'
-import { RestrictionSummary } from '../../../../@types/officialVisitsApi/types'
+import { OfficialVisit, RestrictionSummary } from '../../../../@types/officialVisitsApi/types'
 import { prisonAllowsSocialVisitors } from '../../../../utils/utils'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
@@ -74,7 +75,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       }
     }
 
-    if (hasIssueVisitors && !req.query.continue) {
+    if (shouldShowInterruptPage(hasIssueVisitors, req, visit)) {
       return res.render('pages/view/interrupt', {
         visitId: visit.officialVisitId,
         b64BackTo,
@@ -111,4 +112,13 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       },
     })
   }
+}
+
+function shouldShowInterruptPage(hasIssueVisitors: boolean, req: Request, visit: OfficialVisit) {
+  const pastVisit = !isFuture(new Date(`${visit.visitDate} ${visit.startTime}`))
+  if (req.query.continue || visit.completionCode || pastVisit) {
+    return false
+  }
+
+  return hasIssueVisitors
 }
