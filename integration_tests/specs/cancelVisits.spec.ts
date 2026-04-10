@@ -78,7 +78,6 @@ test.describe('Cancel an official visit', () => {
     await visitListPage.page.getByRole('link', { name: 'Select' }).first().click()
 
     // Verify we're on the visit page
-    await page.getByRole('button', { name: 'Continue', exact: true }).click()
     await ViewVisitPage.verifyOnPage(page)
 
     // Start cancellation journey
