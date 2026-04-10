@@ -42,7 +42,7 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpFlash())
   app.use(setUpCurrentUser())
 
-  app.get(
+  app.use(
     /(.*)/,
     getFrontendComponents({
       requestOptions: { includeSharedData: true },
