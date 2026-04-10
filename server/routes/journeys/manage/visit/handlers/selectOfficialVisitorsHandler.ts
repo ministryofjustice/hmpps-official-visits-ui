@@ -32,16 +32,6 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     contactsOnVisit: JourneyVisitor[],
   ) => {
     const allContacts = await this.officialVisitsService.getAllOfficialContacts(prisonerNumber, user, undefined, true)
-    contactsOnVisit.forEach(o => {
-      if (
-        !allContacts.find(
-          c => c.contactId === o.contactId && c.relationshipToPrisonerCode === o.relationshipToPrisonerCode,
-        )
-      ) {
-        allContacts.push(o)
-      }
-    })
-
     return allContacts.filter(
       o =>
         o.isApprovedVisitor ||

@@ -7,7 +7,7 @@ import PersonalRelationshipsService from '../../../../services/personalRelations
 import ManageUserService from '../../../../services/manageUsersService'
 import TelemetryService from '../../../../services/telemetryService'
 import { RestrictionSummary } from '../../../../@types/officialVisitsApi/types'
-import { prisonAllowsSocialVisitors, socialVisitorsPageEnabled } from '../../../../utils/utils'
+import { prisonAllowsSocialVisitors } from '../../../../utils/utils'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_PAGE

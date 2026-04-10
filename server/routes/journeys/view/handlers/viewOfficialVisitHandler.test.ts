@@ -45,26 +45,7 @@ beforeEach(() => {
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
   manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
-  officialVisitsService.getAllContacts.mockResolvedValue([
-    {
-      prisonerContactId: 7332364,
-      contactId: 20085647,
-      prisonerNumber: 'G4793VF',
-      lastName: 'Malicious',
-      firstName: 'Peter',
-      relationshipTypeCode: 'OFFICIAL',
-      relationshipTypeDescription: 'Official',
-      relationshipToPrisonerCode: 'SOL',
-      relationshipToPrisonerDescription: 'Solicitor',
-      isApprovedVisitor: true,
-      isNextOfKin: false,
-      isEmergencyContact: false,
-      isRelationshipActive: true,
-      currentTerm: true,
-      isStaff: false,
-      restrictionSummary: { active: [], totalActive: 0, totalExpired: 0 },
-    },
-  ])
+  officialVisitsService.getAllContacts.mockResolvedValue([baseMockContact])
 })
 
 afterEach(() => {
@@ -72,6 +53,29 @@ afterEach(() => {
 })
 
 const URL = `/view/visit/1`
+
+const baseMockContact = {
+  prisonerContactId: 7332364,
+  contactId: 20085647,
+  prisonerNumber: 'G4793VF',
+  lastName: 'Malicious',
+  firstName: 'Peter',
+  relationshipTypeCode: 'OFFICIAL',
+  relationshipTypeDescription: 'Official',
+  relationshipToPrisonerCode: 'SOL',
+  relationshipToPrisonerDescription: 'Solicitor',
+  isApprovedVisitor: true,
+  isNextOfKin: false,
+  isEmergencyContact: false,
+  isRelationshipActive: true,
+  currentTerm: true,
+  isStaff: false,
+  restrictionSummary: {
+    active: [] as { restrictionType: string; restrictionTypeDescription: string }[],
+    totalActive: 0,
+    totalExpired: 0,
+  },
+}
 
 describe('View an official visit', () => {
   describe('GET', () => {
@@ -355,6 +359,80 @@ describe('View an official visit', () => {
           expect(res.text).toContain('Banned')
           expect(res.text).toContain('govuk-tag--red')
         })
+    })
+
+    it('should show interruption card when visitor has no relationship with prisoner (contact not found)', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
+      personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
+      prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
+      manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
+      officialVisitsService.getAllContacts.mockResolvedValue([])
+
+      const res = await request(app).get(URL)
+      expect(res.headers['content-type']).toMatch(/html/)
+      expect(officialVisitsService.getAllContacts).toHaveBeenCalled()
+      expect(res.text).toContain('problem with this visit')
+      expect(res.text).toContain('moj-interruption-card')
+      expect(res.text).toContain('Continue')
+      expect(res.text).toContain('/view/visit/1?continue=true')
+    })
+
+    it('should show interruption card when visitor is not approved', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
+      personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
+      prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
+      manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
+      officialVisitsService.getAllContacts.mockResolvedValue([{ ...baseMockContact, isApprovedVisitor: false }])
+
+      const res = await request(app).get(URL)
+      expect(res.text).toContain('problem with this visit')
+      expect(res.text).toContain('moj-interruption-card')
+    })
+
+    it('should show interruption card when visit has social visitors and prison does not support social visits', async () => {
+      const socialVisitMock = {
+        ...mockVisitByIdVisit,
+        officialVisitors: [
+          {
+            ...mockVisitByIdVisit.officialVisitors[0],
+            relationshipTypeCode: 'SOCIAL' as const,
+            relationshipTypeDescription: 'Social',
+            relationshipCode: 'FRI',
+            relationshipDescription: 'Friend',
+          },
+        ],
+      }
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(socialVisitMock)
+      personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
+      prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
+      manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
+      officialVisitsService.getAllContacts.mockResolvedValue([
+        {
+          ...baseMockContact,
+          relationshipTypeCode: 'S',
+          relationshipTypeDescription: 'Social',
+          relationshipToPrisonerCode: 'FRI',
+          relationshipToPrisonerDescription: 'Friend',
+        },
+      ])
+
+      const res = await request(app).get(URL)
+      expect(res.text).toContain('problem with this visit')
+      expect(res.text).toContain('moj-interruption-card')
+    })
+
+    it('should not show interruption card when continue=true query param is present', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
+      personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
+      prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
+      manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
+      officialVisitsService.getAllContacts.mockResolvedValue([])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      const $ = cheerio.load(res.text)
+      expect(res.text).not.toContain('problem with this visit')
+      expect(res.text).not.toContain('moj-interruption-card')
+      expect(getPageHeader($)).toEqual('Official visit')
     })
   })
 })
