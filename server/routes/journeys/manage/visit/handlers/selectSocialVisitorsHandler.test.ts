@@ -16,7 +16,7 @@ import { Journey } from '../../../../../@types/express'
 import { JourneyVisitor } from '../journey'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockSocialVisitors, mockPrisonerRestrictions, mockPrisoner } from '../../../../../testutils/mocks'
-import { expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
+import { expectNoErrorMessages, expectAlertErrors } from '../../../../testutils/expectErrorMessage'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
 
 jest.mock('../../../../../services/auditService')
@@ -356,16 +356,15 @@ describe('Select social visitors', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send({ selected: ['201-BRO', '201-FRI'] })
-        .expect(200)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          // Verify the duplicate contact error alert is displayed
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
-          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasDuplicateContactIds: true,
+          }),
+        )
 
       // Verify the visitors are saved to session but validation error prevents progression
       const journeySession = await getJourneySession(app, 'officialVisit')

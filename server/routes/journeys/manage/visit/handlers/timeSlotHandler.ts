@@ -18,7 +18,7 @@ export default class TimeSlotHandler implements PageHandler {
 
   BODY = schema
 
-  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction) => {
     const { date = '' } = req.query
     const selectedDate = getParsedDateFromQueryString(date.toString(), new Date())
     const { weekOfDates, previousWeek, nextWeek } = getWeekOfDatesStartingMonday(selectedDate)
@@ -46,6 +46,9 @@ export default class TimeSlotHandler implements PageHandler {
       user,
     )
 
+    const rawErrors = req.flash('alertErrors')[0]
+    const errors = rawErrors ? JSON.parse(rawErrors) : {}
+
     res.render('pages/manage/timeSlot', {
       today: new Date().toISOString().substring(0, 10),
       selectedDate,
@@ -72,7 +75,7 @@ export default class TimeSlotHandler implements PageHandler {
     const errors = await cyaGuard(req, res, this.officialVisitsService)
 
     if (Object.keys(errors).length > 0) {
-      return this.GET(req, res, undefined, errors)
+      return res.alertValidationError(errors)
     }
 
     if (res.locals.mode === 'amend') {

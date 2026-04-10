@@ -12,11 +12,14 @@ export default class EquipmentHandler implements PageHandler {
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
-  public GET = async (req: Request, res: Response, _next?: NextFunction, errors: Record<string, boolean> = {}) => {
+  public GET = async (req: Request, res: Response, _next?: NextFunction) => {
     const contacts = [
       ...req.session.journey.officialVisit.officialVisitors,
       ...(req.session.journey.officialVisit.socialVisitors || []),
     ].filter(o => o.contactId)
+
+    const rawErrors = req.flash('alertErrors')[0]
+    const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
     res.render('pages/manage/equipment', {
       contacts,
@@ -39,7 +42,7 @@ export default class EquipmentHandler implements PageHandler {
       const errors = await cyaGuard(req, res, this.officialVisitsService)
 
       if (Object.keys(errors).length > 0) {
-        return this.GET(req, res, undefined, errors)
+        return res.alertValidationError(errors)
       }
       const allVisitors = [...officialVisit.officialVisitors, ...(officialVisit.socialVisitors || [])]
       const officialVisitors: OfficialVisitor[] = allVisitors.map(visitor => ({

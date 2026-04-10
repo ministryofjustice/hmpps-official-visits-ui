@@ -15,7 +15,7 @@ import {
 import { Journey } from '../../../../../@types/express'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockOfficialVisitors, mockPrisonerRestrictions, mockPrisoner } from '../../../../../testutils/mocks'
-import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
+import { expectErrorMessages, expectNoErrorMessages, expectAlertErrors } from '../../../../testutils/expectErrorMessage'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
 import config from '../../../../../config'
 import { JourneyVisitor, OfficialVisitJourney } from '../journey'
@@ -436,6 +436,7 @@ describe('Select official visitors', () => {
         relationshipToPrisonerCode: 'SOL',
         relationshipToPrisonerDescription: 'Solicitor',
       }
+      const amendUrl = `/manage/amend/123/${journeyId()}/select-official-visitors`
 
       appSetup({
         officialVisit: {
@@ -452,17 +453,16 @@ describe('Select official visitors', () => {
       })
 
       return request(app)
-        .post(`/manage/amend/123/${journeyId()}/select-official-visitors`)
+        .post(amendUrl)
+        .set('Referer', amendUrl)
         .send({})
-        .expect(200)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('You cannot remove all visitors from an official visit')
-          expect($('.moj-alert__content').text()).toContain('A visit must have at least one official visitor')
-          expect($('.moj-alert__content a').attr('href')).toContain('/view/visit/123/cancel')
-        })
+        .expect(302)
+        .expect('location', amendUrl)
+        .expect(() =>
+          expectAlertErrors({
+            empty: true,
+          }),
+        )
     })
 
     it('should accept the selection of one official visitor and redirect to social visitors page', async () => {
@@ -566,16 +566,15 @@ describe('Select official visitors', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send({ selected: ['101-SOL', '101-JUD'] })
-        .expect(200)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          // Verify the duplicate contact error alert is displayed
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
-          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasDuplicateContactIds: true,
+          }),
+        )
 
       // Verify the visitors are saved to session but validation error prevents progression
       const journeySession = await getJourneySession(app, 'officialVisit')

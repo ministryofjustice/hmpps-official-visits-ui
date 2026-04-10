@@ -6,6 +6,7 @@ import AuditService, { Page } from '../../../../../services/auditService'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { getPageHeader, getValueByKey } from '../../../../testutils/cheerio'
+import { expectAlertErrors } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
 import { AvailableSlot, RestrictionSummary } from '../../../../../@types/officialVisitsApi/types'
@@ -346,14 +347,14 @@ describe('check your answers handler', () => {
 
       return request(app)
         .post(URL)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
-          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
-        })
+        .set('Referer', URL)
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasDuplicateContactIds: true,
+          }),
+        )
     })
 
     it('should display duplicate contact error when same contact appears twice in official visitors', () => {
@@ -377,14 +378,14 @@ describe('check your answers handler', () => {
 
       return request(app)
         .post(URL)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
-          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
-        })
+        .set('Referer', URL)
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasDuplicateContactIds: true,
+          }),
+        )
     })
 
     it('should display prisoner overlap error on GET when prisoner has conflicting visit', () => {
@@ -396,13 +397,14 @@ describe('check your answers handler', () => {
 
       return request(app)
         .post(URL)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('This prisoner already has a visit booked')
-          expect($('.moj-alert__content').text()).toContain('The prisoner has another visit booked at this time')
-        })
+        .set('Referer', URL)
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasPrisonerOverlap: true,
+          }),
+        )
     })
 
     it('should display visitor overlap error on GET when visitor has conflicting visit', () => {
@@ -419,13 +421,14 @@ describe('check your answers handler', () => {
 
       return request(app)
         .post(URL)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('A visitor already has a visit booked')
-          expect($('.moj-alert__content').text()).toContain('A visitor has another visit booked at this time')
-        })
+        .set('Referer', URL)
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasVisitorOverlap: true,
+          }),
+        )
     })
 
     it('should display both prisoner and visitor overlap errors on GET when both have conflicts', () => {
@@ -442,13 +445,15 @@ describe('check your answers handler', () => {
 
       return request(app)
         .post(URL)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(2)
-          expect($('.moj-alert__heading').eq(0).text()).toContain('This prisoner already has a visit booked')
-          expect($('.moj-alert__heading').eq(1).text()).toContain('A visitor already has a visit booked')
-        })
+        .set('Referer', URL)
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasPrisonerOverlap: true,
+            hasVisitorOverlap: true,
+          }),
+        )
     })
   })
 
@@ -464,16 +469,15 @@ describe('check your answers handler', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send()
-        .expect(200)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
-          expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
-          expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
-          expect($('.moj-alert__content a').attr('href')).toBe('time-slot')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            noCapacity: true,
+          }),
+        )
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
     })
@@ -511,16 +515,15 @@ describe('check your answers handler', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send()
-        .expect(200)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
-          expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
-          expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
-          expect($('.moj-alert__content a').attr('href')).toBe('time-slot')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            noCapacity: true,
+          }),
+        )
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
     })
@@ -542,16 +545,15 @@ describe('check your answers handler', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send()
-        .expect(200)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('Capacity for visit slot selected is exceeded')
-          expect($('.moj-alert__content').text()).toContain('The visit slot has exceeded maximum visitor capacity')
-          expect($('.moj-alert__content a').text()).toContain('Choose another time slot')
-          expect($('.moj-alert__content a').attr('href')).toBe('time-slot')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            noCapacity: true,
+          }),
+        )
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
     })
@@ -586,15 +588,15 @@ describe('check your answers handler', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send()
-        .expect(200)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
-          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasDuplicateContactIds: true,
+          }),
+        )
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
     })
@@ -620,15 +622,15 @@ describe('check your answers handler', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send()
-        .expect(200)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('Duplicate visitors selected')
-          expect($('.moj-alert__content').text()).toContain('You have selected the same contact more than once')
-          expect($('.moj-alert__content').text()).toContain('Remove duplicate visitors')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasDuplicateContactIds: true,
+          }),
+        )
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
     })
@@ -642,14 +644,15 @@ describe('check your answers handler', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send()
-        .expect(200)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('This prisoner already has a visit booked')
-          expect($('.moj-alert__content').text()).toContain('The prisoner has another visit booked at this time')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasPrisonerOverlap: true,
+          }),
+        )
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
     })
@@ -668,14 +671,15 @@ describe('check your answers handler', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send()
-        .expect(200)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(1)
-          expect($('.moj-alert__heading').text()).toContain('A visitor already has a visit booked')
-          expect($('.moj-alert__content').text()).toContain('A visitor has another visit booked at this time')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasVisitorOverlap: true,
+          }),
+        )
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
     })
@@ -694,14 +698,16 @@ describe('check your answers handler', () => {
 
       await request(app)
         .post(URL)
+        .set('Referer', URL)
         .send()
-        .expect(200)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-          expect($('.moj-alert--error').length).toBe(2)
-          expect($('.moj-alert__heading').eq(0).text()).toContain('This prisoner already has a visit booked')
-          expect($('.moj-alert__heading').eq(1).text()).toContain('A visitor already has a visit booked')
-        })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            hasPrisonerOverlap: true,
+            hasVisitorOverlap: true,
+          }),
+        )
 
       expect(officialVisitsService.createVisit).not.toHaveBeenCalled()
     })
