@@ -102,6 +102,7 @@ test.describe('Complete official visits', () => {
     const b64 = encodeURIComponent(btoa(`/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02`))
     expect(page.url()).toBe(`http://localhost:3007/view/visit/1?backTo=${b64}`)
 
+    await page.getByRole('button', { name: 'Continue', exact: true }).click()
     ViewVisitPage.verifyOnPage(page)
 
     await expect(page.locator('[data-qa="mini-profile-person-profile-link"]')).toHaveText('Doe, John')
