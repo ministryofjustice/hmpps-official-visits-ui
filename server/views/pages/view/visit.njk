@@ -39,13 +39,10 @@
 
   <br />
 
-  {% if prisoner.restrictions and prisoner.restrictions | length > 0 %}
-    {% set activeRestrictions = prisoner.restrictions | rejectattr("expiryDate", "isDateAndInThePast") %}
-    {% if activeRestrictions | length > 0 %}
-      {% set badgeText = "ACTIVE RESTRICTION IN PLACE" if (activeRestrictions | length == 1) else "ACTIVE RESTRICTIONS IN PLACE" %}
+  {% if activeRestrictions > 0 %}
+    {% set badgeText = "ACTIVE RESTRICTION IN PLACE" if (activeRestrictions == 1) else "ACTIVE RESTRICTIONS IN PLACE" %}
       {{ mojBadge({ text: badgeText, classes: "moj-badge--red govuk-!-margin-bottom-4" }) }}
     {% endif %}
-  {% endif %}
 
   {% if updateVerb %}
     {{ mojAlert({

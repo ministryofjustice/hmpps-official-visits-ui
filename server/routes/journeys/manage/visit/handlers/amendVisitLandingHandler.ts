@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { isFuture } from 'date-fns'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
@@ -71,6 +72,13 @@ export default class AmendVisitLandingHandler implements PageHandler {
       }
     })
 
+    const visitorActiveRestrictions = enrichedVisitors.reduce(
+      (acc, visitor) => acc + (visitor.restrictionSummary?.active?.length || 0),
+      0,
+    )
+    const prisonerActiveRestrictions =
+      restrictions?.content?.filter(o => !o.expiryDate || isFuture(new Date(o.expiryDate))).length || 0
+
     const createdUser = await this.manageUsersService.getUserByUsername(visit.createdBy, user)
     const modifiedUser =
       visit.updatedBy === visit.createdBy || !visit.updatedBy
@@ -138,6 +146,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
       amendedBackUrl: tryDecodeB64(b64BackTo) || '/view/list',
       backUrl: `/view/visit/${visit.officialVisitId}?backTo=${b64BackTo}`,
       prisoner: req.session.journey.officialVisit.prisoner,
+      activeRestrictions: visitorActiveRestrictions + prisonerActiveRestrictions,
     })
   }
 }

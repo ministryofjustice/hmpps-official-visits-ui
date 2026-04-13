@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import { isFuture } from 'date-fns'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
@@ -16,12 +17,21 @@ export default class CheckYourAnswersHandler implements PageHandler {
     const rawErrors = req.flash('alertErrors')[0]
     const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
+    const visitorActiveRestrictions = [...officialVisit.officialVisitors, ...officialVisit.socialVisitors].reduce(
+      (acc, contact) => acc + (contact.restrictionSummary?.totalActive || 0),
+      0,
+    )
+    const prisonerActiveRestrictions = prisoner.restrictions.filter(
+      o => !o.expiryDate || isFuture(new Date(o.expiryDate)),
+    ).length
+
     req.session.journey.reachedCheckAnswers = true
     return res.render('pages/manage/checkYourAnswers', {
       visit: officialVisit,
       contacts: [...officialVisit.officialVisitors, ...officialVisit.socialVisitors],
       prisoner,
       checks: errors,
+      activeRestrictions: visitorActiveRestrictions + prisonerActiveRestrictions,
     })
   }
 
