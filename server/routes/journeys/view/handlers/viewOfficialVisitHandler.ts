@@ -42,24 +42,29 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user),
     ])
 
-    let hasIssueVisitors = false
     const enrichedVisitors = (visit.officialVisitors || []).map(visitor => {
       const contact = contacts?.find(
         c => c.contactId === visitor.contactId && c.relationshipToPrisonerCode === visitor.relationshipCode,
       )
 
-      if (
-        !contact ||
-        !contact?.isApprovedVisitor ||
-        (!prisonAllowsSocialVisitors(req) && visitor.relationshipTypeCode === 'SOCIAL')
-      ) {
-        hasIssueVisitors = true
-      }
       return {
         ...visitor,
+        issues: {
+          noRelationship: !contact,
+          notApproved: !contact?.isApprovedVisitor,
+          socialVisitor: !prisonAllowsSocialVisitors(req) && visitor.relationshipTypeCode === 'SOCIAL',
+        },
         restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
       }
     })
+
+    const hasIssueVisitors = enrichedVisitors.some(v => Object.values(v.issues).some(o => o))
+    const visitorActiveRestrictions = enrichedVisitors.reduce(
+      (acc, visitor) => acc + (visitor.restrictionSummary?.active?.length || 0),
+      0,
+    )
+    const prisonerActiveRestrictions =
+      restrictions?.content?.filter(o => !o.expiryDate || isFuture(new Date(o.expiryDate))).length || 0
 
     const createdUser = await this.manageUsersService.getUserByUsername(visit.createdBy, user)
     const modifiedUser =
@@ -110,6 +115,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
         alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
         restrictionsCount: restrictions?.content?.length ?? 0,
       },
+      activeRestrictions: visitorActiveRestrictions + prisonerActiveRestrictions,
     })
   }
 }

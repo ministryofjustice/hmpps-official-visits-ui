@@ -303,6 +303,7 @@ describe('Search for an official visit', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           expect(res.text).toContain('Banned')
+          expect(res.text).toContain('ACTIVE RESTRICTIONS IN PLACE')
           expect(res.text).toContain('govuk-tag--red')
         })
     })
