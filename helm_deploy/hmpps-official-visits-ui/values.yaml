@@ -55,8 +55,9 @@ generic-service:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
     # This secret will need to be created in your namespace (note it isn't in hmpps-templates-dev)
     # IRSA configuration in your namespace will also be required, and then uncomment serviceAccountName above.
-    # sqs-hmpps-audit-secret:
-    #   AUDIT_SQS_QUEUE_URL: 'sqs_queue_url'
+    sqs-hmpps-audit-secret:
+      AUDIT_SQS_QUEUE_URL: "sqs_queue_url"
+      AUDIT_SQS_QUEUE_NAME: "sqs_queue_name"
     maintenance:
       MAINTENANCE_MODE: "maintenance_mode"
     feature-toggles:
