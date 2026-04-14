@@ -18,9 +18,6 @@ export default {
     }),
   stubRestrictions: (restrictions: PagedModelPrisonerRestrictionDetails = {}) =>
     simpleApiMock(`/personal-relationships-api/prisoner-restrictions/.*`, restrictions),
-  stubRelationship: (prisonerNumber: string, contactId: number, prisonerContactId: number) =>
-    simpleApiMock(
-      `/personal-relationships-api/prisoner/${prisonerNumber}/contacts/manage/${contactId}/relationship/${prisonerContactId}`,
-      {},
-    ),
+  stubRelationship: (prisonerContactId: number) =>
+    simpleApiMock(`/personal-relationships-api/prisoner-contact/${prisonerContactId}`, {}),
 }
