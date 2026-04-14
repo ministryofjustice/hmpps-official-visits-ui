@@ -67,3 +67,22 @@
 .govuk-button-group--spread > :last-child {
   margin-left: auto;
 }
+
+.fit-content {
+  max-width: fit-content;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.guidance-panel {
+  border-left-color: govuk-colour('blue');
+  background-color: #eaf4f9;
+}
+
+.moj-badge--red {
+  // Darkened to avoid WCAG contrast failure on card header backgrounds
+  color: #c9321a;
+  border-color: #c9321a;
+}

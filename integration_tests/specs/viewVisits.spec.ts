@@ -137,6 +137,7 @@ test.describe('View official visits', () => {
     await officialVisitsApi.stubCompleteVisit({})
     await officialVisitsApi.stubCancelVisit({})
     await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors])
+    await personalRelationshipsApi.stubRelationship(7332364)
   })
 
   test.afterEach(async () => {

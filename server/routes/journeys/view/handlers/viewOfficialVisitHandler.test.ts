@@ -77,6 +77,24 @@ const baseMockContact = {
   },
 }
 
+const baseFutureVisit = { ...mockVisitByIdVisit, visitDate: '2030-01-01' }
+
+const baseSocialVisitor = {
+  ...mockVisitByIdVisit.officialVisitors[0],
+  relationshipTypeCode: 'SOCIAL' as const,
+  relationshipTypeDescription: 'Social',
+  relationshipCode: 'FRI',
+  relationshipDescription: 'Friend',
+}
+
+const baseSocialContact = {
+  ...baseMockContact,
+  relationshipTypeCode: 'S',
+  relationshipTypeDescription: 'Social',
+  relationshipToPrisonerCode: 'FRI',
+  relationshipToPrisonerDescription: 'Friend',
+}
+
 describe('View an official visit', () => {
   describe('GET', () => {
     it('should render the correct view page without backTo param', () => {
@@ -423,6 +441,115 @@ describe('View an official visit', () => {
       expect(res.text).not.toContain('problem with this visit')
       expect(res.text).not.toContain('moj-interruption-card')
       expect(getPageHeader($)).toEqual('Official visit')
+    })
+
+    it('should show inset text when visitor has no relationship with prisoner', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(baseFutureVisit)
+      officialVisitsService.getAllContacts.mockResolvedValue([])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('Some visitor details need updating')
+      expect(res.text).toContain('does not have a recorded relationship with the prisoner')
+      expect(res.text).toContain('govuk-inset-text')
+    })
+
+    it('should show inset text when visitor is not approved', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(baseFutureVisit)
+      officialVisitsService.getAllContacts.mockResolvedValue([{ ...baseMockContact, isApprovedVisitor: false }])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('Some visitor details need updating')
+      expect(res.text).toContain('is not an approved contact')
+    })
+
+    it('should show inset text when visitor is a social visitor for prison without social visits enabled', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...baseFutureVisit,
+        officialVisitors: [baseSocialVisitor],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([baseSocialContact])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('Some visitor details need updating')
+      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+    })
+
+    it('should show all issue types in inset text when multiple visitor issues exist', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...baseFutureVisit,
+        officialVisitors: [baseSocialVisitor],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([{ ...baseSocialContact, isApprovedVisitor: false }])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('Some visitor details need updating')
+      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain('is not an approved contact')
+    })
+
+    it('should show MOJ badge "NO RECORDED RELATIONSHIP" on visitor card when contact not found', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(baseFutureVisit)
+      officialVisitsService.getAllContacts.mockResolvedValue([])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('NO RECORDED RELATIONSHIP')
+      expect(res.text).toContain('moj-badge--red')
+    })
+
+    it('should show MOJ badge "CONTACT NOT APPROVED" on visitor card when visitor not approved', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(baseFutureVisit)
+      officialVisitsService.getAllContacts.mockResolvedValue([{ ...baseMockContact, isApprovedVisitor: false }])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('CONTACT NOT APPROVED')
+      expect(res.text).toContain('moj-badge--red')
+    })
+
+    it('should show MOJ badge "SOCIAL VISITOR" on visitor card when social visitor in unsupported prison', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...baseFutureVisit,
+        officialVisitors: [baseSocialVisitor],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([baseSocialContact])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('SOCIAL VISITOR')
+      expect(res.text).toContain('moj-badge--red')
+    })
+
+    it('should not show inset text or MOJ badges when visit is in the past', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitDate: '2020-01-01',
+        officialVisitors: [{ ...mockVisitByIdVisit.officialVisitors[0], relationshipTypeCode: 'SOCIAL' as const }],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([baseSocialContact])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).not.toContain('Some visitor details need updating')
+      expect(res.text).not.toContain('SOCIAL VISITOR')
+    })
+
+    it('should not show inset text or MOJ badges when visit is completed', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...baseFutureVisit,
+        completionCode: 'NORMAL',
+        officialVisitors: [{ ...mockVisitByIdVisit.officialVisitors[0], relationshipTypeCode: 'SOCIAL' as const }],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([baseSocialContact])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).not.toContain('Some visitor details need updating')
+      expect(res.text).not.toContain('SOCIAL VISITOR')
+    })
+
+    it('should show fallback contact list URL when relationship is invalid (API throws)', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(baseFutureVisit)
+      personalRelationshipsService.getPrisonerContactRelationship.mockRejectedValue(new Error('Not found'))
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('/contacts/list')
+      expect(res.text).not.toContain('/relationship/7332364')
     })
   })
 })
