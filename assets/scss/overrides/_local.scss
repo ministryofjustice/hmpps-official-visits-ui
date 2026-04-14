@@ -82,6 +82,7 @@
 }
 
 .moj-badge--red {
+  // Darkened to avoid WCAG contrast failure on card header backgrounds
   color: #c9321a;
   border-color: #c9321a;
 }

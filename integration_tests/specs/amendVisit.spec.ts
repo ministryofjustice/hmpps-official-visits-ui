@@ -166,6 +166,8 @@ test.describe('Amend official visits', () => {
       overlappingPrisonerVisits: [],
       contacts: [],
     })
+    await personalRelationshipsApi.stubRelationship(101, 1)
+    await personalRelationshipsApi.stubRelationship(201, 1)
   })
 
   test.afterEach(async () => {
