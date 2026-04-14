@@ -25,7 +25,7 @@
   max-width: none;
 }
 
-.moj-filter__options>button {
+.moj-filter__options > button {
   width: 100%
 }
 
@@ -42,12 +42,9 @@
 }
 
 .govuk-table td.long-text-column {
-  overflow-wrap: anywhere;
-  /* allow breaking for long unspaced text */
-  word-break: keep-all;
-  /* keep words intact when spaces exist */
-  white-space: normal;
-  /* normal wrapping behaviour */
+  overflow-wrap: anywhere;   /* allow breaking for long unspaced text */
+  word-break: keep-all;      /* keep words intact when spaces exist */
+  white-space: normal;       /* normal wrapping behaviour */
   width: 20% !important;
 }
 
@@ -57,19 +54,17 @@
 
 .actions {
   display: inline-flex;
-  gap: 30px;
-  /* adjust */
+  gap: 30px; /* adjust */
 }
 
 .govuk-button-group--spread {
-  display: flex;
-  /* govuk-button-group is usually flex already, but safe */
+  display: flex;          /* govuk-button-group is usually flex already, but safe */
   align-items: center;
   width: 100%;
 }
 
 /* push the 2nd button to the far right */
-.govuk-button-group--spread> :last-child {
+.govuk-button-group--spread > :last-child {
   margin-left: auto;
 }
 
