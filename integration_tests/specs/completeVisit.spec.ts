@@ -72,7 +72,7 @@ test.describe('Complete official visits', () => {
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
     await officialVisitsApi.stubCompleteVisit({})
     await officialVisitsApi.stubCancelVisit({})
-    await personalRelationshipsApi.stubRelationship(20085647, 7332364)
+    await personalRelationshipsApi.stubRelationship('G4793VF', 20085647, 7332364)
   })
 
   test.afterEach(async () => {
