@@ -3,7 +3,10 @@ import { RestClient, asSystem } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import logger from '../../logger'
 import { HmppsUser } from '../interfaces/hmppsUser'
-import { PagedModelPrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
+import {
+  PagedModelPrisonerRestrictionDetails,
+  PrisonerContactRelationshipDetails,
+} from '../@types/personalRelationshipsApi/types'
 
 export default class PersonalRelationshipsApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -23,6 +26,16 @@ export default class PersonalRelationshipsApiClient extends RestClient {
         path: `/prisoner-restrictions/${prisonerNumber}`,
         query: { page, size, currentTerm, paged },
       },
+      asSystem(user.username),
+    )
+  }
+
+  async getPrisonerContactRelationship(
+    prisonerContactId: number,
+    user: HmppsUser,
+  ): Promise<PrisonerContactRelationshipDetails> {
+    return this.get<PrisonerContactRelationshipDetails>(
+      { path: `/prisoner-contact/${prisonerContactId}` },
       asSystem(user.username),
     )
   }

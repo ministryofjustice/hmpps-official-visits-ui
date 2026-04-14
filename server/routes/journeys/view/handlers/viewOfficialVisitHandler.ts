@@ -9,6 +9,8 @@ import ManageUserService from '../../../../services/manageUsersService'
 import TelemetryService from '../../../../services/telemetryService'
 import { OfficialVisit, RestrictionSummary } from '../../../../@types/officialVisitsApi/types'
 import { prisonAllowsSocialVisitors } from '../../../../utils/utils'
+import config from '../../../../config'
+import { HmppsUser } from '../../../../interfaces/hmppsUser'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_PAGE
@@ -42,23 +44,34 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user),
     ])
 
-    const enrichedVisitors = (visit.officialVisitors || []).map(visitor => {
-      const contact = contacts?.find(
-        c => c.contactId === visitor.contactId && c.relationshipToPrisonerCode === visitor.relationshipCode,
-      )
+    const enrichedVisitors = await Promise.all(
+      (visit.officialVisitors || []).map(async visitor => {
+        const contact = contacts?.find(
+          c => c.contactId === visitor.contactId && c.relationshipToPrisonerCode === visitor.relationshipCode,
+        )
 
-      return {
-        ...visitor,
-        issues: {
-          noRelationship: !contact,
-          notApproved: !contact?.isApprovedVisitor,
-          socialVisitor: !prisonAllowsSocialVisitors(req) && visitor.relationshipTypeCode === 'SOCIAL',
-        },
-        restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
-      }
-    })
+        const validRelationship =
+          visitor.prisonerContactId && (await this.testValidRelationship(visitor.prisonerContactId, user))
+
+        return {
+          ...visitor,
+          issues: {
+            noRelationship: !contact,
+            notApproved: contact ? !contact.isApprovedVisitor : false,
+            socialVisitor: !prisonAllowsSocialVisitors(req) && visitor.relationshipTypeCode === 'SOCIAL',
+          },
+          restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
+          relationshipUrl: validRelationship
+            ? `${config.serviceUrls.prisonerContacts}/prisoner/${visit.prisonerVisited.prisonerNumber}/contacts/manage/${visitor.contactId}/relationship/${visitor.prisonerContactId}`
+            : `${config.serviceUrls.prisonerContacts}/prisoner/${visit.prisonerVisited.prisonerNumber}/contacts/list`,
+        }
+      }),
+    )
 
     const hasIssueVisitors = enrichedVisitors.some(v => Object.values(v.issues).some(o => o))
+    const hasNoRelationshipVisitors = enrichedVisitors.some(v => v.issues.noRelationship)
+    const hasNotApprovedVisitors = enrichedVisitors.some(v => v.issues.notApproved)
+    const hasSocialVisitors = enrichedVisitors.some(v => v.issues.socialVisitor)
     const visitorActiveRestrictions = enrichedVisitors.reduce(
       (acc, visitor) => acc + (visitor.restrictionSummary?.active?.length || 0),
       0,
@@ -116,7 +129,21 @@ export default class ViewOfficialVisitHandler implements PageHandler {
         restrictionsCount: restrictions?.content?.length ?? 0,
       },
       activeRestrictions: visitorActiveRestrictions + prisonerActiveRestrictions,
+      hasNoRelationshipVisitors,
+      hasNotApprovedVisitors,
+      hasSocialVisitors,
+      hasIssueVisitors,
+      shouldShowIssues: isFuture(new Date(`${visit.visitDate} ${visit.startTime}`)) && !visit.completionCode,
     })
+  }
+
+  async testValidRelationship(prisonerContactId: number, user: HmppsUser) {
+    try {
+      await this.personalRelationshipsService.getPrisonerContactRelationship(prisonerContactId, user)
+      return true
+    } catch {
+      return false
+    }
   }
 }
 

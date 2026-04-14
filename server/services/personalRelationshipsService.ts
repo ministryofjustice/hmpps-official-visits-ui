@@ -22,4 +22,8 @@ export default class PersonalRelationshipsService {
       paged,
     )
   }
+
+  async getPrisonerContactRelationship(prisonerContactId: number, user: HmppsUser) {
+    return this.personalRelationshipsApiClient.getPrisonerContactRelationship(prisonerContactId, user)
+  }
 }

@@ -8,6 +8,9 @@ import PersonalRelationshipsService from '../../../../../services/personalRelati
 import ManageUserService from '../../../../../services/manageUsersService'
 import { JourneyVisitor } from '../journey'
 import { OfficialVisit, RestrictionSummary } from '../../../../../@types/officialVisitsApi/types'
+import { prisonAllowsSocialVisitors } from '../../../../../utils/utils'
+import config from '../../../../../config'
+import { HmppsUser } from '../../../../../interfaces/hmppsUser'
 
 export default class AmendVisitLandingHandler implements PageHandler {
   public PAGE_NAME = Page.AMEND_LANDING_PAGE
@@ -62,15 +65,34 @@ export default class AmendVisitLandingHandler implements PageHandler {
       this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user, true, true),
     ])
 
-    const enrichedVisitors = (visit.officialVisitors || []).map(visitor => {
-      const contact = contacts?.find(
-        c => c.contactId === visitor.contactId && c.relationshipToPrisonerCode === visitor.relationshipCode,
-      )
-      return {
-        ...visitor,
-        restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
-      }
-    })
+    const enrichedVisitors = await Promise.all(
+      (visit.officialVisitors || []).map(async visitor => {
+        const contact = contacts?.find(
+          c => c.contactId === visitor.contactId && c.relationshipToPrisonerCode === visitor.relationshipCode,
+        )
+
+        const validRelationship =
+          visitor.prisonerContactId && (await this.testValidRelationship(visitor.prisonerContactId, user))
+
+        return {
+          ...visitor,
+          issues: {
+            noRelationship: !contact,
+            notApproved: contact ? !contact.isApprovedVisitor : false,
+            socialVisitor: !prisonAllowsSocialVisitors(req) && visitor.relationshipTypeCode === 'SOCIAL',
+          },
+          restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
+          relationshipUrl: validRelationship
+            ? `${config.serviceUrls.prisonerContacts}/prisoner/${visit.prisonerVisited.prisonerNumber}/contacts/manage/${visitor.contactId}/relationship/${visitor.prisonerContactId}`
+            : `${config.serviceUrls.prisonerContacts}/prisoner/${visit.prisonerVisited.prisonerNumber}/contacts/list`,
+        }
+      }),
+    )
+
+    const hasIssueVisitors = enrichedVisitors.some(v => Object.values(v.issues).some(o => o))
+    const hasNoRelationshipVisitors = enrichedVisitors.some(v => v.issues.noRelationship)
+    const hasNotApprovedVisitors = enrichedVisitors.some(v => v.issues.notApproved)
+    const hasSocialVisitors = enrichedVisitors.some(v => v.issues.socialVisitor)
 
     const visitorActiveRestrictions = enrichedVisitors.reduce(
       (acc, visitor) => acc + (visitor.restrictionSummary?.active?.length || 0),
@@ -147,6 +169,20 @@ export default class AmendVisitLandingHandler implements PageHandler {
       backUrl: `/view/visit/${visit.officialVisitId}?backTo=${b64BackTo}`,
       prisoner: req.session.journey.officialVisit.prisoner,
       activeRestrictions: visitorActiveRestrictions + prisonerActiveRestrictions,
+      hasNoRelationshipVisitors,
+      hasNotApprovedVisitors,
+      hasSocialVisitors,
+      hasIssueVisitors,
+      shouldShowIssues: isFuture(new Date(`${visit.visitDate} ${visit.startTime}`)) && !visit.completionCode,
     })
+  }
+
+  async testValidRelationship(prisonerContactId: number, user: HmppsUser) {
+    try {
+      await this.personalRelationshipsService.getPrisonerContactRelationship(prisonerContactId, user)
+      return true
+    } catch {
+      return false
+    }
   }
 }
