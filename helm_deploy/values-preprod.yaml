@@ -23,7 +23,7 @@ generic-service:
     ACTIVITIES_API_URL: 'https://activities-api-preprod.prison.service.justice.gov.uk'
     MANAGE_USERS_API_URL: 'https://manage-users-api-preprod.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: PRE-PRODUCTION
-    AUDIT_ENABLED: "false"
+    AUDIT_ENABLED: "true"
 
 generic-prometheus-alerts:
   alertSeverity: move-and-improve-alerts-non-prod
