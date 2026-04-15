@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { ZodType } from 'zod'
 import { $ZodTypeInternals } from 'zod/v4/core'
+import { isFuture } from 'date-fns'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import { schema } from './selectOfficialVisitorsSchema'
@@ -32,13 +33,30 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     contactsOnVisit: JourneyVisitor[],
   ) => {
     const allContacts = await this.officialVisitsService.getAllOfficialContacts(prisonerNumber, user, undefined, true)
-    return allContacts.filter(
-      o =>
-        o.isApprovedVisitor ||
-        contactsOnVisit?.some(
-          v => v.contactId === o.contactId && v.relationshipToPrisonerCode === o.relationshipToPrisonerCode,
-        ),
-    )
+    const allUnique = [...allContacts]
+    for (const contact of contactsOnVisit) {
+      if (
+        !allUnique.some(
+          c => c.contactId === contact.contactId && c.relationshipToPrisonerCode === contact.relationshipToPrisonerCode,
+        )
+      ) {
+        allUnique.push(contact)
+      }
+    }
+
+    return allUnique.map(o => {
+      const foundContact = allContacts.find(
+        c => c.contactId === o.contactId && c.relationshipToPrisonerCode === o.relationshipToPrisonerCode,
+      )
+      return {
+        ...o,
+        issues: {
+          notApproved: foundContact && !o.isApprovedVisitor,
+          noRelationship: !foundContact,
+          socialVisitor: false,
+        },
+      }
+    })
   }
 
   public GET = async (req: Request, res: Response, _next?: NextFunction) => {
@@ -57,8 +75,16 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const rawErrors = req.flash('alertErrors')[0]
     const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
+    const contacts = recallContacts(req.session.journey, 'O', selectableContacts)
+
+    const hasIssueVisitors = contacts.some(v => Object.values(v.issues).some(o => o))
+    const hasNoRelationshipVisitors = contacts.some(v => v.issues.noRelationship)
+    const hasNotApprovedVisitors = contacts.some(v => v.issues.notApproved)
+    const hasSocialVisitors = contacts.some(v => v.issues.socialVisitor)
+
     // Show the list and prefill the selected checkboxes for official visitors
     const previousDate = req.session.journey.officialVisit?.selectedTimeSlot?.visitDate
+    const previousTime = req.session.journey.officialVisit?.selectedTimeSlot?.startTime
     res.render('pages/manage/selectOfficialVisitors', {
       contacts: recallContacts(req.session.journey, 'O', selectableContacts),
       selectedContacts,
@@ -67,6 +93,11 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       hasVisitorOverlap: req.flash('hasVisitorOverlap')[0] === 'true',
       checks: errors,
       visitId: req.session.journey.officialVisit.officialVisitId,
+      hasNoRelationshipVisitors,
+      hasNotApprovedVisitors,
+      hasSocialVisitors,
+      hasIssueVisitors,
+      shouldShowIssues: isFuture(new Date(`${previousDate} ${previousTime}`)),
     })
   }
 
@@ -83,19 +114,19 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const selectableContacts = await this.getSelectableContacts(prisonerNumber, res.locals.user, journeyVisitors)
     const officialContacts = recallContacts(req.session.journey, 'O', selectableContacts)
 
+    const selectedContacts = selected.map((o: string) => {
+      const [contactId, relationshipToPrisonerCode] = o.split('-')
+      return officialContacts?.find(
+        c => c.contactId === Number(contactId) && c.relationshipToPrisonerCode === relationshipToPrisonerCode,
+      )
+    })
+
+    if (selectedContacts.some(c => c === undefined || c.issues.noRelationship)) {
+      return res.alertValidationError({ noRelationship: true })
+    }
+
     // Update the session journey with selected approved official contacts
-    saveVisitors(
-      req.session.journey,
-      'O',
-      selected
-        .map((o: string) => {
-          const [contactId, relationshipToPrisonerCode] = o.split('-')
-          return officialContacts?.find(
-            c => c.contactId === Number(contactId) && c.relationshipToPrisonerCode === relationshipToPrisonerCode,
-          )
-        })
-        .filter((o: JourneyVisitor) => o),
-    )
+    saveVisitors(req.session.journey, 'O', selectedContacts)
 
     const errors = await cyaGuard(req, res, this.officialVisitsService)
 

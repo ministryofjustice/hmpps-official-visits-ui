@@ -9,7 +9,7 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {%- from "moj/components/badge/macro.njk" import mojBadge -%}
 {% from "partials/restriction-summary.njk" import restrictionSummary %}
-{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "partials/unauthorisedVisitorsInset.njk" import unauthorisedVisitorsInset %}
 
 {% set pageTitle = "Official visit with " + visit.prisonerVisited | firstNameSpaceLastName %}
 {% set paramBackTo = ("?backTo=" + b64BackTo)if b64BackTo %}
@@ -20,31 +20,7 @@
   <h1 class="govuk-heading-l">Official visit</h1>
   {{ miniProfile(prisoner) }}
 
-  {% if hasIssueVisitors and shouldShowIssues %}
-    {% call govukInsetText({ classes: "govuk-!-margin-0 govuk-!-margin-bottom-4 guidance-panel" }) %}
-      <h2 class="govuk-heading-s govuk-!-margin-0">Some visitor details need updating</h2>
-      <p>This visit includes one or more visitors who do not currently meeting the requirements for this prison. <br />This is because a visitor:</p>
-      <ul class="govuk-list govuk-list--bullet">
-        {% if hasSocialVisitors %}
-          <li>is a social visitor for a prison where this is not enabled</li>
-        {% endif %}
-        {% if hasNotApprovedVisitors %}
-          <li>is not an approved contact</li>
-        {% endif %}
-        {% if hasNoRelationshipVisitors %}
-          <li>does not have a recorded relationship with the prisoner</li>
-        {% endif %}
-      </ul>
-
-      {% if user | hasPermission(PERMISSION.CONTACTS_AUTHORISER) %}
-        <p>You can update visitor details in the prisoner’s contact record, or remove visitors from this visit if needed.</p>
-      {% else %}
-        <p>You will need the contacts authoriser to add a contact in the prisoner’s profile or remove visitors from this visit if needed.</p>
-      {% endif %}
-
-      <a target="_blank" href="{{ CONTACTS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}/contacts/list" class="govuk-link govuk-link--no-visited-state">View the prisoner’s contact record</a>
-    {% endcall %}
-  {% endif %}
+  {{ unauthorisedVisitorsInset(user, hasIssueVisitors, shouldShowIssues, hasSocialVisitors, hasNotApprovedVisitors, hasNoRelationshipVisitors) }}
 
   {% if mode != 'amend' %}
       {{ govukButton({

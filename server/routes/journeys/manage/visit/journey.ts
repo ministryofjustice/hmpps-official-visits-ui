@@ -51,6 +51,7 @@ export type JourneyVisitor = ApprovedContact & {
   leadVisitor?: boolean
   notes?: string
   alreadyOnVisit?: boolean
+  issues?: { notApproved: boolean; noRelationship: boolean; socialVisitor: boolean }
 }
 
 export type JourneyPrisoner = {
