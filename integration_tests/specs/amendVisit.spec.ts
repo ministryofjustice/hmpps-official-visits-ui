@@ -413,7 +413,7 @@ test.describe('Amend official visits', () => {
     expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
     expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
     // Chris Smith should be visible and checked (unapproved but already on the visit)
-    expect(page.locator('input[type="checkbox"][value="103-SOL"]')).toBeChecked()
+    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
 
     // Select another visitor
     await page.getByRole('checkbox', { name: 'Bertie Smith' }).check()
