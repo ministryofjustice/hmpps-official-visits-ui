@@ -75,22 +75,6 @@ const getMockVisit = () => ({
       },
     },
     {
-      firstName: mockOfficialVisitors[2].firstName,
-      lastName: mockOfficialVisitors[2].lastName,
-      officialVisitorId: mockOfficialVisitors[2].prisonerContactId,
-      prisonerContactId: mockOfficialVisitors[2].prisonerContactId,
-      contactId: mockOfficialVisitors[2].contactId,
-      relationshipTypeCode: 'OFFICIAL',
-      relationshipDescription: 'Solicitor',
-      relationshipCode: 'SOL',
-      visitorTypeCode: 'CONTACT',
-      relationshipTypeDescription: 'Official',
-      visitorTypeDescription: 'Contact',
-      leadVisitor: true,
-      createdBy: 'TEST_USER',
-      createdTime: '2023-01-01T00:00:00',
-    },
-    {
       firstName: mockSocialVisitors[2].firstName,
       lastName: mockSocialVisitors[2].lastName,
       officialVisitorId: mockSocialVisitors[2].prisonerContactId,
@@ -429,7 +413,7 @@ test.describe('Amend official visits', () => {
     expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
     expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
     // Chris Smith should be visible and checked (unapproved but already on the visit)
-    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
+    expect(page.locator('input[type="checkbox"][value="103-SOL"]')).toBeChecked()
 
     // Select another visitor
     await page.getByRole('checkbox', { name: 'Bertie Smith' }).check()
