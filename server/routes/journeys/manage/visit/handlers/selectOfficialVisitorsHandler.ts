@@ -34,32 +34,22 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     mode: 'amend' | 'create' = 'create',
   ) => {
     const allContacts = await this.officialVisitsService.getAllOfficialContacts(prisonerNumber, user, undefined, true)
-    const allUnique = [...allContacts]
-    for (const contact of contactsOnVisit) {
-      if (
-        !allUnique.some(
-          c => c.contactId === contact.contactId && c.relationshipToPrisonerCode === contact.relationshipToPrisonerCode,
-        )
-      ) {
-        allUnique.push(contact)
-      }
-    }
+    const contactKey = (c: { contactId: number; relationshipToPrisonerCode: string }) =>
+      `${c.contactId}-${c.relationshipToPrisonerCode}`
 
-    return allUnique
-      .map(o => {
-        const foundContact = allContacts.find(
-          c => c.contactId === o.contactId && c.relationshipToPrisonerCode === o.relationshipToPrisonerCode,
-        )
-        return {
-          ...o,
-          issues: {
-            notApproved: foundContact && !o.isApprovedVisitor,
-            noRelationship: !foundContact,
-            socialVisitor: false,
-          },
-        }
-      })
-      .filter(contact => mode === 'amend' || contact.isApprovedVisitor) // In create mode only show approved visitors
+    const apiContacts = new Map(allContacts.map(c => [contactKey(c), c]))
+    const journeyContacts = contactsOnVisit.filter(c => !apiContacts.has(contactKey(c)))
+
+    return [...allContacts, ...journeyContacts]
+      .map(c => ({
+        ...c,
+        issues: {
+          notApproved: apiContacts.has(contactKey(c)) && !c.isApprovedVisitor,
+          noRelationship: !apiContacts.has(contactKey(c)),
+          socialVisitor: false,
+        },
+      }))
+      .filter(c => mode === 'amend' || c.isApprovedVisitor)
   }
 
   public GET = async (req: Request, res: Response, _next?: NextFunction) => {
