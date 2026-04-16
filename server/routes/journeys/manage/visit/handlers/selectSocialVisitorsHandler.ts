@@ -19,6 +19,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     prisonerNumber: string,
     user: HmppsUser,
     contactsOnVisit: JourneyVisitor[],
+    mode: 'amend' | 'create' = 'create',
   ) => {
     const allContacts = await this.officialVisitsService.getAllSocialContacts(prisonerNumber, user, undefined, true)
     const allUnique = [...allContacts]
@@ -32,25 +33,34 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
       }
     }
 
-    return allUnique.map(o => {
-      return {
-        ...o,
-        issues: {
-          notApproved: !o.isApprovedVisitor,
-          noRelationship: !allContacts.find(
-            c => c.contactId === o.contactId && c.relationshipToPrisonerCode === o.relationshipToPrisonerCode,
-          ),
-          socialVisitor: !prisonAllowsSocialVisitors(req),
-        },
-      }
-    })
+    return allUnique
+      .map(o => {
+        const foundContact = allContacts.find(
+          c => c.contactId === o.contactId && c.relationshipToPrisonerCode === o.relationshipToPrisonerCode,
+        )
+        return {
+          ...o,
+          issues: {
+            notApproved: foundContact && !o.isApprovedVisitor,
+            noRelationship: !foundContact,
+            socialVisitor: !prisonAllowsSocialVisitors(req),
+          },
+        }
+      })
+      .filter(contact => mode === 'amend' || contact.isApprovedVisitor) // In create mode only show approved visitors
   }
 
   public GET = async (req: Request, res: Response, _next?: NextFunction) => {
     // TODO: Assume a middleware caseload access check earlier (user v. prisoner's location)
     const { prisonerNumber } = req.session.journey.officialVisit.prisoner
     const journeyVisitors = req.session.journey.officialVisit.socialVisitors || []
-    const selectableContacts = await this.getSelectableContacts(req, prisonerNumber, res.locals.user, journeyVisitors)
+    const selectableContacts = await this.getSelectableContacts(
+      req,
+      prisonerNumber,
+      res.locals.user,
+      journeyVisitors,
+      res.locals.mode,
+    )
 
     // Record the approved social contacts who are already selected for this visit in session data
     const selectedContacts =
@@ -91,7 +101,13 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     const { prisonerNumber } = req.session.journey.officialVisit.prisoner
     const selected = Array.isArray(req.body.selected) ? req.body.selected : []
     const journeyVisitors = req.session.journey.officialVisit.socialVisitors || []
-    const selectableContacts = await this.getSelectableContacts(req, prisonerNumber, res.locals.user, journeyVisitors)
+    const selectableContacts = await this.getSelectableContacts(
+      req,
+      prisonerNumber,
+      res.locals.user,
+      journeyVisitors,
+      res.locals.mode,
+    )
     const socialContacts = recallContacts(req.session.journey, 'S', selectableContacts)
 
     const selectedContacts: JourneyVisitor[] = selected.map((o: string) => {

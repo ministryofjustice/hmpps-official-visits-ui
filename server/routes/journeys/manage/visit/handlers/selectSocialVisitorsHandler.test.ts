@@ -568,7 +568,7 @@ describe('Select social visitors', () => {
       officialVisitsService.getAllSocialContacts.mockResolvedValue([...mockSocialVisitors, mockNotApprovedVisitor])
 
       await request(app)
-        .post(URL)
+        .post(`/manage/amend/1/${journeyId()}/select-social-visitors`)
         .send({ selected: ['204-FRI'] })
         .expect(302)
         .expect('location', 'assistance-required')
