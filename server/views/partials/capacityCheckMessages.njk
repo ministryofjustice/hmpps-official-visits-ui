@@ -1,5 +1,5 @@
 {% from "moj/components/alert/macro.njk" import mojAlert %}
-{% macro capacityCheckMessages(opts, visitId) %}
+{% macro capacityCheckMessages(opts, visitId, prisonerNumber) %}
   {% if opts.empty %}
     {{ mojAlert({
       variant: "error",
@@ -56,6 +56,18 @@
       showTitleAsHeading: true,
       dismissible: false,
       html: "A visitor has another visit booked at this time.<br/>Choose a different time slot to continue.",
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+
+  {% if opts.noRelationship %}
+    {{ mojAlert({
+      variant: "error",
+      role: "alert",
+      title: "Remove visitor with no recorded relationship with the prisoner",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: "This visit includes one or more visitors who do not currently have a recorded relationship with this prisoner. A visitor must have a recorded relationship in <a target=\"_blank\" href=\"" + CONTACTS_HOME_PAGE_URL + "/prisoner/" + prisonerNumber + "/contacts/list\" class=\"govuk-link govuk-link--no-visited-state\"> the prisoner's contact record</a>. Remove affected visitors before proceeding.",
       classes: 'govuk-!-margin-bottom-6'
     }) }}
   {% endif %}

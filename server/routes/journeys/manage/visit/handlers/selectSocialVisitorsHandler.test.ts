@@ -13,11 +13,12 @@ import {
   getByDataQa,
 } from '../../../../testutils/cheerio'
 import { Journey } from '../../../../../@types/express'
-import { JourneyVisitor } from '../journey'
+import { JourneyVisitor, OfficialVisitJourney } from '../journey'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockSocialVisitors, mockPrisonerRestrictions, mockPrisoner } from '../../../../../testutils/mocks'
 import { expectNoErrorMessages, expectAlertErrors } from '../../../../testutils/expectErrorMessage'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
+import config from '../../../../../config'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -40,7 +41,7 @@ const appSetup = (
       selectedTimeSlot: {
         timeSlotId: 1,
         visitSlotId: 1,
-        visitDate: '2026-01-26',
+        visitDate: '2037-01-26',
         startTime: '13:30',
         endTime: '16:00',
         availableVideoSessions: 2,
@@ -48,7 +49,7 @@ const appSetup = (
         availableGroups: 2,
       },
       visitType: 'IN_PERSON',
-    },
+    } as OfficialVisitJourney,
   },
 ) => {
   app = appWithAllRoutes({
@@ -68,7 +69,7 @@ beforeEach(() => {
       prisonCode: 'MDI',
       dayCode: 'MON',
       dayDescription: 'Monday',
-      visitDate: '2026-01-26',
+      visitDate: '2037-01-26',
       startTime: '13:30',
       endTime: '16:00',
       dpsLocationId: 'loc1',
@@ -86,6 +87,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetAllMocks()
+  config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
 })
 
 const URL = `/manage/create/${journeyId()}/select-social-visitors`
@@ -158,7 +160,7 @@ describe('Select social visitors', () => {
 
           const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
           // Row 1
-          expect(visitorRows.eq(0).text().trim()).toEqual(
+          expect(visitorRows.eq(0).text().trim()).toContain(
             `${mockSocialVisitors[0].firstName} ${mockSocialVisitors[0].lastName}`,
           )
           expect(visitorRows.eq(1).text().trim()).toEqual(formatDate(mockSocialVisitors[0].dateOfBirth))
@@ -166,7 +168,7 @@ describe('Select social visitors', () => {
           expect(visitorRows.eq(3).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(4).text().trim()).toBeDefined() // Restrictions
           // Row 2
-          expect(visitorRows.eq(5).text().trim()).toEqual(
+          expect(visitorRows.eq(5).text().trim()).toContain(
             `${mockSocialVisitors[1].firstName} ${mockSocialVisitors[1].lastName}`,
           )
           expect(visitorRows.eq(6).text().trim()).toEqual(formatDate(mockSocialVisitors[1].dateOfBirth))
@@ -194,10 +196,107 @@ describe('Select social visitors', () => {
           })
         })
     })
+
+    it('should not show inset text or MOJ badges when visit is in the past', () => {
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: mockPrisonerRestrictions,
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          selectedTimeSlot: {
+            timeSlotId: 1,
+            visitSlotId: 1,
+            visitDate: '2020-01-01',
+            startTime: '13:30',
+            endTime: '16:00',
+            availableVideoSessions: 2,
+            availableAdults: 3,
+            availableGroups: 2,
+          },
+          visitType: 'IN_PERSON',
+        } as OfficialVisitJourney,
+      })
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          // Should not show inset text or badges for past visits
+          expect(res.text).not.toContain('Some visitor details need updating')
+          expect(res.text).not.toContain('CONTACT NOT APPROVED')
+          expect(res.text).not.toContain('NO RECORDED RELATIONSHIP')
+        })
+    })
   })
 
   describe('GET (amend)', () => {
-    it('should render the correct view page', () => {
+    it('should render the correct view page with badges and inset text for visitors with issues', () => {
+      // Set up a visitor with no relationship (not in API response)
+      const visitorWithNoRelationship = {
+        prisonerContactId: 999,
+        contactId: 999,
+        prisonerNumber: 'A1337AA',
+        lastName: 'Visitor',
+        firstName: 'Unknown',
+        relationshipTypeCode: 'S',
+        relationshipTypeDescription: 'Social',
+        relationshipToPrisonerCode: 'UNK',
+        relationshipToPrisonerDescription: 'Unknown',
+        isApprovedVisitor: false,
+        isNextOfKin: false,
+        isEmergencyContact: false,
+        isRelationshipActive: true,
+        currentTerm: true,
+        isStaff: false,
+        restrictionSummary: mockSocialVisitors[0].restrictionSummary,
+      }
+
+      // Set up a not approved visitor (in API response but not approved)
+      const notApprovedVisitor = {
+        ...mockSocialVisitors[2],
+        prisonerContactId: 204,
+        contactId: 204,
+        relationshipToPrisonerCode: 'FRI',
+        relationshipToPrisonerDescription: 'Friend',
+        isApprovedVisitor: false,
+      }
+
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: mockPrisonerRestrictions,
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          selectedTimeSlot: {
+            timeSlotId: 1,
+            visitSlotId: 1,
+            visitDate: '2037-01-26',
+            startTime: '13:30',
+            endTime: '16:00',
+            availableVideoSessions: 2,
+            availableAdults: 3,
+            availableGroups: 2,
+          },
+          officialVisitors: [],
+          socialVisitors: [visitorWithNoRelationship],
+        } as OfficialVisitJourney,
+      })
+
+      // Disable social visitors for the prison to trigger social visitor badge (must be after appSetup)
+      config.featureToggles.allowSocialVisitorsPrisons = ''
+
+      // Mock API returns normal visitors + not approved visitor
+      officialVisitsService.getAllSocialContacts.mockResolvedValue([
+        mockSocialVisitors[0],
+        mockSocialVisitors[1],
+        notApprovedVisitor,
+      ])
+
       return request(app)
         .get(`/manage/amend/1/${journeyId()}/select-social-visitors`)
         .expect('Content-Type', /html/)
@@ -220,6 +319,16 @@ describe('Select social visitors', () => {
           const heading = getPageHeader($)
           expect($('.govuk-hint').text()).toEqual('Amend an official visit')
           expect(heading).toEqual("Select social visitors from the prisoner's approved contact list (optional)")
+
+          // Check inset text is displayed with bullet points for social visitor and not approved
+          expect(res.text).toContain('Some visitor details need updating')
+          expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+          expect(res.text).toContain('is not an approved contact')
+
+          // Check MOJ badges are displayed for SOCIAL VISITOR and CONTACT NOT APPROVED
+          expect(res.text).toContain('SOCIAL VISITOR')
+          expect(res.text).toContain('CONTACT NOT APPROVED')
+          expect(res.text).toContain('moj-badge--red')
 
           // Prisoner restrictions table
           const restrictionHeaders = getByDataQa($, 'prisoner-restrictions-table').find('thead > tr > th')
@@ -254,7 +363,7 @@ describe('Select social visitors', () => {
 
           const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
           // Row 1
-          expect(visitorRows.eq(0).text().trim()).toEqual(
+          expect(visitorRows.eq(0).text().trim()).toContain(
             `${mockSocialVisitors[0].firstName} ${mockSocialVisitors[0].lastName}`,
           )
           expect(visitorRows.eq(1).text().trim()).toEqual(formatDate(mockSocialVisitors[0].dateOfBirth))
@@ -262,7 +371,7 @@ describe('Select social visitors', () => {
           expect(visitorRows.eq(3).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(4).text().trim()).toBeDefined() // Restrictions
           // Row 2
-          expect(visitorRows.eq(5).text().trim()).toEqual(
+          expect(visitorRows.eq(5).text().trim()).toContain(
             `${mockSocialVisitors[1].firstName} ${mockSocialVisitors[1].lastName}`,
           )
           expect(visitorRows.eq(6).text().trim()).toEqual(formatDate(mockSocialVisitors[1].dateOfBirth))
@@ -382,6 +491,92 @@ describe('Select social visitors', () => {
       expect(friendVisitor).toBeDefined()
       expect(friendVisitor.contactId).toBe(201)
       expect(friendVisitor.relationshipToPrisonerCode).toBe('FRI')
+    })
+
+    it('should show alert error when selecting visitor with no relationship', async () => {
+      // Visitor in session but not in API response (no relationship)
+      const journeyVisitorWithNoRelationship = {
+        prisonerContactId: 999,
+        contactId: 999,
+        prisonerNumber: 'A1337AA',
+        lastName: 'Visitor',
+        firstName: 'Unknown',
+        relationshipTypeCode: 'S',
+        relationshipTypeDescription: 'Social',
+        relationshipToPrisonerCode: 'UNK',
+        relationshipToPrisonerDescription: 'Unknown',
+        isApprovedVisitor: false,
+        isNextOfKin: false,
+        isEmergencyContact: false,
+        isRelationshipActive: true,
+        currentTerm: true,
+        isStaff: false,
+        restrictionSummary: mockSocialVisitors[0].restrictionSummary,
+      }
+
+      // Set up journey with the visitor who has no relationship
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: mockPrisonerRestrictions,
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          selectedTimeSlot: {
+            timeSlotId: 1,
+            visitSlotId: 1,
+            visitDate: '2037-01-26',
+            startTime: '13:30',
+            endTime: '16:00',
+            availableVideoSessions: 2,
+            availableAdults: 3,
+            availableGroups: 2,
+          },
+          socialVisitors: [journeyVisitorWithNoRelationship],
+          visitType: 'IN_PERSON',
+        } as OfficialVisitJourney,
+      })
+
+      // Mock API to return only standard visitors (not the journey visitor with no relationship)
+      officialVisitsService.getAllSocialContacts.mockResolvedValue(mockSocialVisitors)
+
+      await request(app)
+        .post(URL)
+        .set('Referer', URL)
+        .send({ selected: ['999-UNK'] })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            noRelationship: true,
+          }),
+        )
+    })
+
+    it('should allow progression when selected visitor is not approved but has relationship', async () => {
+      // Visitor from API that is not approved - should be allowed but with warning
+      const mockNotApprovedVisitor = {
+        ...mockSocialVisitors[0],
+        contactId: 204,
+        prisonerContactId: 4,
+        relationshipToPrisonerCode: 'FRI',
+        relationshipToPrisonerDescription: 'Friend',
+        isApprovedVisitor: false,
+      }
+
+      officialVisitsService.getAllSocialContacts.mockResolvedValue([...mockSocialVisitors, mockNotApprovedVisitor])
+
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/select-social-visitors`)
+        .send({ selected: ['204-FRI'] })
+        .expect(302)
+        .expect('location', 'assistance-required')
+        .expect(() => expectNoErrorMessages())
+
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.socialVisitors).toHaveLength(1)
+      expect(journeySession.socialVisitors[0].contactId).toBe(204)
     })
   })
 })

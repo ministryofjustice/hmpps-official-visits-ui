@@ -42,7 +42,7 @@ const appSetup = (
       selectedTimeSlot: {
         timeSlotId: 1,
         visitSlotId: 1,
-        visitDate: '2026-01-26',
+        visitDate: '2037-01-26',
         startTime: '13:30',
         endTime: '16:00',
         availableVideoSessions: 2,
@@ -71,7 +71,7 @@ beforeEach(() => {
       prisonCode: 'MDI',
       dayCode: 'MON',
       dayDescription: 'Monday',
-      visitDate: '2026-01-26',
+      visitDate: '2037-01-26',
       startTime: '13:30',
       endTime: '16:00',
       dpsLocationId: 'loc1',
@@ -177,7 +177,7 @@ describe('Select official visitors', () => {
           expect(visitorRows.eq(8).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(9).text().trim()).toBeDefined() // Restrictions
 
-          expect($('.govuk-back-link').attr('href')).toEqual(`time-slot?date=2026-01-26`)
+          expect($('.govuk-back-link').attr('href')).toEqual(`time-slot?date=2037-01-26`)
           expect($('.govuk-button').text()).toContain('Continue')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
           expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=2`)
@@ -247,10 +247,8 @@ describe('Select official visitors', () => {
           })
         })
     })
-  })
 
-  describe('GET (amend)', () => {
-    it('should render the correct view page with restrictions and contacts', () => {
+    it('should not show inset text or MOJ badges when visit is in the past', () => {
       appSetup({
         officialVisit: {
           prisoner: {
@@ -259,10 +257,89 @@ describe('Select official visitors', () => {
           },
           prisonCode: 'MDI',
           availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
-          officialVisitors: [],
+          selectedTimeSlot: {
+            timeSlotId: 1,
+            visitSlotId: 1,
+            visitDate: '2020-01-01',
+            startTime: '13:30',
+            endTime: '16:00',
+            availableVideoSessions: 2,
+            availableAdults: 3,
+            availableGroups: 2,
+          },
+          visitType: 'IN_PERSON',
+        } as OfficialVisitJourney,
+      })
+
+      officialVisitsService.getAllOfficialContacts.mockResolvedValue(mockOfficialVisitors)
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          // Should not show inset text or badges for past visits
+          expect(res.text).not.toContain('Some visitor details need updating')
+          expect(res.text).not.toContain('CONTACT NOT APPROVED')
+          expect(res.text).not.toContain('NO RECORDED RELATIONSHIP')
+        })
+    })
+  })
+
+  describe('GET (amend)', () => {
+    it('should render the correct view page with badges and inset text for visitors with issues', () => {
+      // Set up a visitor with no relationship (not in API response)
+      const visitorWithNoRelationship = {
+        prisonerContactId: 999,
+        contactId: 999,
+        prisonerNumber: 'A1337AA',
+        firstName: 'Unknown',
+        lastName: 'Visitor',
+        relationshipTypeCode: 'O',
+        relationshipTypeDescription: 'Official',
+        relationshipToPrisonerCode: 'UNK',
+        relationshipToPrisonerDescription: 'Unknown',
+      }
+
+      // Set up a not approved visitor (in API response but not approved)
+      const notApprovedVisitor = {
+        ...mockOfficialVisitors[2],
+        prisonerContactId: 104,
+        contactId: 104,
+        relationshipToPrisonerCode: 'JUD',
+        relationshipToPrisonerDescription: 'Judge',
+        isApprovedVisitor: false,
+      }
+
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: mockPrisonerRestrictions,
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          selectedTimeSlot: {
+            timeSlotId: 1,
+            visitSlotId: 1,
+            visitDate: '2027-01-26',
+            startTime: '13:30',
+            endTime: '16:00',
+            availableVideoSessions: 2,
+            availableAdults: 3,
+            availableGroups: 2,
+          },
+          officialVisitors: [visitorWithNoRelationship],
           socialVisitors: [],
         } as OfficialVisitJourney,
       })
+
+      // Mock API returns normal visitors + not approved visitor
+      officialVisitsService.getAllOfficialContacts.mockResolvedValue([
+        mockOfficialVisitors[0],
+        mockOfficialVisitors[1],
+        notApprovedVisitor,
+      ])
+
       return request(app)
         .get(`/manage/amend/1/${journeyId()}/select-official-visitors?change=true`)
         .expect('Content-Type', /html/)
@@ -285,6 +362,16 @@ describe('Select official visitors', () => {
           const heading = getPageHeader($)
           expect($('.govuk-hint').text()).toEqual('Amend an official visit')
           expect(heading).toEqual("Select official visitors from the prisoner's approved contact list")
+
+          // Check inset text is displayed with correct bullet points
+          expect(res.text).toContain('Some visitor details need updating')
+          expect(res.text).toContain('is not an approved contact')
+          expect(res.text).toContain('does not have a recorded relationship with the prisoner')
+
+          // Check MOJ badges are displayed for the two visitors with issues
+          expect(res.text).toContain('CONTACT NOT APPROVED')
+          expect(res.text).toContain('NO RECORDED RELATIONSHIP')
+          expect(res.text).toContain('moj-badge--red')
 
           // Prisoner restrictions table
           const restrictionHeaders = getByDataQa($, 'prisoner-restrictions-table').find('thead > tr > th')
@@ -591,6 +678,83 @@ describe('Select official visitors', () => {
       expect(judgeVisitor).toBeDefined()
       expect(judgeVisitor.contactId).toBe(101)
       expect(judgeVisitor.relationshipToPrisonerCode).toBe('JUD')
+    })
+
+    it('should show alert error when selecting visitor with no relationship', async () => {
+      // Visitor in session but not in API response (no relationship)
+      const journeyVisitorWithNoRelationship = {
+        prisonerContactId: 999,
+        contactId: 999,
+        prisonerNumber: 'A1337AA',
+        firstName: 'Unknown',
+        lastName: 'Visitor',
+        relationshipTypeCode: 'O',
+        relationshipTypeDescription: 'Official',
+        relationshipToPrisonerCode: 'UNK',
+        relationshipToPrisonerDescription: 'Unknown',
+      }
+
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: mockPrisonerRestrictions,
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          selectedTimeSlot: {
+            timeSlotId: 1,
+            visitSlotId: 1,
+            visitDate: '2037-01-26',
+            startTime: '13:30',
+            endTime: '16:00',
+            availableVideoSessions: 2,
+            availableAdults: 3,
+            availableGroups: 2,
+          },
+          officialVisitors: [journeyVisitorWithNoRelationship],
+          visitType: 'IN_PERSON',
+        } as OfficialVisitJourney,
+      })
+
+      officialVisitsService.getAllOfficialContacts.mockResolvedValue(mockOfficialVisitors)
+
+      await request(app)
+        .post(URL)
+        .set('Referer', URL)
+        .send({ selected: ['999-UNK'] })
+        .expect(302)
+        .expect('location', URL)
+        .expect(() =>
+          expectAlertErrors({
+            noRelationship: true,
+          }),
+        )
+    })
+
+    it('should allow progression when selected visitor is not approved but has relationship', async () => {
+      // Visitor from API that is not approved - should be allowed but with warning
+      const mockNotApprovedVisitor = {
+        ...mockOfficialVisitors[0],
+        contactId: 104,
+        prisonerContactId: 4,
+        relationshipToPrisonerCode: 'JUD',
+        relationshipToPrisonerDescription: 'Judge',
+        isApprovedVisitor: false,
+      }
+
+      officialVisitsService.getAllOfficialContacts.mockResolvedValue([...mockOfficialVisitors, mockNotApprovedVisitor])
+
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/select-official-visitors`)
+        .send({ selected: ['104-JUD'] })
+        .expect(302)
+        .expect('location', 'select-social-visitors')
+        .expect(() => expectNoErrorMessages())
+
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.officialVisitors).toHaveLength(1)
+      expect(journeySession.officialVisitors[0].contactId).toBe(104)
     })
   })
 })

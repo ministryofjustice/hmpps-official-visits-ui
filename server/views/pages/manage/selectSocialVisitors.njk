@@ -10,13 +10,17 @@
 {% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 {% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "partials/capacityCheckMessages.njk" import capacityCheckMessages %}
+{% from "partials/unauthorisedVisitorsInset.njk" import unauthorisedVisitorsInset %}
+{%- from "moj/components/badge/macro.njk" import mojBadge -%}
 
 {% set pageTitle = "Select social visitors from the prisoner's approved contact list (optional)" %}
 
 {% block content %}
 
-  {{ capacityCheckMessages(checks)}}
+  {{ capacityCheckMessages(checks, visitId)}}
   {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
+
+  {{ unauthorisedVisitorsInset(user, hasIssueVisitors, shouldShowIssues, hasSocialVisitors, hasNotApprovedVisitors, hasNoRelationshipVisitors) }}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
@@ -89,6 +93,12 @@
             {{ restrictionSummary(contact.restrictionSummary.active or []) }}
           {% endset %}
 
+          {% set badgeHtml %}
+            {% if shouldShowIssues and (contact.issues.notApproved or contact.issues.noRelationship or contact.issues.socialVisitor) %}
+              {{ mojBadge({ text: "CONTACT NOT APPROVED" if contact.issues.notApproved else ("NO RECORDED RELATIONSHIP" if contact.issues.noRelationship else "SOCIAL VISITOR"), classes: "moj-badge--red fit-content" }) }}
+            {% endif %}
+          {% endset %}
+
           {% set rows = (rows.push([
             { html: govukCheckboxes({
               name: "selected[" + loop.index0 + "]",
@@ -108,7 +118,7 @@
                 }
               ]
             }) },
-            { text: (contact.firstName + " " + contact.lastName) | convertToTitleCase },
+            { html: (contact.firstName + " " + contact.lastName) | convertToTitleCase + '<br />' + badgeHtml },
             { text: contact.dateOfBirth | formatDate } or '-',
             { text: contact.relationshipToPrisonerDescription or '-' },
             { html: addressHtml or 'Not entered' },

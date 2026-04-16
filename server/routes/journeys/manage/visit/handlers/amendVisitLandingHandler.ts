@@ -62,7 +62,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
         false,
       ),
       this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerVisited.prisonerNumber, user),
-      this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user, true, true),
+      this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user),
     ])
 
     const enrichedVisitors = await Promise.all(
