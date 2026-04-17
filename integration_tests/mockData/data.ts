@@ -63,6 +63,7 @@ const mockVisit = {
   updatedBy: 'Jane Bloggs',
   updatedTime: '22025-12-04 09:50',
   prisoner: mockPrisoner,
+  visitorIssues: false,
 }
 
 const defaultStartDate = new Date().toISOString().substring(0, 10)
@@ -99,6 +100,8 @@ const generateMockData = (): FindByCriteriaVisit[] => {
         prisonCode: 'LEI',
         prisonerNumber: 'A1111AA',
       },
+      visitorIssues: i % 4 === 0,
+      completionCode: i % 4 === 0 ? undefined : mockVisit.completionCode,
     } as FindByCriteriaVisit
   })
 }
