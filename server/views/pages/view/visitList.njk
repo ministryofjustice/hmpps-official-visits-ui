@@ -174,7 +174,7 @@
             html: '<a class="govuk-link--no-visited-state" href="' + prisonerProfileUrl + '/prisoner/' + visitRecord.prisoner.prisonerNumber + '">' + visitRecord.prisoner | lastNameCommaFirstName + "</a><br/>" + visitRecord.prisoner.prisonerNumber
           },
           {
-            html: visitRecord.visitStatusDescription or '-'
+            html: (visitRecord.visitStatusDescription or '-') + ('<br/><span class="moj-badge moj-badge--red">VISIT ISSUES</span>' if visitRecord.visitorIssues and not visitRecord.completionCode)
           },
           {
             html: '<a class="govuk-link govuk-link--no-visited-state" href="/view/visit/' + visitRecord.officialVisitId + '?backTo=' + backTo + '">Select</a>'

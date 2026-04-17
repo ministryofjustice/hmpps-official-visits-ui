@@ -217,6 +217,91 @@ describe('Search for an official visit', () => {
           ),
         )
     })
+
+    it('should display VISIT ISSUES badge when visitorIssues is true and no completionCode', () => {
+      officialVisitsService.getVisits.mockResolvedValue({
+        content: [
+          {
+            ...mockFindByCriteriaVisit,
+            visitorIssues: true,
+            completionCode: undefined,
+          },
+        ],
+        page: {
+          totalElements: 1,
+          totalPages: 1,
+          number: 0,
+          size: 10,
+        },
+      } as FindByCriteriaResults)
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          const statusCell = getGovukTableCell($, 1, 5)
+          expect(statusCell.text()).toContain('Completed')
+          expect(statusCell.html()).toContain('VISIT ISSUES')
+          expect(statusCell.find('.moj-badge--red').text()).toEqual('VISIT ISSUES')
+        })
+    })
+
+    it('should not display VISIT ISSUES badge when visit has completionCode', () => {
+      officialVisitsService.getVisits.mockResolvedValue({
+        content: [
+          {
+            ...mockFindByCriteriaVisit,
+            visitorIssues: true,
+            completionCode: 'VISITOR_CANCELLED',
+          },
+        ],
+        page: {
+          totalElements: 1,
+          totalPages: 1,
+          number: 0,
+          size: 10,
+        },
+      } as FindByCriteriaResults)
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          const statusCell = getGovukTableCell($, 1, 5)
+          expect(statusCell.text()).toContain('Completed')
+          expect(statusCell.html()).not.toContain('VISIT ISSUES')
+        })
+    })
+
+    it('should not display VISIT ISSUES badge when visitorIssues is false', () => {
+      officialVisitsService.getVisits.mockResolvedValue({
+        content: [
+          {
+            ...mockFindByCriteriaVisit,
+            visitorIssues: false,
+            completionCode: undefined,
+          },
+        ],
+        page: {
+          totalElements: 1,
+          totalPages: 1,
+          number: 0,
+          size: 10,
+        },
+      } as FindByCriteriaResults)
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          const statusCell = getGovukTableCell($, 1, 5)
+          expect(statusCell.text()).toContain('Completed')
+          expect(statusCell.html()).not.toContain('VISIT ISSUES')
+        })
+    })
   })
 
   describe('POST', () => {

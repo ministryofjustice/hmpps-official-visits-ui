@@ -353,6 +353,7 @@ export const mockFindByCriteriaVisit = {
   createdTime: '2025-12-02 14:45',
   updatedBy: 'Jane Bloggs',
   updatedTime: '22025-12-04 09:50',
+  visitorIssues: false,
   prisoner: {
     ...mockPrisoner,
     dateOfBirth: '2025-12-19',

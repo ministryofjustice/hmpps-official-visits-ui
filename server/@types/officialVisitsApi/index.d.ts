@@ -2812,6 +2812,11 @@ export interface components {
       updatedTime?: string
       /** @description The details of the prisoner being visited */
       prisoner: components['schemas']['PrisonerVisitedDetails']
+      /**
+       * @description Indicates potential visitor issues with the visit, if there are issues then true, otherwise false.
+       * @example false
+       */
+      visitorIssues: boolean
     }
     PageMetadata: {
       /** Format: int64 */
