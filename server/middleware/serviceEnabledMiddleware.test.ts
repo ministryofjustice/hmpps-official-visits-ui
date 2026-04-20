@@ -1,8 +1,6 @@
 import type { Request, Response } from 'express'
-
 import serviceEnabledMiddleware from './serviceEnabledMiddleware'
 
-// Mock the config at the top level
 jest.mock('../config', () => ({
   featureToggles: {
     dpsEnabledPrisons: 'MDI,BXI',
