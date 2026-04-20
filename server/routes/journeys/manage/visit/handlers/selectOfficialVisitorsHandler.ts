@@ -38,9 +38,9 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
       `${c.contactId}-${c.relationshipToPrisonerCode}`
 
     const apiContacts = new Map(allContacts.map(c => [contactKey(c), c]))
-    const journeyContacts = contactsOnVisit.filter(c => !apiContacts.has(contactKey(c)))
+    const extraJourneyContacts = contactsOnVisit.filter(c => !apiContacts.has(contactKey(c)))
 
-    return [...allContacts, ...journeyContacts]
+    return [...allContacts, ...extraJourneyContacts]
       .map(c => ({
         ...c,
         issues: {
@@ -48,8 +48,9 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
           noRelationship: !apiContacts.has(contactKey(c)),
           socialVisitor: false,
         },
+        alreadyOnVisit: contactsOnVisit.some(jc => contactKey(jc) === contactKey(c)),
       }))
-      .filter(c => mode === 'amend' || c.isApprovedVisitor)
+      .filter(c => (mode === 'amend' && c.alreadyOnVisit) || c.isApprovedVisitor)
   }
 
   public GET = async (req: Request, res: Response, _next?: NextFunction) => {
