@@ -224,11 +224,15 @@ export const prisonAllowsSocialVisitors = (req: Request) => {
     .includes(req.session.journey?.officialVisit?.prisonCode)
 }
 
+export const prisonEnabled = (caseLoadId: string) => {
+  return config.featureToggles.dpsEnabledPrisons.split(',').includes(caseLoadId)
+}
+
 export const socialVisitorsPageEnabled = (req: Request) => {
   const hasSocialVisitors = req.session.journey.officialVisit.socialVisitors?.length > 0
-  const prisonEnabled = prisonAllowsSocialVisitors(req)
+  const isPrisonEnabled = prisonAllowsSocialVisitors(req)
 
-  return hasSocialVisitors || prisonEnabled
+  return hasSocialVisitors || isPrisonEnabled
 }
 
 export const addRemoveLinks = (

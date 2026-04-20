@@ -1,0 +1,20 @@
+{% extends "../partials/layout.njk" %}
+{% from "components/card.njk" import card %}
+
+{% set pageTitle = "Service not available - "  + applicationName + " - DPS" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">The {{ serviceName }} service is not available at {{ prisonName }} yet</h1>
+
+      <p class="govuk-body">
+        The {{ serviceName }} service will be available at {{ prisonName }} soon. We'll let you know when it's coming.
+      </p>
+
+      <p class="govuk-body">
+        If you have any questions for the team, contact <a href="mailto:officialvisits-productteam@justice.gov.uk" class="govuk-link">officialvisits-productteam@justice.gov.uk</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

@@ -59,6 +59,9 @@ export interface AzureADUser extends BaseUser {
 
 export type HmppsUser = (PrisonUser | ProbationUser | ExternalUser | AzureADUser) & {
   activeCaseLoadId?: string
+  activeCaseLoad?: {
+    description: string
+  }
   permissions: {
     OV: Permission
   }
