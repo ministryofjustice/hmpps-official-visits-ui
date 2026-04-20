@@ -328,7 +328,7 @@ describe('Select official visitors', () => {
             availableAdults: 3,
             availableGroups: 2,
           },
-          officialVisitors: [visitorWithNoRelationship],
+          officialVisitors: [visitorWithNoRelationship, notApprovedVisitor],
           socialVisitors: [],
         } as OfficialVisitJourney,
       })
@@ -742,6 +742,30 @@ describe('Select official visitors', () => {
         relationshipToPrisonerDescription: 'Judge',
         isApprovedVisitor: false,
       }
+
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: mockPrisonerRestrictions,
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          selectedTimeSlot: {
+            timeSlotId: 1,
+            visitSlotId: 1,
+            visitDate: '2037-01-26',
+            startTime: '13:30',
+            endTime: '16:00',
+            availableVideoSessions: 2,
+            availableAdults: 3,
+            availableGroups: 2,
+          },
+          visitType: 'IN_PERSON',
+          officialVisitors: [mockNotApprovedVisitor],
+          socialVisitors: [],
+        } as OfficialVisitJourney,
+      })
 
       officialVisitsService.getAllOfficialContacts.mockResolvedValue([...mockOfficialVisitors, mockNotApprovedVisitor])
 
