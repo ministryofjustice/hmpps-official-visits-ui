@@ -1,6 +1,5 @@
 import { jwtDecode } from 'jwt-decode'
 import type { RequestHandler } from 'express'
-
 import logger from '../../logger'
 
 export default function authorisationMiddleware(authorisedRoles: string[] = []): RequestHandler {
