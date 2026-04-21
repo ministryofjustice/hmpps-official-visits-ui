@@ -23,5 +23,4 @@ generic-service:
     AUDIT_ENABLED: "true"
 
 generic-prometheus-alerts:
-  alertSeverity: move-and-improve-alerts-non-prod # TODO: Change to prod once we're live
-  businessHoursOnly: true
+  alertSeverity: move-and-improve-alerts
