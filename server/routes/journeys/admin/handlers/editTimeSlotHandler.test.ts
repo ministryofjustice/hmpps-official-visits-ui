@@ -107,11 +107,6 @@ describe('EditTimeSlotHandler', () => {
         .expect(() =>
           expectErrorMessages([
             {
-              fieldId: 'startDate',
-              href: '#startDate',
-              text: 'Select a date that is today or in the future for the start date',
-            },
-            {
               fieldId: 'expiryDate',
               href: '#expiryDate',
               text: 'Select a date that is today or in the future for the end date',

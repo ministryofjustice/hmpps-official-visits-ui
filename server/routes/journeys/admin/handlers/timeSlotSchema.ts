@@ -57,7 +57,9 @@ export const schema = z
     } else {
       const startDay = startOfDayLocal(rawStart as Date)
       const today = startOfDayLocal(new Date())
-      if (startDay.getTime() < today.getTime()) {
+      // Only check if start date is in the past if it's a new time slot (no timeSlotId)
+      const isEditMode = typeof data.timeSlotId === 'number' && Number.isInteger(data.timeSlotId)
+      if (!isEditMode && startDay.getTime() < today.getTime()) {
         ctx.addIssue({ code: 'custom', path: ['startDate'], message: ERROR_START_DATE_PAST })
       }
     }

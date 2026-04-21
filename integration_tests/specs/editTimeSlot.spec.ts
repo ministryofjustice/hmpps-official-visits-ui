@@ -90,31 +90,4 @@ test.describe('Admin edit time slot', () => {
 
     await expect(page.getByText('You have updated a visiting time')).toBeVisible()
   })
-
-  test('should show validation error when start date is in the past', async ({ page }) => {
-    await loginAsAdmin(page)
-    await page.goto('/admin/time-slots')
-
-    const mondayTab = page.getByRole('tab', { name: 'Monday' })
-    if (await mondayTab.count()) {
-      await mondayTab.click()
-    }
-
-    const editLink = page.locator('a[href*="/admin/time-slot/3/edit"]')
-    await expect(editLink).toBeVisible()
-    await editLink.click()
-
-    await expect(page.getByRole('heading', { name: 'Edit a time for Monday' })).toBeVisible()
-
-    await page.fill('input[name="startTime-startHour"]', '11')
-    await page.fill('input[name="startTime-startMinute"]', '15')
-    await page.fill('input[name="endTime-endHour"]', '12')
-    await page.fill('input[name="endTime-endMinute"]', '30')
-
-    await page.getByRole('button', { name: 'Save' }).click()
-
-    await expect(
-      page.getByRole('link', { name: 'Select a date that is today or in the future for the start date' }),
-    ).toBeVisible()
-  })
 })
