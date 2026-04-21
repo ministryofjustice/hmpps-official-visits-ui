@@ -50,7 +50,7 @@ describe('admin timeSlotSchema', () => {
     }
   })
 
-  it('rejects a startDate in the past', async () => {
+  it('rejects a startDate in the past for new time slots', async () => {
     const result = await schema.safeParseAsync({
       startDate: yesterdayStr,
       expiryDate: tomorrowStr,
@@ -63,6 +63,24 @@ describe('admin timeSlotSchema', () => {
 
     expect(result.success).toBeFalsy()
     expect(result.error?.issues.some((i: { message: string }) => i.message === START_DATE_ERROR_MESSAGE)).toBeTruthy()
+  })
+
+  it('accepts a startDate in the past when editing (timeSlotId present)', async () => {
+    const result = await schema.safeParseAsync({
+      startDate: yesterdayStr,
+      expiryDate: tomorrowStr,
+      dayCode: 'MON',
+      'startTime-startHour': '09',
+      'startTime-startMinute': '00',
+      'endTime-endHour': '10',
+      'endTime-endMinute': '00',
+      timeSlotId: '123',
+    })
+
+    expect(result.success).toBeTruthy()
+    if (result.success) {
+      expect(result.data.startDate).toBe(yesterdayStr)
+    }
   })
 
   it('rejects an invalid expiryDate', async () => {
