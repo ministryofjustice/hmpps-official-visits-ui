@@ -4,11 +4,16 @@
 
 {% set mainClasses = "app-container govuk-body" %}
 
-{% block content %}
-  <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Official Visits</h1>
+{% block main %}
+  <div class="govuk-width-container" id="before-content">
+    {% include 'partials/beforeContent.njk' %}
+  </div>
+  <main class="govuk-main-wrapper govuk-!-padding-top-0" id="main-content">
+    <div class="govuk-width-container">
+      <h1 class="govuk-heading-l govuk-!-margin-top-8">Official Visits</h1>
+    </div>
 
-  <div class="homepage-content-container">
-    <div class="homepage-content">
+    <div class="homepage-card-background">
       <div class="govuk-width-container">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
@@ -47,10 +52,11 @@
                   }) }}
                 </div>
               {% endif %}
+
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 {% endblock %}
