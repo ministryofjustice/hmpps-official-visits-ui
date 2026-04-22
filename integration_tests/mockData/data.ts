@@ -1,4 +1,5 @@
 // Create mock data with one visit at each location, status, type and date for two people (32 visits)
+import { addDays } from 'date-fns'
 import { FindByCriteriaVisit } from '../../server/@types/officialVisitsApi/types'
 
 const locations = [
@@ -67,7 +68,7 @@ const mockVisit = {
 }
 
 const defaultStartDate = new Date().toISOString().substring(0, 10)
-const defaultEndDate = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+const defaultEndDate = new Date(addDays(new Date(), 14)).toISOString().substring(0, 10)
 
 const generateMockData = (): FindByCriteriaVisit[] => {
   const combos = [

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { addYears } from 'date-fns'
+import { addDays, addYears } from 'date-fns'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
@@ -52,8 +52,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
       page: Number(req.body.page) || 1,
       ...(req.body.prisoner ? { prisoner: req.body.prisoner as string } : {}),
       startDate: (req.body.startDate as string) || new Date().toISOString().substring(0, 10),
-      endDate:
-        (req.body.endDate as string) || new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
+      endDate: (req.body.endDate as string) || new Date(addDays(new Date(), 14)).toISOString().substring(0, 10),
       ...validateRefDataItems<VisitStatusType>('status', req.body.status as string, statusOpts),
       ...validateRefDataItems<VisitType>('type', req.body.type as string, typeOpts),
       ...validateRefDataItems('location', req.body.location as string, locations),
