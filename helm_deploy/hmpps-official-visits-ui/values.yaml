@@ -65,9 +65,9 @@ generic-service:
       FEATURE_DPS_ENABLED_PRISONS: 'FEATURE_DPS_ENABLED_PRISONS'
 
   allowlist:
-    kmpg: 195.68.59.74
     groups:
-      - internal
+      - digital_staff_and_mojo
+      - moj_cloud_platform
       - prisons
       - private_prisons
 
