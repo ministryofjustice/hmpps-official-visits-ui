@@ -68,7 +68,7 @@ const mockVisit = {
 }
 
 const defaultStartDate = new Date().toISOString().substring(0, 10)
-const defaultEndDate = new Date(addDays(new Date(), 14)).toISOString().substring(0, 10)
+const defaultEndDate = new Date(addDays(new Date(), 7)).toISOString().substring(0, 10)
 
 const generateMockData = (): FindByCriteriaVisit[] => {
   const combos = [

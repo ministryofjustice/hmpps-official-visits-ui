@@ -52,7 +52,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
       page: Number(req.body.page) || 1,
       ...(req.body.prisoner ? { prisoner: req.body.prisoner as string } : {}),
       startDate: (req.body.startDate as string) || new Date().toISOString().substring(0, 10),
-      endDate: (req.body.endDate as string) || new Date(addDays(new Date(), 14)).toISOString().substring(0, 10),
+      endDate: (req.body.endDate as string) || new Date(addDays(new Date(), 7)).toISOString().substring(0, 10),
       ...validateRefDataItems<VisitStatusType>('status', req.body.status as string, statusOpts),
       ...validateRefDataItems<VisitType>('type', req.body.type as string, typeOpts),
       ...validateRefDataItems('location', req.body.location as string, locations),

@@ -69,7 +69,7 @@ afterEach(() => {
 
 const URL = `/view/list`
 const startDate = new Date().toISOString().substring(0, 10)
-const endDate = new Date(addDays(new Date(), 14)).toISOString().substring(0, 10)
+const endDate = new Date(addDays(new Date(), 7)).toISOString().substring(0, 10)
 
 describe('Search for an official visit', () => {
   describe('GET', () => {
@@ -89,7 +89,7 @@ describe('Search for an official visit', () => {
             new Date().toISOString().substring(0, 10).split('-').reverse().join('/'),
           )
           expect($('#endDate').attr('value')).toEqual(
-            new Date(addDays(new Date(), 14)).toISOString().substring(0, 10).split('-').reverse().join('/'),
+            new Date(addDays(new Date(), 7)).toISOString().substring(0, 10).split('-').reverse().join('/'),
           )
 
           expect($('.moj-pagination__results').text()).toContain('Showing 1 to 10 of 20 total results')
