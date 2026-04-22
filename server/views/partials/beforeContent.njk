@@ -1,2 +1,28 @@
+{% if not hideBetaBanner %}
+  {{ govukPhaseBanner({
+    tag: {
+      text: "Beta"
+    },
+    html: 'This is a new service - your <a class="govuk-link" href="mailto:officialvisits-productteam@justice.gov.uk">feedback</a> will help us to improve it. You can find out more on <a class="govuk-link" href="https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx" target="_blank">SharePoint.</a>'
+  }) }}
+{% endif %}
+{% if backUrl %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backUrl
+  }) }}
+{% endif %}
+
+{% if showBreadcrumbs and breadcrumbs and (not backUrl) %}
+  <div class="ov-breadcrumbs govuk-!-display-none-print">
+    <div class="ov-breadcrumbs__breadcrumbs">
+      {{ govukBreadcrumbs({
+        items: breadcrumbs.items
+      }) }}
+    </div>
+  </div>
+
+{% endif %}
+
 {% include 'partials/formErrorSummary.njk' %}
 {% include 'partials/successMessage.njk' %}
