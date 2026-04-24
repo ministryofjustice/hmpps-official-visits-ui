@@ -231,7 +231,7 @@ export default class OfficialVisitsApiClient extends RestClient {
 
   async getAllTimeSlotsAndVisitSlots(prisonCode: string, user: HmppsUser): Promise<TimeSlotSummary> {
     return this.get<TimeSlotSummary>(
-      { path: `/admin/time-slots/prison/${prisonCode}`, query: { activeOnly: false } },
+      { path: `/admin/time-slots/prison/${prisonCode}`, query: { weekOldOrLatest: true } },
       asSystem(user.username),
     )
   }

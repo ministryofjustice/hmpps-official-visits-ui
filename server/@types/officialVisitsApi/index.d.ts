@@ -131,62 +131,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/queue-admin/retry-dlq/{dlqName}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    /**
-     * @description Requires one of the following roles:
-     *     * OFFICIAL_VISITS_ADMIN
-     */
-    put: operations['retryDlq']
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/queue-admin/retry-all-dlqs': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put: operations['retryAllDlqs']
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/queue-admin/purge-queue/{queueName}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    /**
-     * @description Requires one of the following roles:
-     *     * OFFICIAL_VISITS_ADMIN
-     */
-    put: operations['purgeQueue']
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   '/official-visit/prison/{prisonCode}/id/{officialVisitId}/visitors': {
     parameters: {
       query?: never
@@ -833,26 +777,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/queue-admin/get-dlq-messages/{dlqName}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * @description Requires one of the following roles:
-     *     * OFFICIAL_VISITS_ADMIN
-     */
-    get: operations['getDlqMessages']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   '/prisoner/{prisonerNumber}/approved-relationships': {
     parameters: {
       query?: never
@@ -1357,6 +1281,11 @@ export interface components {
        */
       commentText?: string
       /**
+       * @description The current term flag from NOMIS. Default is true if not provided.
+       * @example true
+       */
+      currentTerm: boolean
+      /**
        * @description The prisoner search type code. Maps to the same reference code values in both NOMIS and DPS.
        * @example RUB_A
        */
@@ -1532,6 +1461,8 @@ export interface components {
       visitOrderNumber?: number
       /** @description The staff username who authorised an override for a ban for this visit */
       overrideBanStaffUsername?: string
+      /** @description The current term marker. True if the visit is associated with the prisoner's latest term in prison, otherwise false */
+      currentTerm?: boolean
     }
     SyncOfficialVisitor: {
       /**
@@ -1683,14 +1614,6 @@ export interface components {
        * @example X999X
        */
       updateUsername: string
-    }
-    RetryDlqResult: {
-      /** Format: int32 */
-      messagesFoundCount: number
-    }
-    PurgeQueueResult: {
-      /** Format: int32 */
-      messagesFoundCount: number
     }
     /** @description The request body for updating  visitors details for an official visit */
     OfficialVisitUpdateVisitorsRequest: {
@@ -3181,19 +3104,6 @@ export interface components {
        */
       officialVisitId: number
     }
-    DlqMessage: {
-      body: {
-        [key: string]: unknown
-      }
-      messageId: string
-    }
-    GetDlqResult: {
-      /** Format: int32 */
-      messagesFoundCount: number
-      /** Format: int32 */
-      messagesReturnedCount: number
-      messages: components['schemas']['DlqMessage'][]
-    }
     ApprovedContact: {
       /**
        * Format: int64
@@ -3970,70 +3880,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  retryDlq: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        dlqName: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['RetryDlqResult']
-        }
-      }
-    }
-  }
-  retryAllDlqs: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['RetryDlqResult'][]
-        }
-      }
-    }
-  }
-  purgeQueue: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        queueName: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['PurgeQueueResult']
         }
       }
     }
@@ -5592,30 +5438,6 @@ export interface operations {
       }
     }
   }
-  getDlqMessages: {
-    parameters: {
-      query?: {
-        maxMessages?: number
-      }
-      header?: never
-      path: {
-        dlqName: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['GetDlqResult']
-        }
-      }
-    }
-  }
   getApprovedContacts: {
     parameters: {
       query?: {
@@ -5827,8 +5649,8 @@ export interface operations {
   getAllTimeSlotsAndVisitSlots: {
     parameters: {
       query?: {
-        /** @description If true, only returns active time slots and visit slots */
-        activeOnly?: boolean
+        /** @description If true, only returns active time slots and visit slots with expiry date within last 7 days or in the future. If false, returns all time slots and visit slots regardless of their effective and expiry dates. Defaults to true. */
+        weekOldOrLatest?: boolean
       }
       header?: never
       path: {
