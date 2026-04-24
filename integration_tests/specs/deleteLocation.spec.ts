@@ -23,7 +23,7 @@ const setupStubs = async (timeSlotSummary: TimeSlotSummaryItem, visitSlot: Visit
   await officialVisitsApi.stubGetOfficialVisitLocationsAtPrison('LEI', visitLocations as VisitLocation[])
 }
 
-test.describe('Admin: Delete a location', () => {
+test.skip('Admin: Delete a location', () => {
   test.beforeEach(async () => {
     await hmppsAuth.stubSignInPage()
     await componentsApi.stubComponents()

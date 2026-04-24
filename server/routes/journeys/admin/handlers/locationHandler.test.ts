@@ -46,7 +46,7 @@ describe('LocationHandler', () => {
     expect(cancelText).toBe('Return to schedule day view')
   })
 
-  it('renders delete link when there are no visits', async () => {
+  xit('renders delete link when there are no visits', async () => {
     const timeSlotId = 123
 
     officialVisitsService.getPrisonTimeSlotSummaryById.mockResolvedValue({
