@@ -16,6 +16,7 @@
       {% if visitSlots.length > 0 %}
           {% for slot in visitSlots %}
               {% set actionHtml = '<a href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/edit">Edit</a>' %}
+                {# Disabled delete functionality temporarily #}
                 {# {% if slot.hasVisit == false %}
                   {% set actionHtml = actionHtml + ' <a class="govuk-link govuk-!-margin-left-4" href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/delete">Delete</a>' %}
                 {% endif %} #}
