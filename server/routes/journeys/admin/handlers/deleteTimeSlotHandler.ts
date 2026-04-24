@@ -33,7 +33,8 @@ export default class DeleteTimeSlotHandler implements PageHandler {
     })
   }
 
-  public POST = async (req: Request, res: Response) => {
+  // Disabled POST route to prevent deleting through manual request
+  public POST_disabled = async (req: Request, res: Response) => {
     const { user, digitalPrisonServicesUrl } = res.locals
     const timeSlotId = Number(req.params.timeSlotId)
     const { dayCode } = req.body
