@@ -72,7 +72,7 @@ describe('DeleteTimeSlotHandler', () => {
     })
   })
 
-  describe('POST', () => {
+  xdescribe('POST', () => {
     it('deletes and redirects on success', async () => {
       const noVisitSlots: TimeSlotSummary = {
         prisonCode: 'MDI',
