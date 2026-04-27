@@ -80,6 +80,9 @@ describe('LocationHandler', () => {
     const res = await request(app).get(`/admin/time-slot/${timeSlotId}/locations`)
 
     expect(res.status).toBe(200)
-    expect(res.text).toContain('No locations')
+    expect(res.text).toContain('No scheduled locations for time slot')
+    expect(res.text).toContain(
+      "There are no locations in this time slot. Add a new location to add it to your prison's schedule",
+    )
   })
 })

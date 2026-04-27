@@ -1,5 +1,6 @@
 import { type Express } from 'express'
 import request from 'supertest'
+import { scheduler } from 'timers/promises'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import { allSlots } from '../../../../testutils/mocks'
@@ -45,6 +46,23 @@ describe('TimeSlotsHandler', () => {
     // assert links
     expect(res.text).toContain('href="/admin/time-slot/1/locations">Manage locations</a>')
     expect(res.text).toContain('href="/admin/time-slot/1/edit?day=MON">Edit</a>')
+  })
+
+  it('should render the days page with no slots message when no slots exist', async () => {
+    officialVisitsService.getVisitSlotsAtPrison.mockResolvedValue({
+      prisonCode: 'HEI',
+      prisonName: 'Hewell (HMP)',
+      timeSlots: [],
+    })
+
+    const res = await request(app).get(`/admin/time-slots`)
+
+    expect(officialVisitsService.getVisitSlotsAtPrison).toHaveBeenCalledWith('HEI', adminUser)
+    expect(res.status).toBe(200)
+    expect(res.text).toContain('No scheduled visit times')
+    expect(res.text).toContain(
+      "There are no time slots for this day. Create a new time slot to add it to your prison's schedule.",
+    )
   })
 
   it('should sort time slots by start time within each day', async () => {

@@ -15,10 +15,10 @@
       {% set rows = [] %}
       {% if visitSlots.length > 0 %}
           {% for slot in visitSlots %}
-              {% set actionHtml = '<a href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/edit">Edit</a>' %}
+              {% set actionHtml = '<a class="govuk-link--no-visited-state" href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/edit">Edit</a>' %}
                 {# Disabled delete functionality temporarily #}
                 {# {% if slot.hasVisit == false %}
-                  {% set actionHtml = actionHtml + ' <a class="govuk-link govuk-!-margin-left-4" href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/delete">Delete</a>' %}
+                  {% set actionHtml = actionHtml + ' <a class="govuk-link govuk-link--no-visited-state govuk-!-margin-left-4" href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/delete">Delete</a>' %}
                 {% endif %} #}
               {% set rows = (rows.push([
                   { text: slot.locationDescription },
@@ -28,26 +28,20 @@
                   { html: actionHtml }
               ]), rows) %}
           {% endfor %}
+          {{ govukTable({
+            head: [
+                { text: 'Location' },
+                { text: 'Maximum Adults' },
+                { text: 'Maximum Groups' },
+                { text: 'Maximum Video Visits' },
+                { text: 'Actions' }
+            ],
+            rows: rows
+        }) }}
       {% else %}
-          {% set rows = (rows.push([
-              { text: 'No locations' },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' }
-          ]), rows) %}
+        <h2 class="govuk-heading-m">No scheduled locations for time slot</h2>
+        <p class="govuk-!-margin-bottom-6 govuk-!-margin-top-6">There are no locations in this time slot. Add a new location to add it to your prison's schedule.</p>
       {% endif %}
-
-      {{ govukTable({
-          head: [
-              { text: 'Location' },
-              { text: 'Maximum Adults' },
-              { text: 'Maximum Groups' },
-              { text: 'Maximum Video Visits' },
-              { text: 'Actions' }
-          ],
-          rows: rows
-      }) }}
 
     <div class="govuk-button-group">
       {{ govukButton({
@@ -56,7 +50,7 @@
         href: "/admin/time-slot/" ~ timeSlot.prisonTimeSlotId ~ "/location/new"
       }) }}
       <a href="{{ backUrl }}"
-         class="govuk-link govuk-!-margin-left-4">
+         class="govuk-link govuk-!-margin-left-4 govuk-link--no-visited-state">
         Return to schedule day view
       </a>
     </div>
