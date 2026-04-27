@@ -1,6 +1,5 @@
 import { type Express } from 'express'
 import request from 'supertest'
-import { scheduler } from 'timers/promises'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import { allSlots } from '../../../../testutils/mocks'
