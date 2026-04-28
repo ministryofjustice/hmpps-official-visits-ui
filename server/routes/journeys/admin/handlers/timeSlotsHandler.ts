@@ -24,7 +24,7 @@ export default class TimeSlotsHandler implements PageHandler {
         acc[dayCode].push(slot)
         return acc
       },
-      {} as Record<string, typeof allSlots.timeSlots>,
+      { MON: [], TUE: [], WED: [], THU: [], FRI: [], SAT: [], SUN: [] } as Record<string, typeof allSlots.timeSlots>,
     )
 
     // Sort each day's slots by start time, then by end time for tie-breakers

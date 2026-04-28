@@ -52,7 +52,7 @@
 
     {% set items = [] %}
     {% for d in days %}
-      {% if d.slots and d.slots.length > 0 %}
+      {% if d.slots %}
         {% set items = (items.push({ label: d.label, id: d.id, panel: { html: d.html } }), items) %}
       {% endif %}
     {% endfor %}
@@ -63,15 +63,14 @@
 {% endblock %}
 
 {% macro dayVisitTimes(slots, dayLabel, dayCode) %}
-  <h2 class="govuk-heading-m">Scheduled visit times</h2>
-
   {% set rows = [] %}
-  {% if slots.length > 0 %}
+  {% if slots and slots.length > 0 %}
+    <h2 class="govuk-heading-m">Scheduled visit times</h2>
     {% for slot in slots %}
       {% set manageUrl = '/admin/time-slot/' + slot.timeSlot.prisonTimeSlotId +'/locations'%}
       {% set editUrl = "/admin/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/edit?day=" ~ dayCode %}
       {% set deleteUrl = "/admin/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/delete" %}
-      {% set actionLinks = '<span class="actions"><a href="' + manageUrl + '">Manage locations</a> <a href="' + editUrl + '">Edit</a>' %}
+      {% set actionLinks = '<span class="actions"><a class="govuk-link--no-visited-state" href="' + manageUrl + '">Manage locations</a> <a class="govuk-link--no-visited-state" href="' + editUrl + '">Edit</a>' %}
       {# Disabled delete functionality temporarily #}
       {# {% if slot.visitSlots and slot.visitSlots.length == 0 %}
         {% set actionLinks = actionLinks + ' <a href="' + deleteUrl + '">Delete</a>' %}
@@ -85,26 +84,21 @@
         { html: actionLinks }
       ]), rows) %}
     {% endfor %}
-  {% else %}
-    {% set rows = (rows.push([
-      { text: 'No visit times' },
-      { text: '' },
-      { text: '' },
-      { text: '' },
-      { text: '' }
-    ]), rows) %}
-  {% endif %}
 
-  {{ govukTable({
-    head: [
-      { text: 'Start time' },
-      { text: 'End time' },
-      { text: 'Effective from' },
-      { text: 'Valid until' },
-      { text: 'Actions' }
-    ],
-    rows: rows
-  }) }}
+    {{ govukTable({
+      head: [
+        { text: 'Start time' },
+        { text: 'End time' },
+        { text: 'Effective from' },
+        { text: 'Valid until' },
+        { text: 'Actions' }
+      ],
+      rows: rows
+    }) }}
+  {% else %}
+    <h2 class="govuk-heading-m">No scheduled visit times</h2>
+    <p>There are no time slots for this day. Create a new time slot to add it to your prison's schedule.</p>
+  {% endif %}
 
   <div class="govuk-button-group">
     {{ govukButton({
