@@ -56,15 +56,16 @@ export default class EquipmentHandler implements PageHandler {
         assistedNotes: visitor.assistanceNotes,
         ...(visitor.equipmentNotes ? { visitorEquipment: { description: visitor.equipmentNotes } } : {}),
       }))
-
+      const ovId = req.params.ovId as string
+      const journeyId = req.params.journeyId as string
       await this.officialVisitsService.updateVisitors(
         officialVisit.prisonCode,
-        req.params.ovId,
+        ovId,
         { officialVisitors },
         res.locals.user,
       )
       req.flash('updateVerb', 'amended')
-      return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
+      return res.redirect(`/manage/amend/${ovId}/${journeyId}`)
     }
     return res.redirect(`comments`)
   }

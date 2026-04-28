@@ -15,11 +15,11 @@ export default function journeyDataMiddleware(journeyName: keyof Journey): Reque
 
     Object.defineProperty(req.session.journey, 'reachedCheckAnswers', {
       get() {
-        const { journeyId } = req.params
+        const journeyId = req.params.journeyId as string
         return req.session.journeyData[journeyId]?.reachedCheckAnswers
       },
       set(value) {
-        const { journeyId } = req.params
+        const journeyId = req.params.journeyId as string
 
         if (!req.session.journeyData[journeyId]) {
           return
@@ -31,11 +31,11 @@ export default function journeyDataMiddleware(journeyName: keyof Journey): Reque
 
     Object.defineProperty(req.session.journey, 'journeyCompleted', {
       get() {
-        const { journeyId } = req.params
+        const journeyId = req.params.journeyId as string
         return req.session.journeyData[journeyId]?.journeyCompleted
       },
       set(value) {
-        const { journeyId } = req.params
+        const journeyId = req.params.journeyId as string
 
         if (!req.session.journeyData[journeyId]) {
           return
@@ -47,11 +47,11 @@ export default function journeyDataMiddleware(journeyName: keyof Journey): Reque
 
     Object.defineProperty(req.session.journey, journeyName, {
       get() {
-        const { journeyId } = req.params
+        const journeyId = req.params.journeyId as string
         return req.session.journeyData[journeyId]?.[journeyName]
       },
       set(value) {
-        const { journeyId } = req.params
+        const journeyId = req.params.journeyId as string
         req.session.journeyData[journeyId] ??= { instanceUnixEpoch: Date.now() }
         req.session.journeyData[journeyId][journeyName] = value
 

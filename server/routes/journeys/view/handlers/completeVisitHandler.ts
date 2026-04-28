@@ -17,7 +17,12 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
     this.BODY = schemaFactory(this.officialVisitsService)
   }
 
-  GET = async (req: Request, res: Response) => {
+  GET = async (
+    req: Request<{
+      ovId: string
+    }>,
+    res: Response,
+  ) => {
     const { ovId } = req.params
     const { user } = res.locals
     const prisonCode = req.session.activeCaseLoadId
@@ -46,7 +51,12 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
 
   BODY: SchemaFactory
 
-  POST = async (req: Request, res: Response) => {
+  POST = async (
+    req: Request<{
+      ovId: string
+    }>,
+    res: Response,
+  ) => {
     const b64BackTo = req.query.backTo as string
     const prisonCode = req.session.activeCaseLoadId
     const { ovId } = req.params

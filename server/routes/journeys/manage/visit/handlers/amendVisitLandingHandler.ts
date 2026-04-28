@@ -45,7 +45,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
   }
 
   GET = async (req: Request, res: Response) => {
-    const { ovId } = req.params
+    const ovId = req.params.ovId as string
     const { user } = res.locals
     const b64BackTo = req.session.journey.amendVisit?.backTo || (req.query.backTo as string)
 
@@ -155,6 +155,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
     }
 
     const updateVerb = req.flash('updateVerb')[0]
+    const journeyId = req.params.journeyId as string
     return res.render('pages/view/visit', {
       visit: {
         ...visit,
@@ -164,7 +165,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
       },
       updateVerb,
       b64BackTo: b64BackTo || '',
-      journeyId: req.params.journeyId,
+      journeyId,
       amendedBackUrl: tryDecodeB64(b64BackTo) || '/view/list',
       backUrl: `/view/visit/${visit.officialVisitId}?backTo=${b64BackTo}`,
       prisoner: req.session.journey.officialVisit.prisoner,

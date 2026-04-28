@@ -10,7 +10,12 @@ export default class CancelOfficialVisitHandler implements PageHandler {
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
-  GET = async (req: Request, res: Response) => {
+  GET = async (
+    req: Request<{
+      ovId: string
+    }>,
+    res: Response,
+  ) => {
     const { ovId } = req.params
     const b64BackTo = req.query.backTo as string
 
@@ -29,7 +34,7 @@ export default class CancelOfficialVisitHandler implements PageHandler {
   POST = async (req: Request, res: Response) => {
     const b64BackTo = req.query.backTo as string
     const prisonCode = req.session.activeCaseLoadId
-    const { ovId } = req.params
+    const ovId = req.params.ovId as string
 
     const body: CancelTypeRequest = {
       cancellationReason: req.body.reason as VisitCompletionType,
@@ -38,6 +43,6 @@ export default class CancelOfficialVisitHandler implements PageHandler {
 
     await this.officialVisitsService.cancelVisit(prisonCode, ovId, body, res.locals.user)
     req.flash('updateVerb', 'cancelled')
-    return res.redirect(`/view/visit/${req.params.ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`)
+    return res.redirect(`/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`)
   }
 }
