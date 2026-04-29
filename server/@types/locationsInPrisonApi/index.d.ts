@@ -72,6 +72,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/prison-configuration/{prisonId}/non-resi-service/{status}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Update the status of the service for a prison
+     * @description Requires role LOCATION_CONFIG_ADMIN
+     */
+    put: operations['updateNonResiLocationServiceActiveStatus']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/prison-configuration/{prisonId}/include-seg-in-roll-count/{includeSegInRollCountStatus}': {
     parameters: {
       query?: never
@@ -333,6 +353,94 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/locations/residential/{id}/cell-sanitation-change': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Update the cell sanitation and optionally provide a reason for change for certification approval
+     * @description Requires role MAINTAIN_LOCATIONS and write scope
+     */
+    put: operations['updateCellSanitation']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/locations/residential/{id}/cell-mark-change': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Update the cell mark and optionally provide a reason for change for certification approval
+     * @description Requires role MAINTAIN_LOCATIONS and write scope
+     */
+    put: operations['updateCellMark']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/locations/non-residential/{id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Returns non-residential information for this ID
+     * @description Requires role VIEW_LOCATIONS
+     */
+    get: operations['getNonResidentialLocation']
+    /**
+     * Update of a non-residential location
+     * @description Requires role MAINTAIN_LOCATIONS and write scope
+     */
+    put: operations['updateNonResidentialLocation']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /**
+     * Partial update of a non-residential location, not used by UI, data fixes only
+     * @description Requires role MAINTAIN_LOCATIONS and write scope
+     */
+    patch: operations['patchNonResidentialLocation']
+    trace?: never
+  }
+  '/locations/edit-cells': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Updates a list of DRAFT cells below a parent DRAFT location
+     * @description Requires role MAINTAIN_LOCATIONS and write scope
+     */
+    put: operations['updateCells']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/locations/bulk/reactivate': {
     parameters: {
       query?: never
@@ -462,10 +570,10 @@ export interface paths {
     }
     get?: never
     /**
-     * Requests approval for a location currently either LOCKED or in DRAFT status, locations below this will be included in the request
+     * Requests approval for a DRAFT location, locations below this will be included in the request
      * @description Requires role LOCATION_CERTIFICATION
      */
-    put: operations['requestApproval']
+    put: operations['draftRequestApproval']
     post?: never
     delete?: never
     options?: never
@@ -486,6 +594,26 @@ export interface paths {
      * @description Requires role LOCATION_CERTIFICATION
      */
     put: operations['rejectCertificationRequest']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/certification/location/reactivation-request-approval': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Requests approval to reactivate a set of locations
+     * @description Requires role LOCATION_CERTIFICATION
+     */
+    put: operations['reactivationRequestApproval']
     post?: never
     delete?: never
     options?: never
@@ -583,10 +711,50 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Creates a non-residential location
+     * Creates a non-residential location, not used by UI, data fixes only
      * @description Requires role MAINTAIN_LOCATIONS and write scope
      */
     post: operations['createNonResidentialLocation']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/locations/non-residential/{prisonId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Creates a non-residential location in a specified prison with basic data
+     * @description Requires role MAINTAIN_LOCATIONS and write scope
+     */
+    post: operations['createBasicNonResidentialLocation']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/locations/non-residential/prison/{prisonId}/generate-missing-children': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Generates missing child locations for services with parent
+     * @description Requires role MAINTAIN_LOCATIONS and write scope
+     */
+    post: operations['generateMissingChildren']
     delete?: never
     options?: never
     head?: never
@@ -653,6 +821,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/cell-certificates/prison/{prisonId}/baseline': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Baselines a certificate for a prison based on the current location setup
+     * @description Requires LOCATION_CERTIFICATION role and write scope
+     */
+    post: operations['baselineCellCertificateForPrison']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/locations/residential/{id}': {
     parameters: {
       query?: never
@@ -693,26 +881,6 @@ export interface paths {
     patch: operations['patchResidentialLocationByKey']
     trace?: never
   }
-  '/locations/non-residential/{id}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    /**
-     * Partial update of a non-residential location
-     * @description Requires role MAINTAIN_LOCATIONS and write scope
-     */
-    patch: operations['patchNonResidentialLocation']
-    trace?: never
-  }
   '/locations/non-residential/key/{key}': {
     parameters: {
       query?: never
@@ -727,7 +895,7 @@ export interface paths {
     options?: never
     head?: never
     /**
-     * Partial update of a non-residential location
+     * Partial update of a non-residential location, not used by UI, data fixes only
      * @description Requires role MAINTAIN_LOCATIONS and write scope
      */
     patch: operations['patchNonResidentialLocationByKey']
@@ -785,57 +953,6 @@ export interface paths {
      * @description Requires role VIEW_LOCATIONS
      */
     get: operations['getSignedOperationCapacity']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/reports/{reportId}/{reportVariantId}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** @description Returns the dataset for the given report ID and report variant ID filtered by the filters provided in the query. */
-    get: operations['configuredApiDataset']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/reports/{reportId}/{reportVariantId}/{fieldId}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** @description Returns the dataset for the given report ID and report variant ID filtered by the filters provided in the query. */
-    get: operations['configuredApiDynamicFilter']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/reports/{reportId}/{reportVariantId}/count': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** @description Returns the number of records for the given report ID and report variant ID filtered by the filters provided in the query. */
-    get: operations['configuredApiCount']
     put?: never
     post?: never
     delete?: never
@@ -1008,10 +1125,30 @@ export interface paths {
       cookie?: never
     }
     /**
-     * Finds a location matching the local name for a given prison
+     * Finds a location matching the local name for a given prison (residential only)
      * @description Requires role VIEW_LOCATIONS
      */
     get: operations['findLocationByLocalName']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/locations/{prisonId}/cell-mark/{cellMark}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Finds locations matching the cell mark name for a given prison (residential only)
+     * @description Requires role VIEW_LOCATIONS
+     */
+    get: operations['findLocationsByCellMark']
     put?: never
     post?: never
     delete?: never
@@ -1173,6 +1310,7 @@ export interface paths {
     }
     /**
      * Get a list of active non-residential locations for a prison (excluding RTU)
+     * @deprecated
      * @description Requires role VIEW_LOCATIONS
      */
     get: operations['getNonResidentialLocationsForPrison']
@@ -1213,6 +1351,7 @@ export interface paths {
     }
     /**
      * Return non-residential locations by usage for this prison
+     * @deprecated
      * @description Requires role VIEW_LOCATIONS
      */
     get: operations['getLocationsByPrisonAndNonResidentialUsageType']
@@ -1324,6 +1463,66 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/locations/non-residential/summary/{prisonId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get a paged list of non-residential locations for a prison (excluding RTU and BOXes)
+     * @description Requires role VIEW_LOCATIONS
+     */
+    get: operations['getPaginatedNonResidentialList']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/locations/non-residential/prison/{prisonId}/service/{serviceType}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Return non-residential locations by service for this prison
+     * @description Requires role VIEW_LOCATIONS
+     */
+    get: operations['getByPrisonAndServiceType']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/locations/non-residential/prison/{prisonId}/local-name/{localName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Finds any non-residential location matching the local name for a given prison
+     * @description Requires role VIEW_LOCATIONS
+     */
+    get: operations['findLocationsByLocalName']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/locations/key/{key}': {
     parameters: {
       query?: never
@@ -1384,57 +1583,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/definitions': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** @description Gets summaries of all report definitions */
-    get: operations['definitions']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/definitions/{reportId}/{variantId}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** @description Gets report definition containing a single variant. */
-    get: operations['definition']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/definitions/{dataProductDefinitionId}/dashboards/{dashboardId}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /** @description Gets the metric dashboard definition. */
-    get: operations['dashboardDefinition']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   '/constants/used-for-type': {
     parameters: {
       query?: never
@@ -1487,6 +1635,46 @@ export interface paths {
      * @description Requires the READ_LOCATION_REFERENCE_DATA role.
      */
     get: operations['getSpecialistCellTypeConstants']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/constants/service-types': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get service type reference data
+     * @description Requires the READ_LOCATION_REFERENCE_DATA role.
+     */
+    get: operations['nonResidentialServiceTypeConstants']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/constants/service-family-types': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get service family type reference data
+     * @description Requires the READ_LOCATION_REFERENCE_DATA role.
+     */
+    get: operations['serviceFamilyAndTypes']
     put?: never
     post?: never
     delete?: never
@@ -1756,11 +1944,17 @@ export interface paths {
     trace?: never
   }
 }
-
 export type webhooks = Record<string, never>
-
 export interface components {
   schemas: {
+    RetryDlqResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+    }
+    PurgeQueueResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+    }
     /** @description Error response */
     ErrorResponse: {
       /**
@@ -1784,20 +1978,12 @@ export interface components {
        * @description When present, uniquely identifies the type of error making it easier for clients to discriminate without relying on error description or HTTP status code see `uk.gov.justice.digital.hmpps.locationsinsideprison.resources.ErrorCode` enumeration in hmpps-locations-inside-prison-api
        * @example 101
        */
-      errorCode?: number
+      errorCode?: number | null
       /**
        * @description More information about the error
        * @example [Rarely used, error-specific]
        */
-      moreInfo?: string
-    }
-    RetryDlqResult: {
-      /** Format: int32 */
-      messagesFoundCount: number
-    }
-    PurgeQueueResult: {
-      /** Format: int32 */
-      messagesFoundCount: number
+      moreInfo?: string | null
     }
     /** @description Prison configuration */
     PrisonConfigurationDto: {
@@ -1812,6 +1998,12 @@ export interface components {
        * @enum {string}
        */
       resiLocationServiceActive: 'ACTIVE' | 'INACTIVE'
+      /**
+       * @description Indicates that the non-resi service is active
+       * @example ACTIVE
+       * @enum {string}
+       */
+      nonResiServiceActive: 'ACTIVE' | 'INACTIVE'
       /**
        * @description Indicates that roll count should include segregation in its calculations for net vacancies
        * @example INACTIVE
@@ -1829,16 +2021,183 @@ export interface components {
     Capacity: {
       /**
        * Format: int32
-       * @description Max capacity of the location
+       * @description Max capacity of the cell
        * @example 2
        */
       maxCapacity: number
       /**
        * Format: int32
-       * @description Working capacity of the location
-       * @example 2
+       * @description Working capacity of the cell
+       * @example 1
        */
       workingCapacity: number
+      /**
+       * Format: int32
+       * @description CNA of the cell
+       * @example 2
+       */
+      certifiedNormalAccommodation?: number | null
+    }
+    /** @description Cell Certificate Location */
+    CellCertificateLocationDto: {
+      /**
+       * @description Location code
+       * @example 001
+       */
+      locationCode: string
+      /**
+       * @description Path hierarchy
+       * @example A-1-001
+       */
+      pathHierarchy: string
+      /**
+       * Format: int32
+       * @description Capacity of certified cell
+       * @example 2
+       */
+      certifiedNormalAccommodation?: number | null
+      /**
+       * Format: int32
+       * @description Working capacity
+       * @example 1
+       */
+      workingCapacity?: number | null
+      /**
+       * Format: int32
+       * @description Max capacity
+       * @example 2
+       */
+      maxCapacity?: number | null
+      /**
+       * @description Whether the cell has in-cell sanitation
+       * @example true
+       */
+      inCellSanitation?: boolean | null
+      /**
+       * @description Location type
+       * @example CELL
+       * @enum {string}
+       */
+      locationType:
+        | 'WING'
+        | 'SPUR'
+        | 'LANDING'
+        | 'CELL'
+        | 'ROOM'
+        | 'HOLDING_AREA'
+        | 'MOVEMENT_AREA'
+        | 'RESIDENTIAL_UNIT'
+        | 'EXTERNAL_GROUNDS'
+        | 'HOLDING_CELL'
+        | 'MEDICAL'
+        | 'GROUP'
+        | 'OFFICE'
+        | 'ADMINISTRATION_AREA'
+        | 'BOOTH'
+        | 'BOX'
+        | 'RETURN_TO_UNIT'
+        | 'CLASSROOM'
+        | 'TRAINING_AREA'
+        | 'TRAINING_ROOM'
+        | 'EXERCISE_AREA'
+        | 'AREA'
+        | 'SPORTS'
+        | 'WORKSHOP'
+        | 'INSIDE_PARTY'
+        | 'OUTSIDE_PARTY'
+        | 'FAITH_AREA'
+        | 'ADJUDICATION_ROOM'
+        | 'APPOINTMENTS'
+        | 'VISITS'
+        | 'VIDEO_LINK'
+        | 'ASSOCIATION'
+        | 'INTERNAL_GROUNDS'
+        | 'INTERVIEW'
+        | 'LOCATION'
+        | 'POSITION'
+        | 'SHELF'
+        | 'STORE'
+        | 'TABLE'
+      /** @description Accommodation Types */
+      accommodationTypes?:
+        | ('CARE_AND_SEPARATION' | 'HEALTHCARE_INPATIENTS' | 'NORMAL_ACCOMMODATION' | 'OTHER_NON_RESIDENTIAL')[]
+        | null
+      /** @description Specialist Cell Types */
+      specialistCellTypes?:
+        | (
+            | 'ACCESSIBLE_CELL'
+            | 'BIOHAZARD_DIRTY_PROTEST'
+            | 'CSU'
+            | 'CAT_A'
+            | 'CONSTANT_SUPERVISION'
+            | 'DRY'
+            | 'ESCAPE_LIST'
+            | 'ISOLATION_DISEASES'
+            | 'LISTENER_CRISIS'
+            | 'LOCATE_FLAT_CELL'
+            | 'MEDICAL'
+            | 'MOTHER_AND_BABY'
+            | 'SAFE_CELL'
+            | 'UNFURNISHED'
+          )[]
+        | null
+      /** @description Usage For */
+      usedFor?:
+        | (
+            | 'CLOSE_SUPERVISION_CENTRE'
+            | 'SUB_MISUSE_DRUG_RECOVERY'
+            | 'FIRST_NIGHT_CENTRE'
+            | 'HIGH_SECURITY'
+            | 'IPP_LONG_TERM_SENTENCES'
+            | 'MOTHER_AND_BABY'
+            | 'OPEN_UNIT'
+            | 'PATHWAY_TO_PROG'
+            | 'PERINATAL_UNIT'
+            | 'PERSONALITY_DISORDER'
+            | 'PIPE'
+            | 'REMAND'
+            | 'SEPARATION_CENTRE'
+            | 'STANDARD_ACCOMMODATION'
+            | 'THERAPEUTIC_COMMUNITY'
+            | 'VULNERABLE_PRISONERS'
+            | 'YOUNG_PERSONS'
+          )[]
+        | null
+      /**
+       * @description Local name for the location, not used in cells
+       * @example Houseblock A
+       */
+      localName?: string | null
+      /**
+       * @description Cell mark
+       * @example T-01
+       */
+      cellMark?: string | null
+      /**
+       * Format: int32
+       * @description Level within the hierarchy
+       * @example 3
+       */
+      level: number
+      /**
+       * @description If converted, the type of cell this location has been converted to
+       * @enum {string|null}
+       */
+      convertedCellType?:
+        | 'HOLDING_ROOM'
+        | 'INTERVIEW_ROOM'
+        | 'KITCHEN_SERVERY'
+        | 'LISTENERS_ROOM'
+        | 'OFFICE'
+        | 'SHOWER'
+        | 'STAFF_ROOM'
+        | 'STORE'
+        | 'TREATMENT_ROOM'
+        | 'UTILITY_ROOM'
+        | 'OTHER'
+        | null
+      /** @description Sub locations within this cell certificate location */
+      subLocations?: components['schemas']['CellCertificateLocationDto'][] | null
     }
     /** @description Certification */
     Certification: {
@@ -1856,10 +2215,11 @@ export interface components {
       capacityOfCertifiedCell: number
       /**
        * Format: int32
+       * @deprecated
        * @description CNA (Certified normal accommodation)
        * @example 1
        */
-      certifiedNormalAccommodation?: number
+      certifiedNormalAccommodation?: number | null
     }
     /** @description Change History */
     ChangeHistory: {
@@ -1868,16 +2228,19 @@ export interface components {
        * @description Transaction ID
        * @example 019464e9-05da-77b3-810b-887e199d8190
        */
-      transactionId?: string
+      transactionId?: string | null
       /**
        * @description Transaction type
        * @example CAPACITY_CHANGE
-       * @enum {string}
+       * @enum {string|null}
        */
       transactionType?:
         | 'LOCATION_CREATE'
+        | 'LOCATION_CREATE_NON_RESI'
         | 'LOCATION_UPDATE'
+        | 'LOCATION_UPDATE_NON_RESI'
         | 'SYNC'
+        | 'SYNC_NON_RESIDENTIAL'
         | 'DELETE'
         | 'CAPACITY_CHANGE'
         | 'CELL_TYPE_CHANGES'
@@ -1888,13 +2251,15 @@ export interface components {
         | 'ROOM_CONVERTION_TO_CELL'
         | 'SIGNED_OP_CAP'
         | 'RESI_SERVICE_ACTIVATION'
+        | 'NON_RESI_SERVICE_ACTIVATION'
         | 'INCLUDE_SEG_IN_ROLL_COUNT_ACTIVATION'
         | 'APPROVAL_PROCESS_ACTIVATION'
-        | 'PENDING_CELL_CHANGE'
         | 'REQUEST_CERTIFICATION_APPROVAL'
         | 'APPROVE_CERTIFICATION_REQUEST'
         | 'REJECT_CERTIFICATION_REQUEST'
         | 'WITHDRAW_CERTIFICATION_REQUEST'
+        | 'CERTIFICATE_BASELINE'
+        | null
       /**
        * @description Location Attribute
        * @example Location Type
@@ -1907,7 +2272,7 @@ export interface components {
        *       'Safe cell'
        *     ]
        */
-      oldValues?: string[]
+      oldValues?: string[] | null
       /**
        * @description New values of this attribute
        * @example [
@@ -1915,7 +2280,7 @@ export interface components {
        *       'Safe cell'
        *     ]
        */
-      newValues?: string[]
+      newValues?: string[] | null
       /**
        * @description User who made the change
        * @example user
@@ -1950,7 +2315,7 @@ export interface components {
        * @description Cell mark
        * @example A1
        */
-      cellMark?: string
+      cellMark?: string | null
       /**
        * @description Full path of the location within the prison
        * @example A-1-001
@@ -2005,14 +2370,14 @@ export interface components {
        * @description Alternative description to display for location, (Not Cells)
        * @example Wing A
        */
-      localName?: string
+      localName?: string | null
       /** @description The structure of the wing */
-      wingStructure?: ('CELL' | 'LANDING' | 'SPUR' | 'WING')[]
+      wingStructure?: ('CELL' | 'LANDING' | 'SPUR' | 'WING')[] | null
       /**
        * @description Additional comments that can be made about this location
        * @example Not to be used
        */
-      comments?: string
+      comments?: string | null
       /**
        * @description Indicates if the location is permanently inactive
        * @example false
@@ -2022,66 +2387,71 @@ export interface components {
        * @description Reason for permanently deactivating
        * @example Demolished
        */
-      permanentlyInactiveReason?: string
-      /** @description Capacity details of the location */
-      capacity?: components['schemas']['Capacity']
-      /** @description Pending changes of draft or pending approval location */
-      pendingChanges?: components['schemas']['PendingChangeDto']
+      permanentlyInactiveReason?: string | null
+      capacity?: components['schemas']['Capacity'] | null
+      pendingChanges?: components['schemas']['PendingChangeDto'] | null
       /**
        * Format: int32
        * @description When a cell is inactive, show the active working capacity value
        */
-      oldWorkingCapacity?: number
-      /** @description Indicates that this location is certified for use as a residential location */
-      certification?: components['schemas']['Certification']
+      oldWorkingCapacity?: number | null
+      /**
+       * @description Indicates that this location is certified for use as a cell
+       * @example true
+       */
+      certifiedCell?: boolean | null
+      certification?: components['schemas']['Certification'] | null
       /** @description Location Usage */
-      usage?: components['schemas']['NonResidentialUsageDto'][]
+      usage?: components['schemas']['NonResidentialUsageDto'][] | null
+      /** @description Services that use this location */
+      servicesUsingLocation?: components['schemas']['ServiceUsingLocationDto'][] | null
       /** @description Indicates that this location can used for internal movements */
-      internalMovementAllowed?: boolean
+      internalMovementAllowed?: boolean | null
       /** @description Accommodation Types */
-      accommodationTypes?: (
-        | 'CARE_AND_SEPARATION'
-        | 'HEALTHCARE_INPATIENTS'
-        | 'NORMAL_ACCOMMODATION'
-        | 'OTHER_NON_RESIDENTIAL'
-      )[]
+      accommodationTypes?:
+        | ('CARE_AND_SEPARATION' | 'HEALTHCARE_INPATIENTS' | 'NORMAL_ACCOMMODATION' | 'OTHER_NON_RESIDENTIAL')[]
+        | null
       /** @description Specialist Cell Types */
-      specialistCellTypes?: (
-        | 'ACCESSIBLE_CELL'
-        | 'BIOHAZARD_DIRTY_PROTEST'
-        | 'CSU'
-        | 'CAT_A'
-        | 'CONSTANT_SUPERVISION'
-        | 'DRY'
-        | 'ESCAPE_LIST'
-        | 'ISOLATION_DISEASES'
-        | 'LISTENER_CRISIS'
-        | 'LOCATE_FLAT_CELL'
-        | 'MEDICAL'
-        | 'MOTHER_AND_BABY'
-        | 'SAFE_CELL'
-        | 'UNFURNISHED'
-      )[]
+      specialistCellTypes?:
+        | (
+            | 'ACCESSIBLE_CELL'
+            | 'BIOHAZARD_DIRTY_PROTEST'
+            | 'CSU'
+            | 'CAT_A'
+            | 'CONSTANT_SUPERVISION'
+            | 'DRY'
+            | 'ESCAPE_LIST'
+            | 'ISOLATION_DISEASES'
+            | 'LISTENER_CRISIS'
+            | 'LOCATE_FLAT_CELL'
+            | 'MEDICAL'
+            | 'MOTHER_AND_BABY'
+            | 'SAFE_CELL'
+            | 'UNFURNISHED'
+          )[]
+        | null
       /** @description Usage For */
-      usedFor?: (
-        | 'CLOSE_SUPERVISION_CENTRE'
-        | 'SUB_MISUSE_DRUG_RECOVERY'
-        | 'FIRST_NIGHT_CENTRE'
-        | 'HIGH_SECURITY'
-        | 'IPP_LONG_TERM_SENTENCES'
-        | 'MOTHER_AND_BABY'
-        | 'OPEN_UNIT'
-        | 'PATHWAY_TO_PROG'
-        | 'PERINATAL_UNIT'
-        | 'PERSONALITY_DISORDER'
-        | 'PIPE'
-        | 'REMAND'
-        | 'SEPARATION_CENTRE'
-        | 'STANDARD_ACCOMMODATION'
-        | 'THERAPEUTIC_COMMUNITY'
-        | 'VULNERABLE_PRISONERS'
-        | 'YOUNG_PERSONS'
-      )[]
+      usedFor?:
+        | (
+            | 'CLOSE_SUPERVISION_CENTRE'
+            | 'SUB_MISUSE_DRUG_RECOVERY'
+            | 'FIRST_NIGHT_CENTRE'
+            | 'HIGH_SECURITY'
+            | 'IPP_LONG_TERM_SENTENCES'
+            | 'MOTHER_AND_BABY'
+            | 'OPEN_UNIT'
+            | 'PATHWAY_TO_PROG'
+            | 'PERINATAL_UNIT'
+            | 'PERSONALITY_DISORDER'
+            | 'PIPE'
+            | 'REMAND'
+            | 'SEPARATION_CENTRE'
+            | 'STANDARD_ACCOMMODATION'
+            | 'THERAPEUTIC_COMMUNITY'
+            | 'VULNERABLE_PRISONERS'
+            | 'YOUNG_PERSONS'
+          )[]
+        | null
       /**
        * @description Status of the location
        * @example ACTIVE
@@ -2104,7 +2474,7 @@ export interface components {
       locked: boolean
       /**
        * @description Convert Cell Type
-       * @enum {string}
+       * @enum {string|null}
        */
       convertedCellType?:
         | 'HOLDING_ROOM'
@@ -2118,8 +2488,9 @@ export interface components {
         | 'TREATMENT_ROOM'
         | 'UTILITY_ROOM'
         | 'OTHER'
+        | null
       /** @description Convert Cell Type (Other) */
-      otherConvertedCellType?: string
+      otherConvertedCellType?: string | null
       /**
        * @deprecated
        * @description Indicates the location is enabled
@@ -2130,7 +2501,7 @@ export interface components {
        * @description In-cell sanitation
        * @example true
        */
-      inCellSanitation?: boolean
+      inCellSanitation?: boolean | null
       /**
        * @description Indicates the location in inactive as a parent is deactivated
        * @example false
@@ -2141,11 +2512,11 @@ export interface components {
        * @description Date the location was deactivated
        * @example 2023-01-23T12:23:00
        */
-      deactivatedDate?: string
+      deactivatedDate?: string | null
       /**
        * @description Reason for deactivation
        * @example DAMAGED
-       * @enum {string}
+       * @enum {string|null}
        */
       deactivatedReason?:
         | 'DAMAGED'
@@ -2157,24 +2528,25 @@ export interface components {
         | 'SECURITY_SEALED'
         | 'STAFF_SHORTAGE'
         | 'OTHER'
+        | null
       /**
        * @description For OTHER deactivation reason, a free text comment is provided
        * @example Window damage
        */
-      deactivationReasonDescription?: string
+      deactivationReasonDescription?: string | null
       /** @description Staff username who deactivated the location */
-      deactivatedBy?: string
+      deactivatedBy?: string | null
       /**
        * Format: date
        * @description Estimated reactivation date for location reactivation
        * @example 2026-01-24
        */
-      proposedReactivationDate?: string
+      proposedReactivationDate?: string | null
       /**
        * @description Planet FM reference number
        * @example 2323/45M
        */
-      planetFmReference?: string
+      planetFmReference?: string | null
       /**
        * Format: uuid
        * @description Top Level Location Id
@@ -2196,334 +2568,45 @@ export interface components {
       leafLevel: boolean
       /**
        * Format: uuid
+       * @description Location Id where approvals can be requested, below this level approval request will not be allowed
+       * @example 57718979-573c-433a-9e51-2d83f087c11c
+       */
+      topLevelApprovalLocationId?: string | null
+      /**
+       * Format: uuid
+       * @description Indicates that this location this one has a pending approval, the approval will be for the location held in topLevelApprovalLocationId`
+       * @example 57818979-573c-433a-9e51-2d83f087c11c
+       */
+      pendingApprovalRequestId?: string | null
+      /**
+       * @description Reason for the last deactivation change
+       * @example Cell damaged
+       */
+      lastDeactivationReasonForChange?: string | null
+      currentCellCertificate?: components['schemas']['CellCertificateLocationDto'] | null
+      /**
+       * Format: uuid
        * @description Parent Location Id
        * @example 57718979-573c-433a-9e51-2d83f887c11c
        */
-      parentId?: string
-      /** @description Parent Location */
-      parentLocation?: components['schemas']['Location']
+      parentId?: string | null
+      parentLocation?: components['schemas']['Location'] | null
       /**
        * Format: int32
        * @description Number of inactive cells below this location
        */
-      inactiveCells?: number
+      inactiveCells?: number | null
       /**
        * Format: int32
        * @description Total number of non-structural locations are below this level, e.g. cells and rooms
        */
-      numberOfCellLocations?: number
+      numberOfCellLocations?: number | null
       /** @description Child Locations */
-      childLocations?: {
-        /**
-         * Format: uuid
-         * @description Location Id
-         * @example 2475f250-434a-4257-afe7-b911f1773a4d
-         */
-        id: string
-        /**
-         * @description Prison ID
-         * @example MDI
-         */
-        prisonId: string
-        /**
-         * @description Location Code
-         * @example 001
-         */
-        code: string
-        /**
-         * @description Cell mark
-         * @example A1
-         */
-        cellMark?: string
-        /**
-         * @description Full path of the location within the prison
-         * @example A-1-001
-         */
-        pathHierarchy: string
-        /**
-         * @description Location Type
-         * @example CELL
-         * @enum {string}
-         */
-        locationType:
-          | 'WING'
-          | 'SPUR'
-          | 'LANDING'
-          | 'CELL'
-          | 'ROOM'
-          | 'HOLDING_AREA'
-          | 'MOVEMENT_AREA'
-          | 'RESIDENTIAL_UNIT'
-          | 'EXTERNAL_GROUNDS'
-          | 'HOLDING_CELL'
-          | 'MEDICAL'
-          | 'GROUP'
-          | 'OFFICE'
-          | 'ADMINISTRATION_AREA'
-          | 'BOOTH'
-          | 'BOX'
-          | 'RETURN_TO_UNIT'
-          | 'CLASSROOM'
-          | 'TRAINING_AREA'
-          | 'TRAINING_ROOM'
-          | 'EXERCISE_AREA'
-          | 'AREA'
-          | 'SPORTS'
-          | 'WORKSHOP'
-          | 'INSIDE_PARTY'
-          | 'OUTSIDE_PARTY'
-          | 'FAITH_AREA'
-          | 'ADJUDICATION_ROOM'
-          | 'APPOINTMENTS'
-          | 'VISITS'
-          | 'VIDEO_LINK'
-          | 'ASSOCIATION'
-          | 'INTERNAL_GROUNDS'
-          | 'INTERVIEW'
-          | 'LOCATION'
-          | 'POSITION'
-          | 'SHELF'
-          | 'STORE'
-          | 'TABLE'
-        /**
-         * @description Alternative description to display for location, (Not Cells)
-         * @example Wing A
-         */
-        localName?: string
-        /** @description The structure of the wing */
-        wingStructure?: ('CELL' | 'LANDING' | 'SPUR' | 'WING')[]
-        /**
-         * @description Additional comments that can be made about this location
-         * @example Not to be used
-         */
-        comments?: string
-        /**
-         * @description Indicates if the location is permanently inactive
-         * @example false
-         */
-        permanentlyInactive: boolean
-        /**
-         * @description Reason for permanently deactivating
-         * @example Demolished
-         */
-        permanentlyInactiveReason?: string
-        /** @description Capacity details of the location */
-        capacity?: components['schemas']['Capacity']
-        /** @description Pending changes of draft or pending approval location */
-        pendingChanges?: components['schemas']['PendingChangeDto']
-        /**
-         * Format: int32
-         * @description When a cell is inactive, show the active working capacity value
-         */
-        oldWorkingCapacity?: number
-        /** @description Indicates that this location is certified for use as a residential location */
-        certification?: components['schemas']['Certification']
-        /** @description Location Usage */
-        usage?: components['schemas']['NonResidentialUsageDto'][]
-        /** @description Indicates that this location can used for internal movements */
-        internalMovementAllowed?: boolean
-        /** @description Accommodation Types */
-        accommodationTypes?: (
-          | 'CARE_AND_SEPARATION'
-          | 'HEALTHCARE_INPATIENTS'
-          | 'NORMAL_ACCOMMODATION'
-          | 'OTHER_NON_RESIDENTIAL'
-        )[]
-        /** @description Specialist Cell Types */
-        specialistCellTypes?: (
-          | 'ACCESSIBLE_CELL'
-          | 'BIOHAZARD_DIRTY_PROTEST'
-          | 'CSU'
-          | 'CAT_A'
-          | 'CONSTANT_SUPERVISION'
-          | 'DRY'
-          | 'ESCAPE_LIST'
-          | 'ISOLATION_DISEASES'
-          | 'LISTENER_CRISIS'
-          | 'LOCATE_FLAT_CELL'
-          | 'MEDICAL'
-          | 'MOTHER_AND_BABY'
-          | 'SAFE_CELL'
-          | 'UNFURNISHED'
-        )[]
-        /** @description Usage For */
-        usedFor?: (
-          | 'CLOSE_SUPERVISION_CENTRE'
-          | 'SUB_MISUSE_DRUG_RECOVERY'
-          | 'FIRST_NIGHT_CENTRE'
-          | 'HIGH_SECURITY'
-          | 'IPP_LONG_TERM_SENTENCES'
-          | 'MOTHER_AND_BABY'
-          | 'OPEN_UNIT'
-          | 'PATHWAY_TO_PROG'
-          | 'PERINATAL_UNIT'
-          | 'PERSONALITY_DISORDER'
-          | 'PIPE'
-          | 'REMAND'
-          | 'SEPARATION_CENTRE'
-          | 'STANDARD_ACCOMMODATION'
-          | 'THERAPEUTIC_COMMUNITY'
-          | 'VULNERABLE_PRISONERS'
-          | 'YOUNG_PERSONS'
-        )[]
-        /**
-         * @description Status of the location
-         * @example ACTIVE
-         * @enum {string}
-         */
-        status:
-          | 'ACTIVE'
-          | 'INACTIVE'
-          | 'ARCHIVED'
-          | 'DRAFT'
-          | 'NON_RESIDENTIAL'
-          | 'LOCKED_ACTIVE'
-          | 'LOCKED_INACTIVE'
-          | 'LOCKED_DRAFT'
-          | 'LOCKED_NON_RESIDENTIAL'
-        /**
-         * @description Location is locked
-         * @example false
-         */
-        locked: boolean
-        /**
-         * @description Convert Cell Type
-         * @enum {string}
-         */
-        convertedCellType?:
-          | 'HOLDING_ROOM'
-          | 'INTERVIEW_ROOM'
-          | 'KITCHEN_SERVERY'
-          | 'LISTENERS_ROOM'
-          | 'OFFICE'
-          | 'SHOWER'
-          | 'STAFF_ROOM'
-          | 'STORE'
-          | 'TREATMENT_ROOM'
-          | 'UTILITY_ROOM'
-          | 'OTHER'
-        /** @description Convert Cell Type (Other) */
-        otherConvertedCellType?: string
-        /**
-         * @deprecated
-         * @description Indicates the location is enabled
-         * @example true
-         */
-        active: boolean
-        /**
-         * @description In-cell sanitation
-         * @example true
-         */
-        inCellSanitation?: boolean
-        /**
-         * @description Indicates the location in inactive as a parent is deactivated
-         * @example false
-         */
-        deactivatedByParent: boolean
-        /**
-         * Format: date-time
-         * @description Date the location was deactivated
-         * @example 2023-01-23T12:23:00
-         */
-        deactivatedDate?: string
-        /**
-         * @description Reason for deactivation
-         * @example DAMAGED
-         * @enum {string}
-         */
-        deactivatedReason?:
-          | 'DAMAGED'
-          | 'DAMP'
-          | 'MAINTENANCE'
-          | 'MOTHBALLED'
-          | 'PEST'
-          | 'REFURBISHMENT'
-          | 'SECURITY_SEALED'
-          | 'STAFF_SHORTAGE'
-          | 'OTHER'
-        /**
-         * @description For OTHER deactivation reason, a free text comment is provided
-         * @example Window damage
-         */
-        deactivationReasonDescription?: string
-        /** @description Staff username who deactivated the location */
-        deactivatedBy?: string
-        /**
-         * Format: date
-         * @description Estimated reactivation date for location reactivation
-         * @example 2026-01-24
-         */
-        proposedReactivationDate?: string
-        /**
-         * @description Planet FM reference number
-         * @example 2323/45M
-         */
-        planetFmReference?: string
-        /**
-         * Format: uuid
-         * @description Top Level Location Id
-         * @example 57718979-573c-433a-9e51-2d83f887c11c
-         */
-        topLevelId: string
-        /**
-         * Format: int32
-         * @description Current Level within hierarchy, starts at 1, e.g Wing = 1
-         * @example 1
-         * @example 2
-         * @example 3
-         */
-        level: number
-        /**
-         * @description Indicates this is the lowest level, often a cell
-         * @example false
-         */
-        leafLevel: boolean
-        /**
-         * Format: uuid
-         * @description Parent Location Id
-         * @example 57718979-573c-433a-9e51-2d83f887c11c
-         */
-        parentId?: string
-        /** @description Parent Location */
-        parentLocation?: unknown
-        /**
-         * Format: int32
-         * @description Number of inactive cells below this location
-         */
-        inactiveCells?: number
-        /**
-         * Format: int32
-         * @description Total number of non-structural locations are below this level, e.g. cells and rooms
-         */
-        numberOfCellLocations?: number
-        /** @description Child Locations */
-        childLocations?: unknown[]
-        /** @description History of changes */
-        changeHistory?: components['schemas']['ChangeHistory'][]
-        /** @description A list of transactions applied to this location */
-        transactionHistory?: components['schemas']['TransactionHistory'][]
-        /** @description Staff username who last changed the location */
-        lastModifiedBy: string
-        /**
-         * Format: date-time
-         * @description Date and time of the last change
-         */
-        lastModifiedDate: string
-        /**
-         * @description Business Key for a location
-         * @example MDI-A-1-001
-         */
-        key: string
-        /**
-         * @description Indicates if the location is a residential location
-         * @example true
-         */
-        isResidential: boolean
-      }[]
+      childLocations?: components['schemas']['Location'][] | null
       /** @description History of changes */
-      changeHistory?: components['schemas']['ChangeHistory'][]
+      changeHistory?: components['schemas']['ChangeHistory'][] | null
       /** @description A list of transactions applied to this location */
-      transactionHistory?: components['schemas']['TransactionHistory'][]
+      transactionHistory?: components['schemas']['TransactionHistory'][] | null
       /** @description Staff username who last changed the location */
       lastModifiedBy: string
       /**
@@ -2555,7 +2638,7 @@ export interface components {
         | 'VISIT'
         | 'OTHER'
       /** Format: int32 */
-      capacity?: number
+      capacity?: number | null
       /** Format: int32 */
       sequence: number
     }
@@ -2566,19 +2649,50 @@ export interface components {
        * @description Pending max capacity
        * @example 2
        */
-      maxCapacity?: number
+      maxCapacity?: number | null
       /**
        * Format: int32
        * @description Pending working capacity
        * @example 1
        */
-      workingCapacity?: number
+      workingCapacity?: number | null
       /**
        * Format: int32
        * @description Pending CNA
        * @example 2
        */
-      certifiedNormalAccommodation?: number
+      certifiedNormalAccommodation?: number | null
+      /**
+       * @description Pending cell mark of the location
+       * @example A1
+       */
+      cellMark?: string | null
+      /**
+       * @description Pending in-cell sanitation
+       * @example true
+       */
+      inCellSanitation?: boolean | null
+    }
+    /** @description Service that uses a location */
+    ServiceUsingLocationDto: {
+      /** @enum {string} */
+      serviceType:
+        | 'APPOINTMENT'
+        | 'PROGRAMMES_AND_ACTIVITIES'
+        | 'VIDEO_LINK'
+        | 'HEARING_LOCATION'
+        | 'LOCATION_OF_INCIDENT'
+        | 'INTERNAL_MOVEMENTS'
+        | 'OFFICIAL_VISITS'
+        | 'USE_OF_FORCE'
+      /** @enum {string} */
+      serviceFamilyType:
+        | 'ACTIVITIES_APPOINTMENTS'
+        | 'VIDEO_LINK_APPOINTMENTS'
+        | 'ADJUDICATIONS'
+        | 'INTERNAL_MOVEMENTS'
+        | 'OFFICIAL_VISITS'
+        | 'USE_OF_FORCE'
     }
     /** @description Transaction Detail */
     TransactionDetail: {
@@ -2599,6 +2713,7 @@ export interface components {
        */
       attributeCode:
         | 'STATUS'
+        | 'LOCATION_CREATED'
         | 'CERTIFICATION'
         | 'ACCOMMODATION_TYPE'
         | 'USED_FOR'
@@ -2606,23 +2721,25 @@ export interface components {
         | 'CONVERTED_CELL_TYPE'
         | 'WORKING_CAPACITY'
         | 'MAX_CAPACITY'
+        | 'CERTIFIED_CAPACITY'
         | 'DEACTIVATION_REASON'
         | 'PROPOSED_REACTIVATION_DATE'
         | 'PLANET_FM_NUMBER'
         | 'LOCAL_NAME'
+        | 'CELL_MARK'
+        | 'IN_CELL_SANITATION'
         | 'USAGE'
         | 'NON_RESIDENTIAL_CAPACITY'
         | 'INTERNAL_MOVEMENT_ALLOWED'
+        | 'USED_BY_SERVICE'
         | 'CODE'
         | 'LOCATION_TYPE'
         | 'RESIDENTIAL_HOUSING_TYPE'
-        | 'CERTIFIED_CAPACITY'
         | 'PARENT_LOCATION'
         | 'ORDER_WITHIN_PARENT_LOCATION'
         | 'COMMENTS'
         | 'ATTRIBUTES'
         | 'PERMANENT_DEACTIVATION'
-        | 'LOCATION_CREATED'
         | 'ACTIVE'
         | 'DEACTIVATED_DATE'
         | 'DEACTIVATED_REASON'
@@ -2650,7 +2767,7 @@ export interface components {
        *       'Safe cell'
        *     ]
        */
-      oldValues?: string[]
+      oldValues?: string[] | null
       /**
        * @description New values of this attribute
        * @example [
@@ -2658,7 +2775,7 @@ export interface components {
        *       'Safe cell'
        *     ]
        */
-      newValues?: string[]
+      newValues?: string[] | null
     }
     /** @description Transaction history for location */
     TransactionHistory: {
@@ -2675,8 +2792,11 @@ export interface components {
        */
       transactionType:
         | 'LOCATION_CREATE'
+        | 'LOCATION_CREATE_NON_RESI'
         | 'LOCATION_UPDATE'
+        | 'LOCATION_UPDATE_NON_RESI'
         | 'SYNC'
+        | 'SYNC_NON_RESIDENTIAL'
         | 'DELETE'
         | 'CAPACITY_CHANGE'
         | 'CELL_TYPE_CHANGES'
@@ -2687,13 +2807,14 @@ export interface components {
         | 'ROOM_CONVERTION_TO_CELL'
         | 'SIGNED_OP_CAP'
         | 'RESI_SERVICE_ACTIVATION'
+        | 'NON_RESI_SERVICE_ACTIVATION'
         | 'INCLUDE_SEG_IN_ROLL_COUNT_ACTIVATION'
         | 'APPROVAL_PROCESS_ACTIVATION'
-        | 'PENDING_CELL_CHANGE'
         | 'REQUEST_CERTIFICATION_APPROVAL'
         | 'APPROVE_CERTIFICATION_REQUEST'
         | 'REJECT_CERTIFICATION_REQUEST'
         | 'WITHDRAW_CERTIFICATION_REQUEST'
+        | 'CERTIFICATE_BASELINE'
       /**
        * @description Prison ID of the transaction
        * @example MDI
@@ -2718,11 +2839,11 @@ export interface components {
        * Format: date-time
        * @description Date and time the transaction ended
        */
-      txEndTime: string
+      txEndTime: string | null
       /** @description The list of changes that were made in the transaction */
       transactionDetails: components['schemas']['TransactionDetail'][]
     }
-    /** @description Request to temporarily deactivate a location */
+    /** @description Request to temporarily deactivate a location, optionally indicating certification approval required */
     TemporaryDeactivationLocationRequest: {
       /**
        * @description Reason for temporary deactivation
@@ -2743,18 +2864,28 @@ export interface components {
        * @description Additional information on deactivation, for OTHER DeactivatedReason must be provided
        * @example Window broken
        */
-      deactivationReasonDescription?: string
+      deactivationReasonDescription?: string | null
       /**
        * Format: date
        * @description Estimated reactivation date
        * @example 2025-01-05
        */
-      proposedReactivationDate?: string
+      proposedReactivationDate?: string | null
       /**
        * @description Planet FM reference number
        * @example 23423TH/5
        */
-      planetFmReference?: string
+      planetFmReference?: string | null
+      /**
+       * @description The deactivation needs to be approved, if false (default) it will be classed as a short term temporary deactivation
+       * @example false
+       */
+      requiresApproval: boolean
+      /**
+       * @description Explanation of why the capacity need to be decreased
+       * @example The cell is damaged and will be take 6 months to repair
+       */
+      reasonForChange?: string | null
     }
     /** @description Request to update the type of a non-res cell location */
     UpdateNonResCellTypeRequest: {
@@ -2779,7 +2910,7 @@ export interface components {
        * @description When other, the cell type name
        * @example Hot Tub
        */
-      otherConvertedCellType?: string
+      otherConvertedCellType?: string | null
     }
     /** @description Request to permanently deactivate a location */
     PermanentDeactivationLocationRequest: {
@@ -2804,22 +2935,24 @@ export interface components {
        *       'ACCESSIBLE_CELL'
        *     ]
        */
-      specialistCellTypes?: (
-        | 'ACCESSIBLE_CELL'
-        | 'BIOHAZARD_DIRTY_PROTEST'
-        | 'CSU'
-        | 'CAT_A'
-        | 'CONSTANT_SUPERVISION'
-        | 'DRY'
-        | 'ESCAPE_LIST'
-        | 'ISOLATION_DISEASES'
-        | 'LISTENER_CRISIS'
-        | 'LOCATE_FLAT_CELL'
-        | 'MEDICAL'
-        | 'MOTHER_AND_BABY'
-        | 'SAFE_CELL'
-        | 'UNFURNISHED'
-      )[]
+      specialistCellTypes?:
+        | (
+            | 'ACCESSIBLE_CELL'
+            | 'BIOHAZARD_DIRTY_PROTEST'
+            | 'CSU'
+            | 'CAT_A'
+            | 'CONSTANT_SUPERVISION'
+            | 'DRY'
+            | 'ESCAPE_LIST'
+            | 'ISOLATION_DISEASES'
+            | 'LISTENER_CRISIS'
+            | 'LOCATE_FLAT_CELL'
+            | 'MEDICAL'
+            | 'MOTHER_AND_BABY'
+            | 'SAFE_CELL'
+            | 'UNFURNISHED'
+          )[]
+        | null
       /**
        * Format: int32
        * @description Maximum capacity
@@ -2839,25 +2972,27 @@ export interface components {
        *       'PERSONALITY_DISORDER'
        *     ]
        */
-      usedForTypes?: (
-        | 'CLOSE_SUPERVISION_CENTRE'
-        | 'SUB_MISUSE_DRUG_RECOVERY'
-        | 'FIRST_NIGHT_CENTRE'
-        | 'HIGH_SECURITY'
-        | 'IPP_LONG_TERM_SENTENCES'
-        | 'MOTHER_AND_BABY'
-        | 'OPEN_UNIT'
-        | 'PATHWAY_TO_PROG'
-        | 'PERINATAL_UNIT'
-        | 'PERSONALITY_DISORDER'
-        | 'PIPE'
-        | 'REMAND'
-        | 'SEPARATION_CENTRE'
-        | 'STANDARD_ACCOMMODATION'
-        | 'THERAPEUTIC_COMMUNITY'
-        | 'VULNERABLE_PRISONERS'
-        | 'YOUNG_PERSONS'
-      )[]
+      usedForTypes?:
+        | (
+            | 'CLOSE_SUPERVISION_CENTRE'
+            | 'SUB_MISUSE_DRUG_RECOVERY'
+            | 'FIRST_NIGHT_CENTRE'
+            | 'HIGH_SECURITY'
+            | 'IPP_LONG_TERM_SENTENCES'
+            | 'MOTHER_AND_BABY'
+            | 'OPEN_UNIT'
+            | 'PATHWAY_TO_PROG'
+            | 'PERINATAL_UNIT'
+            | 'PERSONALITY_DISORDER'
+            | 'PIPE'
+            | 'REMAND'
+            | 'SEPARATION_CENTRE'
+            | 'STANDARD_ACCOMMODATION'
+            | 'THERAPEUTIC_COMMUNITY'
+            | 'VULNERABLE_PRISONERS'
+            | 'YOUNG_PERSONS'
+          )[]
+        | null
     }
     /** @description Request to convert a cell to a non-res location */
     ConvertCellToNonResidentialLocationRequest: {
@@ -2882,7 +3017,7 @@ export interface components {
        * @description Other type of converted cell
        * @example Swimming pool
        */
-      otherConvertedCellType?: string
+      otherConvertedCellType?: string | null
     }
     /** @description Request to update the local name of a location */
     UpdateLocationLocalNameRequest: {
@@ -2890,11 +3025,371 @@ export interface components {
        * @description Alternative description to display for location
        * @example Wing A
        */
-      localName?: string
+      localName?: string | null
       /** @description Username of the staff updating the location */
-      updatedBy?: string
+      updatedBy?: string | null
     }
-    /** @description Reactivate Locations Request */
+    /** @description Capacity change request */
+    CapacityChangeRequest: {
+      /**
+       * @description Temporary w/c change
+       * @default false
+       * @example false
+       */
+      temporaryWorkingCapacityChange: boolean
+      /**
+       * Format: int32
+       * @description Max capacity of the cell
+       * @example 2
+       */
+      maxCapacity: number
+      /**
+       * Format: int32
+       * @description Working capacity of the cell
+       * @example 1
+       */
+      workingCapacity: number
+      /**
+       * Format: int32
+       * @description CNA of the cell
+       * @example 2
+       */
+      certifiedNormalAccommodation?: number | null
+    }
+    /** @description Request change of cell sanitation and add the reason for change is certification is required */
+    CellSanitationChangeRequest: {
+      /**
+       * @description Whether the cell has in-cell sanitation
+       * @example true
+       */
+      inCellSanitation: boolean
+      /**
+       * @description The reason why the approval was requested, mandatory if the cell change must be approved
+       * @example The toilet is broken
+       */
+      reasonForChange?: string | null
+    }
+    /** @description Request change of cell mark and add the reason for change is certification is required */
+    CellMarkChangeRequest: {
+      /**
+       * @description Cell mark of the location
+       * @example A1
+       */
+      cellMark: string
+      /**
+       * @description The reason why the approval was requested, mandatory if the cell change must be approved
+       * @example The door mark has been updated
+       */
+      reasonForChange?: string | null
+    }
+    /** @description Request to create or update non-residential location */
+    CreateOrUpdateNonResidentialLocationRequest: {
+      /**
+       * @description Description of the non-residential locations, mandatory for create
+       * @example Adj Room
+       */
+      localName?: string | null
+      /** @description Services that use this location */
+      servicesUsingLocation: (
+        | 'APPOINTMENT'
+        | 'PROGRAMMES_AND_ACTIVITIES'
+        | 'VIDEO_LINK'
+        | 'HEARING_LOCATION'
+        | 'LOCATION_OF_INCIDENT'
+        | 'INTERNAL_MOVEMENTS'
+        | 'OFFICIAL_VISITS'
+        | 'USE_OF_FORCE'
+      )[]
+      /**
+       * @description Status, if false will be marked as inactive, true will make active or null untouched
+       * @example true
+       */
+      active?: boolean | null
+    }
+    /** @description Non Residential Detail */
+    NonResidentialLocationDTO: {
+      /**
+       * Format: uuid
+       * @description Location Id
+       * @example 2475f250-434a-4257-afe7-b911f1773a4d
+       */
+      id: string
+      /**
+       * @description Prison ID
+       * @example MDI
+       */
+      prisonId: string
+      /**
+       * @description Description to display for location
+       * @example Gym
+       */
+      localName: string | null
+      /**
+       * @description Location Code
+       * @example 001
+       */
+      code: string
+      /**
+       * @description Full path of the location within the prison
+       * @example A-1-001
+       */
+      pathHierarchy: string
+      /**
+       * @description Indicates this is the lowest level, and not a parent
+       * @example true
+       */
+      isLeafLevel: boolean
+      /**
+       * @description Location Type
+       * @example ADJUDICATION_ROOM
+       * @enum {string}
+       */
+      locationType:
+        | 'WING'
+        | 'SPUR'
+        | 'LANDING'
+        | 'CELL'
+        | 'ROOM'
+        | 'HOLDING_AREA'
+        | 'MOVEMENT_AREA'
+        | 'RESIDENTIAL_UNIT'
+        | 'EXTERNAL_GROUNDS'
+        | 'HOLDING_CELL'
+        | 'MEDICAL'
+        | 'GROUP'
+        | 'OFFICE'
+        | 'ADMINISTRATION_AREA'
+        | 'BOOTH'
+        | 'BOX'
+        | 'RETURN_TO_UNIT'
+        | 'CLASSROOM'
+        | 'TRAINING_AREA'
+        | 'TRAINING_ROOM'
+        | 'EXERCISE_AREA'
+        | 'AREA'
+        | 'SPORTS'
+        | 'WORKSHOP'
+        | 'INSIDE_PARTY'
+        | 'OUTSIDE_PARTY'
+        | 'FAITH_AREA'
+        | 'ADJUDICATION_ROOM'
+        | 'APPOINTMENTS'
+        | 'VISITS'
+        | 'VIDEO_LINK'
+        | 'ASSOCIATION'
+        | 'INTERNAL_GROUNDS'
+        | 'INTERVIEW'
+        | 'LOCATION'
+        | 'POSITION'
+        | 'SHELF'
+        | 'STORE'
+        | 'TABLE'
+      /**
+       * @description Indicates if the location is permanently inactive
+       * @example false
+       */
+      permanentlyInactive: boolean
+      /**
+       * @description Reason for permanently deactivating
+       * @example Demolished
+       */
+      permanentlyInactiveReason?: string | null
+      /** @description Collections of services that use this location */
+      usedByGroupedServices: (
+        | 'ACTIVITIES_APPOINTMENTS'
+        | 'VIDEO_LINK_APPOINTMENTS'
+        | 'ADJUDICATIONS'
+        | 'INTERNAL_MOVEMENTS'
+        | 'OFFICIAL_VISITS'
+        | 'USE_OF_FORCE'
+      )[]
+      /** @description Services that use this location */
+      usedByServices: (
+        | 'APPOINTMENT'
+        | 'PROGRAMMES_AND_ACTIVITIES'
+        | 'VIDEO_LINK'
+        | 'HEARING_LOCATION'
+        | 'LOCATION_OF_INCIDENT'
+        | 'INTERNAL_MOVEMENTS'
+        | 'OFFICIAL_VISITS'
+        | 'USE_OF_FORCE'
+      )[]
+      /**
+       * @description Status of the location
+       * @example ACTIVE
+       * @enum {string}
+       */
+      status:
+        | 'ACTIVE'
+        | 'INACTIVE'
+        | 'ARCHIVED'
+        | 'DRAFT'
+        | 'NON_RESIDENTIAL'
+        | 'LOCKED_ACTIVE'
+        | 'LOCKED_INACTIVE'
+        | 'LOCKED_DRAFT'
+        | 'LOCKED_NON_RESIDENTIAL'
+      /**
+       * Format: date-time
+       * @description Date the location was deactivated
+       * @example 2023-01-23T12:23:00
+       */
+      deactivatedDate?: string | null
+      /**
+       * @description Reason for deactivation
+       * @example DAMAGED
+       * @enum {string|null}
+       */
+      deactivatedReason?:
+        | 'DAMAGED'
+        | 'DAMP'
+        | 'MAINTENANCE'
+        | 'MOTHBALLED'
+        | 'PEST'
+        | 'REFURBISHMENT'
+        | 'SECURITY_SEALED'
+        | 'STAFF_SHORTAGE'
+        | 'OTHER'
+        | null
+      /**
+       * @description For OTHER deactivation reason, a free text comment is provided
+       * @example Window damage
+       */
+      deactivationReasonDescription?: string | null
+      /** @description Staff username who deactivated the location */
+      deactivatedBy?: string | null
+      /**
+       * Format: int32
+       * @description Current Level within hierarchy, starts at 1, e.g Wing = 1
+       * @example 1
+       * @example 2
+       * @example 3
+       */
+      level: number
+      /**
+       * Format: uuid
+       * @description Parent Location Id
+       * @example 57718979-573c-433a-9e51-2d83f887c11c
+       */
+      parentId?: string | null
+      /**
+       * @description Key for a location
+       * @example MDI-ADJU
+       */
+      key: string
+    }
+    /** @description Request to a create location and cell locations below it */
+    CellDraftUpdateRequest: {
+      /**
+       * @description Prison ID where the location is situated
+       * @example MDI
+       */
+      prisonId: string
+      /**
+       * Format: uuid
+       * @description Parent location under which cells is to be updated, this location must be DRAFT
+       */
+      parentLocation: string
+      /** @description Used for types for all cells */
+      cellsUsedFor?:
+        | (
+            | 'CLOSE_SUPERVISION_CENTRE'
+            | 'SUB_MISUSE_DRUG_RECOVERY'
+            | 'FIRST_NIGHT_CENTRE'
+            | 'HIGH_SECURITY'
+            | 'IPP_LONG_TERM_SENTENCES'
+            | 'MOTHER_AND_BABY'
+            | 'OPEN_UNIT'
+            | 'PATHWAY_TO_PROG'
+            | 'PERINATAL_UNIT'
+            | 'PERSONALITY_DISORDER'
+            | 'PIPE'
+            | 'REMAND'
+            | 'SEPARATION_CENTRE'
+            | 'STANDARD_ACCOMMODATION'
+            | 'THERAPEUTIC_COMMUNITY'
+            | 'VULNERABLE_PRISONERS'
+            | 'YOUNG_PERSONS'
+          )[]
+        | null
+      /**
+       * @description Accommodation type for all cells
+       * @default NORMAL_ACCOMMODATION
+       * @example NORMAL_ACCOMMODATION
+       * @enum {string}
+       */
+      accommodationType:
+        | 'CARE_AND_SEPARATION'
+        | 'HEALTHCARE_INPATIENTS'
+        | 'NORMAL_ACCOMMODATION'
+        | 'OTHER_NON_RESIDENTIAL'
+      /** @description Set of cells that are to be created or amended, if the location is for update then missing cells will be removed */
+      cells: components['schemas']['CellInformation'][]
+    }
+    /** @description Information about cells to be created or updated */
+    CellInformation: {
+      /**
+       * Format: uuid
+       * @description ID of the location, update only
+       * @example 2475f250-434a-4257-afe7-b911f1773a4d
+       */
+      id?: string | null
+      /**
+       * @description Code of the location
+       * @example 001
+       */
+      code: string
+      /**
+       * @description Cell mark of the location
+       * @example A1
+       */
+      cellMark?: string | null
+      /**
+       * Format: int32
+       * @description CNA value
+       * @default 0
+       */
+      certifiedNormalAccommodation: number
+      /**
+       * Format: int32
+       * @description Max capacity of the location
+       * @default 0
+       * @example 2
+       */
+      maxCapacity: number
+      /**
+       * Format: int32
+       * @description Working capacity of the location
+       * @default 0
+       * @example 2
+       */
+      workingCapacity: number
+      /** @description Specialist cell types */
+      specialistCellTypes?:
+        | (
+            | 'ACCESSIBLE_CELL'
+            | 'BIOHAZARD_DIRTY_PROTEST'
+            | 'CSU'
+            | 'CAT_A'
+            | 'CONSTANT_SUPERVISION'
+            | 'DRY'
+            | 'ESCAPE_LIST'
+            | 'ISOLATION_DISEASES'
+            | 'LISTENER_CRISIS'
+            | 'LOCATE_FLAT_CELL'
+            | 'MEDICAL'
+            | 'MOTHER_AND_BABY'
+            | 'SAFE_CELL'
+            | 'UNFURNISHED'
+          )[]
+        | null
+      /**
+       * @description In-cell sanitation for cell
+       * @default true
+       */
+      inCellSanitation: boolean
+    }
+    /** @description Bulk reactivate locations Request */
     ReactivateLocationsRequest: {
       /**
        * @description List of locations to reactivate
@@ -2903,31 +3398,88 @@ export interface components {
        *         'cascadeReactivation': false,
        *         'capacity': {
        *           'workingCapacity': 1,
-       *           'maxCapacity': 2
-       *         }
+       *           'maxCapacity': 2,
+       *           'certifiedNormalAccommodation': 2
+       *         },
+       *         'specialistCellTypes': [
+       *           'ACCESSIBLE_CELL',
+       *           'ESCAPE_LIST'
+       *         ]
        *       }
        *     }
        */
       locations: {
         [key: string]: components['schemas']['ReactivationDetail']
       }
+      /**
+       * @description Force location to be reactivated, regardless of the status of the prison certification process
+       * @default false
+       * @example false
+       */
+      forceReactivation: boolean
     }
-    /** @description Reactivation Details */
+    /** @description Bulk reactivation details */
     ReactivationDetail: {
       /**
-       * @description List of locations to reactivate
+       * @description Cascade the reactivation
        * @default false
        * @example true
        */
       cascadeReactivation: boolean
+      capacity?: components['schemas']['Capacity'] | null
+      /** @description Specialist Cell Types */
+      specialistCellTypes?:
+        | (
+            | 'ACCESSIBLE_CELL'
+            | 'BIOHAZARD_DIRTY_PROTEST'
+            | 'CSU'
+            | 'CAT_A'
+            | 'CONSTANT_SUPERVISION'
+            | 'DRY'
+            | 'ESCAPE_LIST'
+            | 'ISOLATION_DISEASES'
+            | 'LISTENER_CRISIS'
+            | 'LOCATE_FLAT_CELL'
+            | 'MEDICAL'
+            | 'MOTHER_AND_BABY'
+            | 'SAFE_CELL'
+            | 'UNFURNISHED'
+          )[]
+        | null
+    }
+    /** @description Request to temporarily deactivate a location - used in bulk updates */
+    BasicTemporaryDeactivationRequest: {
       /**
-       * @description New capacity of the location, if null the old values are used
-       * @example {
-       *       'workingCapacity': 1,
-       *       'maxCapacity': 2
-       *     }
+       * @description Reason for temporary deactivation
+       * @example MOTHBALLED
+       * @enum {string}
        */
-      capacity?: components['schemas']['Capacity']
+      deactivationReason:
+        | 'DAMAGED'
+        | 'DAMP'
+        | 'MAINTENANCE'
+        | 'MOTHBALLED'
+        | 'PEST'
+        | 'REFURBISHMENT'
+        | 'SECURITY_SEALED'
+        | 'STAFF_SHORTAGE'
+        | 'OTHER'
+      /**
+       * @description Additional information on deactivation, for OTHER DeactivatedReason must be provided
+       * @example Window broken
+       */
+      deactivationReasonDescription?: string | null
+      /**
+       * Format: date
+       * @description Estimated reactivation date
+       * @example 2025-01-05
+       */
+      proposedReactivationDate?: string | null
+      /**
+       * @description Planet FM reference number
+       * @example 23423TH/5
+       */
+      planetFmReference?: string | null
     }
     /** @description Deactivate Locations Request */
     DeactivateLocationsRequest: {
@@ -2940,13 +3492,23 @@ export interface components {
        *     }
        */
       locations: {
-        [key: string]: components['schemas']['TemporaryDeactivationLocationRequest']
+        [key: string]: components['schemas']['BasicTemporaryDeactivationRequest']
       }
+      /**
+       * @description The deactivation needs to be approved, if false (default) it will be classed as a short term temporary deactivation
+       * @example false
+       */
+      requiresApproval: boolean
+      /**
+       * @description Explanation of why the capacity need to be decreased
+       * @example The cell is damaged and will be take 6 months to repair
+       */
+      reasonForChange?: string | null
       /**
        * @description Username of the user requesting to deactivate the locations, if not provided the token username or client id will be used
        * @example TESTUSER
        */
-      updatedBy?: string
+      updatedBy?: string | null
     }
     /** @description Bulk permanent deactivation request */
     BulkPermanentDeactivationRequest: {
@@ -2964,6 +3526,11 @@ export interface components {
        *     ]
        */
       locations: string[]
+      /**
+       * @description The reason why the approval was requested, mandatory if it must be approved
+       * @example The cell is no longer needed
+       */
+      reasonForChange?: string | null
     }
     /** @description Bulk Update Cell Capacity Details */
     CellCapacityUpdateDetail: {
@@ -2984,17 +3551,17 @@ export interface components {
        * @description Indicates the capacity of the certified location (cell)
        * @example 1
        */
-      certifiedNormalAccommodation?: number
+      certifiedNormalAccommodation?: number | null
       /**
        * @description Working capacity of the location
        * @example A1-03
        */
-      cellMark?: string
+      cellMark?: string | null
       /**
        * @description Indicate that the cell as in-cell sanitation
        * @example true
        */
-      inCellSanitation: boolean
+      inCellSanitation?: boolean | null
     }
     /** @description Update Capacities Request */
     UpdateCapacityRequest: {
@@ -3016,6 +3583,11 @@ export interface components {
       locations: {
         [key: string]: components['schemas']['CellCapacityUpdateDetail']
       }
+      /**
+       * @description The reason why the approval was requested, mandatory if it must be approved
+       * @example The cell capacity has changed
+       */
+      reasonForChange?: string | null
     }
     /** @description Capacity change audit */
     CapacityChanges: {
@@ -3033,19 +3605,19 @@ export interface components {
        * @description Attribute changed in the update
        * @example workingCapacity
        */
-      type?: string
+      type?: string | null
       /**
        * Format: int32
        * @description Old value of this attribute
        * @example 2
        */
-      previousValue?: number
+      previousValue?: number | null
       /**
        * Format: int32
        * @description New value of this attribute
        * @example 1
        */
-      newValue?: number
+      newValue?: number | null
     }
     /** @description Request to approve a location or set of locations and cells below it */
     SignedOpCapApprovalRequest: {
@@ -3079,13 +3651,21 @@ export interface components {
        * @description Location Id
        * @example 2475f250-434a-4257-afe7-b911f1773a4d
        */
-      locationId?: string
+      locationId?: string | null
       /**
        * @description Type of approval
        * @example SIGNED_OP_CAP
        * @enum {string}
        */
-      approvalType: 'SIGNED_OP_CAP' | 'DRAFT' | 'DEACTIVATION' | 'REACTIVATION' | 'CAPACITY_CHANGE'
+      approvalType:
+        | 'SIGNED_OP_CAP'
+        | 'DRAFT'
+        | 'DEACTIVATION'
+        | 'CELL_MARK'
+        | 'CELL_SANITATION'
+        | 'REACTIVATION'
+        | 'CAPACITY_CHANGE'
+        | 'PRISON_BASELINE'
       /**
        * @description Prison ID
        * @example MDI
@@ -3095,7 +3675,7 @@ export interface components {
        * @description Location key
        * @example MDI-A-1-001
        */
-      locationKey?: string
+      locationKey?: string | null
       /**
        * @description Status of the approval request
        * @example PENDING
@@ -3116,51 +3696,132 @@ export interface components {
        * @description User who approved or rejected the request
        * @example USER2
        */
-      approvedOrRejectedBy?: string
+      approvedOrRejectedBy?: string | null
       /**
        * Format: date-time
        * @description Date and time of the approval or rejection
        */
-      approvedOrRejectedDate?: string
+      approvedOrRejectedDate?: string | null
       /** @description Comments about the approval or rejection */
-      comments?: string
+      comments?: string | null
       /**
        * Format: int32
        * @description Change in certified normal accommodation
        * @example 1
        */
-      certifiedNormalAccommodationChange: number
+      certifiedNormalAccommodationChange: number | null
       /**
        * Format: int32
        * @description Change in working capacity
        * @example 1
        */
-      workingCapacityChange: number
+      workingCapacityChange: number | null
       /**
        * Format: int32
        * @description Change in maximum capacity
        * @example 1
        */
-      maxCapacityChange: number
+      maxCapacityChange: number | null
       /**
        * Format: int32
        * @description Current value of signed operational capacity
        * @example 1
        */
-      currentSignedOperationCapacity: number
+      currentSignedOperationCapacity: number | null
       /**
        * Format: int32
        * @description Change signed operational capacity
        * @example 1
        */
-      signedOperationCapacityChange: number
+      signedOperationCapacityChange: number | null
       /**
+       * @deprecated
        * @description The reason why the signed op cap was changed
        * @example Change in number of cells
        */
-      reasonForSignedOpChange?: string
+      reasonForSignedOpChange?: string | null
+      /**
+       * @description The reason why the approval was requested
+       * @example Change in number of cells
+       */
+      reasonForChange?: string | null
       /** @description Locations affected by the approval */
-      locations?: components['schemas']['CertificationApprovalRequestLocationDto'][]
+      locations?: components['schemas']['CertificationApprovalRequestLocationDto'][] | null
+      /**
+       * Format: uuid
+       * @description The ID of the certificate once approved
+       */
+      certificateId?: string | null
+      /**
+       * @description Cell mark of the location
+       * @example A1
+       */
+      cellMark?: string | null
+      /**
+       * @description Current cell mark
+       * @example A1-001
+       */
+      currentCellMark: string | null
+      /**
+       * @description Whether the cell has in-cell sanitation
+       * @example true
+       */
+      inCellSanitation?: boolean | null
+      /**
+       * @description Whether the current cell has in-cell sanitation
+       * @example false
+       */
+      currentInCellSanitation?: boolean | null
+      /**
+       * @description Reason for deactivation
+       * @example DAMAGED
+       * @enum {string|null}
+       */
+      deactivatedReason?:
+        | 'DAMAGED'
+        | 'DAMP'
+        | 'MAINTENANCE'
+        | 'MOTHBALLED'
+        | 'PEST'
+        | 'REFURBISHMENT'
+        | 'SECURITY_SEALED'
+        | 'STAFF_SHORTAGE'
+        | 'OTHER'
+        | null
+      /**
+       * Format: int32
+       * @description Pending max capacity
+       * @example 2
+       */
+      maxCapacity?: number | null
+      /**
+       * Format: int32
+       * @description Pending working capacity
+       * @example 1
+       */
+      workingCapacity?: number | null
+      /**
+       * Format: int32
+       * @description Pending CNA
+       * @example 2
+       */
+      certifiedNormalAccommodation?: number | null
+      /**
+       * @description For OTHER deactivation reason, a free text comment is provided
+       * @example Window damage
+       */
+      deactivationReasonDescription?: string | null
+      /**
+       * Format: date
+       * @description Estimated reactivation date for location reactivation
+       * @example 2026-01-24
+       */
+      proposedReactivationDate?: string | null
+      /**
+       * @description Planet FM reference number
+       * @example 2323/45M
+       */
+      planetFmReference?: string | null
     }
     /** @description Location affected by certification approval */
     CertificationApprovalRequestLocationDto: {
@@ -3179,12 +3840,12 @@ export interface components {
        * @description Cell mark
        * @example Standard
        */
-      cellMark?: string
+      cellMark?: string | null
       /**
        * @description Local name
        * @example Cell 1
        */
-      localName?: string
+      localName?: string | null
       /**
        * @description Path hierarchy
        * @example MDI-A-1-001
@@ -3201,24 +3862,42 @@ export interface components {
        * @description Capacity of certified cell
        * @example 2
        */
-      certifiedNormalAccommodation?: number
+      certifiedNormalAccommodation?: number | null
       /**
        * Format: int32
        * @description Working capacity
        * @example 2
        */
-      workingCapacity?: number
+      workingCapacity?: number | null
       /**
        * Format: int32
        * @description Maximum capacity
        * @example 2
        */
-      maxCapacity?: number
+      maxCapacity?: number | null
+      /**
+       * Format: int32
+       * @description Current capacity of certified cell
+       * @example 2
+       */
+      currentCertifiedNormalAccommodation?: number | null
+      /**
+       * Format: int32
+       * @description Current working capacity
+       * @example 2
+       */
+      currentWorkingCapacity?: number | null
+      /**
+       * Format: int32
+       * @description Current maximum capacity
+       * @example 2
+       */
+      currentMaxCapacity?: number | null
       /**
        * @description In-cell sanitation
        * @example true
        */
-      inCellSanitation?: boolean
+      inCellSanitation?: boolean | null
       /**
        * @description Location type
        * @example CELL
@@ -3265,53 +3944,73 @@ export interface components {
         | 'STORE'
         | 'TABLE'
       /** @description Accommodation Types */
-      accommodationTypes?: (
-        | 'CARE_AND_SEPARATION'
-        | 'HEALTHCARE_INPATIENTS'
-        | 'NORMAL_ACCOMMODATION'
-        | 'OTHER_NON_RESIDENTIAL'
-      )[]
+      accommodationTypes?:
+        | ('CARE_AND_SEPARATION' | 'HEALTHCARE_INPATIENTS' | 'NORMAL_ACCOMMODATION' | 'OTHER_NON_RESIDENTIAL')[]
+        | null
+      /** @description Current specialist Cell Types */
+      currentSpecialistCellTypes?:
+        | (
+            | 'ACCESSIBLE_CELL'
+            | 'BIOHAZARD_DIRTY_PROTEST'
+            | 'CSU'
+            | 'CAT_A'
+            | 'CONSTANT_SUPERVISION'
+            | 'DRY'
+            | 'ESCAPE_LIST'
+            | 'ISOLATION_DISEASES'
+            | 'LISTENER_CRISIS'
+            | 'LOCATE_FLAT_CELL'
+            | 'MEDICAL'
+            | 'MOTHER_AND_BABY'
+            | 'SAFE_CELL'
+            | 'UNFURNISHED'
+          )[]
+        | null
       /** @description Specialist Cell Types */
-      specialistCellTypes?: (
-        | 'ACCESSIBLE_CELL'
-        | 'BIOHAZARD_DIRTY_PROTEST'
-        | 'CSU'
-        | 'CAT_A'
-        | 'CONSTANT_SUPERVISION'
-        | 'DRY'
-        | 'ESCAPE_LIST'
-        | 'ISOLATION_DISEASES'
-        | 'LISTENER_CRISIS'
-        | 'LOCATE_FLAT_CELL'
-        | 'MEDICAL'
-        | 'MOTHER_AND_BABY'
-        | 'SAFE_CELL'
-        | 'UNFURNISHED'
-      )[]
+      specialistCellTypes?:
+        | (
+            | 'ACCESSIBLE_CELL'
+            | 'BIOHAZARD_DIRTY_PROTEST'
+            | 'CSU'
+            | 'CAT_A'
+            | 'CONSTANT_SUPERVISION'
+            | 'DRY'
+            | 'ESCAPE_LIST'
+            | 'ISOLATION_DISEASES'
+            | 'LISTENER_CRISIS'
+            | 'LOCATE_FLAT_CELL'
+            | 'MEDICAL'
+            | 'MOTHER_AND_BABY'
+            | 'SAFE_CELL'
+            | 'UNFURNISHED'
+          )[]
+        | null
       /** @description Usage For */
-      usedFor?: (
-        | 'CLOSE_SUPERVISION_CENTRE'
-        | 'SUB_MISUSE_DRUG_RECOVERY'
-        | 'FIRST_NIGHT_CENTRE'
-        | 'HIGH_SECURITY'
-        | 'IPP_LONG_TERM_SENTENCES'
-        | 'MOTHER_AND_BABY'
-        | 'OPEN_UNIT'
-        | 'PATHWAY_TO_PROG'
-        | 'PERINATAL_UNIT'
-        | 'PERSONALITY_DISORDER'
-        | 'PIPE'
-        | 'REMAND'
-        | 'SEPARATION_CENTRE'
-        | 'STANDARD_ACCOMMODATION'
-        | 'THERAPEUTIC_COMMUNITY'
-        | 'VULNERABLE_PRISONERS'
-        | 'YOUNG_PERSONS'
-      )[]
+      usedFor?:
+        | (
+            | 'CLOSE_SUPERVISION_CENTRE'
+            | 'SUB_MISUSE_DRUG_RECOVERY'
+            | 'FIRST_NIGHT_CENTRE'
+            | 'HIGH_SECURITY'
+            | 'IPP_LONG_TERM_SENTENCES'
+            | 'MOTHER_AND_BABY'
+            | 'OPEN_UNIT'
+            | 'PATHWAY_TO_PROG'
+            | 'PERINATAL_UNIT'
+            | 'PERSONALITY_DISORDER'
+            | 'PIPE'
+            | 'REMAND'
+            | 'SEPARATION_CENTRE'
+            | 'STANDARD_ACCOMMODATION'
+            | 'THERAPEUTIC_COMMUNITY'
+            | 'VULNERABLE_PRISONERS'
+            | 'YOUNG_PERSONS'
+          )[]
+        | null
       /**
        * @description Converted cell type
        * @example OFFICE
-       * @enum {string}
+       * @enum {string|null}
        */
       convertedCellType?:
         | 'HOLDING_ROOM'
@@ -3325,8 +4024,14 @@ export interface components {
         | 'TREATMENT_ROOM'
         | 'UTILITY_ROOM'
         | 'OTHER'
+        | null
+      /**
+       * @description Indicates this location will be reactivated
+       * @example true
+       */
+      reactivateThisLocation?: boolean | null
       /** @description Sub-locations */
-      subLocations?: unknown
+      subLocations?: components['schemas']['CertificationApprovalRequestLocationDto'][] | null
     }
     /** @description Request to withdraw a certification request */
     WithdrawCertificationRequestDto: {
@@ -3347,12 +4052,6 @@ export interface components {
        * @example 2475f250-434a-4257-afe7-b911f1773a4d
        */
       locationId: string
-      /**
-       * @description Type of approval request
-       * @example DRAFT
-       * @enum {string}
-       */
-      approvalType: 'SIGNED_OP_CAP' | 'DRAFT' | 'DEACTIVATION' | 'REACTIVATION' | 'CAPACITY_CHANGE'
     }
     /** @description Request to reject a certification request */
     RejectCertificationRequestDto: {
@@ -3364,6 +4063,73 @@ export interface components {
       approvalRequestReference: string
       /** @description Comments about the rejection */
       comments: string
+    }
+    /** @description Cell reactivation details */
+    CellReactivationDetail: {
+      capacity?: components['schemas']['Capacity'] | null
+      /** @description Specialist Cell Types */
+      specialistCellTypes?:
+        | (
+            | 'ACCESSIBLE_CELL'
+            | 'BIOHAZARD_DIRTY_PROTEST'
+            | 'CSU'
+            | 'CAT_A'
+            | 'CONSTANT_SUPERVISION'
+            | 'DRY'
+            | 'ESCAPE_LIST'
+            | 'ISOLATION_DISEASES'
+            | 'LISTENER_CRISIS'
+            | 'LOCATE_FLAT_CELL'
+            | 'MEDICAL'
+            | 'MOTHER_AND_BABY'
+            | 'SAFE_CELL'
+            | 'UNFURNISHED'
+          )[]
+        | null
+    }
+    /** @description Reactivate locations Approval Request */
+    ReactivationLocationsApprovalRequest: {
+      /**
+       * Format: uuid
+       * @description The top level location Id of location for reactivation and requiring approval
+       * @example 2475f250-434a-4257-afe7-b911f1773a4d
+       */
+      topLevelLocationId: string
+      /**
+       * @description Cascade the reactivation from the top level, cells will be reactivated in their previous state, if this is true `cellReactivationChanges` should be null
+       * @default false
+       * @example true
+       */
+      cascadeReactivation: boolean
+      /**
+       * @description List of cells below the locationId to reactivate, with capacity and ttype details, missing cells will not be reactivated
+       * @example {
+       *       '0199e835-9eb8-7183-ab7e-f79149e5c1f8': {
+       *         'capacity': {
+       *           'workingCapacity': 1,
+       *           'maxCapacity': 2,
+       *           'certifiedNormalAccommodation': 2
+       *         },
+       *         'specialistCellTypes': [
+       *           'ACCESSIBLE_CELL',
+       *           'ESCAPE_LIST'
+       *         ]
+       *       },
+       *       '0199e345-f9f1-7961-a4dc-39fed02b66ab': {
+       *         'capacity': {
+       *           'workingCapacity': 1,
+       *           'maxCapacity': 2,
+       *           'certifiedNormalAccommodation': 1
+       *         },
+       *         'specialistCellTypes': [
+       *           'ESCAPE_LIST'
+       *         ]
+       *       }
+       *     }
+       */
+      cellReactivationChanges?: {
+        [key: string]: components['schemas']['CellReactivationDetail']
+      } | null
     }
     /** @description Request to approve a certification request */
     ApproveCertificationRequestDto: {
@@ -3381,7 +4147,7 @@ export interface components {
        * @description Location UUID, provided if already exists
        * @example 2475f250-434a-4257-afe7-b911f1773a4d
        */
-      id?: string
+      id?: string | null
       /**
        * @description Prison ID where the location is situated
        * @example MDI
@@ -3441,22 +4207,22 @@ export interface components {
        * @description Alternative description to display for location
        * @example Wing A
        */
-      localName?: string
+      localName?: string | null
       /**
        * @description Additional comments that can be made about this location
        * @example Not to be used
        */
-      comments?: string
+      comments?: string | null
       /**
        * Format: int32
        * @description Sequence of locations within the current parent location
        * @example 1
        */
-      orderWithinParentLocation?: number
+      orderWithinParentLocation?: number | null
       /**
        * @description If residential location, its type
        * @example NORMAL_ACCOMMODATION
-       * @enum {string}
+       * @enum {string|null}
        */
       residentialHousingType?:
         | 'HEALTHCARE'
@@ -3466,10 +4232,11 @@ export interface components {
         | 'SEGREGATION'
         | 'SPECIALIST_CELL'
         | 'OTHER_USE'
+        | null
       /**
        * @description Reason for deactivation
        * @example DAMAGED
-       * @enum {string}
+       * @enum {string|null}
        */
       deactivationReason?:
         | 'REFURBISHMENT'
@@ -3484,133 +4251,136 @@ export interface components {
         | 'OUT_OF_USE'
         | 'CELLS_RETURNING_TO_USE'
         | 'OTHER'
+        | null
       /**
        * Format: date
        * @description Estimated reactivation date
        * @example 2025-01-05
        */
-      proposedReactivationDate?: string
+      proposedReactivationDate?: string | null
       /**
        * Format: date
        * @description Date deactivation occurred
        * @example 2023-01-05
        */
-      deactivatedDate?: string
+      deactivatedDate?: string | null
       /**
        * @description Path hierarchy of the parent (if one exists)
        * @example A-1
        */
-      parentLocationPath?: string
+      parentLocationPath?: string | null
       /**
        * Format: uuid
        * @description Parent UUID of the parent location (if one exists)
        * @example 2475f250-434a-4257-afe7-b911f1773a4e
        */
-      parentId?: string
-      /** @description Capacity details of the location */
-      capacity?: components['schemas']['Capacity']
+      parentId?: string | null
+      capacity?: components['schemas']['Capacity'] | null
       /** @description Indicates that this location is certified for use as a residential location */
-      certification?: components['schemas']['Certification']
+      certifiedCell?: boolean | null
+      certification?: components['schemas']['Certification'] | null
       /** @description Location Attributes */
-      attributes?: (
-        | 'ANTI_BARRICADE_DOOR'
-        | 'AUDITABLE_CELL_BELL'
-        | 'FIXED_BED'
-        | 'METAL_DOOR'
-        | 'MOVABLE_BED'
-        | 'PRIVACY_CURTAIN'
-        | 'PRIVACY_SCREEN'
-        | 'STANDARD_CELL_BELL'
-        | 'SEPARATE_TOILET'
-        | 'WOODEN_DOOR'
-        | 'CAT_A_CELL'
-        | 'DOUBLE_OCCUPANCY'
-        | 'E_LIST_CELL'
-        | 'GATED_CELL'
-        | 'LISTENER_CELL'
-        | 'LOCATE_FLAT'
-        | 'MULTIPLE_OCCUPANCY'
-        | 'NON_SMOKER_CELL'
-        | 'OBSERVATION_CELL'
-        | 'SAFE_CELL'
-        | 'SINGLE_OCCUPANCY'
-        | 'SPECIAL_CELL'
-        | 'WHEELCHAIR_ACCESS'
-        | 'UNCONVICTED_JUVENILES'
-        | 'SENTENCED_JUVENILES'
-        | 'UNCONVICTED_18_20'
-        | 'SENTENCED_18_20'
-        | 'UNCONVICTED_ADULTS'
-        | 'SENTENCED_ADULTS'
-        | 'VULNERABLE_PRISONER_UNIT'
-        | 'SPECIAL_UNIT'
-        | 'RESETTLEMENT_HOSTEL'
-        | 'HEALTHCARE_CENTRE'
-        | 'NATIONAL_RESOURCE_HOSPITAL'
-        | 'OTHER_SPECIFIED'
-        | 'REMAND_CENTRE'
-        | 'LOCAL_PRISON'
-        | 'CLOSED_PRISON'
-        | 'OPEN_TRAINING'
-        | 'HOSTEL'
-        | 'CLOSED_YOUNG_OFFENDER'
-        | 'OPEN_YOUNG_OFFENDER'
-        | 'REMAND_UNDER_18'
-        | 'SENTENCED_UNDER_18'
-        | 'ECL_COMPONENT'
-        | 'ADDITIONAL_SPECIAL_UNIT'
-        | 'SECOND_CLOSED_TRAINER'
-        | 'IMMIGRATION_DETAINEES'
-        | 'CELL'
-        | 'LANDING'
-        | 'WING'
-        | 'CAT_A'
-        | 'CAT_A_EX'
-        | 'CAT_A_HI'
-        | 'CAT_B'
-        | 'CAT_C'
-        | 'CAT_D'
-        | 'ELIGIBLE'
-        | 'PAROLE_GRANTED'
-        | 'INELIGIBLE'
-        | 'YOI_CLOSED'
-        | 'YOI_OPEN'
-        | 'YOI_RESTRICTED'
-        | 'YOI_SHORT_SENTENCE'
-        | 'YOI_LONG_TERM_CLOSED'
-        | 'UNCLASSIFIED'
-        | 'UNCATEGORISED_SENTENCED_MALE'
-        | 'LOW'
-        | 'MEDIUM'
-        | 'HIGH'
-        | 'NOT_APPLICABLE'
-        | 'PROV_A'
-        | 'PENDING'
-        | 'REF_REVIEW'
-        | 'REFUSED_NO_REVIEW'
-        | 'STANDARD'
-        | 'FEMALE_RESTRICTED'
-        | 'FEMALE_CLOSED'
-        | 'FEMALE_SEMI'
-        | 'FEMALE_OPEN'
-        | 'UN_SENTENCED'
-        | 'YES'
-        | 'NO'
-      )[]
+      attributes?:
+        | (
+            | 'ANTI_BARRICADE_DOOR'
+            | 'AUDITABLE_CELL_BELL'
+            | 'FIXED_BED'
+            | 'METAL_DOOR'
+            | 'MOVABLE_BED'
+            | 'PRIVACY_CURTAIN'
+            | 'PRIVACY_SCREEN'
+            | 'STANDARD_CELL_BELL'
+            | 'SEPARATE_TOILET'
+            | 'WOODEN_DOOR'
+            | 'CAT_A_CELL'
+            | 'DOUBLE_OCCUPANCY'
+            | 'E_LIST_CELL'
+            | 'GATED_CELL'
+            | 'LISTENER_CELL'
+            | 'LOCATE_FLAT'
+            | 'MULTIPLE_OCCUPANCY'
+            | 'NON_SMOKER_CELL'
+            | 'OBSERVATION_CELL'
+            | 'SAFE_CELL'
+            | 'SINGLE_OCCUPANCY'
+            | 'SPECIAL_CELL'
+            | 'WHEELCHAIR_ACCESS'
+            | 'UNCONVICTED_JUVENILES'
+            | 'SENTENCED_JUVENILES'
+            | 'UNCONVICTED_18_20'
+            | 'SENTENCED_18_20'
+            | 'UNCONVICTED_ADULTS'
+            | 'SENTENCED_ADULTS'
+            | 'VULNERABLE_PRISONER_UNIT'
+            | 'SPECIAL_UNIT'
+            | 'RESETTLEMENT_HOSTEL'
+            | 'HEALTHCARE_CENTRE'
+            | 'NATIONAL_RESOURCE_HOSPITAL'
+            | 'OTHER_SPECIFIED'
+            | 'REMAND_CENTRE'
+            | 'LOCAL_PRISON'
+            | 'CLOSED_PRISON'
+            | 'OPEN_TRAINING'
+            | 'HOSTEL'
+            | 'CLOSED_YOUNG_OFFENDER'
+            | 'OPEN_YOUNG_OFFENDER'
+            | 'REMAND_UNDER_18'
+            | 'SENTENCED_UNDER_18'
+            | 'ECL_COMPONENT'
+            | 'ADDITIONAL_SPECIAL_UNIT'
+            | 'SECOND_CLOSED_TRAINER'
+            | 'IMMIGRATION_DETAINEES'
+            | 'CELL'
+            | 'LANDING'
+            | 'WING'
+            | 'CAT_A'
+            | 'CAT_A_EX'
+            | 'CAT_A_HI'
+            | 'CAT_B'
+            | 'CAT_C'
+            | 'CAT_D'
+            | 'ELIGIBLE'
+            | 'PAROLE_GRANTED'
+            | 'INELIGIBLE'
+            | 'YOI_CLOSED'
+            | 'YOI_OPEN'
+            | 'YOI_RESTRICTED'
+            | 'YOI_SHORT_SENTENCE'
+            | 'YOI_LONG_TERM_CLOSED'
+            | 'UNCLASSIFIED'
+            | 'UNCATEGORISED_SENTENCED_MALE'
+            | 'LOW'
+            | 'MEDIUM'
+            | 'HIGH'
+            | 'NOT_APPLICABLE'
+            | 'PROV_A'
+            | 'PENDING'
+            | 'REF_REVIEW'
+            | 'REFUSED_NO_REVIEW'
+            | 'STANDARD'
+            | 'FEMALE_RESTRICTED'
+            | 'FEMALE_CLOSED'
+            | 'FEMALE_SEMI'
+            | 'FEMALE_OPEN'
+            | 'UN_SENTENCED'
+            | 'YES'
+            | 'NO'
+          )[]
+        | null
       /** @description Location Usage */
-      usage?: components['schemas']['NonResidentialUsageDto'][]
+      usage?: components['schemas']['NonResidentialUsageDto'][] | null
       /** @description Indicates that this location can used for internal movements */
-      internalMovementAllowed?: boolean
+      internalMovementAllowed?: boolean | null
       /**
        * Format: date-time
        * @description Date location was created, if not provided then the current time will be used for a new location
        */
-      createDate?: string
+      createDate?: string | null
       /**
        * Format: date-time
        * @description Last updated, if not provided then the current time will be used
        */
-      lastModifiedDate?: string
+      lastModifiedDate?: string | null
       /** @description Username of the staff updating the location */
       lastUpdatedBy: string
       isDeactivated: boolean
@@ -3686,7 +4456,7 @@ export interface components {
       /**
        * @description If residential location, its type
        * @example NORMAL_ACCOMMODATION
-       * @enum {string}
+       * @enum {string|null}
        */
       residentialHousingType?:
         | 'HEALTHCARE'
@@ -3696,121 +4466,127 @@ export interface components {
         | 'SEGREGATION'
         | 'SPECIALIST_CELL'
         | 'OTHER_USE'
+        | null
       /**
        * @description Alternative description to display for location, (Not Cells)
        * @example Wing A
        */
-      localName?: string
+      localName?: string | null
       /**
        * @description Additional comments that can be made about this location
        * @example Not to be used
        */
-      comments?: string
+      comments?: string | null
       /**
        * @description When set to true DO NOT SYNC the working capacity
        * @default false
        */
       ignoreWorkingCapacity: boolean
-      /** @description Capacity details of the location */
-      capacity?: components['schemas']['Capacity']
-      /** @description Indicates that this location is certified for use as a residential location */
-      certification?: components['schemas']['Certification']
+      capacity?: components['schemas']['Capacity'] | null
+      /**
+       * @description Indicates that this location is certified for use as a cell
+       * @example true
+       */
+      certifiedCell?: boolean | null
+      certification?: components['schemas']['Certification'] | null
       /** @description Location Attributes */
-      attributes?: (
-        | 'ANTI_BARRICADE_DOOR'
-        | 'AUDITABLE_CELL_BELL'
-        | 'FIXED_BED'
-        | 'METAL_DOOR'
-        | 'MOVABLE_BED'
-        | 'PRIVACY_CURTAIN'
-        | 'PRIVACY_SCREEN'
-        | 'STANDARD_CELL_BELL'
-        | 'SEPARATE_TOILET'
-        | 'WOODEN_DOOR'
-        | 'CAT_A_CELL'
-        | 'DOUBLE_OCCUPANCY'
-        | 'E_LIST_CELL'
-        | 'GATED_CELL'
-        | 'LISTENER_CELL'
-        | 'LOCATE_FLAT'
-        | 'MULTIPLE_OCCUPANCY'
-        | 'NON_SMOKER_CELL'
-        | 'OBSERVATION_CELL'
-        | 'SAFE_CELL'
-        | 'SINGLE_OCCUPANCY'
-        | 'SPECIAL_CELL'
-        | 'WHEELCHAIR_ACCESS'
-        | 'UNCONVICTED_JUVENILES'
-        | 'SENTENCED_JUVENILES'
-        | 'UNCONVICTED_18_20'
-        | 'SENTENCED_18_20'
-        | 'UNCONVICTED_ADULTS'
-        | 'SENTENCED_ADULTS'
-        | 'VULNERABLE_PRISONER_UNIT'
-        | 'SPECIAL_UNIT'
-        | 'RESETTLEMENT_HOSTEL'
-        | 'HEALTHCARE_CENTRE'
-        | 'NATIONAL_RESOURCE_HOSPITAL'
-        | 'OTHER_SPECIFIED'
-        | 'REMAND_CENTRE'
-        | 'LOCAL_PRISON'
-        | 'CLOSED_PRISON'
-        | 'OPEN_TRAINING'
-        | 'HOSTEL'
-        | 'CLOSED_YOUNG_OFFENDER'
-        | 'OPEN_YOUNG_OFFENDER'
-        | 'REMAND_UNDER_18'
-        | 'SENTENCED_UNDER_18'
-        | 'ECL_COMPONENT'
-        | 'ADDITIONAL_SPECIAL_UNIT'
-        | 'SECOND_CLOSED_TRAINER'
-        | 'IMMIGRATION_DETAINEES'
-        | 'CELL'
-        | 'LANDING'
-        | 'WING'
-        | 'CAT_A'
-        | 'CAT_A_EX'
-        | 'CAT_A_HI'
-        | 'CAT_B'
-        | 'CAT_C'
-        | 'CAT_D'
-        | 'ELIGIBLE'
-        | 'PAROLE_GRANTED'
-        | 'INELIGIBLE'
-        | 'YOI_CLOSED'
-        | 'YOI_OPEN'
-        | 'YOI_RESTRICTED'
-        | 'YOI_SHORT_SENTENCE'
-        | 'YOI_LONG_TERM_CLOSED'
-        | 'UNCLASSIFIED'
-        | 'UNCATEGORISED_SENTENCED_MALE'
-        | 'LOW'
-        | 'MEDIUM'
-        | 'HIGH'
-        | 'NOT_APPLICABLE'
-        | 'PROV_A'
-        | 'PENDING'
-        | 'REF_REVIEW'
-        | 'REFUSED_NO_REVIEW'
-        | 'STANDARD'
-        | 'FEMALE_RESTRICTED'
-        | 'FEMALE_CLOSED'
-        | 'FEMALE_SEMI'
-        | 'FEMALE_OPEN'
-        | 'UN_SENTENCED'
-        | 'YES'
-        | 'NO'
-      )[]
+      attributes?:
+        | (
+            | 'ANTI_BARRICADE_DOOR'
+            | 'AUDITABLE_CELL_BELL'
+            | 'FIXED_BED'
+            | 'METAL_DOOR'
+            | 'MOVABLE_BED'
+            | 'PRIVACY_CURTAIN'
+            | 'PRIVACY_SCREEN'
+            | 'STANDARD_CELL_BELL'
+            | 'SEPARATE_TOILET'
+            | 'WOODEN_DOOR'
+            | 'CAT_A_CELL'
+            | 'DOUBLE_OCCUPANCY'
+            | 'E_LIST_CELL'
+            | 'GATED_CELL'
+            | 'LISTENER_CELL'
+            | 'LOCATE_FLAT'
+            | 'MULTIPLE_OCCUPANCY'
+            | 'NON_SMOKER_CELL'
+            | 'OBSERVATION_CELL'
+            | 'SAFE_CELL'
+            | 'SINGLE_OCCUPANCY'
+            | 'SPECIAL_CELL'
+            | 'WHEELCHAIR_ACCESS'
+            | 'UNCONVICTED_JUVENILES'
+            | 'SENTENCED_JUVENILES'
+            | 'UNCONVICTED_18_20'
+            | 'SENTENCED_18_20'
+            | 'UNCONVICTED_ADULTS'
+            | 'SENTENCED_ADULTS'
+            | 'VULNERABLE_PRISONER_UNIT'
+            | 'SPECIAL_UNIT'
+            | 'RESETTLEMENT_HOSTEL'
+            | 'HEALTHCARE_CENTRE'
+            | 'NATIONAL_RESOURCE_HOSPITAL'
+            | 'OTHER_SPECIFIED'
+            | 'REMAND_CENTRE'
+            | 'LOCAL_PRISON'
+            | 'CLOSED_PRISON'
+            | 'OPEN_TRAINING'
+            | 'HOSTEL'
+            | 'CLOSED_YOUNG_OFFENDER'
+            | 'OPEN_YOUNG_OFFENDER'
+            | 'REMAND_UNDER_18'
+            | 'SENTENCED_UNDER_18'
+            | 'ECL_COMPONENT'
+            | 'ADDITIONAL_SPECIAL_UNIT'
+            | 'SECOND_CLOSED_TRAINER'
+            | 'IMMIGRATION_DETAINEES'
+            | 'CELL'
+            | 'LANDING'
+            | 'WING'
+            | 'CAT_A'
+            | 'CAT_A_EX'
+            | 'CAT_A_HI'
+            | 'CAT_B'
+            | 'CAT_C'
+            | 'CAT_D'
+            | 'ELIGIBLE'
+            | 'PAROLE_GRANTED'
+            | 'INELIGIBLE'
+            | 'YOI_CLOSED'
+            | 'YOI_OPEN'
+            | 'YOI_RESTRICTED'
+            | 'YOI_SHORT_SENTENCE'
+            | 'YOI_LONG_TERM_CLOSED'
+            | 'UNCLASSIFIED'
+            | 'UNCATEGORISED_SENTENCED_MALE'
+            | 'LOW'
+            | 'MEDIUM'
+            | 'HIGH'
+            | 'NOT_APPLICABLE'
+            | 'PROV_A'
+            | 'PENDING'
+            | 'REF_REVIEW'
+            | 'REFUSED_NO_REVIEW'
+            | 'STANDARD'
+            | 'FEMALE_RESTRICTED'
+            | 'FEMALE_CLOSED'
+            | 'FEMALE_SEMI'
+            | 'FEMALE_OPEN'
+            | 'UN_SENTENCED'
+            | 'YES'
+            | 'NO'
+          )[]
+        | null
       /** @description Location Usage */
-      usage?: components['schemas']['NonResidentialUsageDto'][]
+      usage?: components['schemas']['NonResidentialUsageDto'][] | null
       /** @description Indicates that this location can used for internal movements */
-      internalMovementAllowed?: boolean
+      internalMovementAllowed?: boolean | null
       /**
        * Format: int32
        * @description Sequence of locations within the current parent location
        * @example 1
        */
-      orderWithinParentLocation?: number
+      orderWithinParentLocation?: number | null
       /**
        * @description Indicates the location is enabled
        * @example true
@@ -3821,11 +4597,11 @@ export interface components {
        * @description Date the location was deactivated
        * @example 2023-01-23
        */
-      deactivatedDate?: string
+      deactivatedDate?: string | null
       /**
        * @description Reason for deactivation
        * @example DAMAGED
-       * @enum {string}
+       * @enum {string|null}
        */
       deactivatedReason?:
         | 'DAMAGED'
@@ -3837,12 +4613,13 @@ export interface components {
         | 'SECURITY_SEALED'
         | 'STAFF_SHORTAGE'
         | 'OTHER'
+        | null
       /**
        * Format: date
        * @description Estimated reactivation date for location reactivation
        * @example 2026-01-24
        */
-      proposedReactivationDate?: string
+      proposedReactivationDate?: string | null
       /**
        * @description Indicates that this location has been permanently deactivated and should not be changed in NOMIS
        * @default false
@@ -3854,9 +4631,9 @@ export interface components {
        * @description Parent Location Id
        * @example 57718979-573c-433a-9e51-2d83f887c11c
        */
-      parentId?: string
+      parentId?: string | null
       /** @description History of changes */
-      changeHistory?: components['schemas']['ChangeHistory'][]
+      changeHistory?: components['schemas']['ChangeHistory'][] | null
       /** @description Staff username who last changed the location */
       lastModifiedBy: string
       /**
@@ -3930,7 +4707,7 @@ export interface components {
        * @description Cell mark of the location
        * @example A1
        */
-      cellMark?: string
+      cellMark?: string | null
       /**
        * @description Accommodation Type
        * @example NORMAL_ACCOMMODATION
@@ -3967,64 +4744,68 @@ export interface components {
        * @description Alternative description to display for location
        * @example Wing A
        */
-      localName?: string
+      localName?: string | null
       /**
        * Format: uuid
        * @description ID of parent location
        * @example c73e8ad1-191b-42b8-bfce-2550cc858dab
        */
-      parentId?: string
+      parentId?: string | null
       /**
        * @description Key of parent location (can be used instead of parentId)
        * @example MDI-B-1
        */
-      parentLocationKey?: string
-      /** @description Capacity of the residential location */
-      capacity?: components['schemas']['Capacity']
+      parentLocationKey?: string | null
+      capacity?: components['schemas']['Capacity'] | null
       /**
        * @description Certified status of the residential location
        * @default false
        */
       certified: boolean
       /** @description Used For Types */
-      usedFor?: (
-        | 'CLOSE_SUPERVISION_CENTRE'
-        | 'SUB_MISUSE_DRUG_RECOVERY'
-        | 'FIRST_NIGHT_CENTRE'
-        | 'HIGH_SECURITY'
-        | 'IPP_LONG_TERM_SENTENCES'
-        | 'MOTHER_AND_BABY'
-        | 'OPEN_UNIT'
-        | 'PATHWAY_TO_PROG'
-        | 'PERINATAL_UNIT'
-        | 'PERSONALITY_DISORDER'
-        | 'PIPE'
-        | 'REMAND'
-        | 'SEPARATION_CENTRE'
-        | 'STANDARD_ACCOMMODATION'
-        | 'THERAPEUTIC_COMMUNITY'
-        | 'VULNERABLE_PRISONERS'
-        | 'YOUNG_PERSONS'
-      )[]
+      usedFor?:
+        | (
+            | 'CLOSE_SUPERVISION_CENTRE'
+            | 'SUB_MISUSE_DRUG_RECOVERY'
+            | 'FIRST_NIGHT_CENTRE'
+            | 'HIGH_SECURITY'
+            | 'IPP_LONG_TERM_SENTENCES'
+            | 'MOTHER_AND_BABY'
+            | 'OPEN_UNIT'
+            | 'PATHWAY_TO_PROG'
+            | 'PERINATAL_UNIT'
+            | 'PERSONALITY_DISORDER'
+            | 'PIPE'
+            | 'REMAND'
+            | 'SEPARATION_CENTRE'
+            | 'STANDARD_ACCOMMODATION'
+            | 'THERAPEUTIC_COMMUNITY'
+            | 'VULNERABLE_PRISONERS'
+            | 'YOUNG_PERSONS'
+          )[]
+        | null
       /** @description Specialist Cell Types */
-      specialistCellTypes?: (
-        | 'ACCESSIBLE_CELL'
-        | 'BIOHAZARD_DIRTY_PROTEST'
-        | 'CSU'
-        | 'CAT_A'
-        | 'CONSTANT_SUPERVISION'
-        | 'DRY'
-        | 'ESCAPE_LIST'
-        | 'ISOLATION_DISEASES'
-        | 'LISTENER_CRISIS'
-        | 'LOCATE_FLAT_CELL'
-        | 'MEDICAL'
-        | 'MOTHER_AND_BABY'
-        | 'SAFE_CELL'
-        | 'UNFURNISHED'
-      )[]
+      specialistCellTypes?:
+        | (
+            | 'ACCESSIBLE_CELL'
+            | 'BIOHAZARD_DIRTY_PROTEST'
+            | 'CSU'
+            | 'CAT_A'
+            | 'CONSTANT_SUPERVISION'
+            | 'DRY'
+            | 'ESCAPE_LIST'
+            | 'ISOLATION_DISEASES'
+            | 'LISTENER_CRISIS'
+            | 'LOCATE_FLAT_CELL'
+            | 'MEDICAL'
+            | 'MOTHER_AND_BABY'
+            | 'SAFE_CELL'
+            | 'UNFURNISHED'
+          )[]
+        | null
       /**
        * Format: int32
+       * @deprecated
        * @description CNA value
        * @default 0
        */
@@ -4085,17 +4866,32 @@ export interface components {
        * @description Alternative description to display for location
        * @example Adj Room
        */
-      localName?: string
+      localName?: string | null
       /**
        * Format: uuid
        * @description ID of parent location
        * @example c73e8ad1-191b-42b8-bfce-2550cc858dab
        */
-      parentId?: string
-      /** @description Location Usage */
-      usage?: components['schemas']['NonResidentialUsageDto'][]
-      /** @description Indicates that this location can used for internal movements */
-      internalMovementAllowed?: boolean
+      parentId?: string | null
+      /** @description Services that use this location */
+      servicesUsingLocation?:
+        | (
+            | 'APPOINTMENT'
+            | 'PROGRAMMES_AND_ACTIVITIES'
+            | 'VIDEO_LINK'
+            | 'HEARING_LOCATION'
+            | 'LOCATION_OF_INCIDENT'
+            | 'INTERNAL_MOVEMENTS'
+            | 'OFFICIAL_VISITS'
+            | 'USE_OF_FORCE'
+          )[]
+        | null
+      /**
+       * @description Non residential location active, if false will be marked as inactive
+       * @default true
+       * @example true
+       */
+      active: boolean
     }
     /** @description Request to create a wing */
     CreateWingAndStructureRequest: {
@@ -4113,7 +4909,7 @@ export interface components {
        * @description Alternative description to display for location
        * @example Wing A
        */
-      wingDescription?: string
+      wingDescription?: string | null
       /** @description The structure of the wing */
       wingStructure: ('CELL' | 'LANDING' | 'SPUR' | 'WING')[]
     }
@@ -4128,29 +4924,30 @@ export interface components {
        * Format: uuid
        * @description Parent location under which the structure and/or cells should be created, if not specified then will add to the top level of the prison, is specified but no `newLevelAboveCells` is specified then cells will be created under this location
        */
-      parentLocation?: string
-      /** @description The location to create above the cells, this is normally a landing or spur, if the location where cells should be created under already exists then leave null */
-      newLevelAboveCells?: components['schemas']['LevelAboveCells']
+      parentLocation?: string | null
+      newLevelAboveCells?: components['schemas']['LevelAboveCells'] | null
       /** @description Used For Types for all cells */
-      cellsUsedFor?: (
-        | 'CLOSE_SUPERVISION_CENTRE'
-        | 'SUB_MISUSE_DRUG_RECOVERY'
-        | 'FIRST_NIGHT_CENTRE'
-        | 'HIGH_SECURITY'
-        | 'IPP_LONG_TERM_SENTENCES'
-        | 'MOTHER_AND_BABY'
-        | 'OPEN_UNIT'
-        | 'PATHWAY_TO_PROG'
-        | 'PERINATAL_UNIT'
-        | 'PERSONALITY_DISORDER'
-        | 'PIPE'
-        | 'REMAND'
-        | 'SEPARATION_CENTRE'
-        | 'STANDARD_ACCOMMODATION'
-        | 'THERAPEUTIC_COMMUNITY'
-        | 'VULNERABLE_PRISONERS'
-        | 'YOUNG_PERSONS'
-      )[]
+      cellsUsedFor?:
+        | (
+            | 'CLOSE_SUPERVISION_CENTRE'
+            | 'SUB_MISUSE_DRUG_RECOVERY'
+            | 'FIRST_NIGHT_CENTRE'
+            | 'HIGH_SECURITY'
+            | 'IPP_LONG_TERM_SENTENCES'
+            | 'MOTHER_AND_BABY'
+            | 'OPEN_UNIT'
+            | 'PATHWAY_TO_PROG'
+            | 'PERINATAL_UNIT'
+            | 'PERSONALITY_DISORDER'
+            | 'PIPE'
+            | 'REMAND'
+            | 'SEPARATION_CENTRE'
+            | 'STANDARD_ACCOMMODATION'
+            | 'THERAPEUTIC_COMMUNITY'
+            | 'VULNERABLE_PRISONERS'
+            | 'YOUNG_PERSONS'
+          )[]
+        | null
       /**
        * @description Accommodation Type for all cells
        * @default NORMAL_ACCOMMODATION
@@ -4162,8 +4959,10 @@ export interface components {
         | 'HEALTHCARE_INPATIENTS'
         | 'NORMAL_ACCOMMODATION'
         | 'OTHER_NON_RESIDENTIAL'
-      cells?: components['schemas']['NewCellRequest'][]
+      /** @description Set of cells that are to be created */
+      cells?: components['schemas']['CellInformation'][] | null
     }
+    /** @description Holds information about the level above which the cells should be created */
     LevelAboveCells: {
       /**
        * @description Code assigned to the new structural location
@@ -4174,7 +4973,7 @@ export interface components {
        * @description Alternative description to display for location
        * @example Landing A
        */
-      levelLocalName?: string
+      levelLocalName?: string | null
       /**
        * @description Parent location type
        * @default LANDING
@@ -4183,123 +4982,71 @@ export interface components {
        */
       locationType: 'CELL' | 'LANDING' | 'SPUR' | 'WING'
     }
-    NewCellRequest: {
-      /**
-       * @description Code of the location
-       * @example 001
-       */
-      code: string
-      /**
-       * @description Cell mark of the location
-       * @example A1
-       */
-      cellMark?: string
-      /**
-       * Format: int32
-       * @description CNA value
-       * @default 0
-       */
-      certifiedNormalAccommodation: number
-      /**
-       * Format: int32
-       * @description Max capacity of the location
-       * @default 0
-       * @example 2
-       */
-      maxCapacity: number
-      /**
-       * Format: int32
-       * @description Working capacity of the location
-       * @default 0
-       * @example 2
-       */
-      workingCapacity: number
-      /** @description Specialist Cell Types */
-      specialistCellTypes?: (
-        | 'ACCESSIBLE_CELL'
-        | 'BIOHAZARD_DIRTY_PROTEST'
-        | 'CSU'
-        | 'CAT_A'
-        | 'CONSTANT_SUPERVISION'
-        | 'DRY'
-        | 'ESCAPE_LIST'
-        | 'ISOLATION_DISEASES'
-        | 'LISTENER_CRISIS'
-        | 'LOCATE_FLAT_CELL'
-        | 'MEDICAL'
-        | 'MOTHER_AND_BABY'
-        | 'SAFE_CELL'
-        | 'UNFURNISHED'
-      )[]
-      /**
-       * @description In-cell sanitation for cell
-       * @default true
-       */
-      inCellSanitation: boolean
-      isCapacityValid: boolean
-    }
     /** @description Request to update a residential location */
     PatchResidentialLocationRequest: {
       /**
        * @description Code of the location
        * @example 001
        */
-      code?: string
+      code?: string | null
       /**
        * Format: uuid
        * @description ID of parent location
        * @example c73e8ad1-191b-42b8-bfce-2550cc858dab
        */
-      parentId?: string
+      parentId?: string | null
       /**
        * @description Key of parent location
        * @example MDI-B-1
        */
-      parentLocationKey?: string
+      parentLocationKey?: string | null
       /**
        * @description Indicates this location should move to the top of the hierarchy
        * @example false
        */
-      removeParent?: boolean
+      removeParent?: boolean | null
       /**
        * @description Accommodation type
        * @example NORMAL_ACCOMMODATION
-       * @enum {string}
+       * @enum {string|null}
        */
       accommodationType?:
         | 'CARE_AND_SEPARATION'
         | 'HEALTHCARE_INPATIENTS'
         | 'NORMAL_ACCOMMODATION'
         | 'OTHER_NON_RESIDENTIAL'
+        | null
       /** @description used For types */
-      usedFor?: (
-        | 'CLOSE_SUPERVISION_CENTRE'
-        | 'SUB_MISUSE_DRUG_RECOVERY'
-        | 'FIRST_NIGHT_CENTRE'
-        | 'HIGH_SECURITY'
-        | 'IPP_LONG_TERM_SENTENCES'
-        | 'MOTHER_AND_BABY'
-        | 'OPEN_UNIT'
-        | 'PATHWAY_TO_PROG'
-        | 'PERINATAL_UNIT'
-        | 'PERSONALITY_DISORDER'
-        | 'PIPE'
-        | 'REMAND'
-        | 'SEPARATION_CENTRE'
-        | 'STANDARD_ACCOMMODATION'
-        | 'THERAPEUTIC_COMMUNITY'
-        | 'VULNERABLE_PRISONERS'
-        | 'YOUNG_PERSONS'
-      )[]
+      usedFor?:
+        | (
+            | 'CLOSE_SUPERVISION_CENTRE'
+            | 'SUB_MISUSE_DRUG_RECOVERY'
+            | 'FIRST_NIGHT_CENTRE'
+            | 'HIGH_SECURITY'
+            | 'IPP_LONG_TERM_SENTENCES'
+            | 'MOTHER_AND_BABY'
+            | 'OPEN_UNIT'
+            | 'PATHWAY_TO_PROG'
+            | 'PERINATAL_UNIT'
+            | 'PERSONALITY_DISORDER'
+            | 'PIPE'
+            | 'REMAND'
+            | 'SEPARATION_CENTRE'
+            | 'STANDARD_ACCOMMODATION'
+            | 'THERAPEUTIC_COMMUNITY'
+            | 'VULNERABLE_PRISONERS'
+            | 'YOUNG_PERSONS'
+          )[]
+        | null
       /**
        * @description Alternative description to display for location
        * @example Wing A
        */
-      localName?: string
+      localName?: string | null
       /**
        * @description Location Type
        * @example CELL
-       * @enum {string}
+       * @enum {string|null}
        */
       locationType?:
         | 'WING'
@@ -4318,11 +5065,22 @@ export interface components {
         | 'HOLDING_AREA'
         | 'MOVEMENT_AREA'
         | 'EXTERNAL_GROUNDS'
+        | null
       /**
        * @description Additional comments that can be made about this location
        * @example Not to be used
        */
-      comments?: string
+      comments?: string | null
+      /**
+       * @description Cell mark of the location, this can only be used in Draft or a prison that does not require approval to change the certificate
+       * @example A1
+       */
+      cellMark?: string | null
+      /**
+       * @description In-cell sanitation, this can only be used in Draft or a prison that does not require approval to change the certificate
+       * @example true
+       */
+      inCellSanitation?: boolean | null
     }
     /** @description Request to update a non-res location */
     PatchNonResidentialLocationRequest: {
@@ -4330,11 +5088,11 @@ export interface components {
        * @description Code of the location
        * @example 001
        */
-      code?: string
+      code?: string | null
       /**
        * @description Location Type
        * @example APPOINTMENTS
-       * @enum {string}
+       * @enum {string|null}
        */
       locationType?:
         | 'GROUP'
@@ -4364,44 +5122,46 @@ export interface components {
         | 'SHELF'
         | 'STORE'
         | 'TABLE'
+        | null
       /**
        * Format: uuid
        * @description ID of parent location
        * @example c73e8ad1-191b-42b8-bfce-2550cc858dab
        */
-      parentId?: string
+      parentId?: string | null
       /**
        * @description Key of parent location
        * @example MDI-B-1
        */
-      parentLocationKey?: string
+      parentLocationKey?: string | null
       /**
        * @description Indicates this location should move to the top of the hierarchy
        * @example false
        */
-      removeParent?: boolean
-      /** @description Non-residential usage */
-      usage?: components['schemas']['NonResidentialUsageDto'][]
-      /** @description Indicates that this location can used for internal movements */
-      internalMovementAllowed?: boolean
+      removeParent?: boolean | null
+      /** @description Services that use this location */
+      servicesUsingLocation?:
+        | (
+            | 'APPOINTMENT'
+            | 'PROGRAMMES_AND_ACTIVITIES'
+            | 'VIDEO_LINK'
+            | 'HEARING_LOCATION'
+            | 'LOCATION_OF_INCIDENT'
+            | 'INTERNAL_MOVEMENTS'
+            | 'OFFICIAL_VISITS'
+            | 'USE_OF_FORCE'
+          )[]
+        | null
       /**
        * @description Alternative description to display for location
        * @example Wing A
        */
-      localName?: string
+      localName?: string | null
       /**
        * @description Additional comments that can be made about this location
        * @example Not to be used
        */
-      comments?: string
-    }
-    Count: {
-      /**
-       * Format: int64
-       * @description The total number of records
-       * @example 501
-       */
-      count: number
+      comments?: string | null
     }
     DlqMessage: {
       body: {
@@ -4449,17 +5209,17 @@ export interface components {
        * @description Prison ID
        * @example LEI
        */
-      prisonId?: string
+      prisonId?: string | null
       /**
        * @description Prison Name
        * @example HMP Leeds
        */
-      prisonName?: string
+      prisonName?: string | null
       /**
        * @description Cell location of the prisoner
        * @example 1-1-001
        */
-      cellLocation?: string
+      cellLocation?: string | null
       /**
        * @description Prisoner first name
        * @example Dave
@@ -4489,19 +5249,19 @@ export interface components {
        * @description Prisoner CSRA
        * @example High
        */
-      csra?: string
+      csra?: string | null
       /**
        * @description Prisoner category
        * @example C
        */
-      category?: string
+      category?: string | null
       /** @description Prisoner alerts */
-      alerts?: components['schemas']['Alert'][]
+      alerts?: components['schemas']['Alert'][] | null
       /**
        * @description Last Movement Type Code of prisoner
        * @example CRT
        */
-      lastMovementTypeCode?: string
+      lastMovementTypeCode?: string | null
     }
     /** @description Prisoner Location Information */
     PrisonerLocation: {
@@ -4662,13 +5422,13 @@ export interface components {
        * @description Alternative description to display for location, (Not Cells)
        * @example Wing A
        */
-      localName?: string
+      localName?: string | null
       /** @description Indicates that this location is certified for use as a residential location */
       certified: boolean
       /**
        * @description Reason for deactivation
        * @example DAMAGED
-       * @enum {string}
+       * @enum {string|null}
        */
       deactivatedReason?:
         | 'DAMAGED'
@@ -4680,10 +5440,11 @@ export interface components {
         | 'SECURITY_SEALED'
         | 'STAFF_SHORTAGE'
         | 'OTHER'
+        | null
       /** @description Roll count details */
       rollCount: components['schemas']['LocationRollCount']
       /** @description Sub Locations */
-      subLocations?: unknown
+      subLocations?: components['schemas']['ResidentialLocationRollCount'][] | null
     }
     /** @description Location Hierarchy Summary */
     LocationSummary: {
@@ -4692,7 +5453,7 @@ export interface components {
        * @description ID of location
        * @example c73e8ad1-191b-42b8-bfce-2550cc858dab
        */
-      id?: string
+      id?: string | null
       /**
        * @description Prison ID where the location is situated
        * @example MDI
@@ -4752,12 +5513,12 @@ export interface components {
        * @description Alternative description to display for location
        * @example Wing A
        */
-      localName?: string
+      localName?: string | null
       /**
        * @description Full path of the location within the prison
        * @example A-1-001
        */
-      pathHierarchy: string
+      pathHierarchy: string | null
       /**
        * Format: int32
        * @description Current Level within hierarchy, starts at 1, e.g Wing = 1
@@ -4770,7 +5531,7 @@ export interface components {
     /** @description Establishment Roll Count for Cells */
     PrisonCellRollCount: {
       /** @description Parent locations, top to bottom */
-      locationHierarchy: components['schemas']['LocationSummary'][]
+      locationHierarchy: components['schemas']['LocationSummary'][] | null
       /** @description Totals */
       totals: components['schemas']['LocationRollCount']
       /** @description Residential location roll count summary */
@@ -4781,14 +5542,14 @@ export interface components {
       totalElements?: number
       /** Format: int32 */
       totalPages?: number
-      first?: boolean
-      last?: boolean
       /** Format: int32 */
       size?: number
       content?: components['schemas']['LegacyLocation'][]
       /** Format: int32 */
       number?: number
       sort?: components['schemas']['SortObject']
+      first?: boolean
+      last?: boolean
       /** Format: int32 */
       numberOfElements?: number
       pageable?: components['schemas']['PageableObject']
@@ -4800,9 +5561,9 @@ export interface components {
       sort?: components['schemas']['SortObject']
       /** Format: int32 */
       pageSize?: number
-      paged?: boolean
       /** Format: int32 */
       pageNumber?: number
+      paged?: boolean
       unpaged?: boolean
     }
     SortObject: {
@@ -4822,6 +5583,70 @@ export interface components {
        * @example Cat A cell
        */
       description: string
+    }
+    /** @description Cell Certificate */
+    CellCertificateDto: {
+      /**
+       * Format: uuid
+       * @description ID of the cell certificate
+       * @example 2475f250-434a-4257-afe7-b911f1773a4d
+       */
+      id: string
+      /**
+       * @description Prison ID
+       * @example MDI
+       */
+      prisonId: string
+      /**
+       * @description Who approved the certificate
+       * @example USER1
+       */
+      approvedBy: string
+      /**
+       * Format: date-time
+       * @description When the certificate was approved
+       * @example 2023-01-01T12:00:00
+       */
+      approvedDate: string
+      /**
+       * Format: uuid
+       * @description ID of the certification approval request
+       * @example 2475f250-434a-4257-afe7-b911f1773a4d
+       */
+      certificationApprovalRequestId: string
+      /**
+       * Format: int32
+       * @description Total working capacity for the prison
+       * @example 100
+       */
+      totalWorkingCapacity: number
+      /**
+       * Format: int32
+       * @description Total max capacity for the prison
+       * @example 120
+       */
+      totalMaxCapacity: number
+      /**
+       * Format: int32
+       * @description Total capacity of certified cells for the prison
+       * @example 110
+       */
+      totalCertifiedNormalAccommodation: number
+      /**
+       * Format: int32
+       * @description Signed operational capacity for the prison
+       * @example 500
+       */
+      signedOperationCapacity: number
+      /**
+       * @description Whether this is the current certificate
+       * @example true
+       */
+      current: boolean
+      /** @description The approval request that created the certificate */
+      approvedRequest: components['schemas']['CertificationApprovalRequestDto']
+      /** @description Locations in the certificate */
+      locations: components['schemas']['CellCertificateLocationDto'][] | null
     }
     /** @description Prison Summary Information */
     PrisonSummary: {
@@ -4847,11 +5672,11 @@ export interface components {
        * @description Total number of non-structural locations  e.g. cells and rooms
        */
       numberOfCellLocations: number
+      currentCertificate?: components['schemas']['CellCertificateDto'] | null
     }
     /** @description Residential Summary */
     ResidentialSummary: {
-      /** @description Prison summary for top level view */
-      prisonSummary?: components['schemas']['PrisonSummary']
+      prisonSummary?: components['schemas']['PrisonSummary'] | null
       /**
        * @description The top level type of locations
        * @example Wings
@@ -4864,321 +5689,14 @@ export interface components {
        * @example Spurs
        * @example Cells
        */
-      subLocationName?: string
+      subLocationName?: string | null
       /** @description The structure of the wing */
-      wingStructure?: ('CELL' | 'LANDING' | 'SPUR' | 'WING')[]
+      wingStructure?: ('CELL' | 'LANDING' | 'SPUR' | 'WING')[] | null
       /** @description Parent locations, top to bottom */
-      locationHierarchy: components['schemas']['LocationSummary'][]
-      /** @description The current parent location (e.g Wing or Landing) details */
-      parentLocation?: components['schemas']['Location']
+      locationHierarchy: components['schemas']['LocationSummary'][] | null
+      parentLocation?: components['schemas']['Location'] | null
       /** @description All residential locations under this parent */
-      subLocations: {
-        /**
-         * Format: uuid
-         * @description Location Id
-         * @example 2475f250-434a-4257-afe7-b911f1773a4d
-         */
-        id: string
-        /**
-         * @description Prison ID
-         * @example MDI
-         */
-        prisonId: string
-        /**
-         * @description Location Code
-         * @example 001
-         */
-        code: string
-        /**
-         * @description Cell mark
-         * @example A1
-         */
-        cellMark?: string
-        /**
-         * @description Full path of the location within the prison
-         * @example A-1-001
-         */
-        pathHierarchy: string
-        /**
-         * @description Location Type
-         * @example CELL
-         * @enum {string}
-         */
-        locationType:
-          | 'WING'
-          | 'SPUR'
-          | 'LANDING'
-          | 'CELL'
-          | 'ROOM'
-          | 'HOLDING_AREA'
-          | 'MOVEMENT_AREA'
-          | 'RESIDENTIAL_UNIT'
-          | 'EXTERNAL_GROUNDS'
-          | 'HOLDING_CELL'
-          | 'MEDICAL'
-          | 'GROUP'
-          | 'OFFICE'
-          | 'ADMINISTRATION_AREA'
-          | 'BOOTH'
-          | 'BOX'
-          | 'RETURN_TO_UNIT'
-          | 'CLASSROOM'
-          | 'TRAINING_AREA'
-          | 'TRAINING_ROOM'
-          | 'EXERCISE_AREA'
-          | 'AREA'
-          | 'SPORTS'
-          | 'WORKSHOP'
-          | 'INSIDE_PARTY'
-          | 'OUTSIDE_PARTY'
-          | 'FAITH_AREA'
-          | 'ADJUDICATION_ROOM'
-          | 'APPOINTMENTS'
-          | 'VISITS'
-          | 'VIDEO_LINK'
-          | 'ASSOCIATION'
-          | 'INTERNAL_GROUNDS'
-          | 'INTERVIEW'
-          | 'LOCATION'
-          | 'POSITION'
-          | 'SHELF'
-          | 'STORE'
-          | 'TABLE'
-        /**
-         * @description Alternative description to display for location, (Not Cells)
-         * @example Wing A
-         */
-        localName?: string
-        /** @description The structure of the wing */
-        wingStructure?: ('CELL' | 'LANDING' | 'SPUR' | 'WING')[]
-        /**
-         * @description Additional comments that can be made about this location
-         * @example Not to be used
-         */
-        comments?: string
-        /**
-         * @description Indicates if the location is permanently inactive
-         * @example false
-         */
-        permanentlyInactive: boolean
-        /**
-         * @description Reason for permanently deactivating
-         * @example Demolished
-         */
-        permanentlyInactiveReason?: string
-        /** @description Capacity details of the location */
-        capacity?: components['schemas']['Capacity']
-        /** @description Pending changes of draft or pending approval location */
-        pendingChanges?: components['schemas']['PendingChangeDto']
-        /**
-         * Format: int32
-         * @description When a cell is inactive, show the active working capacity value
-         */
-        oldWorkingCapacity?: number
-        /** @description Indicates that this location is certified for use as a residential location */
-        certification?: components['schemas']['Certification']
-        /** @description Location Usage */
-        usage?: components['schemas']['NonResidentialUsageDto'][]
-        /** @description Indicates that this location can used for internal movements */
-        internalMovementAllowed?: boolean
-        /** @description Accommodation Types */
-        accommodationTypes?: (
-          | 'CARE_AND_SEPARATION'
-          | 'HEALTHCARE_INPATIENTS'
-          | 'NORMAL_ACCOMMODATION'
-          | 'OTHER_NON_RESIDENTIAL'
-        )[]
-        /** @description Specialist Cell Types */
-        specialistCellTypes?: (
-          | 'ACCESSIBLE_CELL'
-          | 'BIOHAZARD_DIRTY_PROTEST'
-          | 'CSU'
-          | 'CAT_A'
-          | 'CONSTANT_SUPERVISION'
-          | 'DRY'
-          | 'ESCAPE_LIST'
-          | 'ISOLATION_DISEASES'
-          | 'LISTENER_CRISIS'
-          | 'LOCATE_FLAT_CELL'
-          | 'MEDICAL'
-          | 'MOTHER_AND_BABY'
-          | 'SAFE_CELL'
-          | 'UNFURNISHED'
-        )[]
-        /** @description Usage For */
-        usedFor?: (
-          | 'CLOSE_SUPERVISION_CENTRE'
-          | 'SUB_MISUSE_DRUG_RECOVERY'
-          | 'FIRST_NIGHT_CENTRE'
-          | 'HIGH_SECURITY'
-          | 'IPP_LONG_TERM_SENTENCES'
-          | 'MOTHER_AND_BABY'
-          | 'OPEN_UNIT'
-          | 'PATHWAY_TO_PROG'
-          | 'PERINATAL_UNIT'
-          | 'PERSONALITY_DISORDER'
-          | 'PIPE'
-          | 'REMAND'
-          | 'SEPARATION_CENTRE'
-          | 'STANDARD_ACCOMMODATION'
-          | 'THERAPEUTIC_COMMUNITY'
-          | 'VULNERABLE_PRISONERS'
-          | 'YOUNG_PERSONS'
-        )[]
-        /**
-         * @description Status of the location
-         * @example ACTIVE
-         * @enum {string}
-         */
-        status:
-          | 'ACTIVE'
-          | 'INACTIVE'
-          | 'ARCHIVED'
-          | 'DRAFT'
-          | 'NON_RESIDENTIAL'
-          | 'LOCKED_ACTIVE'
-          | 'LOCKED_INACTIVE'
-          | 'LOCKED_DRAFT'
-          | 'LOCKED_NON_RESIDENTIAL'
-        /**
-         * @description Location is locked
-         * @example false
-         */
-        locked: boolean
-        /**
-         * @description Convert Cell Type
-         * @enum {string}
-         */
-        convertedCellType?:
-          | 'HOLDING_ROOM'
-          | 'INTERVIEW_ROOM'
-          | 'KITCHEN_SERVERY'
-          | 'LISTENERS_ROOM'
-          | 'OFFICE'
-          | 'SHOWER'
-          | 'STAFF_ROOM'
-          | 'STORE'
-          | 'TREATMENT_ROOM'
-          | 'UTILITY_ROOM'
-          | 'OTHER'
-        /** @description Convert Cell Type (Other) */
-        otherConvertedCellType?: string
-        /**
-         * @deprecated
-         * @description Indicates the location is enabled
-         * @example true
-         */
-        active: boolean
-        /**
-         * @description In-cell sanitation
-         * @example true
-         */
-        inCellSanitation?: boolean
-        /**
-         * @description Indicates the location in inactive as a parent is deactivated
-         * @example false
-         */
-        deactivatedByParent: boolean
-        /**
-         * Format: date-time
-         * @description Date the location was deactivated
-         * @example 2023-01-23T12:23:00
-         */
-        deactivatedDate?: string
-        /**
-         * @description Reason for deactivation
-         * @example DAMAGED
-         * @enum {string}
-         */
-        deactivatedReason?:
-          | 'DAMAGED'
-          | 'DAMP'
-          | 'MAINTENANCE'
-          | 'MOTHBALLED'
-          | 'PEST'
-          | 'REFURBISHMENT'
-          | 'SECURITY_SEALED'
-          | 'STAFF_SHORTAGE'
-          | 'OTHER'
-        /**
-         * @description For OTHER deactivation reason, a free text comment is provided
-         * @example Window damage
-         */
-        deactivationReasonDescription?: string
-        /** @description Staff username who deactivated the location */
-        deactivatedBy?: string
-        /**
-         * Format: date
-         * @description Estimated reactivation date for location reactivation
-         * @example 2026-01-24
-         */
-        proposedReactivationDate?: string
-        /**
-         * @description Planet FM reference number
-         * @example 2323/45M
-         */
-        planetFmReference?: string
-        /**
-         * Format: uuid
-         * @description Top Level Location Id
-         * @example 57718979-573c-433a-9e51-2d83f887c11c
-         */
-        topLevelId: string
-        /**
-         * Format: int32
-         * @description Current Level within hierarchy, starts at 1, e.g Wing = 1
-         * @example 1
-         * @example 2
-         * @example 3
-         */
-        level: number
-        /**
-         * @description Indicates this is the lowest level, often a cell
-         * @example false
-         */
-        leafLevel: boolean
-        /**
-         * Format: uuid
-         * @description Parent Location Id
-         * @example 57718979-573c-433a-9e51-2d83f887c11c
-         */
-        parentId?: string
-        /** @description Parent Location */
-        parentLocation?: unknown
-        /**
-         * Format: int32
-         * @description Number of inactive cells below this location
-         */
-        inactiveCells?: number
-        /**
-         * Format: int32
-         * @description Total number of non-structural locations are below this level, e.g. cells and rooms
-         */
-        numberOfCellLocations?: number
-        /** @description Child Locations */
-        childLocations?: unknown[]
-        /** @description History of changes */
-        changeHistory?: components['schemas']['ChangeHistory'][]
-        /** @description A list of transactions applied to this location */
-        transactionHistory?: components['schemas']['TransactionHistory'][]
-        /** @description Staff username who last changed the location */
-        lastModifiedBy: string
-        /**
-         * Format: date-time
-         * @description Date and time of the last change
-         */
-        lastModifiedDate: string
-        /**
-         * @description Business Key for a location
-         * @example MDI-A-1-001
-         */
-        key: string
-        /**
-         * @description Indicates if the location is a residential location
-         * @example true
-         */
-        isResidential: boolean
-      }[]
+      subLocations: components['schemas']['Location'][]
     }
     /** @description Prison hierarchy */
     PrisonHierarchyDto: {
@@ -5247,7 +5765,7 @@ export interface components {
        * @description Alternative description to display for location, (Not Cells)
        * @example Wing A
        */
-      localName?: string
+      localName?: string | null
       /**
        * Format: int32
        * @description Current Level within hierarchy, starts at 1, e.g Wing = 1
@@ -5263,14 +5781,14 @@ export interface components {
        */
       status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED' | 'DRAFT'
       /** @description Sub residential locations */
-      subLocations?: unknown[]
+      subLocations?: components['schemas']['PrisonHierarchyDto'][] | null
     }
     LocationGroupDto: {
       /**
        * @description Group name
        * @example Block A
        */
-      name: string
+      name: string | null
       /**
        * @description Group key
        * @example A
@@ -5289,7 +5807,32 @@ export interface components {
        *       }
        *     ]
        */
-      children: unknown[]
+      children: components['schemas']['LocationGroupDto'][] | null
+    }
+    /** @description Non Residential Summary */
+    NonResidentialSummary: {
+      /** @description Prison Id */
+      prisonId: string
+      /** @description All non-residential locations for this prison */
+      locations: components['schemas']['PageNonResidentialLocationDTO']
+    }
+    PageNonResidentialLocationDTO: {
+      /** Format: int64 */
+      totalElements?: number
+      /** Format: int32 */
+      totalPages?: number
+      /** Format: int32 */
+      size?: number
+      content?: components['schemas']['NonResidentialLocationDTO'][]
+      /** Format: int32 */
+      number?: number
+      sort?: components['schemas']['SortObject']
+      first?: boolean
+      last?: boolean
+      /** Format: int32 */
+      numberOfElements?: number
+      pageable?: components['schemas']['PageableObject']
+      empty?: boolean
     }
     /** @description Cell with specialist cell attribute */
     CellType: {
@@ -5356,7 +5899,7 @@ export interface components {
        * Local Name of the location.
        * @example RES-HB1-ALE
        */
-      localName?: string
+      localName?: string | null
       /**
        * List of specialist types for the cell.
        * @example [
@@ -5378,7 +5921,7 @@ export interface components {
        */
       legacyAttributes: components['schemas']['ResidentialLocationAttribute'][]
       /** List prisoners in this cell */
-      prisonersInCell: components['schemas']['Prisoner'][]
+      prisonersInCell: components['schemas']['Prisoner'][] | null
       /**
        * @description Business Key for a location
        * @example MDI-A-1-001
@@ -5478,186 +6021,6 @@ export interface components {
       /** Attribute Type Description */
       typeDescription: string
     }
-    DashboardDefinitionSummary: {
-      id: string
-      name: string
-      description?: string
-      /** @enum {string} */
-      loadType?: 'sync' | 'async'
-    }
-    ReportDefinitionSummary: {
-      id: string
-      name: string
-      description?: string
-      variants: components['schemas']['VariantDefinitionSummary'][]
-      dashboards?: components['schemas']['DashboardDefinitionSummary'][]
-      authorised: boolean
-    }
-    VariantDefinitionSummary: {
-      id: string
-      name: string
-      description?: string
-      isMissing: boolean
-      /** @enum {string} */
-      loadType?: 'sync' | 'async'
-    }
-    ChildVariantDefinition: {
-      id: string
-      name: string
-      resourceName: string
-      specification?: components['schemas']['Specification']
-      joinFields: string[]
-    }
-    DynamicFilterOption: {
-      /** Format: int32 */
-      minimumLength?: number
-    }
-    FieldDefinition: {
-      name: string
-      display: string
-      /** @enum {string} */
-      wordWrap?: 'none' | 'normal' | 'break-words'
-      filter?: components['schemas']['FilterDefinition']
-      sortable: boolean
-      defaultsort: boolean
-      /** @enum {string} */
-      sortDirection?: 'asc' | 'desc'
-      /** @enum {string} */
-      type: 'boolean' | 'date' | 'double' | 'HTML' | 'long' | 'string' | 'time'
-      mandatory: boolean
-      visible: boolean
-      calculated: boolean
-      header: boolean
-    }
-    FilterDefinition: {
-      /** @enum {string} */
-      type: 'Radio' | 'Select' | 'multiselect' | 'daterange' | 'autocomplete' | 'text' | 'date' | 'granulardaterange'
-      mandatory: boolean
-      pattern?: string
-      staticOptions?: components['schemas']['FilterOption'][]
-      dynamicOptions?: components['schemas']['DynamicFilterOption']
-      defaultValue?: string
-      min?: string
-      max?: string
-      interactive?: boolean
-      /** @enum {string} */
-      defaultGranularity?: 'hourly' | 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'annually'
-      /** @enum {string} */
-      defaultQuickFilterValue?:
-        | 'today'
-        | 'yesterday'
-        | 'last-seven-days'
-        | 'last-thirty-days'
-        | 'last-month'
-        | 'last-full-month'
-        | 'last-ninety-days'
-        | 'last-three-months'
-        | 'last-full-three-months'
-        | 'last-year'
-        | 'last-full-year'
-        | 'tomorrow'
-        | 'next-seven-days'
-        | 'next-thirty-days'
-        | 'next-month'
-        | 'next-full-month'
-        | 'next-ninety-days'
-        | 'next-three-months'
-        | 'next-full-three-months'
-        | 'next-year'
-        | 'next-full-year'
-    }
-    FilterOption: {
-      name: string
-      display: string
-    }
-    ReportSummary: {
-      id: string
-      /** @enum {string} */
-      template: 'table-header' | 'table-footer' | 'section-header' | 'section-footer' | 'page-header' | 'page-footer'
-      fields: components['schemas']['SummaryField'][]
-    }
-    SingleVariantReportDefinition: {
-      id: string
-      name: string
-      description?: string
-      variant: components['schemas']['VariantDefinition']
-    }
-    Specification: {
-      /** @enum {string} */
-      template:
-        | 'list'
-        | 'list-section'
-        | 'list-tab'
-        | 'summary'
-        | 'summary-section'
-        | 'parent-child'
-        | 'parent-child-section'
-        | 'row-section'
-        | 'row-section-child'
-      fields: components['schemas']['FieldDefinition'][]
-      sections: string[]
-    }
-    SummaryField: {
-      name: string
-      display?: string
-      /** @enum {string} */
-      type?: 'boolean' | 'date' | 'double' | 'HTML' | 'long' | 'string' | 'time'
-      header?: boolean
-      mergeRows?: boolean
-    }
-    VariantDefinition: {
-      id: string
-      name: string
-      resourceName: string
-      description?: string
-      specification?: components['schemas']['Specification']
-      classification?: string
-      printable?: boolean
-      summaries?: components['schemas']['ReportSummary'][]
-      interactive?: boolean
-      childVariants?: components['schemas']['ChildVariantDefinition'][]
-    }
-    DashboardDefinition: {
-      id: string
-      name: string
-      description?: string
-      sections: components['schemas']['DashboardSectionDefinition'][]
-      filterFields?: components['schemas']['FieldDefinition'][]
-    }
-    DashboardSectionDefinition: {
-      id: string
-      display?: string
-      description?: string
-      visualisations: components['schemas']['DashboardVisualisationDefinition'][]
-    }
-    DashboardVisualisationColumnDefinition: {
-      id: string
-      display: string
-      /** @enum {string} */
-      aggregate?: 'sum' | 'average'
-      /** @enum {string} */
-      unit?: 'NUMBER' | 'PERCENTAGE'
-      displayValue?: boolean
-      axis?: string
-    }
-    DashboardVisualisationColumnsDefinition: {
-      keys?: components['schemas']['DashboardVisualisationColumnDefinition'][]
-      measures: components['schemas']['DashboardVisualisationColumnDefinition'][]
-      filters?: components['schemas']['ValueVisualisationColumnDefinition'][]
-      expectNulls: boolean
-    }
-    DashboardVisualisationDefinition: {
-      id: string
-      /** @enum {string} */
-      type: 'list' | 'doughnut' | 'bar' | 'bar-timeseries' | 'line' | 'scorecard' | 'scorecard-group'
-      display?: string
-      description?: string
-      columns: components['schemas']['DashboardVisualisationColumnsDefinition']
-    }
-    ValueVisualisationColumnDefinition: {
-      id: string
-      equals: string
-    }
     /** @description Reference data information */
     Constant: {
       /**
@@ -5672,12 +6035,12 @@ export interface components {
       description: string
       attributes?: {
         [key: string]: unknown
-      }
+      } | null
       /**
        * @description Additional information about this reference code
        * @example Some useful extra info
        */
-      additionalInformation?: string
+      additionalInformation?: string | null
     }
     /** @description Reference data information */
     CompoundConstant: {
@@ -5694,229 +6057,6 @@ export interface components {
       /** @description Sub list of reference data values */
       values: components['schemas']['Constant'][]
     }
-    /** @description Cell Certificate */
-    CellCertificateDto: {
-      /**
-       * Format: uuid
-       * @description ID of the cell certificate
-       * @example 2475f250-434a-4257-afe7-b911f1773a4d
-       */
-      id: string
-      /**
-       * @description Prison ID
-       * @example MDI
-       */
-      prisonId: string
-      /**
-       * @description Who approved the certificate
-       * @example USER1
-       */
-      approvedBy: string
-      /**
-       * Format: date-time
-       * @description When the certificate was approved
-       * @example 2023-01-01T12:00:00
-       */
-      approvedDate: string
-      /**
-       * Format: uuid
-       * @description ID of the certification approval request
-       * @example 2475f250-434a-4257-afe7-b911f1773a4d
-       */
-      certificationApprovalRequestId: string
-      /**
-       * Format: int32
-       * @description Total working capacity for the prison
-       * @example 100
-       */
-      totalWorkingCapacity: number
-      /**
-       * Format: int32
-       * @description Total max capacity for the prison
-       * @example 120
-       */
-      totalMaxCapacity: number
-      /**
-       * Format: int32
-       * @description Total capacity of certified cells for the prison
-       * @example 110
-       */
-      totalCertifiedNormalAccommodation: number
-      /**
-       * Format: int32
-       * @description Signed operational capacity for the prison
-       * @example 500
-       */
-      signedOperationCapacity: number
-      /**
-       * @description Whether this is the current certificate
-       * @example true
-       */
-      current: boolean
-      /** @description The approval request that created the certificate */
-      approvedRequest: components['schemas']['CertificationApprovalRequestDto']
-      /** @description Locations in the certificate */
-      locations: components['schemas']['CellCertificateLocationDto'][]
-    }
-    /** @description Cell Certificate Location */
-    CellCertificateLocationDto: {
-      /**
-       * @description Location code
-       * @example 001
-       */
-      locationCode: string
-      /**
-       * @description Path hierarchy
-       * @example A-1-001
-       */
-      pathHierarchy: string
-      /**
-       * Format: int32
-       * @description Capacity of certified cell
-       * @example 2
-       */
-      certifiedNormalAccommodation?: number
-      /**
-       * Format: int32
-       * @description Working capacity
-       * @example 1
-       */
-      workingCapacity?: number
-      /**
-       * Format: int32
-       * @description Max capacity
-       * @example 2
-       */
-      maxCapacity?: number
-      /**
-       * @description Whether the cell has in-cell sanitation
-       * @example true
-       */
-      inCellSanitation?: boolean
-      /**
-       * @description Location type
-       * @example CELL
-       * @enum {string}
-       */
-      locationType:
-        | 'WING'
-        | 'SPUR'
-        | 'LANDING'
-        | 'CELL'
-        | 'ROOM'
-        | 'HOLDING_AREA'
-        | 'MOVEMENT_AREA'
-        | 'RESIDENTIAL_UNIT'
-        | 'EXTERNAL_GROUNDS'
-        | 'HOLDING_CELL'
-        | 'MEDICAL'
-        | 'GROUP'
-        | 'OFFICE'
-        | 'ADMINISTRATION_AREA'
-        | 'BOOTH'
-        | 'BOX'
-        | 'RETURN_TO_UNIT'
-        | 'CLASSROOM'
-        | 'TRAINING_AREA'
-        | 'TRAINING_ROOM'
-        | 'EXERCISE_AREA'
-        | 'AREA'
-        | 'SPORTS'
-        | 'WORKSHOP'
-        | 'INSIDE_PARTY'
-        | 'OUTSIDE_PARTY'
-        | 'FAITH_AREA'
-        | 'ADJUDICATION_ROOM'
-        | 'APPOINTMENTS'
-        | 'VISITS'
-        | 'VIDEO_LINK'
-        | 'ASSOCIATION'
-        | 'INTERNAL_GROUNDS'
-        | 'INTERVIEW'
-        | 'LOCATION'
-        | 'POSITION'
-        | 'SHELF'
-        | 'STORE'
-        | 'TABLE'
-      /** @description Accommodation Types */
-      accommodationTypes?: (
-        | 'CARE_AND_SEPARATION'
-        | 'HEALTHCARE_INPATIENTS'
-        | 'NORMAL_ACCOMMODATION'
-        | 'OTHER_NON_RESIDENTIAL'
-      )[]
-      /** @description Specialist Cell Types */
-      specialistCellTypes?: (
-        | 'ACCESSIBLE_CELL'
-        | 'BIOHAZARD_DIRTY_PROTEST'
-        | 'CSU'
-        | 'CAT_A'
-        | 'CONSTANT_SUPERVISION'
-        | 'DRY'
-        | 'ESCAPE_LIST'
-        | 'ISOLATION_DISEASES'
-        | 'LISTENER_CRISIS'
-        | 'LOCATE_FLAT_CELL'
-        | 'MEDICAL'
-        | 'MOTHER_AND_BABY'
-        | 'SAFE_CELL'
-        | 'UNFURNISHED'
-      )[]
-      /** @description Usage For */
-      usedFor?: (
-        | 'CLOSE_SUPERVISION_CENTRE'
-        | 'SUB_MISUSE_DRUG_RECOVERY'
-        | 'FIRST_NIGHT_CENTRE'
-        | 'HIGH_SECURITY'
-        | 'IPP_LONG_TERM_SENTENCES'
-        | 'MOTHER_AND_BABY'
-        | 'OPEN_UNIT'
-        | 'PATHWAY_TO_PROG'
-        | 'PERINATAL_UNIT'
-        | 'PERSONALITY_DISORDER'
-        | 'PIPE'
-        | 'REMAND'
-        | 'SEPARATION_CENTRE'
-        | 'STANDARD_ACCOMMODATION'
-        | 'THERAPEUTIC_COMMUNITY'
-        | 'VULNERABLE_PRISONERS'
-        | 'YOUNG_PERSONS'
-      )[]
-      /**
-       * @description Local name for the location, not used in cells
-       * @example Houseblock A
-       */
-      localName?: string
-      /**
-       * @description Cell mark
-       * @example T-01
-       */
-      cellMark?: string
-      /**
-       * Format: int32
-       * @description Level within the hierarchy
-       * @example 3
-       */
-      level: number
-      /**
-       * @description If converted, the type of cell this location has been converted to
-       * @enum {string}
-       */
-      convertedCellType?:
-        | 'HOLDING_ROOM'
-        | 'INTERVIEW_ROOM'
-        | 'KITCHEN_SERVERY'
-        | 'LISTENERS_ROOM'
-        | 'OFFICE'
-        | 'SHOWER'
-        | 'STAFF_ROOM'
-        | 'STORE'
-        | 'TREATMENT_ROOM'
-        | 'UTILITY_ROOM'
-        | 'OTHER'
-      /** @description Sub locations within this cell certificate location */
-      subLocations?: unknown
-    }
   }
   responses: never
   parameters: never
@@ -5924,9 +6064,7 @@ export interface components {
   headers: never
   pathItems: never
 }
-
 export type $defs = Record<string, never>
-
 export interface operations {
   retryDlq: {
     parameters: {
@@ -5946,42 +6084,6 @@ export interface operations {
         }
         content: {
           '*/*': components['schemas']['RetryDlqResult']
-        }
-      }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -6004,42 +6106,6 @@ export interface operations {
           '*/*': components['schemas']['RetryDlqResult'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   purgeQueue: {
@@ -6060,42 +6126,6 @@ export interface operations {
         }
         content: {
           '*/*': components['schemas']['PurgeQueueResult']
-        }
-      }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -6129,15 +6159,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonConfigurationDto']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -6156,22 +6177,53 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
+    }
+  }
+  updateNonResiLocationServiceActiveStatus: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Prison ID
+         * @example MDI
+         */
+        prisonId: string
+        /**
+         * @description Status of the non-resi service to change
+         * @example ACTIVE
+         */
+        status: 'ACTIVE' | 'INACTIVE'
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns configuration */
+      200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['PrisonConfigurationDto']
         }
       }
-      /** @description Internal Server Error */
-      500: {
+      /** @description Unauthorized to access this endpoint */
+      401: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the LOCATION_CONFIG_ADMIN role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -6205,15 +6257,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonConfigurationDto']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -6230,24 +6273,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -6281,15 +6306,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonConfigurationDto']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -6306,24 +6322,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -6410,24 +6408,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   updateDeactivateDetails: {
@@ -6494,24 +6474,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   updateNonResidentialCellType: {
@@ -6576,24 +6538,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -6677,30 +6621,13 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   reactivateLocation: {
     parameters: {
       query?: {
         'cascade-reactivation'?: boolean
+        'force-reactivation'?: boolean
       }
       header?: never
       path: {
@@ -6757,24 +6684,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -6843,24 +6752,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   permanentlyDeactivateLocation: {
@@ -6925,24 +6816,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -7020,24 +6893,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   convertCellToNonResidentialLocation: {
@@ -7102,24 +6957,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -7188,24 +7025,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   changeCapacity: {
@@ -7223,7 +7042,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['Capacity']
+        'application/json': components['schemas']['CapacityChangeRequest']
       }
     }
     responses: {
@@ -7272,1313 +7091,9 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
-  bulkReactivateLocations: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ReactivateLocationsRequest']
-      }
-    }
-    responses: {
-      /** @description Returns updated locations */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Location'][]
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Location not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  bulkDeactivateLocations: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['DeactivateLocationsRequest']
-      }
-    }
-    responses: {
-      /** @description Returns deactivated locations */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Location'][]
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Location not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  bulkPermanentlyDeactivateLocations: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['BulkPermanentDeactivationRequest']
-      }
-    }
-    responses: {
-      /** @description Returns perm deactivated locations */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Location'][]
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Location not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  bulkUpdateCapacity: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateCapacityRequest']
-      }
-    }
-    responses: {
-      /** @description Returns list of changes made to capacity locations */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            [key: string]: components['schemas']['CapacityChanges'][]
-          }
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Location not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  requestSignedOpCapApproval: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SignedOpCapApprovalRequest']
-      }
-    }
-    responses: {
-      /** @description Returns the approval request status */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['CertificationApprovalRequestDto']
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Location not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  withdrawCertificationRequest: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['WithdrawCertificationRequestDto']
-      }
-    }
-    responses: {
-      /** @description Returns the approval request status */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['CertificationApprovalRequestDto']
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Approval request not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  requestApproval: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['LocationApprovalRequest']
-      }
-    }
-    responses: {
-      /** @description Returns the approval request status */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['CertificationApprovalRequestDto']
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Location not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  rejectCertificationRequest: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RejectCertificationRequestDto']
-      }
-    }
-    responses: {
-      /** @description Returns the approval request status */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['CertificationApprovalRequestDto']
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Approval request not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  approveCertificationRequest: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ApproveCertificationRequestDto']
-      }
-    }
-    responses: {
-      /** @description Returns the approval request status */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['CertificationApprovalRequestDto']
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Approval request not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  upsertLocation: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['NomisSyncLocationRequest']
-      }
-    }
-    responses: {
-      /** @description Updated location */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['LegacyLocation']
-        }
-      }
-      /** @description Created location */
-      201: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['LegacyLocation']
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the SYNC_LOCATIONS role with write scope. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Data not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  updateSignedOperationCapacity: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SignedOperationCapacityValidRequest']
-      }
-    }
-    responses: {
-      /** @description Returns created Signed Operation Capacity */
-      201: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['SignedOperationCapacityDto']
-        }
-      }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the ROLE_MAINTAIN_LOCATIONS role */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description PrisonID not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Signed Operation Capacity already has this value */
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  createResidentialLocation: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateResidentialLocationRequest']
-      }
-    }
-    responses: {
-      /** @description Returns created location */
-      201: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Location']
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Data not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Location already exists */
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  createNonResidentialLocation: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateNonResidentialLocationRequest']
-      }
-    }
-    responses: {
-      /** @description Returns created location */
-      201: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Location']
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Data not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Location already exists */
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  getLocationsByKeys: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': string[]
-      }
-    }
-    responses: {
-      /** @description Returns location */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Location'][]
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Data not found */
-      404: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  createWing: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateWingAndStructureRequest']
-      }
-    }
-    responses: {
-      /** @description Returns created locations */
-      201: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Location']
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Location already exists */
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  createCells: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CellInitialisationRequest']
-      }
-    }
-    responses: {
-      /** @description Returns created locations */
-      201: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Location']
-        }
-      }
-      /** @description Invalid Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Unauthorized to access this endpoint */
-      401: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Location already exists */
-      409: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  patchResidentialLocation: {
+  updateCellSanitation: {
     parameters: {
       query?: never
       header?: never
@@ -8593,7 +7108,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['PatchResidentialLocationRequest']
+        'application/json': components['schemas']['CellSanitationChangeRequest']
       }
     }
     responses: {
@@ -8651,42 +7166,24 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
-  patchResidentialLocationByKey: {
+  updateCellMark: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description Location key
-         * @example MDI-A-1-001
+         * @description The location Id
+         * @example de91dfa7-821f-4552-a427-bf2f32eafeb0
          */
-        key: string
+        id: string
       }
       cookie?: never
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['PatchResidentialLocationRequest']
+        'application/json': components['schemas']['CellMarkChangeRequest']
       }
     }
     responses: {
@@ -8744,22 +7241,132 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
+    }
+  }
+  getNonResidentialLocation: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The non-residential location Id
+         * @example de91dfa7-821f-4552-a427-bf2f32eafeb0
+         */
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns location */
+      200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['NonResidentialLocationDTO']
         }
       }
-      /** @description Internal Server Error */
-      500: {
+      /** @description Unauthorized to access this endpoint */
+      401: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the VIEW_LOCATIONS role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Data not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  updateNonResidentialLocation: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The location Id
+         * @example de91dfa7-821f-4552-a427-bf2f32eafeb0
+         */
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateOrUpdateNonResidentialLocationRequest']
+      }
+    }
+    responses: {
+      /** @description Returns updated location */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['NonResidentialLocationDTO']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Data not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location already exists */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -8837,22 +7444,1444 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
+    }
+  }
+  updateCells: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CellDraftUpdateRequest']
+      }
+    }
+    responses: {
+      /** @description OK */
+      200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['Location']
         }
       }
-      /** @description Internal Server Error */
-      500: {
+      /** @description Returns updates locations */
+      201: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['Location']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location already exists */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  bulkReactivateLocations: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ReactivateLocationsRequest']
+      }
+    }
+    responses: {
+      /** @description Returns updated locations */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location'][]
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  bulkDeactivateLocations: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DeactivateLocationsRequest']
+      }
+    }
+    responses: {
+      /** @description Returns deactivated locations */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location'][]
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  bulkPermanentlyDeactivateLocations: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['BulkPermanentDeactivationRequest']
+      }
+    }
+    responses: {
+      /** @description Returns perm deactivated locations */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location'][]
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  bulkUpdateCapacity: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateCapacityRequest']
+      }
+    }
+    responses: {
+      /** @description Returns list of changes made to capacity locations */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': {
+            [key: string]: components['schemas']['CapacityChanges'][]
+          }
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  requestSignedOpCapApproval: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SignedOpCapApprovalRequest']
+      }
+    }
+    responses: {
+      /** @description Returns the approval request status */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CertificationApprovalRequestDto']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  withdrawCertificationRequest: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['WithdrawCertificationRequestDto']
+      }
+    }
+    responses: {
+      /** @description Returns the approval request status */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CertificationApprovalRequestDto']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Approval request not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  draftRequestApproval: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LocationApprovalRequest']
+      }
+    }
+    responses: {
+      /** @description Returns the approval request status */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CertificationApprovalRequestDto']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  rejectCertificationRequest: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RejectCertificationRequestDto']
+      }
+    }
+    responses: {
+      /** @description Returns the approval request status */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CertificationApprovalRequestDto']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Approval request not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  reactivationRequestApproval: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ReactivationLocationsApprovalRequest']
+      }
+    }
+    responses: {
+      /** @description Returns the approval request status */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CertificationApprovalRequestDto']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  approveCertificationRequest: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ApproveCertificationRequestDto']
+      }
+    }
+    responses: {
+      /** @description Returns the approval request status */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CertificationApprovalRequestDto']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Approval request not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  upsertLocation: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['NomisSyncLocationRequest']
+      }
+    }
+    responses: {
+      /** @description Updated location */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LegacyLocation']
+        }
+      }
+      /** @description Created location */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LegacyLocation']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the SYNC_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Data not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  updateSignedOperationCapacity: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SignedOperationCapacityValidRequest']
+      }
+    }
+    responses: {
+      /** @description Returns created Signed Operation Capacity */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SignedOperationCapacityDto']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the ROLE_MAINTAIN_LOCATIONS role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description PrisonID not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Signed Operation Capacity already has this value */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  createResidentialLocation: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateResidentialLocationRequest']
+      }
+    }
+    responses: {
+      /** @description Returns created location */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Data not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location already exists */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  createNonResidentialLocation: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateNonResidentialLocationRequest']
+      }
+    }
+    responses: {
+      /** @description Returns created location */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Data not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location already exists */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  createBasicNonResidentialLocation: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Prison Id
+         * @example MDI
+         */
+        prisonId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateOrUpdateNonResidentialLocationRequest']
+      }
+    }
+    responses: {
+      /** @description Returns created location */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['NonResidentialLocationDTO']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Data not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location already exists */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  generateMissingChildren: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Prison Id
+         * @example MDI
+         */
+        prisonId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns created locations */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location'][]
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getLocationsByKeys: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': string[]
+      }
+    }
+    responses: {
+      /** @description Returns location */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location'][]
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Data not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  createWing: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateWingAndStructureRequest']
+      }
+    }
+    responses: {
+      /** @description Returns created locations */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location already exists */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  createCells: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CellInitialisationRequest']
+      }
+    }
+    responses: {
+      /** @description Returns created locations */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location already exists */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  baselineCellCertificateForPrison: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Prison Id
+         * @example MDI
+         */
+        prisonId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Cell certificate generated - prison base-lined */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CertificationApprovalRequestDto']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': unknown
+        }
+      }
+      /** @description Missing required role. Requires the LOCATION_CERTIFICATION role and write scope */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description No prison found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': unknown
+        }
+      }
+    }
+  }
+  patchResidentialLocation: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The location Id
+         * @example de91dfa7-821f-4552-a427-bf2f32eafeb0
+         */
+        id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PatchResidentialLocationRequest']
+      }
+    }
+    responses: {
+      /** @description Returns updated location */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Data not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location already exists */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  patchResidentialLocationByKey: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Location key
+         * @example MDI-A-1-001
+         */
+        key: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PatchResidentialLocationRequest']
+      }
+    }
+    responses: {
+      /** @description Returns updated location */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location']
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the MAINTAIN_LOCATIONS role with write scope. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Data not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location already exists */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -8930,24 +8959,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   getTransaction: {
@@ -8972,15 +8983,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['TransactionHistory']
-        }
-      }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
       /** @description Unauthorized to access this endpoint */
@@ -9008,24 +9010,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -9056,15 +9040,6 @@ export interface operations {
           'application/json': components['schemas']['LegacyLocation']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -9090,24 +9065,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -9172,291 +9129,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  configuredApiDataset: {
-    parameters: {
-      query: {
-        selectedPage?: number
-        pageSize?: number
-        sortColumn?: string
-        sortedAsc?: boolean
-        /**
-         * @description The filter query parameters have to start with the prefix 'filters.' followed by the name of the filter.
-         *           For range filters, like date for instance, these need to be followed by a .start or .end suffix accordingly.
-         *           For multiselect filters, these are passed as one query parameter per filter with a comma separated list of values:
-         *           filters.someMultiselectFilter=a,b,c
-         *
-         * @example {
-         *       'filters.date.start': '2023-04-25',
-         *       'filters.date.end': '2023-05-30',
-         *       'filters.someMultiselectFilter': 'a,b,c'
-         *     }
-         */
-        filters: {
-          [key: string]: string
-        }
-        /**
-         * @description This optional parameter sets the path of the directory of the data product definition files your application will use.
-         *           'This query parameter is intended to be used in conjunction with the `dpr.lib.dataProductDefinitions.host` property to retrieve definition files from another application by using a web client.
-         * @example definitions/prisons/orphanage
-         */
-        dataProductDefinitionsPath?: string
-      }
-      header?: never
-      path: {
-        reportId: string
-        reportVariantId: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description default response */
-      default: {
-        headers: {
-          /** @description Provides additional information about why no data has been returned. */
-          'x-no-data-warning'?: string
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': {
-            [key: string]: unknown
-          }[]
-        }
-      }
-    }
-  }
-  configuredApiDynamicFilter: {
-    parameters: {
-      query: {
-        pageSize?: number
-        sortedAsc?: boolean
-        /**
-         * @description The filter query parameters have to start with the prefix 'filters.' followed by the name of the filter.
-         *           For range filters, like date for instance, these need to be followed by a .start or .end suffix accordingly.
-         *           For multiselect filters, these are passed as one query parameter per filter with a comma separated list of values:
-         *           filters.someMultiselectFilter=a,b,c
-         *
-         * @example {
-         *       'filters.date.start': '2023-04-25',
-         *       'filters.date.end': '2023-05-30',
-         *       'filters.someMultiselectFilter': 'a,b,c'
-         *     }
-         */
-        filters: {
-          [key: string]: string
-        }
-        /**
-         * @description The value to match the start of the fieldId
-         * @example Lond
-         */
-        prefix: string
-        /**
-         * @description This optional parameter sets the path of the directory of the data product definition files your application will use.
-         *           'This query parameter is intended to be used in conjunction with the `dpr.lib.dataProductDefinitions.host` property to retrieve definition files from another application by using a web client.
-         * @example definitions/prisons/orphanage
-         */
-        dataProductDefinitionsPath?: string
-      }
-      header?: never
-      path: {
-        reportId: string
-        reportVariantId: string
-        /**
-         * @description The name of the schema field which will be used as a dynamic filter.
-         * @example name
-         */
-        fieldId: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description default response */
-      default: {
-        headers: {
-          /** @description Provides additional information about why no data has been returned. */
-          'x-no-data-warning'?: string
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': string[]
-        }
-      }
-    }
-  }
-  configuredApiCount: {
-    parameters: {
-      query: {
-        /**
-         * @description The filter query parameters have to start with the prefix 'filters.' followed by the name of the filter.
-         *           For range filters, like date for instance, these need to be followed by a .start or .end suffix accordingly.
-         *           For multiselect filters, these are passed as one query parameter per filter with a comma separated list of values:
-         *           filters.someMultiselectFilter=a,b,c
-         *
-         * @example {
-         *       'filters.date.start': '2023-04-25',
-         *       'filters.date.end': '2023-05-30',
-         *       'filters.someMultiselectFilter': 'a,b,c'
-         *     }
-         */
-        filters: {
-          [key: string]: string
-        }
-        /**
-         * @description This optional parameter sets the path of the directory of the data product definition files your application will use.
-         *           'This query parameter is intended to be used in conjunction with the `dpr.lib.dataProductDefinitions.host` property to retrieve definition files from another application by using a web client.
-         * @example definitions/prisons/orphanage
-         */
-        dataProductDefinitionsPath?: string
-      }
-      header?: never
-      path: {
-        reportId: string
-        reportVariantId: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description default response */
-      default: {
-        headers: {
-          /** @description Provides additional information about why no data has been returned. */
-          'x-no-data-warning'?: string
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['Count']
-        }
-      }
     }
   }
   getDlqMessages: {
@@ -9479,42 +9151,6 @@ export interface operations {
         }
         content: {
           '*/*': components['schemas']['GetDlqResult']
-        }
-      }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -9540,15 +9176,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonerLocation'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -9565,24 +9192,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -9608,15 +9217,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonerLocation'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -9633,24 +9233,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -9679,15 +9261,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonerLocation'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -9704,24 +9277,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -9752,15 +9307,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonRollCount']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -9777,24 +9323,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -9828,15 +9356,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonCellRollCount']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -9853,24 +9372,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -9899,15 +9400,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonConfigurationDto']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -9924,24 +9416,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -9996,24 +9470,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -10089,22 +9545,77 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
+    }
+  }
+  findLocationsByCellMark: {
+    parameters: {
+      query?: {
+        /**
+         * @description The level above in this hierarchy to look below, empty will check prison level
+         * @example de91dfa7-821f-4552-a427-bf2f32eafeb0
+         */
+        parentLocationId?: string
+      }
+      header?: never
+      path: {
+        /**
+         * @description Prison ID where the location is situated
+         * @example MDI
+         */
+        prisonId: string
+        /**
+         * @description Cell mark / cell door number
+         * @example DR-01
+         */
+        cellMark: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns cell location matching */
+      200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['Location'][]
         }
       }
-      /** @description Internal Server Error */
-      500: {
+      /** @description Invalid Request */
+      400: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the VIEW_LOCATIONS role. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Location not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -10115,6 +9626,7 @@ export interface operations {
         includeChildren?: boolean
         includeHistory?: boolean
         formatLocalName?: boolean
+        includeCurrentCertificate?: boolean
       }
       header?: never
       path: {
@@ -10135,15 +9647,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['Location']
-        }
-      }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
       /** @description Unauthorized to access this endpoint */
@@ -10171,24 +9674,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -10251,24 +9736,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   getCellAttributes: {
@@ -10322,24 +9789,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   getLocationForPrisonBelowParent: {
@@ -10379,15 +9828,6 @@ export interface operations {
           'application/json': components['schemas']['ResidentialSummary']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -10413,24 +9853,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -10459,15 +9881,6 @@ export interface operations {
           'application/json': components['schemas']['Location'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -10493,24 +9906,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -10555,15 +9950,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonHierarchyDto'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -10589,24 +9975,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -10656,15 +10024,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonHierarchyDto'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -10690,24 +10049,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -10742,15 +10083,6 @@ export interface operations {
           'application/json': components['schemas']['PrisonHierarchyDto'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -10776,24 +10108,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -10861,24 +10175,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   getLocationsByPrisonWithUsageTypes: {
@@ -10934,24 +10230,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -11022,24 +10300,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -11115,15 +10375,6 @@ export interface operations {
           'application/json': components['schemas']['Location'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -11149,24 +10400,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -11201,15 +10434,6 @@ export interface operations {
           'application/json': components['schemas']['Location'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -11226,24 +10450,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -11272,15 +10478,6 @@ export interface operations {
           'application/json': components['schemas']['LocationGroupDto'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -11306,24 +10503,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -11375,15 +10554,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unrecoverable error occurred whilst processing request. */
       500: {
         headers: {
@@ -11419,15 +10589,6 @@ export interface operations {
           'application/json': components['schemas']['Location'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -11455,22 +10616,265 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
+    }
+  }
+  getPaginatedNonResidentialList: {
+    parameters: {
+      query?: {
+        /**
+         * @description Filter by given statuses
+         * @example [ACTIVE,INACTIVE]
+         */
+        status?: ('ACTIVE' | 'INACTIVE' | 'ARCHIVED' | 'DRAFT')[]
+        /**
+         * @description Filter by the local name
+         * @example Work
+         */
+        localName?: string
+        /**
+         * @description Filter parent locations
+         * @example false
+         */
+        filterParents?: boolean
+        /**
+         * @description Include box locations
+         * @example false
+         */
+        includeBoxes?: boolean
+        /**
+         * @description Filter by given types
+         * @example [ADJUDICATION_ROOM,VIDEO_LINK]
+         */
+        locationType?: (
+          | 'GROUP'
+          | 'OFFICE'
+          | 'ADMINISTRATION_AREA'
+          | 'BOOTH'
+          | 'BOX'
+          | 'RETURN_TO_UNIT'
+          | 'CLASSROOM'
+          | 'TRAINING_AREA'
+          | 'TRAINING_ROOM'
+          | 'EXERCISE_AREA'
+          | 'SPORTS'
+          | 'WORKSHOP'
+          | 'INSIDE_PARTY'
+          | 'OUTSIDE_PARTY'
+          | 'FAITH_AREA'
+          | 'ADJUDICATION_ROOM'
+          | 'APPOINTMENTS'
+          | 'VISITS'
+          | 'VIDEO_LINK'
+          | 'ASSOCIATION'
+          | 'INTERNAL_GROUNDS'
+          | 'INTERVIEW'
+          | 'LOCATION'
+          | 'POSITION'
+          | 'SHELF'
+          | 'STORE'
+          | 'TABLE'
+        )[]
+        /**
+         * @description Filter by service family
+         * @example ACTIVITIES_APPOINTMENTS
+         */
+        serviceFamilyType?:
+          | 'ACTIVITIES_APPOINTMENTS'
+          | 'VIDEO_LINK_APPOINTMENTS'
+          | 'ADJUDICATIONS'
+          | 'INTERNAL_MOVEMENTS'
+          | 'OFFICIAL_VISITS'
+          | 'USE_OF_FORCE'
+        /** @description Zero-based page index (0..N) */
+        page?: number
+        /** @description The size of the page to be returned */
+        size?: number
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        sort?: string[]
+      }
+      header?: never
+      path: {
+        /**
+         * @description Prison Id
+         * @example MDI
+         */
+        prisonId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns a paged list of non-residential locations for a prison */
+      200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['NonResidentialSummary']
         }
       }
-      /** @description Internal Server Error */
-      500: {
+      /** @description When input parameters are not valid */
+      400: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the VIEW_LOCATIONS role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getByPrisonAndServiceType: {
+    parameters: {
+      query?: {
+        sortByLocalName?: boolean
+        formatLocalName?: boolean
+        filterParents?: boolean
+      }
+      header?: never
+      path: {
+        /**
+         * @description Prison Id
+         * @example MDI
+         */
+        prisonId: string
+        /**
+         * @description Service
+         * @example HEARING_LOCATION
+         */
+        serviceType:
+          | 'APPOINTMENT'
+          | 'PROGRAMMES_AND_ACTIVITIES'
+          | 'VIDEO_LINK'
+          | 'HEARING_LOCATION'
+          | 'LOCATION_OF_INCIDENT'
+          | 'INTERNAL_MOVEMENTS'
+          | 'OFFICIAL_VISITS'
+          | 'USE_OF_FORCE'
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns non-residential locations */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location'][]
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the VIEW_LOCATIONS role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  findLocationsByLocalName: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description Prison ID where the location is situated
+         * @example MDI
+         */
+        prisonId: string
+        /**
+         * @description Alternative description to display for location
+         * @example Wing A
+         */
+        localName: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns locations matching local name */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Location'][]
+        }
+      }
+      /** @description Invalid Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unauthorized to access this endpoint */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the VIEW_LOCATIONS role. */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description No non-residential location not found with that localName */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -11480,6 +10884,7 @@ export interface operations {
       query?: {
         includeChildren?: boolean
         includeHistory?: boolean
+        includeCurrentCertificate?: boolean
       }
       header?: never
       path: {
@@ -11502,15 +10907,6 @@ export interface operations {
           'application/json': components['schemas']['Location']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -11536,24 +10932,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -11584,15 +10962,6 @@ export interface operations {
           'application/json': components['schemas']['Location'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -11618,24 +10987,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -11696,15 +11047,6 @@ export interface operations {
           'application/json': components['schemas']['CellWithSpecialistCellTypes'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -11732,240 +11074,6 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  definitions: {
-    parameters: {
-      query?: {
-        /**
-         * @description Set this parameter to filter the list to only include reports for the given rendering method.
-         * @example HTML
-         */
-        renderMethod?: 'HTML' | 'PDF' | 'SVG'
-        /**
-         * @description This optional parameter sets the path of the directory of the data product definition files your application will use.
-         *           'This query parameter is intended to be used in conjunction with the `dpr.lib.dataProductDefinitions.host` property to retrieve definition files from another application by using a web client.
-         * @example definitions/prisons/orphanage
-         */
-        dataProductDefinitionsPath?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ReportDefinitionSummary'][]
-        }
-      }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  definition: {
-    parameters: {
-      query?: {
-        /**
-         * @description This optional parameter sets the path of the directory of the data product definition files your application will use.
-         *           'This query parameter is intended to be used in conjunction with the `dpr.lib.dataProductDefinitions.host` property to retrieve definition files from another application by using a web client.
-         * @example definitions/prisons/orphanage
-         */
-        dataProductDefinitionsPath?: string
-      }
-      header?: never
-      path: {
-        /**
-         * @description The ID of the report definition.
-         * @example external-movements
-         */
-        reportId: string
-        /**
-         * @description The ID of the variant definition.
-         * @example list
-         */
-        variantId: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['SingleVariantReportDefinition']
-        }
-      }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-    }
-  }
-  dashboardDefinition: {
-    parameters: {
-      query?: {
-        /**
-         * @description This optional parameter sets the path of the directory of the data product definition files your application will use.
-         *           'This query parameter is intended to be used in conjunction with the `dpr.lib.dataProductDefinitions.host` property to retrieve definition files from another application by using a web client.
-         * @example definitions/prisons/orphanage
-         */
-        dataProductDefinitionsPath?: string
-      }
-      header?: never
-      path: {
-        /**
-         * @description The ID of the Data Product Definition.
-         * @example external-movements
-         */
-        dataProductDefinitionId: string
-        /**
-         * @description The ID of the dashboard.
-         * @example dashboardId
-         */
-        dashboardId: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['DashboardDefinition']
-        }
-      }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   getUsedForTypeConstants: {
@@ -11988,15 +11096,6 @@ export interface operations {
           }
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12013,24 +11112,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12061,15 +11142,6 @@ export interface operations {
           }
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12086,24 +11158,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12128,13 +11182,44 @@ export interface operations {
           }
         }
       }
-      /** @description Bad Request */
-      400: {
+      /** @description Unauthorized to access this endpoint */
+      401: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the READ_LOCATION_REFERENCE_DATA role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  nonResidentialServiceTypeConstants: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns location reference data */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': {
+            [key: string]: components['schemas']['Constant'][]
+          }
         }
       }
       /** @description Unauthorized to access this endpoint */
@@ -12155,22 +11240,44 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Too Many Requests */
-      429: {
+    }
+  }
+  serviceFamilyAndTypes: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns residential attribute reference data */
+      200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': {
+            [key: string]: components['schemas']['CompoundConstant'][]
+          }
         }
       }
-      /** @description Internal Server Error */
-      500: {
+      /** @description Unauthorized to access this endpoint */
+      401: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          '*/*': components['schemas']['ErrorResponse']
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Missing required role. Requires the READ_LOCATION_REFERENCE_DATA role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12195,15 +11302,6 @@ export interface operations {
           }
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12220,24 +11318,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12262,15 +11342,6 @@ export interface operations {
           }
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12287,24 +11358,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12329,15 +11382,6 @@ export interface operations {
           }
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12354,24 +11398,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12396,15 +11422,6 @@ export interface operations {
           }
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12421,24 +11438,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12463,15 +11462,6 @@ export interface operations {
           }
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12488,24 +11478,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12530,15 +11502,6 @@ export interface operations {
           }
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12555,24 +11518,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12597,15 +11542,6 @@ export interface operations {
           }
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12622,24 +11558,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12668,15 +11586,6 @@ export interface operations {
           'application/json': components['schemas']['CertificationApprovalRequestDto']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12702,24 +11611,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12750,15 +11641,6 @@ export interface operations {
           'application/json': components['schemas']['CertificationApprovalRequestDto'][]
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12775,24 +11657,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12816,15 +11680,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['CellCertificateDto']
-        }
-      }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
       /** @description Unauthorized to access this endpoint */
@@ -12854,24 +11709,6 @@ export interface operations {
           'application/json': unknown
         }
       }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
     }
   }
   getCellCertificatesForPrison: {
@@ -12898,15 +11735,6 @@ export interface operations {
           'application/json': components['schemas']['CellCertificateDto']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -12923,24 +11751,6 @@ export interface operations {
         }
         content: {
           'application/json': unknown
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -12969,15 +11779,6 @@ export interface operations {
           'application/json': components['schemas']['CellCertificateDto']
         }
       }
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
       /** @description Unauthorized to access this endpoint */
       401: {
         headers: {
@@ -13003,24 +11804,6 @@ export interface operations {
         }
         content: {
           'application/json': unknown
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
@@ -13081,24 +11864,6 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Too Many Requests */
-      429: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
-        }
-      }
-      /** @description Internal Server Error */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          '*/*': components['schemas']['ErrorResponse']
         }
       }
     }
