@@ -77,11 +77,12 @@ export default class TimeSlotHandler implements PageHandler {
     if (Object.keys(errors).length > 0) {
       return res.alertValidationError(errors)
     }
-
+    const ovId = req.params.ovId as string
+    const journeyId = req.params.journeyId as string
     if (res.locals.mode === 'amend') {
       await this.officialVisitsService.updateVisitTypeAndSlot(
         visit.prisonCode,
-        req.params.ovId,
+        ovId,
         {
           prisonVisitSlotId: selectedSlot.visitSlotId,
           visitDate: selectedSlot.visitDate,
@@ -93,7 +94,7 @@ export default class TimeSlotHandler implements PageHandler {
         res.locals.user,
       )
       req.flash('updateVerb', 'amended')
-      return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
+      return res.redirect(`/manage/amend/${ovId}/${journeyId}`)
     }
 
     saveTimeSlot(req.session.journey, selectedSlot)

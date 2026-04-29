@@ -49,7 +49,8 @@ export default function AmendRoutes({
 
   // Subsequent steps require the official visit journey session data to exist
   router.use((req, res, next) => {
-    if (!req.session.journeyData[req.params.journeyId]) {
+    const journeyId = req.params.journeyId as string
+    if (!req.session.journeyData[journeyId]) {
       return res.redirect('/')
     }
     return next()

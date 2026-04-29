@@ -32,11 +32,12 @@ export default class CommentsHandler implements PageHandler {
     req.session.journey.officialVisit.prisonerNotes = req.body.prisonerNotes
     req.session.journey.officialVisit.staffNotes = req.body.staffNotes
     req.session.journey.officialVisit.commentsPageCompleted = true
-
+    const ovId = req.params.ovId as string
+    const journeyId = req.params.journeyId as string
     if (res.locals.mode === 'amend') {
       await this.officialVisitsService.updateComments(
         req.session.journey.officialVisit.prisonCode,
-        req.params.ovId,
+        ovId,
         {
           staffNotes: req.body.staffNotes,
           prisonerNotes: req.body.prisonerNotes,
@@ -44,7 +45,7 @@ export default class CommentsHandler implements PageHandler {
         res.locals.user,
       )
       req.flash('updateVerb', 'amended')
-      return res.redirect(`/manage/amend/${req.params.ovId}/${req.params.journeyId}`)
+      return res.redirect(`/manage/amend/${ovId}/${journeyId}`)
     }
 
     return res.redirect(`check-your-answers`)

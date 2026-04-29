@@ -8,7 +8,12 @@ export default class OfficialVisitMovementSlipHandler implements PageHandler {
 
   constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
-  GET = async (req: Request, res: Response) => {
+  GET = async (
+    req: Request<{
+      ovId: string
+    }>,
+    res: Response,
+  ) => {
     const { ovId } = req.params
     const { user } = res.locals
 

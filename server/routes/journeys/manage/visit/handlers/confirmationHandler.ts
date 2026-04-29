@@ -16,7 +16,7 @@ export default class ConfirmationHandler implements PageHandler {
 
   public GET = async (req: Request, res: Response) => {
     const prisonCode = req.session.activeCaseLoadId
-    const { officialVisitId } = req.params
+    const officialVisitId = req.params.officialVisitId as string
     const visit = await this.officialVisitsService.getOfficialVisitById(
       prisonCode,
       Number(officialVisitId),

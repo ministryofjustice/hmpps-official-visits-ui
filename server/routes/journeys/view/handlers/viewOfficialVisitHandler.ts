@@ -23,7 +23,12 @@ export default class ViewOfficialVisitHandler implements PageHandler {
     private readonly telemetryService: TelemetryService,
   ) {}
 
-  GET = async (req: Request, res: Response) => {
+  GET = async (
+    req: Request<{
+      ovId: string
+    }>,
+    res: Response,
+  ) => {
     const { ovId } = req.params
     const { user } = res.locals
     const b64BackTo = req.query.backTo as string
