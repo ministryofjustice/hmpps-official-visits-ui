@@ -129,7 +129,7 @@
       "chokidar": "$chokidar"
     },
     "mocha": {
-      "diff": "8.0.3"
+      "diff": "9.0.0"
     },
     "@aws-sdk/xml-builder": {
       "fast-xml-parser": "5.5.7"
