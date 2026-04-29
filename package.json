@@ -80,7 +80,7 @@
     "@tsconfig/node24": "^24.0.3",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
-    "@types/cheerio": "^0.22.35",
+    "@types/cheerio": "^1.0.0",
     "@types/compression": "^1.8.1",
     "@types/connect-flash": "0.0.40",
     "@types/express-session": "^1.18.2",
