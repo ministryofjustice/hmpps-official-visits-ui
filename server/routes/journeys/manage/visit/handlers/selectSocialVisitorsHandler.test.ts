@@ -19,6 +19,7 @@ import { mockSocialVisitors, mockPrisonerRestrictions, mockPrisoner } from '../.
 import { expectNoErrorMessages, expectAlertErrors } from '../../../../testutils/expectErrorMessage'
 import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
 import config from '../../../../../config'
+import { AuthorisedRoles } from '../../../../../middleware/populateUserPermissions'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -51,10 +52,11 @@ const appSetup = (
       visitType: 'IN_PERSON',
     } as OfficialVisitJourney,
   },
+  userRoles: AuthorisedRoles[] = user.userRoles as AuthorisedRoles[],
 ) => {
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService },
-    userSupplier: () => user,
+    userSupplier: () => ({ ...user, userRoles }),
     journeySessionSupplier: () => journeySession as Journey,
   })
 }
@@ -322,8 +324,8 @@ describe('Select social visitors', () => {
 
           // Check inset text is displayed with bullet points for social visitor and not approved
           expect(res.text).toContain('Some visitor details need updating')
-          expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
-          expect(res.text).toContain('is not an approved contact')
+          expect(res.text).toContain('social visitors cannot join official visits')
+          expect(res.text).toContain('a visitor is not an approved contact')
 
           // Check MOJ badges are displayed for SOCIAL VISITOR and CONTACT NOT APPROVED
           expect(res.text).toContain('SOCIAL VISITOR')
@@ -398,6 +400,95 @@ describe('Select social visitors', () => {
             correlationId: expect.any(String),
           })
         })
+    })
+
+    it('should show correct inset text when user has both authoriser and manage roles', async () => {
+      const notApprovedVisitor = {
+        ...mockSocialVisitors[2],
+        prisonerContactId: 304,
+        contactId: 304,
+        relationshipToPrisonerCode: 'BRO',
+        relationshipToPrisonerDescription: 'Brother',
+        isApprovedVisitor: false,
+      }
+
+      appSetup(
+        {
+          officialVisit: {
+            prisoner: {
+              ...mockPrisoner,
+              restrictions: mockPrisonerRestrictions,
+            },
+            availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+            selectedTimeSlot: {
+              timeSlotId: 1,
+              visitSlotId: 1,
+              visitDate: '2037-01-26',
+              startTime: '13:30',
+              endTime: '16:00',
+              availableVideoSessions: 2,
+              availableAdults: 3,
+              availableGroups: 2,
+            },
+            socialVisitors: [notApprovedVisitor],
+          } as OfficialVisitJourney,
+        },
+        [AuthorisedRoles.VIEW, AuthorisedRoles.CONTACTS_AUTHORISER, AuthorisedRoles.MANAGE],
+      )
+
+      officialVisitsService.getAllSocialContacts.mockResolvedValue([...mockSocialVisitors, notApprovedVisitor])
+
+      const res = await request(app).get(`/manage/amend/1/${journeyId()}/select-social-visitors?change=true`)
+      expect(res.text).toContain('Some visitor details need updating')
+      expect(res.text).toContain('a visitor is not an approved contact')
+      expect(res.text).toContain(
+        "You can update visitor details in the prisoner's contact record or remove visitors from this visit.",
+      )
+    })
+
+    it('should show correct inset text when user has only manage role', async () => {
+      const notApprovedVisitor = {
+        ...mockSocialVisitors[2],
+        prisonerContactId: 304,
+        contactId: 304,
+        relationshipToPrisonerCode: 'BRO',
+        relationshipToPrisonerDescription: 'Brother',
+        isApprovedVisitor: false,
+      }
+
+      appSetup(
+        {
+          officialVisit: {
+            prisoner: {
+              ...mockPrisoner,
+              restrictions: mockPrisonerRestrictions,
+            },
+            availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+            selectedTimeSlot: {
+              timeSlotId: 1,
+              visitSlotId: 1,
+              visitDate: '2037-01-26',
+              startTime: '13:30',
+              endTime: '16:00',
+              availableVideoSessions: 2,
+              availableAdults: 3,
+              availableGroups: 2,
+            },
+            socialVisitors: [notApprovedVisitor],
+          } as OfficialVisitJourney,
+        },
+        [AuthorisedRoles.VIEW, AuthorisedRoles.MANAGE],
+      )
+
+      officialVisitsService.getAllSocialContacts.mockResolvedValue([...mockSocialVisitors, notApprovedVisitor])
+
+      const res = await request(app).get(`/manage/amend/1/${journeyId()}/select-social-visitors?change=true`)
+      expect(res.text).toContain('Some visitor details need updating')
+      expect(res.text).toContain('a visitor is not an approved contact')
+      expect(res.text).toContain('You can remove visitors from this visit.')
+      expect(res.text).toContain(
+        "You'll need the Contacts Authoriser role to update visitor details in the prisoner's contact record.",
+      )
     })
   })
 
