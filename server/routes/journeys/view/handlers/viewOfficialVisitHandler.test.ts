@@ -11,6 +11,7 @@ import PersonalRelationshipsService from '../../../../services/personalRelations
 import { Prisoner } from '../../../../@types/prisonerSearchApi/types'
 import { convertToTitleCase } from '../../../../utils/utils'
 import ManageUserService from '../../../../services/manageUsersService'
+import { AuthorisedRoles } from '../../../../middleware/populateUserPermissions'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/prisonerService')
@@ -26,7 +27,9 @@ const manageUsersService = new ManageUserService(null) as jest.Mocked<ManageUser
 
 let app: Express
 
-const appSetup = () => {
+const appSetup = (
+  userRoles: AuthorisedRoles[] = [AuthorisedRoles.MANAGE, AuthorisedRoles.CONTACTS_AUTHORISER, AuthorisedRoles.ADMIN],
+) => {
   app = appWithAllRoutes({
     services: {
       auditService,
@@ -35,7 +38,7 @@ const appSetup = () => {
       personalRelationshipsService,
       manageUsersService,
     },
-    userSupplier: () => user,
+    userSupplier: () => ({ ...user, userRoles }),
   })
 }
 
@@ -550,6 +553,76 @@ describe('View an official visit', () => {
       const res = await request(app).get(`${URL}?continue=true`)
       expect(res.text).toContain('/contacts/list')
       expect(res.text).not.toContain('/relationship/7332364')
+    })
+
+    it('should show correct inset text when user has both authoriser and manage roles', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...baseFutureVisit,
+        officialVisitors: [baseSocialVisitor],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([{ ...baseSocialContact, isApprovedVisitor: false }])
+
+      appSetup([AuthorisedRoles.VIEW, AuthorisedRoles.CONTACTS_AUTHORISER, AuthorisedRoles.MANAGE])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('Some visitor details need updating')
+      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain(
+        "You can update visitor details in the prisoner's contact record or remove visitors from this visit.",
+      )
+    })
+
+    it('should show correct inset text when user has only authoriser role', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...baseFutureVisit,
+        officialVisitors: [baseSocialVisitor],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([{ ...baseSocialContact, isApprovedVisitor: false }])
+
+      appSetup([AuthorisedRoles.VIEW, AuthorisedRoles.CONTACTS_AUTHORISER])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('Some visitor details need updating')
+      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain("You can update visitor details in the prisoner's contact record.")
+      expect(res.text).toContain("You'll need the Official Visits - Manage role to remove visitors from this visit.")
+    })
+
+    it('should show correct inset text when user has only manage role', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...baseFutureVisit,
+        officialVisitors: [baseSocialVisitor],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([{ ...baseSocialContact, isApprovedVisitor: false }])
+
+      appSetup([AuthorisedRoles.VIEW, AuthorisedRoles.MANAGE])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('Some visitor details need updating')
+      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain('You can remove visitors from this visit.')
+      expect(res.text).toContain(
+        "You'll need the Contacts Authoriser role to update visitor details in the prisoner's contact record.",
+      )
+    })
+
+    it('should show correct inset text when user has neither authoriser nor manage role', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...baseFutureVisit,
+        officialVisitors: [baseSocialVisitor],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([{ ...baseSocialContact, isApprovedVisitor: false }])
+
+      appSetup([AuthorisedRoles.VIEW])
+
+      const res = await request(app).get(`${URL}?continue=true`)
+      expect(res.text).toContain('Some visitor details need updating')
+      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain("You'll need:")
+      expect(res.text).toContain(
+        "the Contacts Authoriser role to update visitor details in the prisoner's contact record",
+      )
+      expect(res.text).toContain('the Official Visits - Manage role to remove visitors from this visit')
     })
   })
 })

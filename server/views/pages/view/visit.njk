@@ -20,7 +20,7 @@
   <h1 class="govuk-heading-l">Official visit</h1>
   {{ miniProfile(prisoner) }}
 
-  {{ unauthorisedVisitorsInset(user, hasIssueVisitors, shouldShowIssues, hasSocialVisitors, hasNotApprovedVisitors, hasNoRelationshipVisitors) }}
+  {{ unauthorisedVisitorsInset(user, hasIssueVisitors, shouldShowIssues, hasSocialVisitors, hasNotApprovedVisitors, hasNoRelationshipVisitors, PERMISSION) }}
 
   {% if mode != 'amend' %}
       {{ govukButton({

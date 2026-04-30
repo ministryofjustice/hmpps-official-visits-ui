@@ -20,7 +20,7 @@
   {{ capacityCheckMessages(checks, visitId)}}
   {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
 
-  {{ unauthorisedVisitorsInset(user, hasIssueVisitors, shouldShowIssues, hasSocialVisitors, hasNotApprovedVisitors, hasNoRelationshipVisitors) }}
+  {{ unauthorisedVisitorsInset(user, hasIssueVisitors, shouldShowIssues, hasSocialVisitors, hasNotApprovedVisitors, hasNoRelationshipVisitors, PERMISSION) }}
 
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
@@ -48,15 +48,11 @@
 
       {% endfor %}
 
-      {% set captionText %}
-        {{ (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma }} active restrictions
-      {% endset %}
-
-      <div class="govuk-summary-card">
+        <div class="govuk-summary-card">
         {% if rows.length > 0 %}
           <div class="govuk-summary-card__content" data-qa="prisoner-restrictions-table">
             {{ govukTable({
-              caption: captionText,
+              caption: (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma + " active restrictions",
               captionClasses: "govuk-table__caption--m",
               firstCellIsHeader: true,
               head: [
@@ -69,7 +65,7 @@
             }) }}
           </div>
         {% else %}
-          <div class="govuk-summary-card__content govuk-summary-card__title">{{ captionText }}</div>
+          <div class="govuk-summary-card__content govuk-summary-card__title">{{ (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma }} active restrictions</div>
           <div class="govuk-body govuk-!-margin-top-0 govuk-!-margin-left-4">No active restrictions</div>
         {% endif %}
       </div>
