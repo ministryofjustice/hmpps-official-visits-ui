@@ -452,7 +452,7 @@ describe('View an official visit', () => {
 
       const res = await request(app).get(`${URL}?continue=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('does not have a recorded relationship with the prisoner')
+      expect(res.text).toContain('a visitor does not have a recorded relationship with the prisoner')
       expect(res.text).toContain('govuk-inset-text')
     })
 
@@ -462,7 +462,7 @@ describe('View an official visit', () => {
 
       const res = await request(app).get(`${URL}?continue=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is not an approved contact')
+      expect(res.text).toContain('a visitor is not an approved contact')
     })
 
     it('should show inset text when visitor is a social visitor for prison without social visits enabled', async () => {
@@ -474,7 +474,7 @@ describe('View an official visit', () => {
 
       const res = await request(app).get(`${URL}?continue=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain('social visitors cannot join official visits')
     })
 
     it('should show all issue types in inset text when multiple visitor issues exist', async () => {
@@ -486,8 +486,8 @@ describe('View an official visit', () => {
 
       const res = await request(app).get(`${URL}?continue=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
-      expect(res.text).toContain('is not an approved contact')
+      expect(res.text).toContain('social visitors cannot join official visits')
+      expect(res.text).toContain('a visitor is not an approved contact')
     })
 
     it('should show MOJ badge "NO RECORDED RELATIONSHIP" on visitor card when contact not found', async () => {
@@ -566,7 +566,7 @@ describe('View an official visit', () => {
 
       const res = await request(app).get(`${URL}?continue=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain('social visitors cannot join official visits')
       expect(res.text).toContain(
         "You can update visitor details in the prisoner's contact record or remove visitors from this visit.",
       )
@@ -583,7 +583,7 @@ describe('View an official visit', () => {
 
       const res = await request(app).get(`${URL}?continue=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain('social visitors cannot join official visits')
       expect(res.text).toContain("You can update visitor details in the prisoner's contact record.")
       expect(res.text).toContain("You'll need the Official Visits - Manage role to remove visitors from this visit.")
     })
@@ -599,7 +599,7 @@ describe('View an official visit', () => {
 
       const res = await request(app).get(`${URL}?continue=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain('social visitors cannot join official visits')
       expect(res.text).toContain('You can remove visitors from this visit.')
       expect(res.text).toContain(
         "You'll need the Contacts Authoriser role to update visitor details in the prisoner's contact record.",
@@ -617,7 +617,7 @@ describe('View an official visit', () => {
 
       const res = await request(app).get(`${URL}?continue=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain('social visitors cannot join official visits')
       expect(res.text).toContain("You'll need:")
       expect(res.text).toContain(
         "the Contacts Authoriser role to update visitor details in the prisoner's contact record",

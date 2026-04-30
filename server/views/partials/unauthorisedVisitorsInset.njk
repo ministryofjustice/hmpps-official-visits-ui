@@ -4,16 +4,16 @@
   {% if hasIssueVisitors and shouldShowIssues %}
     {% call govukInsetText({ classes: "govuk-!-margin-0 govuk-!-margin-bottom-4 guidance-panel" }) %}
       <h2 class="govuk-heading-s govuk-!-margin-0">Some visitor details need updating</h2>
-      <p>This visit includes one or more people who are not allowed to visit. <br />This is because:</p>
+      <p>This visit includes one or more people who are not allowed to visit.<br /><br />This is because:</p>
       <ul class="govuk-list govuk-list--bullet">
         {% if hasSocialVisitors %}
-          <li>is a social visitor for a prison where this is not enabled</li>
+          <li>social visitors cannot join official visits</li>
         {% endif %}
         {% if hasNotApprovedVisitors %}
-          <li>is not an approved contact</li>
+          <li>a visitor is not an approved contact</li>
         {% endif %}
         {% if hasNoRelationshipVisitors %}
-          <li>does not have a recorded relationship with the prisoner</li>
+          <li>a visitor does not have a recorded relationship with the prisoner</li>
         {% endif %}
       </ul>
 

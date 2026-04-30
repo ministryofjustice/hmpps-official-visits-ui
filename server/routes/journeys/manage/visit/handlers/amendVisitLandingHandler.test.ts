@@ -355,7 +355,7 @@ describe('Search for an official visit', () => {
 
       const res = await request(app).get(URL)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('does not have a recorded relationship with the prisoner')
+      expect(res.text).toContain('a visitor does not have a recorded relationship with the prisoner')
       expect(res.text).toContain('govuk-inset-text')
     })
 
@@ -365,7 +365,7 @@ describe('Search for an official visit', () => {
 
       const res = await request(app).get(URL)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is not an approved contact')
+      expect(res.text).toContain('a visitor is not an approved contact')
     })
 
     it('should show inset text when visitor is a social visitor for prison without social visits enabled', async () => {
@@ -377,7 +377,7 @@ describe('Search for an official visit', () => {
 
       const res = await request(app).get(URL)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
+      expect(res.text).toContain('social visitors cannot join official visits')
     })
 
     it('should show MOJ badge "NO RECORDED RELATIONSHIP" on visitor card when contact not found', async () => {

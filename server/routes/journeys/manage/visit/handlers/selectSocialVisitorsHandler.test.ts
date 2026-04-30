@@ -324,8 +324,8 @@ describe('Select social visitors', () => {
 
           // Check inset text is displayed with bullet points for social visitor and not approved
           expect(res.text).toContain('Some visitor details need updating')
-          expect(res.text).toContain('is a social visitor for a prison where this is not enabled')
-          expect(res.text).toContain('is not an approved contact')
+          expect(res.text).toContain('social visitors cannot join official visits')
+          expect(res.text).toContain('a visitor is not an approved contact')
 
           // Check MOJ badges are displayed for SOCIAL VISITOR and CONTACT NOT APPROVED
           expect(res.text).toContain('SOCIAL VISITOR')
@@ -440,7 +440,7 @@ describe('Select social visitors', () => {
 
       const res = await request(app).get(`/manage/amend/1/${journeyId()}/select-social-visitors?change=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is not an approved contact')
+      expect(res.text).toContain('a visitor is not an approved contact')
       expect(res.text).toContain(
         "You can update visitor details in the prisoner's contact record or remove visitors from this visit.",
       )
@@ -484,7 +484,7 @@ describe('Select social visitors', () => {
 
       const res = await request(app).get(`/manage/amend/1/${journeyId()}/select-social-visitors?change=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is not an approved contact')
+      expect(res.text).toContain('a visitor is not an approved contact')
       expect(res.text).toContain('You can remove visitors from this visit.')
       expect(res.text).toContain(
         "You'll need the Contacts Authoriser role to update visitor details in the prisoner's contact record.",

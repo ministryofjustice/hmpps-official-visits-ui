@@ -367,8 +367,8 @@ describe('Select official visitors', () => {
 
           // Check inset text is displayed with correct bullet points
           expect(res.text).toContain('Some visitor details need updating')
-          expect(res.text).toContain('is not an approved contact')
-          expect(res.text).toContain('does not have a recorded relationship with the prisoner')
+          expect(res.text).toContain('a visitor is not an approved contact')
+          expect(res.text).toContain('a visitor does not have a recorded relationship with the prisoner')
 
           // Check MOJ badges are displayed for the two visitors with issues
           expect(res.text).toContain('CONTACT NOT APPROVED')
@@ -535,7 +535,7 @@ describe('Select official visitors', () => {
 
       const res = await request(app).get(`/manage/amend/1/${journeyId()}/select-official-visitors?change=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is not an approved contact')
+      expect(res.text).toContain('a visitor is not an approved contact')
       expect(res.text).toContain(
         "You can update visitor details in the prisoner's contact record or remove visitors from this visit.",
       )
@@ -581,7 +581,7 @@ describe('Select official visitors', () => {
 
       const res = await request(app).get(`/manage/amend/1/${journeyId()}/select-official-visitors?change=true`)
       expect(res.text).toContain('Some visitor details need updating')
-      expect(res.text).toContain('is not an approved contact')
+      expect(res.text).toContain('a visitor is not an approved contact')
       expect(res.text).toContain('You can remove visitors from this visit.')
       expect(res.text).toContain(
         "You'll need the Contacts Authoriser role to update visitor details in the prisoner's contact record.",
