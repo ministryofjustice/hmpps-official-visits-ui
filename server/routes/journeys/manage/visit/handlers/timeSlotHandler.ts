@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from 'express'
+import { endOfMonth, addMonths, format, startOfMonth, isBefore, startOfToday } from 'date-fns'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { saveTimeSlot, filterAvailableSlots, cyaGuard } from '../createJourneyState'
 import ActivitiesService from '../../../../../services/activitiesService'
-import { getParsedDateFromQueryString, getWeekOfDatesStartingMonday } from '../../../../../utils/utils'
+import { getParsedDateFromQueryString, buildCalendarMonths, ensureNotBeforeToday } from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
 import { getBackLink } from './utils'
 
@@ -21,21 +22,27 @@ export default class TimeSlotHandler implements PageHandler {
   public GET = async (req: Request, res: Response, _next?: NextFunction) => {
     const { date = '' } = req.query
     const selectedDate = getParsedDateFromQueryString(date.toString(), new Date())
-    const { weekOfDates, previousWeek, nextWeek } = getWeekOfDatesStartingMonday(selectedDate)
     const { user } = res.locals
     const { officialVisit } = req.session.journey
     const { prisonCode, prisonerNumber } = officialVisit.prisoner
 
+    const selectedDateObj = new Date(ensureNotBeforeToday(selectedDate))
+    const selectedMonthStart = startOfMonth(selectedDateObj)
+    const today = startOfToday()
+    const calendarStartDate = isBefore(selectedMonthStart, today) ? today : selectedMonthStart
+    const calendarEndDate = endOfMonth(addMonths(calendarStartDate, 1))
+
     const availableSlots = await this.officialVisitsService.getAvailableSlots(
       res,
       prisonCode,
-      selectedDate,
-      selectedDate,
+      format(calendarStartDate, 'yyyy-MM-dd'),
+      format(calendarEndDate, 'yyyy-MM-dd'),
       officialVisit.visitType === 'VIDEO',
       officialVisit.officialVisitId,
     )
 
-    const filteredSlots = filterAvailableSlots(availableSlots, officialVisit.visitType, 1)
+    const selectedDateSlots = availableSlots.filter(slot => slot.visitDate === selectedDate)
+    const filteredSlots = filterAvailableSlots(selectedDateSlots, officialVisit.visitType, 1)
 
     req.session.journey.officialVisit.availableSlots = filteredSlots
 
@@ -46,15 +53,16 @@ export default class TimeSlotHandler implements PageHandler {
       user,
     )
 
+    const availableDates = [...new Set(availableSlots.map(slot => slot.visitDate))]
+    const calendar = buildCalendarMonths(new Date(selectedDate), availableDates)
+
     const rawErrors = req.flash('alertErrors')[0]
     const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
     res.render('pages/manage/timeSlot', {
       today: new Date().toISOString().substring(0, 10),
       selectedDate,
-      weekOfDates,
-      previousWeek,
-      nextWeek,
+      calendarData: calendar,
       prisonerSchedule,
       slots: filteredSlots,
       selectedTimeSlot: res.locals.formResponses?.['timeSlot'] || officialVisit?.selectedTimeSlot?.visitSlotId,

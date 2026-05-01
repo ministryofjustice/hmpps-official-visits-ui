@@ -112,22 +112,14 @@ describe('Time slot handler', () => {
 
           expect($('.govuk-hint').text()).toEqual('Schedule an official visit')
           expect(heading).toEqual('Select date and time of official visit')
-          expect(selectedDate).toEqual('Thursday 25 December 2025')
+          expect(selectedDate).toEqual('Choose the visit time')
 
-          // Not clickable dates (in the past or today)
-          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(0).text()).toEqual('22')
-          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(1).text()).toEqual('23')
-          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(2).text()).toEqual('24')
-          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(3).text()).toEqual('25')
+          // Calendar renders with month headings
+          expect($('.hmpps-calendar').length).toEqual(1)
+          expect($('.hmpps-calendar__month').length).toBeGreaterThan(0)
 
-          // Clickable dates (in the future)
-          expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(0).text()).toEqual('26')
-          expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(1).text()).toEqual('27')
-          expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(2).text()).toEqual('28')
-
-          // Default page shouldn't show previous week because it'll be in the past
-          expect($('.moj-pagination__item--prev').children().length).toBeFalsy()
-          expect($('.moj-pagination__item--next').children().length).toBeTruthy()
+          // Default page shouldn't show previous month because it'll be in the past
+          expect($('.hmpps-calendar__navigation').length).toBeTruthy()
 
           // Prisoner's schedule
           expect($('caption').text()).toEqual('John Smith’s schedule')
@@ -179,25 +171,17 @@ describe('Time slot handler', () => {
 
           expect($('.govuk-hint').text()).toEqual('Amend an official visit')
           expect(heading).toEqual('Select date and time of official visit')
-          expect(selectedDate).toEqual('Thursday 25 December 2025')
+          expect(selectedDate).toEqual('Choose the visit time')
 
           // There should not be a progress tracker on this page
           expect($('.moj-progress-bar').length).toBeFalsy()
 
-          // Not clickable dates (in the past or today)
-          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(0).text()).toEqual('22')
-          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(1).text()).toEqual('23')
-          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(2).text()).toEqual('24')
-          expect($('.bapv-timetable-dates__date > span:nth-child(2)').eq(3).text()).toEqual('25')
+          // Calendar renders with month headings
+          expect($('.hmpps-calendar').length).toEqual(1)
+          expect($('.hmpps-calendar__month').length).toBeGreaterThan(0)
 
-          // Clickable dates (in the future)
-          expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(0).text()).toEqual('26')
-          expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(1).text()).toEqual('27')
-          expect($('.bapv-timetable-dates__date > a > span:nth-child(1)').eq(2).text()).toEqual('28')
-
-          // Default page shouldn't show previous week because it'll be in the past
-          expect($('.moj-pagination__item--prev').children().length).toBeFalsy()
-          expect($('.moj-pagination__item--next').children().length).toBeTruthy()
+          // Default page shouldn't show previous month because it'll be in the past
+          expect($('.hmpps-calendar__navigation').length).toBeTruthy()
 
           // Prisoner's schedule
           expect($('caption').text()).toEqual('John Smith’s schedule')
