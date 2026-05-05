@@ -30,6 +30,7 @@ export default ({ officialVisitsService, prisonerService }: Services): RequestHa
 
     // Populate the journey object with the visit and prisoner details
     req.session.journey.officialVisit = {
+      caseLoad: req.session.activeCaseLoadId,
       officialVisitId: Number(officialVisitId),
       prisonCode: visit.prisonCode,
       prisonName: '',

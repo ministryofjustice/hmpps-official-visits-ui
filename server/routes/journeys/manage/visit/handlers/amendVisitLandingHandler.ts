@@ -48,7 +48,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
     try {
       return await this.officialVisitsService.getOfficialVisitById(prisonCode, visitId, user)
     } catch (error) {
-      if (error.responseStatus === 404) {
+      if (error?.responseStatus === 404) {
         return undefined
       }
       throw error

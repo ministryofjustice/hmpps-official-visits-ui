@@ -11,7 +11,7 @@ export default class PrisonerSearchHandler implements PageHandler {
   constructor() {}
 
   public GET = async (req: Request, res: Response) => {
-    req.session.journey.officialVisit ??= { searchTerm: '' }
+    req.session.journey.officialVisit ??= { searchTerm: '', caseLoad: req.user.activeCaseLoad?.caseLoadId }
 
     res.render('pages/manage/prisonerSearch', {
       backUrl: '/',
