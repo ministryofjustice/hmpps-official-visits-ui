@@ -44,13 +44,28 @@ export default class AmendVisitLandingHandler implements PageHandler {
     } as Partial<JourneyVisitor>
   }
 
+  private async fetchVisit(visitId: number, prisonCode: string, user: HmppsUser): Promise<OfficialVisit> {
+    try {
+      return await this.officialVisitsService.getOfficialVisitById(prisonCode, visitId, user)
+    } catch (error) {
+      if (error.responseStatus === 404) {
+        return undefined
+      }
+      throw error
+    }
+  }
+
   GET = async (req: Request, res: Response) => {
     const ovId = req.params.ovId as string
     const { user } = res.locals
     const b64BackTo = req.session.journey.amendVisit?.backTo || (req.query.backTo as string)
 
     const prisonCode = req.session.activeCaseLoadId
-    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), user)
+    const visit = await this.fetchVisit(Number(ovId), prisonCode, user)
+
+    if (!visit) {
+      return res.redirect('/')
+    }
 
     const [restrictions, prisoner, contacts] = await Promise.all([
       this.personalRelationshipsService.getPrisonerRestrictions(
@@ -109,6 +124,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
 
     // Save to journey data
     req.session.journey.officialVisit = {
+      caseLoad: req.user.activeCaseLoad?.caseLoadId,
       dpsLocationId: visit.dpsLocationId,
       endTime: visit.endTime,
       locationDescription: visit.locationDescription,

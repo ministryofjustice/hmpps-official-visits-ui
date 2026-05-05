@@ -137,6 +137,7 @@ describe('Visit type handler', () => {
         .expect(() => expectNoErrorMessages())
         .then(() =>
           expectJourneySession(app, 'officialVisit', {
+            caseLoad: 'HEI',
             visitType: 'PHONE',
             visitTypeDescription: 'Phone',
           }),

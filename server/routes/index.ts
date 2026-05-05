@@ -11,6 +11,7 @@ import PrisonerImageRoutes from './prisonerImage/prisonerImageRoutes'
 import { populateUserPermissions } from '../middleware/populateUserPermissions'
 import { requirePermissions } from '../middleware/requirePermissions'
 import { Permission } from '../interfaces/hmppsUser'
+import preventNavigationToMismatchedCaseloadsJourneys from '../middleware/journey/preventNavigationToMismatchedCaseloadsJourneys'
 
 export default function routes(_services: Services): Router {
   const router = Router()
@@ -20,6 +21,7 @@ export default function routes(_services: Services): Router {
   router.use('/', requirePermissions('OV', Permission.DEFAULT), home(_services))
   router.use(preventNavigationToExpiredJourneys([/confirmation(\/[0-9a-zA-Z-]+)$/]))
   router.use(redirectCheckAnswersMiddleware([/check-your-answers$/]))
+  router.use(preventNavigationToMismatchedCaseloadsJourneys())
   router.use('/manage', manageVisits(_services))
   router.use('/view', viewVisits(_services))
   router.use('/admin', requirePermissions('OV', Permission.ADMIN), admin(_services))

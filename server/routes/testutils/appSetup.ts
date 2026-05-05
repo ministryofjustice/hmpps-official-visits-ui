@@ -79,9 +79,14 @@ function appSetup(
     req.user = userSupplier() as Express.User
     req.flash = flashProvider
     req.session.activeCaseLoadId = 'HEI'
-    req.session.journey = journeySessionSupplier()
+    const suppliedJourney = journeySessionSupplier()
+    req.session.journey = suppliedJourney
     req.session.journeyData = {}
-    req.session.journeyData[journeyId()] = { instanceUnixEpoch: Date.now(), ...journeySessionSupplier() }
+    req.session.journeyData[journeyId()] = {
+      instanceUnixEpoch: Date.now(),
+      ...suppliedJourney,
+      officialVisit: { caseLoad: req.session.activeCaseLoadId, ...suppliedJourney.officialVisit },
+    }
     res.locals = {
       user: { ...req.user } as HmppsUser,
       breadcrumbs: new Breadcrumbs(res),

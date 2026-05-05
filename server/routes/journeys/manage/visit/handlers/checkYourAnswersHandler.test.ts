@@ -23,6 +23,7 @@ const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<Off
 let app: Express
 
 const mockOfficialVisitJourney = {
+  caseLoad: 'HEI',
   searchPage: '0',
   searchTerm: 'Tim',
   prisonCode: 'MDI',
