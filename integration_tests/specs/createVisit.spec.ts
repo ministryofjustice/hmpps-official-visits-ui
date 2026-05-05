@@ -109,6 +109,7 @@ test.describe('Create an official visit', () => {
     await hmppsAuth.stubSignInPage()
     await componentsApi.stubComponents()
     await prisonApi.stubGetPrisonerImage()
+    await prisonApi.stubUserCaseLoads()
     await prisonerSearchApi.stubGetByPrisonerNumber(mockPrisoner)
     await personalRelationshipsApi.stubRestrictions()
     await prisonerSearchApi.stubSearchInCaseload({

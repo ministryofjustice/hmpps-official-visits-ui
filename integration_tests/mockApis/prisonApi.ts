@@ -28,4 +28,23 @@ export default {
         },
       },
     }),
+  stubUserCaseLoads: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/prison-api/api/users/me/caseLoads',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: [
+          {
+            caseLoadId: 'LEI',
+            description: 'Leeds (HMP)',
+            currentlyActive: true,
+            type: 'INST',
+          },
+        ],
+      },
+    }),
 }

@@ -104,6 +104,7 @@ test.describe('Amend official visits', () => {
     await manageUsersApi.stubGetByUsername()
     await componentsApi.stubComponents()
     await prisonApi.stubGetPrisonerImage()
+    await prisonApi.stubUserCaseLoads()
     await prisonerSearchApi.stubGetByPrisonerNumber({ ...mockPrisoner, prisonId: 'LEI' })
     await personalRelationshipsApi.stubRestrictions({ content: mockPrisonerRestrictions })
     await prisonerSearchApi.stubSearchInCaseload({
