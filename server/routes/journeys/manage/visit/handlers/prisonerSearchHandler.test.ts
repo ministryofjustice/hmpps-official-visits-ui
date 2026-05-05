@@ -124,6 +124,7 @@ describe('Prisoner search handler', () => {
         .expect('location', 'results')
         .then(() =>
           expectJourneySession(app, 'officialVisit', {
+            caseLoad: 'HEI',
             searchTerm: 'Bob',
           }),
         )

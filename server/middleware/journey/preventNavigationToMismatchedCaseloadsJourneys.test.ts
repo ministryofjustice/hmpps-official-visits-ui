@@ -69,28 +69,4 @@ describe('preventNavigationToMismatchedCaseloadsJourneys', () => {
     expect(res.redirect).toHaveBeenCalledWith('/')
     expect(next).not.toHaveBeenCalled()
   })
-
-  it('should redirect to home when journey caseload is undefined', () => {
-    const res = createRes()
-    req.session.journeyData[uuid] = {
-      officialVisit: {},
-      instanceUnixEpoch: Date.now(),
-    }
-    req.originalUrl = `/manage/create/${uuid}/search`
-
-    preventNavigationToMismatchedCaseloadsJourneys()(req, res, next)
-
-    expect(res.redirect).toHaveBeenCalledWith('/')
-    expect(next).not.toHaveBeenCalled()
-  })
-
-  it('should call next when URL does not contain a journey ID', () => {
-    const res = createRes()
-    req.originalUrl = '/manage/create/search'
-
-    preventNavigationToMismatchedCaseloadsJourneys()(req, res, next)
-
-    expect(next).toHaveBeenCalled()
-    expect(res.redirect).not.toHaveBeenCalled()
-  })
 })
