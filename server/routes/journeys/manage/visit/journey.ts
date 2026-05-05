@@ -36,8 +36,6 @@ export type OfficialVisitJourney = {
   equipmentPageCompleted?: boolean
   socialVisitorsPageCompleted?: boolean
   commentsPageCompleted?: boolean
-  // The active caseload when journey was created
-  caseLoad?: string
 }
 /*
  Define the additional data over and above the ApprovedContact structure for each visitor.

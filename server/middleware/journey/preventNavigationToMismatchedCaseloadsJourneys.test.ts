@@ -45,7 +45,6 @@ describe('preventNavigationToMismatchedCaseloadsJourneys', () => {
   it('should call next when journey caseload matches active caseload', () => {
     const res = createRes()
     req.session.journeyData[uuid] = {
-      officialVisit: { caseLoad: 'MDI' },
       instanceUnixEpoch: Date.now(),
     }
     req.originalUrl = `/manage/create/${uuid}/search`
@@ -59,8 +58,8 @@ describe('preventNavigationToMismatchedCaseloadsJourneys', () => {
   it('should redirect to home when journey caseload does not match active caseload', () => {
     const res = createRes()
     req.session.journeyData[uuid] = {
-      officialVisit: { caseLoad: 'HEI' },
       instanceUnixEpoch: Date.now(),
+      caseLoad: 'HEI',
     }
     req.originalUrl = `/manage/create/${uuid}/search`
 

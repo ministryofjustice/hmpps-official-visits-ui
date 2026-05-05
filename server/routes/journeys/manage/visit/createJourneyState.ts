@@ -32,7 +32,6 @@ export function getProgressTrackerState(page: Page) {
 export function savePrisonerSelection(journey: Journey, prisoner: JourneyPrisoner) {
   // Reassigning the object deletes anything else that might have been previously saved (restarting the journey)
   journey.officialVisit = {
-    caseLoad: journey.officialVisit.caseLoad,
     searchPage: journey.officialVisit.searchPage,
     searchTerm: journey.officialVisit.searchTerm,
     prisonCode: prisoner.prisonCode,

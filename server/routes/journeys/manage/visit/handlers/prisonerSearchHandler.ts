@@ -23,7 +23,6 @@ export default class PrisonerSearchHandler implements PageHandler {
   public POST = async (req: Request, res: Response) => {
     const { body } = req
     req.session.journey.officialVisit ||= {}
-    req.session.journey.officialVisit.caseLoad = req.session.activeCaseLoadId
     req.session.journey.officialVisit.searchTerm = body.searchTerm
     res.redirect('results')
   }

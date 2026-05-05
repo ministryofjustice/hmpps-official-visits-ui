@@ -4,6 +4,7 @@ import { AmendVisitJourney, OfficialVisitJourney } from '../../routes/journeys/m
 
 export interface JourneyData extends Journey {
   instanceUnixEpoch: number
+  caseLoad?: string
 }
 
 export interface Journey {

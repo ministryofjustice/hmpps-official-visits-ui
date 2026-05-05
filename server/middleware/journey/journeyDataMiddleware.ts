@@ -45,6 +45,22 @@ export default function journeyDataMiddleware(journeyName: keyof Journey): Reque
       },
     })
 
+    Object.defineProperty(req.session.journey, 'caseLoad', {
+      get() {
+        const journeyId = req.params.journeyId as string
+        return req.session.journeyData[journeyId]?.caseLoad
+      },
+      set(value) {
+        const journeyId = req.params.journeyId as string
+
+        if (!req.session.journeyData[journeyId]) {
+          return
+        }
+
+        req.session.journeyData[journeyId].caseLoad = value
+      },
+    })
+
     Object.defineProperty(req.session.journey, journeyName, {
       get() {
         const journeyId = req.params.journeyId as string
@@ -52,7 +68,7 @@ export default function journeyDataMiddleware(journeyName: keyof Journey): Reque
       },
       set(value) {
         const journeyId = req.params.journeyId as string
-        req.session.journeyData[journeyId] ??= { instanceUnixEpoch: Date.now() }
+        req.session.journeyData[journeyId] ??= { instanceUnixEpoch: Date.now(), caseLoad: req.session.activeCaseLoadId }
         req.session.journeyData[journeyId][journeyName] = value
 
         if (value === null || value === undefined) {

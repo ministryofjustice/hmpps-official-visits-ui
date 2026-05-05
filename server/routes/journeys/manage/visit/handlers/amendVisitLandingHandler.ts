@@ -124,7 +124,6 @@ export default class AmendVisitLandingHandler implements PageHandler {
 
     // Save to journey data
     req.session.journey.officialVisit = {
-      caseLoad: req.session.activeCaseLoadId,
       dpsLocationId: visit.dpsLocationId,
       endTime: visit.endTime,
       locationDescription: visit.locationDescription,

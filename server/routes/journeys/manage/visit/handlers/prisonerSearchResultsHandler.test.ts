@@ -183,7 +183,7 @@ describe('Prisoner search results handler', () => {
         .send({ searchTerm: 'Smith' })
         .expect(302)
         .expect('location', 'results')
-        .then(() => expectJourneySession(app, 'officialVisit', { caseLoad: 'HEI', searchTerm: 'Smith' }))
+        .then(() => expectJourneySession(app, 'officialVisit', { searchTerm: 'Smith' }))
     })
   })
 })

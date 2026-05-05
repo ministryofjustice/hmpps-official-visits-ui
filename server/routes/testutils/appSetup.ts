@@ -85,7 +85,8 @@ function appSetup(
     req.session.journeyData[journeyId()] = {
       instanceUnixEpoch: Date.now(),
       ...suppliedJourney,
-      officialVisit: { caseLoad: req.session.activeCaseLoadId, ...suppliedJourney.officialVisit },
+      caseLoad: 'HEI',
+      officialVisit: suppliedJourney.officialVisit,
     }
     res.locals = {
       user: { ...req.user } as HmppsUser,
