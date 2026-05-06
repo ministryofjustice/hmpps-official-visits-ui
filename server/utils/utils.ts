@@ -454,72 +454,40 @@ export type CalendarParams = {
 export const buildCalendarMonths = (selectedDate: Date, availableDates: string[]): CalendarParams => {
   const today = startOfToday()
   const selectedMonthStart = startOfMonth(selectedDate)
-
-  // Calendar starts from the later of today or the 1st of the selected month
   const effectiveStartDate = isBefore(selectedMonthStart, today) ? today : selectedMonthStart
-  const maxEndDate = addDays(effectiveStartDate, 41) // 6 weeks max
   const selectedDateStr = format(selectedDate, 'yyyy-MM-dd')
 
-  // First month: from effective start to end of month (or 6-week cap)
-  const month1End = endOfMonth(effectiveStartDate)
-  const actualMonth1End = isBefore(month1End, maxEndDate) ? month1End : maxEndDate
-  const month1Days: CalendarDay[] = []
-
-  for (let d = new Date(effectiveStartDate); !isAfter(d, actualMonth1End); d = addDays(d, 1)) {
-    const dateStr = format(d, 'yyyy-MM-dd')
-    month1Days.push({
-      date: dateStr,
-      dayNumber: format(d, 'd'),
-      href: availableDates.includes(dateStr) ? `?date=${dateStr}` : undefined,
-      selected: dateStr === selectedDateStr,
-    })
-  }
-
-  const month1: CalendarMonth = {
-    monthHeading: format(effectiveStartDate, 'MMMM yyyy'),
-    firstDayStartColumn: Number(format(effectiveStartDate, 'i')),
-    days: month1Days,
-  }
-
-  const months: CalendarMonth[] = [month1]
-
-  // Second month: only if 6-week cap extends into next month
-  if (!isSameMonth(effectiveStartDate, maxEndDate)) {
-    const month2Start = startOfMonth(addMonths(effectiveStartDate, 1))
-    const month2Days: CalendarDay[] = []
-
-    for (let d = new Date(month2Start); !isAfter(d, maxEndDate); d = addDays(d, 1)) {
+  const buildDays = (startDate: Date, endDate: Date): CalendarDay[] => {
+    const days: CalendarDay[] = []
+    for (let d = new Date(startDate); !isAfter(d, endDate); d = addDays(d, 1)) {
       const dateStr = format(d, 'yyyy-MM-dd')
-      month2Days.push({
+      days.push({
         date: dateStr,
         dayNumber: format(d, 'd'),
         href: availableDates.includes(dateStr) ? `?date=${dateStr}` : undefined,
         selected: dateStr === selectedDateStr,
       })
     }
-
-    const month2: CalendarMonth = {
-      monthHeading: format(month2Start, 'MMMM yyyy'),
-      firstDayStartColumn: Number(format(month2Start, 'i')),
-      days: month2Days,
-    }
-
-    months.push(month2)
+    return days
   }
 
-  // Navigation: previous month only if we're viewing a month strictly after the current month
-  const previousMonthDate = subMonths(selectedMonthStart, 1)
+  const buildMonth = (startDate: Date, endDate: Date): CalendarMonth => ({
+    monthHeading: format(startDate, 'MMMM yyyy'),
+    firstDayStartColumn: Number(format(startDate, 'i')),
+    days: buildDays(startDate, endDate),
+  })
+
+  const month1End = endOfMonth(effectiveStartDate)
+  const month2Start = startOfMonth(addMonths(effectiveStartDate, 1))
+  const month2End = endOfMonth(month2Start)
+
+  const months: CalendarMonth[] = [buildMonth(effectiveStartDate, month1End), buildMonth(month2Start, month2End)]
+
   const previousMonthHref = isAfter(selectedMonthStart, startOfMonth(today))
-    ? `?date=${format(previousMonthDate, 'yyyy-MM-dd')}`
+    ? `?date=${format(subMonths(selectedMonthStart, 1), 'yyyy-MM-dd')}`
     : undefined
 
-  // Next month: always available, starts from 1st of next month
-  const nextMonthDate = addMonths(selectedMonthStart, 1)
-  const nextMonthHref = `?date=${format(nextMonthDate, 'yyyy-MM-dd')}`
+  const nextMonthHref = `?date=${format(addMonths(selectedMonthStart, 1), 'yyyy-MM-dd')}`
 
-  return {
-    months,
-    previousMonthHref,
-    nextMonthHref,
-  }
+  return { months, previousMonthHref, nextMonthHref }
 }

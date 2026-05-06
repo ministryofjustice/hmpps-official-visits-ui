@@ -5,7 +5,7 @@ import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { saveTimeSlot, filterAvailableSlots, cyaGuard } from '../createJourneyState'
 import ActivitiesService from '../../../../../services/activitiesService'
-import { getParsedDateFromQueryString, buildCalendarMonths, ensureNotBeforeToday } from '../../../../../utils/utils'
+import { getParsedDateFromQueryString, buildCalendarMonths } from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
 import { getBackLink } from './utils'
 
@@ -26,8 +26,7 @@ export default class TimeSlotHandler implements PageHandler {
     const { officialVisit } = req.session.journey
     const { prisonCode, prisonerNumber } = officialVisit.prisoner
 
-    const selectedDateObj = new Date(ensureNotBeforeToday(selectedDate))
-    const selectedMonthStart = startOfMonth(selectedDateObj)
+    const selectedMonthStart = startOfMonth(new Date(selectedDate))
     const today = startOfToday()
     const calendarStartDate = isBefore(selectedMonthStart, today) ? today : selectedMonthStart
     const calendarEndDate = endOfMonth(addMonths(calendarStartDate, 1))

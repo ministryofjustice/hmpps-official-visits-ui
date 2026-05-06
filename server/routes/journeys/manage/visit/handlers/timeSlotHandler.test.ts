@@ -73,7 +73,7 @@ beforeEach(() => {
       prisonCode: 'MDI',
       dayCode: 'MON',
       dayDescription: 'Monday',
-      visitDate: '2026-01-26',
+      visitDate: '2025-12-25',
       startTime: '13:30',
       endTime: '16:00',
       dpsLocationId: 'loc1',
@@ -116,10 +116,26 @@ describe('Time slot handler', () => {
 
           // Calendar renders with month headings
           expect($('.hmpps-calendar').length).toEqual(1)
-          expect($('.hmpps-calendar__month').length).toBeGreaterThan(0)
+          expect($('.hmpps-calendar__month').length).toEqual(2)
+
+          // Day headings are present (one per month)
+          expect($('.hmpps-calendar__day-headings').length).toBeGreaterThan(0)
+          // First month's day headings have 7 days
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').length).toEqual(7)
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(0).text()).toContain('Mon')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(1).text()).toContain('Tue')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(2).text()).toContain('Wed')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(3).text()).toContain('Thu')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(4).text()).toContain('Fri')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(5).text()).toContain('Sat')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(6).text()).toContain('Sun')
+
+          // Calendar days are rendered - rest of December and all of January
+          expect($('.hmpps-calendar__day').length).toEqual(38)
 
           // Default page shouldn't show previous month because it'll be in the past
           expect($('.hmpps-calendar__navigation').length).toBeTruthy()
+          expect($('.hmpps-calendar__navigation a').length).toEqual(1)
 
           // Prisoner's schedule
           expect($('caption').text()).toEqual('John Smith’s schedule')
@@ -178,10 +194,26 @@ describe('Time slot handler', () => {
 
           // Calendar renders with month headings
           expect($('.hmpps-calendar').length).toEqual(1)
-          expect($('.hmpps-calendar__month').length).toBeGreaterThan(0)
+          expect($('.hmpps-calendar__month').length).toEqual(2)
+
+          // Day headings are present (one per month)
+          expect($('.hmpps-calendar__day-headings').length).toBeGreaterThan(0)
+          // First month's day headings have 7 days
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').length).toEqual(7)
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(0).text()).toContain('Mon')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(1).text()).toContain('Tue')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(2).text()).toContain('Wed')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(3).text()).toContain('Thu')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(4).text()).toContain('Fri')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(5).text()).toContain('Sat')
+          expect($('.hmpps-calendar__day-headings').eq(0).find('li').eq(6).text()).toContain('Sun')
+
+          // Calendar days are rendered - rest of December and all of January
+          expect($('.hmpps-calendar__day').length).toEqual(38)
 
           // Default page shouldn't show previous month because it'll be in the past
           expect($('.hmpps-calendar__navigation').length).toBeTruthy()
+          expect($('.hmpps-calendar__navigation a').length).toEqual(1)
 
           // Prisoner's schedule
           expect($('caption').text()).toEqual('John Smith’s schedule')
