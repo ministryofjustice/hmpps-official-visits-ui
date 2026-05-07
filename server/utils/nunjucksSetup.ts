@@ -142,4 +142,5 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
       text: loc.locationName,
     }))
   })
+  njkEnv.addFilter('prependEmptyOption', (list: object[], text: string = '') => [{ value: '', text }, ...list])
 }
