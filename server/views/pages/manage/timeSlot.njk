@@ -31,11 +31,49 @@
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
-        <h1 class="govuk-heading-m" id="selected-date">Choose the visit time</h1>
+        {% if calendarData %}
+          <h1 class="govuk-heading-m" id="selected-date">Choose the visit time</h1>
 
-        <div class="govuk-grid-column-one-half">
-          {{ calendar(calendarData) }}
-        </div>
+          <div class="govuk-grid-column-one-half">
+            {{ calendar(calendarData) }}
+          </div>
+        {% else %}
+          <nav aria-labelledby="selected-date">
+            <h2 class="govuk-heading-m" id="selected-date">{{ selectedDate | formatDate('EEEE d MMMM yyyy') }}</h2>
+
+            <ul class="govuk-list bapv-timetable-dates govuk-!-margin-bottom-1">
+              {% for day in weekOfDates %}
+                {% set selected = day.date == selectedDate %}
+                <li class="bapv-timetable-dates__date{{ ' bapv-timetable-dates__date--selected' if selected }}">
+                  <span>{{ day.date | formatDate('E') }}</span>
+                  {% if not selected and day.isInFuture %}
+                    <a class="govuk-link--no-visited-state" href="?date={{ day.date | formatDate('yyyy-MM-dd') }}">
+                  {% endif %}
+                  <span class="day" id="day-{{ loop.index }}">{{ day.date | formatDate('d') }}</span>
+                  <span class="govuk-visually-hidden">
+                    {{ day.date | formatDate('MMMM yyyy') }}
+                  </span>
+                  {% if not selected and day.isInFuture %}
+                    </a>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+            <ul class="govuk-list bapv-timetable-dates">
+
+              <li class="moj-pagination__item  moj-pagination__item--prev">
+                {% if (weekOfDates | first)
+                    .isInFuture and(weekOfDates | first)
+                    .date != today %}
+                  <a class="moj-pagination__link" href="?date={{ previousWeek | formatDate('yyyy-MM-dd') }}">Previous week</a>
+                {% endif %}
+              </li>
+              <li class="moj-pagination__item  moj-pagination__item--next">
+                <a class="moj-pagination__link" href="?date={{ nextWeek | formatDate('yyyy-MM-dd') }}">Next week</a>
+              </li>
+            </ul>
+          </nav>
+        {% endif %}
 
         {% set rows = [] %}
         {% for event in prisonerSchedule %}

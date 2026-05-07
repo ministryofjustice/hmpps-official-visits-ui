@@ -5,9 +5,14 @@ import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { saveTimeSlot, filterAvailableSlots, cyaGuard } from '../createJourneyState'
 import ActivitiesService from '../../../../../services/activitiesService'
-import { getParsedDateFromQueryString, buildCalendarMonths } from '../../../../../utils/utils'
+import {
+  getParsedDateFromQueryString,
+  getWeekOfDatesStartingMonday,
+  buildCalendarMonths,
+} from '../../../../../utils/utils'
 import { schema } from './timeSlotSchema'
 import { getBackLink } from './utils'
+import config from '../../../../../config'
 
 export default class TimeSlotHandler implements PageHandler {
   public PAGE_NAME = Page.TIME_SLOT_PAGE
@@ -26,22 +31,50 @@ export default class TimeSlotHandler implements PageHandler {
     const { officialVisit } = req.session.journey
     const { prisonCode, prisonerNumber } = officialVisit.prisoner
 
-    const selectedMonthStart = startOfMonth(new Date(selectedDate))
-    const today = startOfToday()
-    const calendarStartDate = isBefore(selectedMonthStart, today) ? today : selectedMonthStart
-    const calendarEndDate = endOfMonth(addMonths(calendarStartDate, 1))
+    let availableSlots: Awaited<ReturnType<OfficialVisitsService['getAvailableSlots']>>
+    let filteredSlots: ReturnType<typeof filterAvailableSlots>
+    let calendarData: ReturnType<typeof buildCalendarMonths> | undefined
+    let weekOfDates: { date: string; isInFuture: boolean }[] | undefined
+    let previousWeek: string | undefined
+    let nextWeek: string | undefined
 
-    const availableSlots = await this.officialVisitsService.getAvailableSlots(
-      res,
-      prisonCode,
-      format(calendarStartDate, 'yyyy-MM-dd'),
-      format(calendarEndDate, 'yyyy-MM-dd'),
-      officialVisit.visitType === 'VIDEO',
-      officialVisit.officialVisitId,
-    )
+    if (config.featureToggles.twoMonthCalendarEnabled) {
+      const selectedMonthStart = startOfMonth(new Date(selectedDate))
+      const today = startOfToday()
+      const calendarStartDate = isBefore(selectedMonthStart, today) ? today : selectedMonthStart
+      const calendarEndDate = endOfMonth(addMonths(calendarStartDate, 1))
 
-    const selectedDateSlots = availableSlots.filter(slot => slot.visitDate === selectedDate)
-    const filteredSlots = filterAvailableSlots(selectedDateSlots, officialVisit.visitType, 1)
+      availableSlots = await this.officialVisitsService.getAvailableSlots(
+        res,
+        prisonCode,
+        format(calendarStartDate, 'yyyy-MM-dd'),
+        format(calendarEndDate, 'yyyy-MM-dd'),
+        officialVisit.visitType === 'VIDEO',
+        officialVisit.officialVisitId,
+      )
+
+      const selectedDateSlots = availableSlots.filter(slot => slot.visitDate === selectedDate)
+      filteredSlots = filterAvailableSlots(selectedDateSlots, officialVisit.visitType, 1)
+
+      const availableDates = [...new Set(availableSlots.map(slot => slot.visitDate))]
+      calendarData = buildCalendarMonths(new Date(selectedDate), availableDates)
+    } else {
+      const weekDates = getWeekOfDatesStartingMonday(selectedDate)
+      weekOfDates = weekDates.weekOfDates
+      previousWeek = weekDates.previousWeek
+      nextWeek = weekDates.nextWeek
+
+      availableSlots = await this.officialVisitsService.getAvailableSlots(
+        res,
+        prisonCode,
+        selectedDate,
+        selectedDate,
+        officialVisit.visitType === 'VIDEO',
+        officialVisit.officialVisitId,
+      )
+
+      filteredSlots = filterAvailableSlots(availableSlots, officialVisit.visitType, 1)
+    }
 
     req.session.journey.officialVisit.availableSlots = filteredSlots
 
@@ -52,16 +85,16 @@ export default class TimeSlotHandler implements PageHandler {
       user,
     )
 
-    const availableDates = [...new Set(availableSlots.map(slot => slot.visitDate))]
-    const calendar = buildCalendarMonths(new Date(selectedDate), availableDates)
-
     const rawErrors = req.flash('alertErrors')[0]
     const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
     res.render('pages/manage/timeSlot', {
       today: new Date().toISOString().substring(0, 10),
       selectedDate,
-      calendarData: calendar,
+      calendarData,
+      weekOfDates,
+      previousWeek,
+      nextWeek,
       prisonerSchedule,
       slots: filteredSlots,
       selectedTimeSlot: res.locals.formResponses?.['timeSlot'] || officialVisit?.selectedTimeSlot?.visitSlotId,
