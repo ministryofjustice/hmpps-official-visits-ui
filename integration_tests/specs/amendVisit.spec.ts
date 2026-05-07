@@ -125,8 +125,8 @@ test.describe('Amend official visits', () => {
           visitSlotId: i + 1,
           timeSlotId: i + 1,
           prisonCode: 'MDI',
-          dayCode: 'WED',
-          dayDescription: 'Wednesday',
+          dayCode: 'FRI',
+          dayDescription: 'Friday',
           startTime: '08:00',
           endTime: '17:00',
           dpsLocationId: o.code,
@@ -134,7 +134,7 @@ test.describe('Amend official visits', () => {
           availableAdults: 1,
           availableGroups: 1,
           availableVideoSessions: 1,
-          visitDate: format(new Date(), 'yyyy-MM-dd'),
+          visitDate: '2038-01-01',
         }
       }),
     )
@@ -316,8 +316,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('h1', { hasText: `Select date and time of official visit` })).toBeVisible()
     expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
-    expect(page.getByRole('heading', { name: 'Friday 1 January 2038' })).toBeVisible()
-    expect(await page.locator('.bapv-timetable-dates__date--selected').innerText()).toMatch(/Fri\s+1\s+January/)
+    expect(page.locator('.hmpps-calendar__day--selected')).toBeVisible()
     // Pre-selected value
     expect(page.getByRole('radio', { name: '8am to 5pm First Location' })).toBeChecked()
 
@@ -344,8 +343,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('h1', { hasText: `Select date and time of official visit` })).toBeVisible()
     expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
-    expect(page.getByRole('heading', { name: 'Friday 1 January 2038' })).toBeVisible()
-    expect(await page.locator('.bapv-timetable-dates__date--selected').innerText()).toMatch(/Fri\s+1\s+January/)
+    expect(page.locator('.hmpps-calendar__day--selected')).toBeVisible()
     // Pre-selected value
     expect(page.getByRole('radio', { name: '8am to 5pm First Location' })).toBeChecked()
 

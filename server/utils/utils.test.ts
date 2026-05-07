@@ -31,6 +31,8 @@ import {
   coerceInt,
   getTime,
   socialVisitorsPageEnabled,
+  timeRangesOverlap,
+  buildCalendarMonths,
 } from './utils'
 import config from '../config'
 import { JourneyVisitor } from '../routes/journeys/manage/visit/journey'
@@ -555,5 +557,106 @@ describe('socialVisitorsPageEnabled', () => {
     mockConfig.featureToggles.allowSocialVisitorsPrisons = 'MDI'
     mockReq.session!.journey.officialVisit.socialVisitors = undefined
     expect(socialVisitorsPageEnabled(mockReq as Request)).toBe(true)
+  })
+})
+
+describe('timeRangesOverlap', () => {
+  it('returns true when time ranges overlap', () => {
+    expect(timeRangesOverlap('09:00', '10:00', '09:30', '10:30')).toBe(true)
+    expect(timeRangesOverlap('09:00', '10:00', '08:30', '09:30')).toBe(true)
+    expect(timeRangesOverlap('09:00', '10:00', '09:00', '10:00')).toBe(true)
+  })
+
+  it('returns false when time ranges do not overlap', () => {
+    expect(timeRangesOverlap('09:00', '10:00', '10:00', '11:00')).toBe(false)
+    expect(timeRangesOverlap('09:00', '10:00', '08:00', '09:00')).toBe(false)
+    expect(timeRangesOverlap('09:00', '10:00', '11:00', '12:00')).toBe(false)
+  })
+
+  it('returns true for invalid time inputs', () => {
+    expect(timeRangesOverlap('', '10:00', '09:00', '11:00')).toBe(true)
+    expect(timeRangesOverlap('09:00', '', '09:00', '11:00')).toBe(true)
+    expect(timeRangesOverlap('invalid', '10:00', '09:00', '11:00')).toBe(true)
+  })
+})
+
+describe('buildCalendarMonths', () => {
+  beforeEach(() => {
+    jest.useFakeTimers({
+      now: new Date('2025-12-25'),
+      doNotFake: ['nextTick', 'setImmediate'],
+    })
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
+  it('builds calendar months with available dates', () => {
+    const selectedDate = new Date('2025-12-25')
+    const availableDates = ['2025-12-25', '2025-12-26', '2026-01-15']
+
+    const result = buildCalendarMonths(selectedDate, availableDates)
+
+    expect(result.months).toHaveLength(2)
+    expect(result.months[0].monthHeading).toBe('December 2025')
+    expect(result.months[1].monthHeading).toBe('January 2026')
+    expect(result.months[0].days).toBeDefined()
+    expect(result.months[1].days).toBeDefined()
+  })
+
+  it('marks selected date correctly', () => {
+    const selectedDate = new Date('2025-12-25')
+    const availableDates = ['2025-12-25']
+
+    const result = buildCalendarMonths(selectedDate, availableDates)
+
+    const selectedDay = result.months[0].days.find(d => d.selected)
+    expect(selectedDay).toBeDefined()
+    expect(selectedDay?.date).toBe('2025-12-25')
+  })
+
+  it('adds href to available dates', () => {
+    const selectedDate = new Date('2025-12-25')
+    const availableDates = ['2025-12-26', '2026-01-15']
+
+    const result = buildCalendarMonths(selectedDate, availableDates)
+
+    const availableDay1 = result.months[0].days.find(d => d.date === '2025-12-26')
+    const availableDay2 = result.months[1].days.find(d => d.date === '2026-01-15')
+
+    expect(availableDay1?.href).toBe('?date=2025-12-26')
+    expect(availableDay2?.href).toBe('?date=2026-01-15')
+  })
+
+  it('does not add href to unavailable dates', () => {
+    const selectedDate = new Date('2025-12-25')
+    const availableDates = ['2025-12-25']
+
+    const result = buildCalendarMonths(selectedDate, availableDates)
+
+    const unavailableDay = result.months[0].days.find(d => d.date === '2025-12-26')
+    expect(unavailableDay?.href).toBeUndefined()
+  })
+
+  it('provides navigation links', () => {
+    const selectedDate = new Date('2025-12-25')
+    const availableDates: string[] = []
+
+    const result = buildCalendarMonths(selectedDate, availableDates)
+
+    expect(result.nextMonthHref).toBe('?date=2026-01-01')
+    // Previous month should be undefined since selected date is in current month (December 2025, and today is Dec 25 2025)
+    expect(result.previousMonthHref).toBeUndefined()
+  })
+
+  it('provides previous month link when selected date is in future month', () => {
+    const selectedDate = new Date('2026-01-15')
+    const availableDates: string[] = []
+
+    const result = buildCalendarMonths(selectedDate, availableDates)
+
+    expect(result.nextMonthHref).toBe('?date=2026-02-01')
+    expect(result.previousMonthHref).toBe('?date=2025-12-01')
   })
 })
