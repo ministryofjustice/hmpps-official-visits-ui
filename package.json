@@ -119,7 +119,7 @@
     "prettier-plugin-jinja-template": "^2.1.0",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.5",
-    "typescript": "^6.0.3"
+    "typescript": "^5.9.3"
   },
   "overrides": {
     "@jgoz/esbuild-plugin-typecheck": {
