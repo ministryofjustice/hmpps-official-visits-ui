@@ -23,7 +23,7 @@
                         name: 'dpsLocationId',
                         label: { text: 'Location' },
                         errorMessage: validationErrors | findError('dpsLocationId'),
-                        items: locations | locationsToOptions | addSelectValue('', 'Select a location') | sort(false, false, 'text') | setSelected(formResponses.location or filter.location or '')
+                        items: locations | locationsToOptions | sort(false, false, 'text') | prependEmptyOption('Select a location') | setSelected(formResponses.location or filter.location or '')
                     }) }}
 
                     {{ govukInput({
