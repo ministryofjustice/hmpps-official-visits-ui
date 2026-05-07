@@ -12,6 +12,11 @@ import {
   subWeeks,
   addDays,
   isBefore,
+  addMonths,
+  subMonths,
+  endOfMonth,
+  startOfMonth,
+  isAfter,
 } from 'date-fns'
 import { enGB } from 'date-fns/locale'
 import { Request } from 'express'
@@ -422,4 +427,64 @@ export const timeRangesOverlap = (
   }
 
   return start1 < end2 && start2 < end1
+}
+
+export type CalendarDay = {
+  date: string
+  dayNumber: string
+  href?: string
+  selected?: boolean
+}
+
+export type CalendarMonth = {
+  monthHeading: string
+  firstDayStartColumn?: number
+  days: CalendarDay[]
+}
+
+export type CalendarParams = {
+  months: CalendarMonth[]
+  previousMonthHref?: string
+  nextMonthHref?: string
+}
+
+export const buildCalendarMonths = (selectedDate: Date, availableDates: string[]): CalendarParams => {
+  const today = startOfToday()
+  const selectedMonthStart = startOfMonth(selectedDate)
+  const effectiveStartDate = isBefore(selectedMonthStart, today) ? today : selectedMonthStart
+  const selectedDateStr = format(selectedDate, 'yyyy-MM-dd')
+
+  const buildDays = (startDate: Date, endDate: Date): CalendarDay[] => {
+    const days: CalendarDay[] = []
+    for (let d = new Date(startDate); !isAfter(d, endDate); d = addDays(d, 1)) {
+      const dateStr = format(d, 'yyyy-MM-dd')
+      days.push({
+        date: dateStr,
+        dayNumber: format(d, 'd'),
+        href: availableDates.includes(dateStr) ? `?date=${dateStr}` : undefined,
+        selected: dateStr === selectedDateStr,
+      })
+    }
+    return days
+  }
+
+  const buildMonth = (startDate: Date, endDate: Date): CalendarMonth => ({
+    monthHeading: format(startDate, 'MMMM yyyy'),
+    firstDayStartColumn: Number(format(startDate, 'i')),
+    days: buildDays(startDate, endDate),
+  })
+
+  const month1End = endOfMonth(effectiveStartDate)
+  const month2Start = startOfMonth(addMonths(effectiveStartDate, 1))
+  const month2End = endOfMonth(month2Start)
+
+  const months: CalendarMonth[] = [buildMonth(effectiveStartDate, month1End), buildMonth(month2Start, month2End)]
+
+  const previousMonthHref = isAfter(selectedMonthStart, startOfMonth(today))
+    ? `?date=${format(subMonths(selectedMonthStart, 1), 'yyyy-MM-dd')}`
+    : undefined
+
+  const nextMonthHref = `?date=${format(addMonths(selectedMonthStart, 1), 'yyyy-MM-dd')}`
+
+  return { months, previousMonthHref, nextMonthHref }
 }

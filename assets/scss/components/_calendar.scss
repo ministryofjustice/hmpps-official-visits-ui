@@ -1,0 +1,80 @@
+.hmpps-calendar {
+  margin-bottom: govuk-spacing(9);
+}
+
+.hmpps-calendar__day-headings {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  row-gap: govuk-spacing(1);
+  margin-top: govuk-spacing(1);
+
+  li {
+    width: 3rem;
+  }
+
+  // only show abbreviated weekday names on mobile
+  span {
+    @include govuk-media-query($until: tablet) {
+      display: none;
+    }
+  }
+}
+
+.hmpps-calendar__month {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  row-gap: govuk-spacing(1);
+}
+
+.hmpps-calendar__day {
+  @include govuk-font-size($size: 24);
+  aspect-ratio: 1 / 1;
+  color: $govuk-secondary-text-colour;
+  position: relative;
+  width: 3rem;
+
+  a,
+  span {
+    padding: govuk-spacing(1);
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  a {
+    @include govuk-link-style-no-visited-state;
+    font-weight: $govuk-font-weight-bold;
+    min-width: 1.5rem;
+  }
+}
+
+.hmpps-calendar__day--has-link a {
+  color: $govuk-link-colour;
+}
+
+.hmpps-calendar__day--selected span {
+  background-color: $govuk-link-colour;
+  border-radius: 50%;
+  color: govuk-colour("white");
+  display: inline-block;
+  font-weight: $govuk-font-weight-bold;
+  height: 2.5rem;
+  line-height: 2.5rem;
+  text-align: center;
+  width: 2.5rem;
+}
+
+// Column offset classes for first day of month
+@for $i from 2 through 7 {
+  .hmpps-calendar__day--start-col-#{$i} {
+    grid-column-start: $i;
+  }
+}
+
+.hmpps-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: govuk-spacing(6);
+}
