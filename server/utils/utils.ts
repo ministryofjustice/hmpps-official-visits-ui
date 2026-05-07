@@ -16,9 +16,6 @@ import {
   subMonths,
   endOfMonth,
   startOfMonth,
-  getDate,
-  isSameMonth,
-  isEqual,
   isAfter,
 } from 'date-fns'
 import { enGB } from 'date-fns/locale'
