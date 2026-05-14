@@ -5,7 +5,7 @@ import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import AuditService from '../../../../services/auditService'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
-import { TimeSlot, VisitLocation } from '../../../../@types/officialVisitsApi/types'
+import { TimeSlot, TimeSlotSummaryItem, VisitLocation } from '../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../services/officialVisitsService')
 jest.mock('../../../../services/auditService')
@@ -41,6 +41,11 @@ describe('NewVisitSlotHandler', () => {
         endTime: '11:00',
       }
       officialVisitsService.getPrisonTimeSlotById.mockResolvedValue(existing as TimeSlot)
+      // Simulate that loc-1 is already used in a visit slot for this time slot
+      officialVisitsService.getPrisonTimeSlotSummaryById.mockResolvedValue({
+        timeSlot: existing,
+        visitSlots: [{ visitSlotId: 1, dpsLocationId: 'loc-1' }],
+      } as TimeSlotSummaryItem)
 
       const res = await request(app).get('/admin/time-slot/1/location/new')
 
@@ -60,6 +65,11 @@ describe('NewVisitSlotHandler', () => {
 
       const $ = cheerio.load(res.text)
       expect($('select#dpsLocationId').length).toBeGreaterThan(0)
+      const options = $('select#dpsLocationId option')
+        .map((i, el) => $(el).attr('value'))
+        .get()
+      expect(options).not.toContain('loc-1')
+      expect(options).toContain('loc-2')
       expect(res.text).toContain('<a href="/admin/time-slot/1/locations" class="govuk-back-link">Back</a>')
       const cancelAnchor = $('a[href="/admin/time-slot/1/locations"]').eq(1)
       const cancelText = cancelAnchor.text().replace(/\s+/g, ' ').trim()

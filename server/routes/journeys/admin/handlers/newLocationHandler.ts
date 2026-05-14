@@ -19,10 +19,16 @@ export default class NewLocationHandler implements PageHandler {
 
     const locations = await this.officialVisitsService.getOfficialVisitLocationsAtPrison(prisonCode, user)
     const timeSlot = await this.officialVisitsService.getPrisonTimeSlotById(timeSlotId, user)
+    const summaryItem = await this.officialVisitsService.getPrisonTimeSlotSummaryById(timeSlotId, user)
+
+    // Filter out locations that already have an associated visit slot for this time slot
+    const existingDpsLocationIds = (summaryItem?.visitSlots || []).map(v => v.dpsLocationId).filter(Boolean)
+
+    const availableLocations = locations.filter(l => !existingDpsLocationIds.includes(l.locationId))
 
     res.render('pages/admin/newLocation', {
       timeSlot,
-      locations,
+      locations: availableLocations,
       backUrl: `/admin/time-slot/${timeSlotId}/locations`,
     })
   }
