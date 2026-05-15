@@ -510,6 +510,28 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/notification/{officialVisitId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Endpoint to support the sending of notifications for official visits.
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__RW
+     */
+    post: operations['sendNotification']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/migrate/visit': {
     parameters: {
       query?: never
@@ -1736,11 +1758,6 @@ export interface components {
        * @description Maximum video sessions allowed in the visit slot
        */
       maxVideo?: number
-      /**
-       * Format: uuid
-       * @description The Official visit Location Id
-       */
-      dpsLocationId?: string
     }
     /** @description Response for a prison visit slot */
     VisitSlot: {
@@ -2786,6 +2803,38 @@ export interface components {
       /** @description Prisoner attendance code description */
       attendanceCodeDescription?: string
     }
+    /** @description The request containing the details of the notification */
+    NotificationRequest: {
+      /**
+       * @description The type of notification to send
+       * @example CREATE
+       * @enum {string}
+       */
+      notificationType: 'CREATE' | 'AMEND' | 'CANCEL'
+      /** @description The recipient email address to send the notification to */
+      emailAddresses: string[]
+    }
+    NotificationRecipient: {
+      emailAddress: string
+      /** Format: int64 */
+      notificationId: number
+    }
+    NotificationResponse: {
+      /**
+       * Format: int64
+       * @description The official visit id
+       * @example 1
+       */
+      officialVisitId: number
+      /**
+       * @description The type of notification that was sent
+       * @example CREATE
+       * @enum {string}
+       */
+      notificationType: 'CREATE' | 'AMEND' | 'CANCEL'
+      /** @description The recipients the notification was sent to */
+      recipients: components['schemas']['NotificationRecipient'][]
+    }
     /** @description Request to migrate a day and time slot for a prison and its associated visit slots from NOMIS */
     MigrateVisitConfigRequest: {
       /**
@@ -3787,6 +3836,15 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
+      /** @description Downstream service problem retrieving user details (temporary) */
+      408: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
     }
   }
   syncUpdateOfficialVisitor: {
@@ -3834,6 +3892,15 @@ export interface operations {
       }
       /** @description The the official visit or visitor was not found using the IDs presented */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Downstream service problem retrieving user details (temporary) */
+      408: {
         headers: {
           [name: string]: unknown
         }
@@ -4471,6 +4538,15 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
+      /** @description Downstream service problem retrieving user details (temporary) */
+      408: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
       /** @description Another visit exists with the same offender visit ID */
       409: {
         headers: {
@@ -4526,6 +4602,15 @@ export interface operations {
       }
       /** @description The the official visit was not found using the ID presented */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Downstream service problem retrieving user details (temporary) */
+      408: {
         headers: {
           [name: string]: unknown
         }
@@ -4643,7 +4728,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description Conflict, requires users active caseload to match that of the prison */
+      /** @description Conflict, requires caseload access to the prison */
       409: {
         headers: {
           [name: string]: unknown
@@ -4866,6 +4951,63 @@ export interface operations {
       }
       /** @description Forbidden, requires an appropriate role */
       403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  sendNotification: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The identifier of the official visit to send the notification for.
+         * @example 1
+         */
+        officialVisitId: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['NotificationRequest']
+      }
+    }
+    responses: {
+      /** @description The response containing the details of all notifications sent */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['NotificationResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description No official visit found to send the notification for. */
+      404: {
         headers: {
           [name: string]: unknown
         }
