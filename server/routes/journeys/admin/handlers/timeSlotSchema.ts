@@ -27,7 +27,10 @@ const VALID_DAY_CODES = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
 export const schema = z
   .object({
-    startDate: z.any().transform(v => coerceDate(v)),
+    startDate: z
+      .any()
+      .optional()
+      .transform(v => coerceDate(v)),
     timeSlotId: z
       .any()
       .transform(v => coerceInt(v))
@@ -37,10 +40,22 @@ export const schema = z
       .transform(v => coerceDate(v))
       .optional(),
     dayCode: z.string().min(3).max(3, { message: 'DayCode must be 3 characters' }).optional(),
-    'startTime-startHour': z.any().transform(v => coerceInt(v)),
-    'startTime-startMinute': z.any().transform(v => coerceInt(v)),
-    'endTime-endHour': z.any().transform(v => coerceInt(v)),
-    'endTime-endMinute': z.any().transform(v => coerceInt(v)),
+    'startTime-startHour': z
+      .any()
+      .optional()
+      .transform(v => coerceInt(v)),
+    'startTime-startMinute': z
+      .any()
+      .optional()
+      .transform(v => coerceInt(v)),
+    'endTime-endHour': z
+      .any()
+      .optional()
+      .transform(v => coerceInt(v)),
+    'endTime-endMinute': z
+      .any()
+      .optional()
+      .transform(v => coerceInt(v)),
   })
   .superRefine((data, ctx) => {
     // Deterministic ordering of errors is important. We add issues in the sequence below.

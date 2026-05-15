@@ -1,6 +1,6 @@
 import type { Express } from 'express'
 import request from 'supertest'
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import AuditService from '../../../../services/auditService'
