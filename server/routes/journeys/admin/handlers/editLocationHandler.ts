@@ -30,10 +30,9 @@ export default class EditLocationHandler implements PageHandler {
     const { user, digitalPrisonServicesUrl } = res.locals
     const locationId = Number(req.params.locationId)
 
-    const { dpsLocationId, maxAdults, maxGroups, maxVideo } = req.body as Record<string, unknown>
+    const { maxAdults, maxGroups, maxVideo } = req.body as Record<string, unknown>
 
     const body = {
-      dpsLocationId: dpsLocationId as string,
       maxAdults: typeof maxAdults !== 'undefined' ? Number(maxAdults) : undefined,
       maxGroups: typeof maxGroups !== 'undefined' ? Number(maxGroups) : undefined,
       maxVideo: typeof maxVideo !== 'undefined' ? Number(maxVideo) : undefined,

@@ -95,7 +95,7 @@ describe('EditLocationHandler', () => {
 
       expect(officialVisitsService.updateVisitSlot).toHaveBeenCalledWith(
         11,
-        { dpsLocationId: 'loc-1', maxAdults: 5, maxGroups: 2, maxVideo: 0 },
+        { maxAdults: 5, maxGroups: 2, maxVideo: 0 },
         adminUser,
       )
     })
