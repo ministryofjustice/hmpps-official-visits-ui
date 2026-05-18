@@ -1,6 +1,6 @@
 import request from 'supertest'
 import type { Express } from 'express'
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import { adminUser, appWithAllRoutes } from '../../../testutils/appSetup'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { TimeSlotSummaryItem } from '../../../../@types/officialVisitsApi/types'

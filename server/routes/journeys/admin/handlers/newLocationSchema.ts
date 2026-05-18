@@ -6,7 +6,7 @@ const ERROR_NEGATIVE = 'Enter a number between 0 and 999'
 
 export const schema = z
   .object({
-    dpsLocationId: z.any(),
+    dpsLocationId: z.any().optional(),
     maxAdults: z
       .any()
       .optional()
