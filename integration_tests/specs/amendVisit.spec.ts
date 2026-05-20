@@ -483,6 +483,91 @@ test.describe('Amend official visits', () => {
     expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
   })
 
+  test('should show unauthorised visitor warnings and errors when amending visitors', async ({ page }) => {
+    const notApprovedOfficialVisitor = {
+      officialVisitorId: mockOfficialVisitors[2].prisonerContactId,
+      prisonerContactId: mockOfficialVisitors[2].prisonerContactId,
+      contactId: mockOfficialVisitors[2].contactId,
+      firstName: mockOfficialVisitors[2].firstName,
+      lastName: mockOfficialVisitors[2].lastName,
+      relationshipTypeCode: 'OFFICIAL',
+      relationshipTypeDescription: 'Official',
+      relationshipDescription: mockOfficialVisitors[2].relationshipToPrisonerDescription,
+      relationshipCode: mockOfficialVisitors[2].relationshipToPrisonerCode,
+      visitorTypeCode: 'CONTACT',
+      visitorTypeDescription: 'Contact',
+      leadVisitor: false,
+      createdBy: 'TEST_USER',
+      createdTime: '2023-01-01T00:00:00',
+    }
+
+    const noRelationshipOfficialVisitor = {
+      officialVisitorId: 999,
+      prisonerContactId: 999,
+      contactId: 999,
+      firstName: 'Unauthorised',
+      lastName: 'Visitor',
+      relationshipTypeCode: 'OFFICIAL',
+      relationshipTypeDescription: 'Official',
+      relationshipDescription: 'Judge',
+      relationshipCode: 'JUD',
+      visitorTypeCode: 'CONTACT',
+      visitorTypeDescription: 'Contact',
+      leadVisitor: false,
+      createdBy: 'TEST_USER',
+      createdTime: '2023-01-01T00:00:00',
+    }
+
+    const baseVisit = getMockVisit()
+    const visitWithUnauthorisedVisitors = {
+      ...baseVisit,
+      officialVisitors: [baseVisit.officialVisitors[0], notApprovedOfficialVisitor, noRelationshipOfficialVisitor],
+    }
+
+    await officialVisitsApi.stubGetOfficialVisitById(visitWithUnauthorisedVisitors as OfficialVisit)
+
+    await login(page)
+    await page.goto(`/manage/amend/1/${journeyId}`)
+
+    await expect(page.getByText('Some visitor details need updating')).toBeVisible()
+    await expect(page.getByText('a visitor is not an approved contact')).toBeVisible()
+    await expect(page.getByText('a visitor does not have a recorded relationship with the prisoner')).toBeVisible()
+    await expect(page.getByText('CONTACT NOT APPROVED')).toBeVisible()
+    await expect(page.getByText('NO RECORDED RELATIONSHIP')).toBeVisible()
+
+    await page.getByRole('link', { name: 'Add or remove visitors' }).click()
+
+    expect(
+      page.locator('h1', { hasText: `Select official visitors from the prisoner's approved contact list` }),
+    ).toBeVisible()
+    await expect(page.getByText('Some visitor details need updating')).toBeVisible()
+    await expect(page.getByText('a visitor is not an approved contact')).toBeVisible()
+    await expect(page.getByText('a visitor does not have a recorded relationship with the prisoner')).toBeVisible()
+    await expect(page.getByText('CONTACT NOT APPROVED')).toBeVisible()
+    await expect(page.getByText('NO RECORDED RELATIONSHIP')).toBeVisible()
+
+    await expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Unauthorised Visitor' })).toBeChecked()
+
+    await page.getByRole('button', { name: 'Continue' }).click()
+
+    await expect(
+      page.getByRole('heading', { name: 'Remove visitor with no recorded relationship with the prisoner' }),
+    ).toBeVisible()
+    await expect(page.getByText('A visitor must have a recorded relationship')).toBeVisible()
+
+    await page.getByRole('checkbox', { name: 'Unauthorised Visitor' }).uncheck()
+    await page.getByRole('button', { name: 'Continue' }).click()
+    await page.getByRole('button', { name: 'Continue' }).click()
+
+    expect(
+      page.locator('h1', { hasText: `Will visitors need assistance during their visit? (optional)` }),
+    ).toBeVisible()
+
+    await page.getByRole('button', { name: 'Save' }).click()
+    expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
+  })
+
   test('should navigate to official visitors and show all related pages when "add or remove visitors" is clicked (no equipment)', async ({
     page,
   }) => {
