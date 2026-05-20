@@ -108,12 +108,48 @@ describe('notification check handler', () => {
   })
 
   it('GET should render check page when action is not a known notification action', async () => {
-    appSetup(() => ({ officialVisit: sampleVisit }))
+    app = appWithAllRoutes({
+      services: { auditService, officialVisitsService },
+      userSupplier: () => user,
+      journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
+      middlewares: [
+        (req, _res, next) => {
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          next()
+        },
+      ],
+    })
+
     officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
 
     const res = await request(app).get(`/notification/${OV_ID}/invalid/check`).expect(200)
     expect(res.text).toContain('Check and send official visit confirmation')
     expect(res.text).toContain(`/notification/${OV_ID}/invalid`)
+  })
+
+  it('GET should redirect to enter email page when email is not in form responses or session', async () => {
+    const ovIdWithoutEmail = '999'
+
+    app = appWithAllRoutes({
+      services: { auditService, officialVisitsService },
+      userSupplier: () => user,
+      journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
+      middlewares: [
+        (req, res, next) => {
+          res.locals.formResponses = {}
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          next()
+        },
+      ],
+    })
+
+    await request(app)
+      .get(`/notification/${ovIdWithoutEmail}/create/check`)
+      .redirects(0)
+      .expect(302)
+      .expect('location', `/notification/${ovIdWithoutEmail}/create`)
+
+    expect(officialVisitsService.getOfficialVisitById).not.toHaveBeenCalled()
   })
 
   it('POST should send notification and clear session entries', async () => {

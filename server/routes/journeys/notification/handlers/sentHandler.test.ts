@@ -32,6 +32,13 @@ afterEach(() => {
 })
 
 describe('notification sent handler', () => {
+  it('GET should redirect to enter email page when email is missing', async () => {
+    await request(app)
+      .get(`/notification/${OV_ID}/create/sent`)
+      .expect(302)
+      .expect('location', `/notification/${OV_ID}/create`)
+  })
+
   it('GET should render sent confirmation with email and links', async () => {
     app = appWithAllRoutes({
       services: { auditService },

@@ -29,8 +29,14 @@ export default class CheckHandler implements PageHandler {
     // document two user scenarios for the logic below:
     // 1. User enters email and clicks continue - email is in form responses but not session yet
     // 2. User goes back to check page from sent confirmation - email is in session but not form responses
-    const emailAddress =
-      res.locals['formResponses']?.emailAddress || req.session?.notifications?.[ovId as string]?.emailAddress
+    const formResponsesEmail = res.locals['formResponses']?.emailAddress
+    const sessionEmail = req.session?.notifications?.[ovId as string]?.emailAddress
+    const emailAddress = formResponsesEmail || sessionEmail
+
+    // Redirect to enter-email page when no valid email is available yet.
+    if (!emailAddress) {
+      return res.redirect(`/notification/${ovId}/${action}`)
+    }
 
     const prisonCode = req.session.activeCaseLoadId
     const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), user)

@@ -10,6 +10,10 @@ export default class SentHandler implements PageHandler {
     const emailAddress =
       res.locals['formResponses']?.emailAddress || req.session?.notifications?.[ovId as string]?.emailAddress
 
+    if (!emailAddress) {
+      return res.redirect(`/notification/${ovId}/${action}`)
+    }
+
     return res.render('pages/notification/sent', { emailAddress, action, ovId, back: '/' })
   }
 }
