@@ -1,0 +1,23 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% set pageTitle = "Notification sent" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+        {{ govukPanel({
+            titleText: "An email will be sent confirming details of this official visit.",
+            html: "<strong>Email:</strong> " ~ (emailAddress | e)
+        }) }}
+
+      <p class="govuk-body">You should check to confirm this email has been sent successfully. If you update or cancel this visit, you should send another email.</p>
+
+      <h2 class="govuk-heading-m govuk-!-margin-top-6">What you can do next</h2>
+      <ul class="govuk-list govuk-!-margin-bottom-6">
+        <li><a class="govuk-link govuk-link--no-visited-state" href="/view/visit/{{ ovId }}">View visit</a></li>
+        <li><a class="govuk-link govuk-link--no-visited-state" href="/notification/emails">View the status of official visit emails</a></li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}
