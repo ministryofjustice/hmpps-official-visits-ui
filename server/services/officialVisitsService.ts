@@ -19,6 +19,7 @@ import {
   VisitorType,
   CreateVisitSlotRequest,
   OverlappingVisitsResponse,
+  NotificationRequest,
 } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
@@ -182,6 +183,13 @@ export default class OfficialVisitsService {
   ) {
     logger.info(`Update comments for prison ${prisonId} with visit id ${visitId} and body ${JSON.stringify(body)}`)
     return this.officialVisitsApiClient.updateComments(prisonId, visitId, body, user)
+  }
+
+  public async sendNotification(prisonId: string, visitId: string, body: NotificationRequest, user: HmppsUser) {
+    logger.info(
+      `Send notification for prison ${prisonId} with visit id ${visitId} and notification type ${body.notificationType}`,
+    )
+    return this.officialVisitsApiClient.sendNotification(Number(visitId), body, user)
   }
 
   public async getPrisonTimeSlotById(prisonTimeSlotId: number, user: HmppsUser) {

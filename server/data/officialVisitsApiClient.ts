@@ -14,6 +14,8 @@ import {
   CreateVisitSlotRequest,
   FindByCriteria,
   FindByCriteriaResults,
+  NotificationRequest,
+  NotificationResponse,
   OfficialVisit,
   OfficialVisitUpdateCommentRequest,
   OfficialVisitUpdateSlotRequest,
@@ -327,6 +329,13 @@ export default class OfficialVisitsApiClient extends RestClient {
         },
       },
       asSystem(user?.username),
+    )
+  }
+
+  async sendNotification(officialVisitId: number, body: NotificationRequest, user: HmppsUser) {
+    return this.post<NotificationResponse>(
+      { path: `/notification/${officialVisitId}`, data: body },
+      asSystem(user.username),
     )
   }
 }
