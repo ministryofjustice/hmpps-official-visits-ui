@@ -3,13 +3,17 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
-{% set pageTitle = "Check and send official visit confirmation" %}
+
 
 {% block content %}
 <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Email official visit details to visitors</span>
-      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+      {% if action === 'cancel' %}
+          <h1 class="govuk-heading-l">Check and send official visit cancellation</h1>
+      {% else %}
+           <h1 class="govuk-heading-l">Check and send official visit confirmation</h1>
+      {% endif %}
     </div>
   </div>
   <div class="govuk-grid-row govuk-body">
@@ -30,7 +34,13 @@
       }) }}
 
       <h2 class="govuk-heading-m govuk-!-margin-top-6">Visit details</h2>
-      <p class="govuk-body">A confirmation email will be sent confirming the details of this official visit.</p>
+      <p class="govuk-body">
+        {% if action === 'cancel' %}
+          An email will be sent confirming the cancellation of this official visit.
+        {% else %}
+          A confirmation email will be sent confirming the details of this official visit.
+        {% endif %}
+      </p>
       {% if visit %}
         {{ govukSummaryList({
           rows: [
@@ -48,8 +58,8 @@
       <h2 class="govuk-heading-m govuk-!-margin-top-6">Visitor details</h2>
       {% if contacts and contacts.length > 0 %}
         {% set contactRows = [] %}
-        {% for c in contacts %}
-          {% set contactRows = (contactRows.push({ key: { text: (c.firstName + ' ' + c.lastName) }, value: { text: c.relationshipDescription or '' } }), contactRows) %}
+        {% for contact in contacts %}
+          {% set contactRows = (contactRows.push({ key: { text: contact | firstNameSpaceLastName }, value: { text: contact.relationshipDescription or '' } }), contactRows) %}
         {% endfor %}
         {{ govukSummaryList({ rows: contactRows }) }}
       {% else %}
@@ -59,7 +69,7 @@
       <form method="POST">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
         <div class="govuk-button-group govuk-!-margin-top-6">
-          {{ govukButton({ text: 'Send official visit confirmation', preventDoubleClick: true }) }}
+          {{ govukButton({ text: 'Send official visit cancellation' if action === 'cancel' else 'Send official visit confirmation', preventDoubleClick: true }) }}
           <a class="govuk-link govuk-link--no-visited-state" href="{{ back }}">Cancel and return to homepage</a>
         </div>
       </form>

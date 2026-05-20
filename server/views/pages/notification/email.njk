@@ -13,7 +13,13 @@
   </div>
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
-      <p class="govuk-body">An email will be sent confirming the details of this official visit.</p>
+      <p class="govuk-body">
+        {% if action === 'cancel' %}
+          An email will be sent confirming the cancellation of this official visit.
+        {% else %}
+          An email will be sent confirming the details of this official visit.
+        {% endif %}
+      </p>
 
       <form method="POST">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>

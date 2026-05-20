@@ -81,6 +81,36 @@ describe('notification email handler', () => {
         })
     })
 
+    it('should show visit details text for create action', () => {
+      return request(app)
+        .get(`/notification/${OV_ID}/create`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('An email will be sent confirming the details of this official visit.')
+          expect(res.text).not.toContain('the cancellation of this official visit')
+        })
+    })
+
+    it('should show visit details text for edit action', () => {
+      return request(app)
+        .get(`/notification/${OV_ID}/edit`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('An email will be sent confirming the details of this official visit.')
+          expect(res.text).not.toContain('the cancellation of this official visit')
+        })
+    })
+
+    it('should show cancellation text for cancel action', () => {
+      return request(app)
+        .get(`/notification/${OV_ID}/cancel`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain('An email will be sent confirming the cancellation of this official visit.')
+          expect(res.text).not.toContain('the details of this official visit')
+        })
+    })
+
     it('should populate the input when session contains an email', () => {
       // Add middleware to set session value prior to handler
       const mw: RequestHandler = (req, _res, next) => {

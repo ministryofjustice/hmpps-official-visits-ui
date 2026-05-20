@@ -77,6 +77,31 @@ describe('notification check handler', () => {
     // Visitor name and relationship should be shown
     expect(res.text).toContain('Peter Malicious')
     expect(res.text).toContain('Solicitor')
+    // Description text for non-cancel action
+    expect(res.text).toContain('A confirmation email will be sent confirming the details of this official visit.')
+    expect(res.text).not.toContain('the cancellation of this official visit')
+  })
+
+  it('GET should show cancellation text in description for cancel action', async () => {
+    app = appWithAllRoutes({
+      services: { auditService, officialVisitsService },
+      userSupplier: () => user,
+      journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
+      middlewares: [
+        (req, _res, next) => {
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          next()
+        },
+      ],
+    })
+
+    officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
+    const res = await request(app).get(`/notification/${OV_ID}/cancel/check`).expect(200)
+
+    expect(res.text).toContain('Check and send official visit cancellation')
+    expect(res.text).toContain('An email will be sent confirming the cancellation of this official visit.')
+    expect(res.text).not.toContain('the details of this official visit')
+    expect(res.text).toContain('Send official visit cancellation')
   })
 
   it('GET should prefer formResponses (flash) email over session notifications', async () => {

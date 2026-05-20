@@ -30,10 +30,9 @@ export default class EmailHandler implements PageHandler {
 
     const session = req.session as SessionData
     if (!session.notifications) session.notifications = {}
-    const actionValue = Array.isArray(action) ? action[0] : action
     session.notifications[ovId as string] = {
       emailAddress,
-      entity: { action: actionValue },
+      entity: { action },
       createdAt: Date.now(),
     }
 

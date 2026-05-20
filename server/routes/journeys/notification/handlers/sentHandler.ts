@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { SessionData } from 'express-session'
 import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 
@@ -14,6 +15,9 @@ export default class SentHandler implements PageHandler {
       return res.redirect(`/notification/${ovId}/${action}`)
     }
 
+    // clear the session data set using the below code in the check handler
+    const session = req.session as SessionData
+    session.notifications[ovId as string] = {}
     return res.render('pages/notification/sent', { emailAddress, action, ovId, back: '/' })
   }
 }
