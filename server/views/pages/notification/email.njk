@@ -1,0 +1,49 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageTitle = "Enter an email address" %}
+
+{% block content %}
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Email official visit details to visitors</span>
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <p class="govuk-body">
+        {% if action === 'cancel' %}
+          An email will be sent confirming the cancellation of this official visit.
+        {% else %}
+          An email will be sent confirming the details of this official visit.
+        {% endif %}
+      </p>
+
+      <form method="POST">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+
+        {{ govukInput({
+          id: "emailAddress",
+          name: "emailAddress",
+          label: {
+            text: "Enter an email address",
+            classes: "govuk-!-font-weight-bold"
+          },
+          classes: "govuk-input--width-20",
+          type: "email",
+          autocomplete: "email",
+          spellcheck: false,
+          errorMessage: validationErrors | findError('emailAddress'),
+          value: formResponses.emailAddress
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({ text: 'Continue', preventDoubleClick: true }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ back }}">Cancel and return to homepage</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

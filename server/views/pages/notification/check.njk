@@ -1,0 +1,78 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+
+
+{% block content %}
+<div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Email official visit details to visitors</span>
+      {% if action === 'cancel' %}
+          <h1 class="govuk-heading-l">Check and send official visit cancellation</h1>
+      {% else %}
+           <h1 class="govuk-heading-l">Check and send official visit confirmation</h1>
+      {% endif %}
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: { text: 'Email address' },
+            value: { text: emailAddress },
+            actions: {
+              items: [
+                { href: change, text: 'Change', classes: 'govuk-link--no-visited-state' }
+              ]
+            }
+          }
+        ]
+      }) }}
+
+      <h2 class="govuk-heading-m govuk-!-margin-top-6">Visit details</h2>
+      <p class="govuk-body">
+        {% if action === 'cancel' %}
+          An email will be sent confirming the cancellation of this official visit.
+        {% else %}
+          A confirmation email will be sent confirming the details of this official visit.
+        {% endif %}
+      </p>
+      {% if visit %}
+        {{ govukSummaryList({
+          rows: [
+            { key: { text: 'Prisoner' }, value: { text: visit.prisonerVisited | firstNameSpaceLastName } },
+            { key: { text: 'Visit type' }, value: { text: visit.visitTypeDescription } },
+            { key: { text: 'Date' }, value: { text: visit.visitDate | formatDate("EEEE, d MMMM yyyy") } },
+            { key: { text: 'Time' }, value: { text: (visit.startTime | timeStringTo12HourPretty) + ' to ' + (visit.endTime | timeStringTo12HourPretty) + ' (' + (visit.startTime | durationText(visit.endTime)) + ')' } },
+            { key: { text: 'Location' }, value: { text: visit.locationDescription } }
+          ]
+        }) }}
+      {% else %}
+        <p class="govuk-body">No visit details available</p>
+      {% endif %}
+
+      <h2 class="govuk-heading-m govuk-!-margin-top-6">Visitor details</h2>
+      {% if contacts and contacts.length > 0 %}
+        {% set contactRows = [] %}
+        {% for contact in contacts %}
+          {% set contactRows = (contactRows.push({ key: { text: contact | firstNameSpaceLastName }, value: { text: contact.relationshipDescription or '' } }), contactRows) %}
+        {% endfor %}
+        {{ govukSummaryList({ rows: contactRows }) }}
+      {% else %}
+        <p class="govuk-body">No visitor details available</p>
+      {% endif %}
+
+      <form method="POST">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+        <div class="govuk-button-group govuk-!-margin-top-6">
+          {{ govukButton({ text: 'Send official visit cancellation' if action === 'cancel' else 'Send official visit confirmation', preventDoubleClick: true }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ back }}">Cancel and return to homepage</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -21,6 +21,14 @@ export declare module 'express-session' {
     journey: Journey
     journeyData: Record<string, JourneyData>
     activeCaseLoadId: string
+    notifications?: Record<
+      string,
+      {
+        emailAddress?: string
+        entity?: Record<string, unknown>
+        createdAt?: number
+      }
+    >
   }
 }
 

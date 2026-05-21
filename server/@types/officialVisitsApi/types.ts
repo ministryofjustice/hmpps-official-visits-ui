@@ -44,3 +44,5 @@ export type OfficialVisitUpdateVisitorsRequest = components['schemas']['Official
 export type OfficialVisitUpdateSlotRequest = components['schemas']['OfficialVisitUpdateSlotRequest']
 export type OfficialVisitUpdateCommentRequest = components['schemas']['OfficialVisitUpdateCommentRequest']
 export type OverlappingVisitsResponse = components['schemas']['OverlappingVisitsResponse']
+export type NotificationRequest = components['schemas']['NotificationRequest']
+export type NotificationResponse = components['schemas']['NotificationResponse']
