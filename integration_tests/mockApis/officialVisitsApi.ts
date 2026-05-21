@@ -6,6 +6,7 @@ import {
   CancelTypeRequest,
   CompleteVisitRequest,
   FindByCriteriaResults,
+  NotificationResponse,
   OfficialVisit,
   ReferenceDataItem,
   TimeSlot,
@@ -151,4 +152,6 @@ export default {
       overlappingContactVisits: number[]
     }>
   }) => simplePostApiMock(`/official-visits-api/official-visit/prison/.*/overlapping`, response),
+  stubSendNotification: (officialVisitId: number, response: RecursivePartial<NotificationResponse> = {}) =>
+    simplePostApiMock(`/official-visits-api/notification/${officialVisitId}`, response),
 }
