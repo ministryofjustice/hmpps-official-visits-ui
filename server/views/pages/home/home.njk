@@ -1,6 +1,7 @@
 {% extends "../../partials/layout.njk" %}
 
 {% from "components/card.njk" import card %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set mainClasses = "app-container govuk-body" %}
 
@@ -8,11 +9,23 @@
   <div class="govuk-width-container" id="before-content">
     {% include 'partials/beforeContent.njk' %}
   </div>
+
+  {% if showSwitchOffBanner %}
+    <div class="govuk-width-container">
+      {{ mojAlert({
+        variant: "information",
+        title: "",
+        showTitleAsHeading: true,
+        dismissible: true,
+        html: "The Visits screens in NOMIS will be switched off in your prisons on Monday 1 June. It is important that you and your colleagues use the new DPS Official Visits service to book and manage official visits and notify us if switching-off NOMIS will present any issues for you. You can <a class='govuk-link' href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx'>find further guidance on our SharePoint page</a>."
+      }) }}
+    </div>
+  {% endif %}
+
   <main class="govuk-main-wrapper govuk-!-padding-top-0" id="main-content">
     <div class="govuk-width-container">
       <h1 class="govuk-heading-l govuk-!-margin-top-8">Official Visits</h1>
     </div>
-
     <div class="homepage-card-background">
       <div class="govuk-width-container">
         <div class="govuk-grid-row">

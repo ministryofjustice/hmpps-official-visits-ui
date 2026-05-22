@@ -13,12 +13,30 @@ const auditService = new AuditService(null) as jest.Mocked<AuditService>
 
 let app: Express
 
+const createUserWithCaseLoad = ({
+  activeCaseLoadId,
+  activeCaseLoadDescription,
+}: {
+  activeCaseLoadId: string
+  activeCaseLoadDescription: string
+}) => ({
+  ...user,
+  activeCaseLoadId,
+  activeCaseLoad: {
+    description: activeCaseLoadDescription,
+  },
+})
+
 beforeEach(() => {
   app = appWithAllRoutes({
     services: { auditService },
-    userSupplier: () => user,
+    userSupplier: () => createUserWithCaseLoad({
+      activeCaseLoadId: 'MDI',
+      activeCaseLoadDescription: 'Moorland (HMP & YOI)',
+    }),
   })
   config.maintenanceMode = false
+  config.featureToggles.nomisSwitchOffPrisons = ''
 })
 
 afterEach(() => {
@@ -35,7 +53,13 @@ describe('GET /home', () => {
     auditService.logPageView.mockResolvedValue(null)
     app = appWithAllRoutes({
       services: { auditService },
-      userSupplier: () => ({ ...user, userRoles: [role] }),
+      userSupplier: () => ({
+        ...createUserWithCaseLoad({
+          activeCaseLoadId: 'MDI',
+          activeCaseLoadDescription: 'Moorland (HMP & YOI)',
+        }),
+        userRoles: [role],
+      }),
     })
     return request(app)
       .get('/')
@@ -75,6 +99,40 @@ describe('GET /home', () => {
           who: user.username,
           correlationId: expect.any(String),
         })
+      })
+  })
+
+  it('should show NOMIS switch-off banner when prison is enabled in feature toggle', () => {
+    config.featureToggles.nomisSwitchOffPrisons = 'MDI'
+
+    return request(app)
+      .get('/')
+      .expect('Content-Type', /html/)
+      .expect(200)
+      .expect(res => {
+        const $ = cheerio.load(res.text)
+        expect(res.text).toContain('The Visits screens in NOMIS will be switched off in your prisons on Monday 1 June')
+        const bannerLink = $("a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']")
+          .filter((_, link) => $(link).text().includes('SharePoint page'))
+        expect(bannerLink.length).toBe(1)
+      })
+  })
+
+  it('should not show NOMIS switch-off banner when prison is not enabled in feature toggle', () => {
+    config.featureToggles.nomisSwitchOffPrisons = 'LEI'
+
+    return request(app)
+      .get('/')
+      .expect('Content-Type', /html/)
+      .expect(200)
+      .expect(res => {
+        const $ = cheerio.load(res.text)
+        expect(res.text).not.toContain(
+          'The Visits screens in NOMIS will be switched off in your prisons on Monday 1 June',
+        )
+        const bannerLink = $("a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']")
+          .filter((_, link) => $(link).text().includes('SharePoint page'))
+        expect(bannerLink.length).toBe(0)
       })
   })
 
