@@ -5,7 +5,7 @@ import TelemetryService from '../../../../services/telemetryService'
 import { nomisSwitchOffEnabled } from '../../../../utils/utils'
 
 export default class HomeHandler implements PageHandler {
-  constructor(private readonly telemetryService: TelemetryService) { }
+  constructor(private readonly telemetryService: TelemetryService) {}
 
   public PAGE_NAME = Page.HOME_PAGE
 

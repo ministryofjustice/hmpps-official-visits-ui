@@ -30,10 +30,11 @@ const createUserWithCaseLoad = ({
 beforeEach(() => {
   app = appWithAllRoutes({
     services: { auditService },
-    userSupplier: () => createUserWithCaseLoad({
-      activeCaseLoadId: 'MDI',
-      activeCaseLoadDescription: 'Moorland (HMP & YOI)',
-    }),
+    userSupplier: () =>
+      createUserWithCaseLoad({
+        activeCaseLoadId: 'MDI',
+        activeCaseLoadDescription: 'Moorland (HMP & YOI)',
+      }),
   })
   config.maintenanceMode = false
   config.featureToggles.nomisSwitchOffPrisons = ''
@@ -112,8 +113,9 @@ describe('GET /home', () => {
       .expect(res => {
         const $ = cheerio.load(res.text)
         expect(res.text).toContain('The Visits screens in NOMIS will be switched off in your prisons on Monday 1 June')
-        const bannerLink = $("a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']")
-          .filter((_, link) => $(link).text().includes('SharePoint page'))
+        const bannerLink = $(
+          "a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']",
+        ).filter((_, link) => $(link).text().includes('SharePoint page'))
         expect(bannerLink.length).toBe(1)
       })
   })
@@ -130,8 +132,9 @@ describe('GET /home', () => {
         expect(res.text).not.toContain(
           'The Visits screens in NOMIS will be switched off in your prisons on Monday 1 June',
         )
-        const bannerLink = $("a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']")
-          .filter((_, link) => $(link).text().includes('SharePoint page'))
+        const bannerLink = $(
+          "a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']",
+        ).filter((_, link) => $(link).text().includes('SharePoint page'))
         expect(bannerLink.length).toBe(0)
       })
   })
