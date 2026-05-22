@@ -10,6 +10,7 @@ import CancelOfficialVisitHandler from './handlers/cancelVisitHandler'
 import { requirePermissions } from '../../../middleware/requirePermissions'
 import { Permission } from '../../../interfaces/hmppsUser'
 import OfficialVisitMovementSlipHandler from './handlers/movementSlipHandler'
+import SentEmailsHandler from './handlers/sentEmailsHandler'
 
 export default function Index({
   auditService,
@@ -21,11 +22,16 @@ export default function Index({
 }: Services): Router {
   const router = Router({ mergeParams: true })
 
-  const route = (path: string | string[], permission: Permission, handler: PageHandler) =>
+  const route = (
+    path: string | string[],
+    permission: Permission,
+    handler: PageHandler,
+    queryProps: string[] = ['startDate', 'endDate'],
+  ) =>
     router.get(
       path,
       requirePermissions('OV', permission),
-      validateOnGET(handler.QUERY, 'startDate', 'endDate'),
+      validateOnGET(handler.QUERY, ...queryProps),
       logPageViewMiddleware(auditService, handler),
       handler.GET,
     ) &&
@@ -33,6 +39,7 @@ export default function Index({
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
   route('/list', Permission.DEFAULT, new ViewOfficialVisitListHandler(officialVisitsService))
+  route('/sent-emails', Permission.DEFAULT, new SentEmailsHandler(officialVisitsService), ['fromDate', 'toDate'])
   route(
     '/visit/:ovId',
     Permission.VIEW,

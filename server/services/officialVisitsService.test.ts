@@ -234,4 +234,34 @@ describe('OfficialVisitsService', () => {
     expect(officialVisitsApiClient.updateComments).toHaveBeenCalledWith('MDI', '1', body, user)
     expect(result).toEqual(body)
   })
+
+  it('should return paginated sent emails', async () => {
+    const result = await officialVisitsService.getSentEmails({ page: 1, size: 3 }, user)
+
+    expect(result.totalElements).toBe(6)
+    expect(result.totalPages).toBe(2)
+    expect(result.number).toBe(0)
+    expect(result.first).toBe(true)
+    expect(result.last).toBe(false)
+    expect(result.content.map(email => email.officialVisitId)).toEqual([4006, 4005, 4004])
+  })
+
+  it('should filter sent emails by date range', async () => {
+    const result = await officialVisitsService.getSentEmails(
+      {
+        page: 1,
+        size: 3,
+        fromDate: new Date('2026-05-18T00:00:00Z'),
+        toDate: new Date('2026-05-20T00:00:00Z'),
+      },
+      user,
+    )
+
+    expect(result.totalElements).toBe(3)
+    expect(result.totalPages).toBe(1)
+    expect(result.number).toBe(0)
+    expect(result.first).toBe(true)
+    expect(result.last).toBe(true)
+    expect(result.content.map(email => email.officialVisitId)).toEqual([4006, 4005, 4004])
+  })
 })
