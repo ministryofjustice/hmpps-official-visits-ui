@@ -18,7 +18,6 @@ export default class ConfirmationHandler implements PageHandler {
     const prisonCode = req.session.activeCaseLoadId
     const officialVisitId = req.params.officialVisitId as string
     const visit = await this.officialVisitsService.getOfficialVisitById(
-      prisonCode,
       Number(officialVisitId),
       res.locals.user,
     )

@@ -94,9 +94,10 @@ describe('OfficialVisitsService', () => {
 
     officialVisitsApiClient.getOfficialVisitById.mockResolvedValue(expected)
 
-    const result = await officialVisitsService.getOfficialVisitById('AAA', visitId, user)
+    const result = await officialVisitsService.getOfficialVisitById(visitId, user)
 
     expect(officialVisitsApiClient.getOfficialVisitById).toHaveBeenCalledTimes(1)
+    expect(officialVisitsApiClient.getOfficialVisitById).toHaveBeenCalledWith(visitId, user)
     expect(result).toEqual(expected)
   })
 

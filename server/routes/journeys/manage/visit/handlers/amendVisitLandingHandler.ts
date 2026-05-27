@@ -50,7 +50,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
     const b64BackTo = req.session.journey.amendVisit?.backTo || (req.query.backTo as string)
 
     const prisonCode = req.session.activeCaseLoadId
-    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), user)
+    const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
 
     const [restrictions, prisoner, contacts] = await Promise.all([
       this.personalRelationshipsService.getPrisonerRestrictions(

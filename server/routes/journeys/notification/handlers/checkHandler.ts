@@ -38,8 +38,7 @@ export default class CheckHandler implements PageHandler {
       return res.redirect(`/notification/${ovId}/${action}`)
     }
 
-    const prisonCode = req.session.activeCaseLoadId
-    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), user)
+    const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
     const contacts = visit?.officialVisitors || []
 
     return res.render('pages/notification/check', {
