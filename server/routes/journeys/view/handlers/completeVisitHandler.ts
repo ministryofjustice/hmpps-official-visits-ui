@@ -25,10 +25,9 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
   ) => {
     const { ovId } = req.params
     const { user } = res.locals
-    const prisonCode = req.session.activeCaseLoadId
     const b64BackTo = req.query.backTo as string
 
-    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), user)
+    const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
     const completionCodes = await this.officialVisitsService.getReferenceData(res, 'VIS_COMPLETION')
     const searchTypes = await this.officialVisitsService.getReferenceData(res, 'SEARCH_LEVEL')
     const prisoner = visit.prisonerVisited
@@ -62,7 +61,7 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
     const { ovId } = req.params
     const reqBody = req.body as SchemaType
 
-    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), res.locals.user)
+    const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), res.locals.user)
 
     const body: CompleteVisitRequest = {
       completionReason: req.body.reason as VisitCompletionType,

@@ -57,7 +57,7 @@ export default {
     })
   },
   stubGetOfficialVisitById: (response: OfficialVisit) =>
-    simpleApiMock(`/official-visits-api/official-visit/prison/LEI/id/.+`, response),
+    simpleApiMock(`/official-visits-api/official-visit/id/\\d+`, response),
   stubCreateVisit: (response: OfficialVisit) =>
     simplePostApiMock(`/official-visits-api/official-visit/prison/LEI`, response),
   stubCompleteVisit: (response: RecursivePartial<CompleteVisitRequest>) =>

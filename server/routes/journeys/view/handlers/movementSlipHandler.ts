@@ -17,8 +17,7 @@ export default class OfficialVisitMovementSlipHandler implements PageHandler {
     const { ovId } = req.params
     const { user } = res.locals
 
-    const prisonCode = req.session.activeCaseLoadId
-    const visit = await this.officialVisitsService.getOfficialVisitById(prisonCode, Number(ovId), user)
+    const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
     return res.render('pages/view/movement-slip', { visit, now: new Date(), hideBetaBanner: true })
   }
 }

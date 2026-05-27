@@ -150,8 +150,8 @@ const SENT_EMAILS: SentEmailRecord[] = [
 export default class OfficialVisitsService {
   constructor(private readonly officialVisitsApiClient: OfficialVisitsApiClient) {}
 
-  public async getOfficialVisitById(prisonCode: string, visitId: number, user: HmppsUser): Promise<OfficialVisit> {
-    return this.officialVisitsApiClient.getOfficialVisitById(prisonCode, visitId, user)
+  public async getOfficialVisitById(visitId: number, user: HmppsUser): Promise<OfficialVisit> {
+    return this.officialVisitsApiClient.getOfficialVisitById(visitId, user)
   }
 
   public async createVisit(sessionVisit: OfficialVisitJourney, user: HmppsUser): Promise<CreateOfficialVisitResponse> {
