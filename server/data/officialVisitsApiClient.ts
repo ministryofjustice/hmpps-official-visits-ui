@@ -67,10 +67,7 @@ export default class OfficialVisitsApiClient extends RestClient {
 
   // Not a real endpoint at present - none exist - just for test support
   async getOfficialVisitById(officialVisitId: number, user: HmppsUser): Promise<OfficialVisit> {
-    return this.get<OfficialVisit>(
-      { path: `/official-visit/id/${officialVisitId}` },
-      asSystem(user.username),
-    )
+    return this.get<OfficialVisit>({ path: `/official-visit/id/${officialVisitId}` }, asSystem(user.username))
   }
 
   async getReferenceData(code: components['schemas']['ReferenceDataGroup'], user: HmppsUser) {
