@@ -25,7 +25,6 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
   ) => {
     const { ovId } = req.params
     const { user } = res.locals
-    const prisonCode = req.session.activeCaseLoadId
     const b64BackTo = req.query.backTo as string
 
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)

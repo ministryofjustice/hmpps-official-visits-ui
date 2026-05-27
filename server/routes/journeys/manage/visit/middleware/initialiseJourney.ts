@@ -17,7 +17,6 @@ export default ({ officialVisitsService, prisonerService }: Services): RequestHa
     if (officialVisitId === req.session.journey.officialVisit?.officialVisitId?.toString()) return next()
 
     // Get the visit details for this ID
-    const prisonCode = req.session.activeCaseLoadId
     const visit = await officialVisitsService.getOfficialVisitById(Number(officialVisitId), user)
 
     // Local functions - move to utils
