@@ -46,7 +46,7 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-from-desktop">
-      {% if results.totalElements > 0 %}
+      {% if results.page.totalElements > 0 %}
         {{ simplePagination(pagination) }}
 
         {% set rows = [] %}

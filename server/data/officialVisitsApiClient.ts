@@ -22,6 +22,8 @@ import {
   OfficialVisitUpdateVisitorsRequest,
   OverlappingVisitsResponse,
   ReferenceDataItem,
+  SentEmailSearchCriteriaRequest,
+  SentEmailSearchResults,
   TimeSlot,
   TimeSlotSummary,
   TimeSlotSummaryItem,
@@ -331,6 +333,23 @@ export default class OfficialVisitsApiClient extends RestClient {
   async sendNotification(officialVisitId: number, body: NotificationRequest, user: HmppsUser) {
     return this.post<NotificationResponse>(
       { path: `/notification/${officialVisitId}`, data: body },
+      asSystem(user.username),
+    )
+  }
+
+  async searchSentEmails(
+    prisonCode: string,
+    criteria: SentEmailSearchCriteriaRequest,
+    page: number,
+    size: number,
+    user: HmppsUser,
+  ) {
+    return this.post<SentEmailSearchResults>(
+      {
+        path: `/notification/prison/${prisonCode}/sent-emails`,
+        query: { page, size },
+        data: criteria,
+      },
       asSystem(user.username),
     )
   }

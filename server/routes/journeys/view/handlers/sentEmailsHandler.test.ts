@@ -3,7 +3,8 @@ import request from 'supertest'
 import * as cheerio from 'cheerio'
 import { appWithAllRoutes, flashProvider, user } from '../../../testutils/appSetup'
 import AuditService, { Page } from '../../../../services/auditService'
-import OfficialVisitsService, { SentEmailSearchResults } from '../../../../services/officialVisitsService'
+import OfficialVisitsService from '../../../../services/officialVisitsService'
+import { SentEmailSearchResults } from '../../../../@types/officialVisitsApi/types'
 import { getGovukTableCell, getPageHeader } from '../../../testutils/cheerio'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
 
@@ -83,23 +84,23 @@ const RESULTS: SentEmailSearchResults = {
       notificationTypeDescription: 'Cancel',
     },
   ],
-  totalElements: 11,
-  totalPages: 2,
-  number: 0,
-  size: 10,
-  first: true,
-  last: false,
+  page: {
+    number: 0,
+    size: 10,
+    totalElements: 11,
+    totalPages: 2,
+  },
 }
 
 const PAGE_2_RESULTS: SentEmailSearchResults = {
   ...RESULTS,
   content: [RESULTS.content[0], RESULTS.content[1], RESULTS.content[2]],
-  totalElements: 7,
-  totalPages: 3,
-  number: 1,
-  size: 10,
-  first: false,
-  last: false,
+  page: {
+    number: 1,
+    size: 10,
+    totalElements: 7,
+    totalPages: 3,
+  },
 }
 
 describe('sent emails handler', () => {
@@ -138,12 +139,10 @@ describe('sent emails handler', () => {
     expect(getGovukTableCell($, 1, 5).text()).toContain('10 May 2026')
 
     expect(officialVisitsService.getSentEmails).toHaveBeenCalledWith(
-      {
-        page: 1,
-        size: 10,
-        fromDate: undefined,
-        toDate: undefined,
-      },
+      user.activeCaseLoadId,
+      {},
+      1,
+      10,
       expect.objectContaining(user),
     )
     expect(auditService.logPageView).toHaveBeenCalledWith(Page.VIEW_SENT_EMAILS_PAGE, {
@@ -168,12 +167,13 @@ describe('sent emails handler', () => {
     )
 
     expect(officialVisitsService.getSentEmails).toHaveBeenCalledWith(
+      user.activeCaseLoadId,
       {
-        page: 2,
-        size: 10,
-        fromDate: expect.any(Date),
-        toDate: expect.any(Date),
+        fromDate: '2026-05-15',
+        toDate: '2026-05-20',
       },
+      2,
+      10,
       expect.objectContaining(user),
     )
   })
