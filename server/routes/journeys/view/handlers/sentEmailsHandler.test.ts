@@ -125,7 +125,7 @@ describe('sent emails handler', () => {
     expect(headers.eq(3).text().trim()).toEqual('Email status')
     expect(headers.eq(4).text().trim()).toEqual('Email sent')
 
-    expect(getGovukTableCell($, 1, 1).text()).toContain('1:30pm to 4:00pm')
+    expect(getGovukTableCell($, 1, 1).text()).toContain('13:30 to 16:00')
     expect(getGovukTableCell($, 1, 1).text()).toContain('21 May 2026')
     expect(getGovukTableCell($, 1, 2).text()).toContain('Harrison, Tim')
     expect(getGovukTableCell($, 1, 2).text()).toContain('G4793VF')
@@ -135,7 +135,7 @@ describe('sent emails handler', () => {
     expect(getGovukTableCell($, 1, 4).find('.govuk-tag').hasClass('govuk-tag--green')).toEqual(true)
     expect(getGovukTableCell($, 2, 4).find('.govuk-tag').text().trim()).toEqual('FAILED')
     expect(getGovukTableCell($, 2, 4).find('.govuk-tag').hasClass('govuk-tag--red')).toEqual(true)
-    expect(getGovukTableCell($, 1, 5).text()).toContain('12:23pm')
+    expect(getGovukTableCell($, 1, 5).text()).toContain('12:23')
     expect(getGovukTableCell($, 1, 5).text()).toContain('10 May 2026')
 
     expect(officialVisitsService.getSentEmails).toHaveBeenCalledWith(

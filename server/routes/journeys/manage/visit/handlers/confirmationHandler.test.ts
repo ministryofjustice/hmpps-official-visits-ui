@@ -65,7 +65,7 @@ describe('confirmation handler', () => {
           expect($('.govuk-list--bullet > li').text()).toEqual('Peter Malicious (Solicitor)')
           expect($('.govuk-panel__body').text().trim()).toEqual('Prisoner: John Doe (A1111AA)')
           expect(getTextById($, 'visit-details')).toEqual(
-            'The visit will take place on Thursday, 1 January 2026 from 10am to 11am (1 hour) in First Location.',
+            'The visit will take place on Thursday, 1 January 2026 from 10:00 to 11:00 (1 hour) in First Location.',
           )
 
           expect($('a[href="/view/visit/1"]').text()).toEqual('View visit')

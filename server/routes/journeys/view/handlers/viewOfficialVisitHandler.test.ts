@@ -131,7 +131,7 @@ describe('View an official visit', () => {
           expect($('.govuk-button[href="/manage/amend/1"]').length).toBe(1)
 
           expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
-          expect(getValueByKey($, 'Time')).toEqual('10:00am to 11:00am (1 hour)')
+          expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00 (1 hour)')
           expect(getValueByKey($, 'Visit status')).toEqual('Scheduled')
           expect(getValueByKey($, 'Visit reference number')).toEqual('1')
           expect(getValueByKey($, 'Completion notes')).toBeNull()
@@ -212,7 +212,7 @@ describe('View an official visit', () => {
           expect(getPageHeader($)).toEqual('Official visit')
 
           expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
-          expect(getValueByKey($, 'Time')).toEqual('10:00am to 11:00am (1 hour)')
+          expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00 (1 hour)')
           expect(getValueByKey($, 'Visit status')).toEqual('Scheduled')
           expect(getValueByKey($, 'Visit reference number')).toEqual('1')
           expect(getValueByKey($, 'Location')).toEqual('First Location')

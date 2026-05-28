@@ -72,7 +72,7 @@ describe('notification check handler', () => {
     // Date formatted
     expect(res.text).toContain('Thursday, 1 January 2026')
     // Time formatted and duration
-    expect(res.text).toContain('10am to 11am (1 hour)')
+    expect(res.text).toContain('10:00 to 11:00 (1 hour)')
     expect(res.text).toContain('First Location')
     // Visitor name and relationship should be shown
     expect(res.text).toContain('Peter Malicious')

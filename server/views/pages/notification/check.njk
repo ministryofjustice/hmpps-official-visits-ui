@@ -47,7 +47,7 @@
             { key: { text: 'Prisoner' }, value: { text: visit.prisonerVisited | firstNameSpaceLastName } },
             { key: { text: 'Visit type' }, value: { text: visit.visitTypeDescription } },
             { key: { text: 'Date' }, value: { text: visit.visitDate | formatDate("EEEE, d MMMM yyyy") } },
-            { key: { text: 'Time' }, value: { text: (visit.startTime | timeStringTo12HourPretty) + ' to ' + (visit.endTime | timeStringTo12HourPretty) + ' (' + (visit.startTime | durationText(visit.endTime)) + ')' } },
+            { key: { text: 'Time' }, value: { text: (visit.startTime | timeStringTo24HourPretty) + ' to ' + (visit.endTime | timeStringTo24HourPretty) + ' (' + (visit.startTime | durationText(visit.endTime)) + ')' } },
             { key: { text: 'Location' }, value: { text: visit.locationDescription } }
           ]
         }) }}

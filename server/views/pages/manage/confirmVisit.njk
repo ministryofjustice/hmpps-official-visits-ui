@@ -21,7 +21,7 @@
         {% endfor %}
       </ul>
 
-      <p id="visit-details">The visit will take place on {{ visit.visitDate | formatDate("EEEE, d MMMM yyyy") }} from {{ (visit.startTime | timeStringTo12HourPretty) + ' to ' + (visit.endTime | timeStringTo12HourPretty) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' }} in {{ visit.locationDescription }}.</p>
+      <p id="visit-details">The visit will take place on {{ visit.visitDate | formatDate("EEEE, d MMMM yyyy") }} from {{ (visit.startTime | timeStringTo24HourPretty) + ' to ' + (visit.endTime | timeStringTo24HourPretty) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' }} in {{ visit.locationDescription }}.</p>
 
       <h2 class='govuk-heading-m'>What you can do next</h2>
 
