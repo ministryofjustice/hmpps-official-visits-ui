@@ -532,6 +532,29 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/notification/prison/{prisonCode}/sent-emails': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Endpoint to retrieve a list of sent email notifications with search and pagination support.
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS_RW
+     */
+    post: operations['searchSentEmails']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/migrate/visit': {
     parameters: {
       query?: never
@@ -863,6 +886,31 @@ export interface paths {
      *     * ROLE_OFFICIAL_VISITS_RW
      */
     get: operations['getOfficialVisitByPrisonCodeAndId']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/official-visit/id/{officialVisitId}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get an official visit by official visit ID
+     * @description Get the full details of an official visit, its visitors and prisoner details
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS_RW
+     */
+    get: operations['getOfficialVisitById_2']
     put?: never
     post?: never
     delete?: never
@@ -2834,6 +2882,88 @@ export interface components {
       notificationType: 'CREATE' | 'AMEND' | 'CANCEL'
       /** @description The recipients the notification was sent to */
       recipients: components['schemas']['NotificationRecipient'][]
+    }
+    /** @description The request containing sent-email search criteria */
+    SentEmailSearchCriteria: {
+      /**
+       * Format: date
+       * @description The start date filter (optional)
+       * @example 2026-05-01
+       */
+      fromDate?: string
+      /**
+       * Format: date
+       * @description The end date filter (optional)
+       * @example 2026-05-31
+       */
+      toDate?: string
+    }
+    PagedModelSentEmailRecord: {
+      content?: components['schemas']['SentEmailRecord'][]
+      page?: components['schemas']['PageMetadata']
+    }
+    SentEmailRecord: {
+      /**
+       * Format: int64
+       * @description The official visit ID
+       * @example 123
+       */
+      officialVisitId: number
+      /**
+       * @description The date the email was sent (YYYY-MM-DD format)
+       * @example 2026-05-22
+       */
+      sentDate: string
+      /**
+       * @description The full date and time the email was sent (ISO 8601 format)
+       * @example 2026-05-22T10:30:00
+       */
+      sentDateTime: string
+      /**
+       * @description The visit date (YYYY-MM-DD format)
+       * @example 2026-06-01
+       */
+      visitDate: string
+      /**
+       * @description The visit start time (HH:MM format)
+       * @example 09:00
+       */
+      visitStartTime: string
+      /**
+       * @description The visit end time (HH:MM format)
+       * @example 10:00
+       */
+      visitEndTime: string
+      /**
+       * @description The prisoner's full name
+       * @example John Smith
+       */
+      prisonerName: string
+      /**
+       * @description The prisoner's number
+       * @example G1234AB
+       */
+      prisonerNumber: string
+      /**
+       * @description The email address the notification was sent to
+       * @example user@example.com
+       */
+      emailAddress: string
+      /**
+       * @description The status of the email delivery
+       * @example SENT
+       */
+      emailStatus: string
+      /**
+       * @description The type of notification that was sent
+       * @example CREATE
+       */
+      notificationType: string
+      /**
+       * @description The description of the notification type
+       * @example Visit Created
+       */
+      notificationTypeDescription: string
     }
     /** @description Request to migrate a day and time slot for a prison and its associated visit slots from NOMIS */
     MigrateVisitConfigRequest: {
@@ -5017,6 +5147,59 @@ export interface operations {
       }
     }
   }
+  searchSentEmails: {
+    parameters: {
+      query?: {
+        /** @description Zero-based page index (0..N) */
+        page?: number
+        /** @description The size of the page to be returned */
+        size?: number
+      }
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SentEmailSearchCriteria']
+      }
+    }
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PagedModelSentEmailRecord']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   migrateVisit: {
     parameters: {
       query?: never
@@ -5697,7 +5880,7 @@ export interface operations {
     }
     requestBody?: never
     responses: {
-      /** @description Official visit found */
+      /** @description Visit details */
       200: {
         headers: {
           [name: string]: unknown
@@ -5724,7 +5907,60 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description No official visit found */
+      /** @description Official visit not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getOfficialVisitById_2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The official visit ID
+         * @example 123456
+         */
+        officialVisitId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Visit details */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OfficialVisitDetails']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Official visit not found */
       404: {
         headers: {
           [name: string]: unknown

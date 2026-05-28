@@ -8,13 +8,14 @@ import {
   OfficialVisitUpdateCommentRequest,
   OfficialVisitUpdateSlotRequest,
   OfficialVisitUpdateVisitorsRequest,
+  PagedModelSentEmailRecord,
   TimeSlotSummary,
 } from '../@types/officialVisitsApi/types'
 import { mockFindByCriteriaResults } from '../testutils/mocks'
 
 jest.mock('../data/officialVisitsApiClient')
 
-const user = { token: 'userToken', username: 'test' } as HmppsUser
+const user = { token: 'userToken', username: 'test', activeCaseLoadId: 'MDI' } as HmppsUser
 
 describe('OfficialVisitsService', () => {
   let officialVisitsApiClient: jest.Mocked<OfficialVisitsApiClient>
@@ -236,33 +237,66 @@ describe('OfficialVisitsService', () => {
     expect(result).toEqual(body)
   })
 
-  it('should return paginated sent emails', async () => {
-    const result = await officialVisitsService.getSentEmails({ page: 1, size: 3 }, user)
-
-    expect(result.totalElements).toBe(6)
-    expect(result.totalPages).toBe(2)
-    expect(result.number).toBe(0)
-    expect(result.first).toBe(true)
-    expect(result.last).toBe(false)
-    expect(result.content.map(email => email.officialVisitId)).toEqual([4006, 4005, 4004])
-  })
-
-  it('should filter sent emails by date range', async () => {
-    const result = await officialVisitsService.getSentEmails(
-      {
-        page: 1,
-        size: 3,
-        fromDate: new Date('2026-05-18T00:00:00Z'),
-        toDate: new Date('2026-05-20T00:00:00Z'),
+  it('should retrieve sent emails via API client endpoint', async () => {
+    const apiResponse: PagedModelSentEmailRecord = {
+      content: [
+        {
+          officialVisitId: 4006,
+          sentDate: '2026-05-20',
+          sentDateTime: '2026-05-20T12:23:00',
+          visitDate: '2026-05-21',
+          visitStartTime: '13:30',
+          visitEndTime: '16:00',
+          prisonerName: 'Tim Harrison',
+          prisonerNumber: 'G4793VF',
+          emailAddress: 'tim.harrison@example.com',
+          emailStatus: 'SENT',
+          notificationType: 'CREATE',
+          notificationTypeDescription: 'Create',
+        },
+      ],
+      page: {
+        number: 0,
+        size: 10,
+        totalElements: 1,
+        totalPages: 1,
       },
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    officialVisitsApiClient.searchSentEmails.mockResolvedValue(apiResponse as any)
+
+    const result = await officialVisitsService.getSentEmails(
+      'MDI',
+      {
+        fromDate: '2026-05-18',
+        toDate: '2026-05-20',
+      },
+      1,
+      10,
       user,
     )
 
-    expect(result.totalElements).toBe(3)
-    expect(result.totalPages).toBe(1)
-    expect(result.number).toBe(0)
-    expect(result.first).toBe(true)
-    expect(result.last).toBe(true)
-    expect(result.content.map(email => email.officialVisitId)).toEqual([4006, 4005, 4004])
+    expect(officialVisitsApiClient.searchSentEmails).toHaveBeenCalledTimes(1)
+    expect(officialVisitsApiClient.searchSentEmails).toHaveBeenCalledWith(
+      'MDI',
+      {
+        fromDate: '2026-05-18',
+        toDate: '2026-05-20',
+      },
+      0,
+      10,
+      user,
+    )
+    expect(result.content).toEqual(apiResponse.content)
+    expect(result.page.number).toEqual(0)
+    expect(result.page.size).toEqual(10)
+    expect(result.page.totalElements).toEqual(1)
+    expect(result.page.totalPages).toEqual(1)
+  })
+
+  it('should throw if prison code is missing when retrieving sent emails', async () => {
+    await expect(officialVisitsService.getSentEmails('', {}, 1, 10, user)).rejects.toThrow(
+      'Cannot retrieve sent emails without a prison code',
+    )
   })
 })
