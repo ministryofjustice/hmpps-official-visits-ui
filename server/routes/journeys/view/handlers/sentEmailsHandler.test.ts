@@ -4,7 +4,7 @@ import * as cheerio from 'cheerio'
 import { appWithAllRoutes, flashProvider, user } from '../../../testutils/appSetup'
 import AuditService, { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
-import { SentEmailSearchResults } from '../../../../@types/officialVisitsApi/types'
+import { PagedModelSentEmailRecord } from '../../../../@types/officialVisitsApi/types'
 import { getGovukTableCell, getPageHeader } from '../../../testutils/cheerio'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
 
@@ -39,7 +39,7 @@ afterEach(() => {
 
 const URL = '/view/sent-emails'
 
-const RESULTS: SentEmailSearchResults = {
+const RESULTS: PagedModelSentEmailRecord = {
   content: [
     {
       officialVisitId: 4006,
@@ -92,7 +92,7 @@ const RESULTS: SentEmailSearchResults = {
   },
 }
 
-const PAGE_2_RESULTS: SentEmailSearchResults = {
+const PAGE_2_RESULTS: PagedModelSentEmailRecord = {
   ...RESULTS,
   content: [RESULTS.content[0], RESULTS.content[1], RESULTS.content[2]],
   page: {

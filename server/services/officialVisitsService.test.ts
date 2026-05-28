@@ -8,7 +8,7 @@ import {
   OfficialVisitUpdateCommentRequest,
   OfficialVisitUpdateSlotRequest,
   OfficialVisitUpdateVisitorsRequest,
-  SentEmailSearchResults,
+  PagedModelSentEmailRecord,
   TimeSlotSummary,
 } from '../@types/officialVisitsApi/types'
 import { mockFindByCriteriaResults } from '../testutils/mocks'
@@ -238,7 +238,7 @@ describe('OfficialVisitsService', () => {
   })
 
   it('should retrieve sent emails via API client endpoint', async () => {
-    const apiResponse: SentEmailSearchResults = {
+    const apiResponse: PagedModelSentEmailRecord = {
       content: [
         {
           officialVisitId: 4006,

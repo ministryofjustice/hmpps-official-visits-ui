@@ -4,11 +4,11 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { formatDate } from '../../../../utils/utils'
 import { schema, SchemaType } from './sentEmailsHandlerSchema'
-import { SentEmailSearchCriteriaRequest, SentEmailSearchResults } from '../../../../@types/officialVisitsApi/types'
+import { SentEmailSearchCriteriaRequest, PagedModelSentEmailRecord } from '../../../../@types/officialVisitsApi/types'
 
 const PAGE_SIZE = 10
 
-const EMPTY_RESULTS: SentEmailSearchResults = {
+const EMPTY_RESULTS: PagedModelSentEmailRecord = {
   content: [],
   page: {
     number: 0,
@@ -63,7 +63,7 @@ export default class SentEmailsHandler implements PageHandler {
       if (formattedToDate) criteria.toDate = formattedToDate
     }
 
-    const results: SentEmailSearchResults = res.locals.validationErrors
+    const results: PagedModelSentEmailRecord = res.locals.validationErrors
       ? EMPTY_RESULTS
       : await (this.officialVisitsService.getSentEmails(
           prisonCode,
@@ -71,7 +71,7 @@ export default class SentEmailsHandler implements PageHandler {
           page,
           PAGE_SIZE,
           res.locals.user,
-        ) as Promise<SentEmailSearchResults>)
+        ) as Promise<PagedModelSentEmailRecord>)
 
     return res.render('pages/view/sentEmails', {
       pageTitle: `Official visit emails sent from ${prisonName}`,

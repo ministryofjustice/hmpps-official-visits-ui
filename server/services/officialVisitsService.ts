@@ -21,7 +21,7 @@ import {
   OverlappingVisitsResponse,
   NotificationRequest,
   SentEmailSearchCriteriaRequest,
-  SentEmailSearchResults,
+  PagedModelSentEmailRecord,
 } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
@@ -198,7 +198,7 @@ export default class OfficialVisitsService {
     page: number,
     size: number,
     user: HmppsUser,
-  ): Promise<SentEmailSearchResults> {
+  ): Promise<PagedModelSentEmailRecord> {
     if (!prisonId?.trim()) {
       throw new Error('Cannot retrieve sent emails without a prison code')
     }

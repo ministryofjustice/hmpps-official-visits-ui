@@ -2898,6 +2898,10 @@ export interface components {
        */
       toDate?: string
     }
+    PagedModelSentEmailRecord: {
+      content?: components['schemas']['SentEmailRecord'][]
+      page?: components['schemas']['PageMetadata']
+    }
     SentEmailRecord: {
       /**
        * Format: int64
@@ -2960,38 +2964,6 @@ export interface components {
        * @example Visit Created
        */
       notificationTypeDescription: string
-    }
-    SentEmailSearchPage: {
-      /**
-       * Format: int64
-       * @description The size of the current page
-       * @example 20
-       */
-      size: number
-      /**
-       * Format: int64
-       * @description The current page number (zero-based)
-       * @example 0
-       */
-      number: number
-      /**
-       * Format: int64
-       * @description The total number of elements
-       * @example 150
-       */
-      totalElements: number
-      /**
-       * Format: int64
-       * @description The total number of pages
-       * @example 8
-       */
-      totalPages: number
-    }
-    SentEmailSearchResults: {
-      /** @description The page content */
-      content: components['schemas']['SentEmailRecord'][]
-      /** @description Paging metadata for the current response */
-      page: components['schemas']['SentEmailSearchPage']
     }
     /** @description Request to migrate a day and time slot for a prison and its associated visit slots from NOMIS */
     MigrateVisitConfigRequest: {
@@ -5199,13 +5171,13 @@ export interface operations {
       }
     }
     responses: {
-      /** @description The paginated response containing the list of sent email notifications */
+      /** @description OK */
       200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['SentEmailSearchResults']
+          'application/json': components['schemas']['PagedModelSentEmailRecord']
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */

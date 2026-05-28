@@ -23,7 +23,7 @@ import {
   OverlappingVisitsResponse,
   ReferenceDataItem,
   SentEmailSearchCriteriaRequest,
-  SentEmailSearchResults,
+  PagedModelSentEmailRecord,
   TimeSlot,
   TimeSlotSummary,
   TimeSlotSummaryItem,
@@ -344,7 +344,7 @@ export default class OfficialVisitsApiClient extends RestClient {
     size: number,
     user: HmppsUser,
   ) {
-    return this.post<SentEmailSearchResults>(
+    return this.post<PagedModelSentEmailRecord>(
       {
         path: `/notification/prison/${prisonCode}/sent-emails`,
         query: { page, size },

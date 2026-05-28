@@ -47,4 +47,4 @@ export type OverlappingVisitsResponse = components['schemas']['OverlappingVisits
 export type NotificationRequest = components['schemas']['NotificationRequest']
 export type NotificationResponse = components['schemas']['NotificationResponse']
 export type SentEmailSearchCriteriaRequest = components['schemas']['SentEmailSearchCriteria']
-export type SentEmailSearchResults = components['schemas']['SentEmailSearchResults']
+export type PagedModelSentEmailRecord = components['schemas']['PagedModelSentEmailRecord']
