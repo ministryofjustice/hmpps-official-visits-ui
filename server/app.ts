@@ -1,5 +1,4 @@
 import express from 'express'
-
 import createError from 'http-errors'
 
 import { getFrontendComponents, retrieveCaseLoadData } from '@ministryofjustice/hmpps-connect-dps-components'
