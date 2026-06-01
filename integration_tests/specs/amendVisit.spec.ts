@@ -191,7 +191,7 @@ test.describe('Amend official visits', () => {
     )
 
     await expect(summaryValue(page, 'Date')).toHaveText('Friday, 1 January 2038')
-    await expect(summaryValue(page, 'Time')).toHaveText('10:00am to 11:00am (1 hour)')
+    await expect(summaryValue(page, 'Time')).toHaveText('10:00 to 11:00 (1 hour)')
     await expect(summaryValue(page, 'Visit status')).toHaveText('Scheduled')
     await expect(summaryValue(page, 'Visit reference number')).toHaveText('1')
     await expect(summaryValue(page, 'Location')).toHaveText('First Location')
@@ -318,7 +318,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
     expect(page.locator('.hmpps-calendar__day--selected')).toBeVisible()
     // Pre-selected value
-    expect(page.getByRole('radio', { name: '8am to 5pm First Location' })).toBeChecked()
+    expect(page.getByRole('radio', { name: '08:00 to 17:00 First Location' })).toBeChecked()
 
     // Back should go back to visit type page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -326,7 +326,7 @@ test.describe('Amend official visits', () => {
     await page.getByRole('button', { name: 'Continue' }).click()
 
     // Can select a different time slot
-    await page.getByRole('radio', { name: '8am to 5pm Second Location' }).check()
+    await page.getByRole('radio', { name: '08:00 to 17:00 Second Location' }).check()
     await page.getByRole('button', { name: 'Save' }).click()
 
     expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
@@ -345,7 +345,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
     expect(page.locator('.hmpps-calendar__day--selected')).toBeVisible()
     // Pre-selected value
-    expect(page.getByRole('radio', { name: '8am to 5pm First Location' })).toBeChecked()
+    expect(page.getByRole('radio', { name: '08:00 to 17:00 First Location' })).toBeChecked()
 
     // Back should go back to amend overview page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -353,7 +353,7 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Change   date of visit (Visit' }).click()
 
     // Can select a different time slot
-    await page.getByRole('radio', { name: '8am to 5pm Second Location' }).check()
+    await page.getByRole('radio', { name: '08:00 to 17:00 Second Location' }).check()
     await page.getByRole('button', { name: 'Save' }).click()
 
     expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()

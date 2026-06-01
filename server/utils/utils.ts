@@ -182,22 +182,16 @@ export const refDataRadiosMapper = (referenceData: components['schemas']['Refere
 }
 
 /**
- * Returns a formatted string, for example '10am' or '11:30pm'
+ * Returns a formatted string, for example '09:00' or '23:59'
  * @param time String representing the time component of a date
- * @returns A formatted string representing the time in 12 hour format
+ * @returns A formatted string representing the time in 24 hour format
  */
-export const timeStringTo12HourPretty = (time: string, alwaysShowMinutes = false) => {
-  const [hours, minutes] = time.split(':')
-  // Convert to 12 hour time
-  const twelveHours = Number(hours) % 12 || 12
-  const amPm = Number(hours) >= 12 ? 'pm' : 'am'
+export const timeStringTo24HourPretty = (time: string) => {
+  if (!time) return time
 
-  // If minutes are 0 only return hours
-  if (minutes === '00' && !alwaysShowMinutes) {
-    return twelveHours + amPm
-  }
+  const [hours = '00', minutes = '00'] = time.split(':')
 
-  return `${twelveHours}:${minutes}${amPm}`
+  return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`
 }
 
 export const formatAddressLines = (

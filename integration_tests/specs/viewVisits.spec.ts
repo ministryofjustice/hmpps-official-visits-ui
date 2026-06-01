@@ -258,7 +258,7 @@ test.describe('View official visits', () => {
     )
 
     await expect(summaryValue(page, 'Date')).toHaveText('Thursday, 1 January 2026')
-    await expect(summaryValue(page, 'Time')).toHaveText('10:00am to 11:00am (1 hour)')
+    await expect(summaryValue(page, 'Time')).toHaveText('10:00 to 11:00 (1 hour)')
     await expect(summaryValue(page, 'Visit status')).toHaveText('Scheduled')
     await expect(summaryValue(page, 'Visit reference number')).toHaveText('1')
     await expect(summaryValue(page, 'Location')).toHaveText('First Location')

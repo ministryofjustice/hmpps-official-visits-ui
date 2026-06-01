@@ -101,7 +101,7 @@ describe('Search for an official visit', () => {
           expect($('.govuk-table__header:nth-child(5)').text()).toEqual('Status')
           expect($('.govuk-table__header:nth-child(6)').text()).toEqual('Action')
 
-          expect(getGovukTableCell($, 1, 1).text()).toEqual('10:00am to 11:00am23 December 2022')
+          expect(getGovukTableCell($, 1, 1).text()).toEqual('10:00 to 11:0023 December 2022')
           expect(getGovukTableCell($, 1, 2).text()).toEqual('Legal visits ward')
           expect(getGovukTableCell($, 1, 3).text()).toEqual('Telephone')
           expect(getGovukTableCell($, 1, 4).text()).toEqual('Smith, JohnA1337AA')

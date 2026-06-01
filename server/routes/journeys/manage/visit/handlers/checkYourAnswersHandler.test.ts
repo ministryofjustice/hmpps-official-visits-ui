@@ -172,7 +172,7 @@ describe('check your answers handler', () => {
           expect(getValueByKey($, 'Prisoner')).toEqual('Tim Harrison (G4793VF)')
           expect(getValueByKey($, 'Visit type')).toEqual('Attend in person')
           expect(getValueByKey($, 'Date')).toEqual('Monday, 26 January 2026')
-          expect(getValueByKey($, 'Time')).toEqual('1:30pm to 4pm (2 hours 30 minutes)')
+          expect(getValueByKey($, 'Time')).toEqual('13:30 to 16:00 (2 hours 30 minutes)')
           expect(getValueByKey($, 'Location')).toEqual('Official Visits')
           expect(getValueByKey($, 'Prisoner notes')).toEqual('prisoner notes')
           expect(getValueByKey($, 'Staff notes')).toEqual('staff notes')

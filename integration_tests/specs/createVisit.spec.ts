@@ -192,7 +192,7 @@ test.describe('Create an official visit', () => {
 
     const timeSlotPage = await TimeSlotPage.verifyOnPage(page)
     await checkCancelPage(timeSlotPage, TimeSlotPage.verifyOnPage, 1)
-    await timeSlotPage.selectRadioButton('8am to 5pm Legal Visits Room 2 Groups 1, people 2, video 1')
+    await timeSlotPage.selectRadioButton('08:00 to 17:00 Legal Visits Room 2 Groups 1, people 2, video 1')
     await timeSlotPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
@@ -297,7 +297,7 @@ test.describe('Create an official visit', () => {
       'You have successfully scheduled an official visit with:',
     )
     expect(await confirmationPage.page.locator('#visit-details').innerText()).toEqual(
-      'The visit will take place on Thursday, 1 January 2026 from 10am to 11am (1 hour) in First Location.',
+      'The visit will take place on Thursday, 1 January 2026 from 10:00 to 11:00 (1 hour) in First Location.',
     )
   })
 

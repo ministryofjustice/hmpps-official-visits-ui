@@ -162,7 +162,7 @@
       {% for visitRecord in visits %}
         {% set rows = (rows.push([
           {
-            html: (visitRecord.startTime | timeStringTo12HourPretty(true)) + ' to ' + (visitRecord.endTime | timeStringTo12HourPretty(true)) + '</b><br />' + visitRecord.visitDate | formatDate
+            html: (visitRecord.startTime | timeStringTo24HourPretty) + ' to ' + (visitRecord.endTime | timeStringTo24HourPretty) + '</b><br />' + visitRecord.visitDate | formatDate
           },
           {
             html: visitRecord.locationDescription or '-'

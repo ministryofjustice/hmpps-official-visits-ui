@@ -168,7 +168,7 @@ describe('Time slot handler', () => {
 
           expect($('.govuk-radios__item').length).toEqual(1)
           expect($('.govuk-radios__item').eq(0).text()).toMatch(
-            /1:30pm to 4pm\s+Mock Location\s+Groups 2, people 3, video 2/,
+            /13:30 to 16:00\s+Mock Location\s+Groups 2, people 3, video 2/,
           )
           expect($('.govuk-radios__input').eq(0).attr('value')).toEqual('1')
 
@@ -246,7 +246,7 @@ describe('Time slot handler', () => {
 
           expect($('.govuk-radios__item').length).toEqual(1)
           expect($('.govuk-radios__item').eq(0).text()).toMatch(
-            /1:30pm to 4pm\s+Mock Location\s+Groups 2, people 3, video 2/,
+            /13:30 to 16:00\s+Mock Location\s+Groups 2, people 3, video 2/,
           )
           expect($('.govuk-radios__input').eq(0).attr('value')).toEqual('1')
 

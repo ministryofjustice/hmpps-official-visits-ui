@@ -14,7 +14,7 @@ import {
   toDuration,
   getParsedDateFromQueryString,
   getWeekOfDatesStartingMonday,
-  timeStringTo12HourPretty,
+  timeStringTo24HourPretty,
   isDateAndInThePast,
   formatAddressLines,
   getTimeDiff,
@@ -270,16 +270,15 @@ describe('getWeekOfDatesStartingMonday', () => {
   })
 })
 
-describe('timeStringTo12HourPretty', () => {
+describe('timeStringTo24HourPretty', () => {
   it.each([
-    ['00:00', '12am'],
-    ['01:00', '1am'],
-    ['12:00', '12pm'],
-    ['13:00', '1pm'],
-    ['23:59', '11:59pm'],
-    ['00:00', '12am'],
+    ['00:00', '00:00'],
+    ['01:00', '01:00'],
+    ['12:00', '12:00'],
+    ['13:00', '13:00'],
+    ['23:59', '23:59'],
   ])('converts %s to %s', (input, expected) => {
-    expect(timeStringTo12HourPretty(input)).toBe(expected)
+    expect(timeStringTo24HourPretty(input)).toBe(expected)
   })
 })
 

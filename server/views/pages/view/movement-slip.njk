@@ -44,7 +44,7 @@
         },
         {
           key: { text: "Time" },
-          value: { html: (visit.startTime | timeStringTo12HourPretty(true)) + ' to ' + (visit.endTime | timeStringTo12HourPretty(true)) + '<br />' + visit.visitDate | formatDate("iiii, d MMMM yyyy") }
+          value: { html: (visit.startTime | timeStringTo24HourPretty) + ' to ' + (visit.endTime | timeStringTo24HourPretty) + '<br />' + visit.visitDate | formatDate("iiii, d MMMM yyyy") }
         },
         {
           key: { text: "Visit type" },

@@ -56,11 +56,11 @@
           {% endset %}
 
           {% set dateAndTimeHtml %}
-            {{ email.visitStartTime | timeStringTo12HourPretty(true) }} to {{ email.visitEndTime | timeStringTo12HourPretty(true) }}<br>{{ email.visitDate | formatDate('d MMMM yyyy') }}
+            {{ email.visitStartTime | timeStringTo24HourPretty }} to {{ email.visitEndTime | timeStringTo24HourPretty }}<br>{{ email.visitDate | formatDate('d MMMM yyyy') }}
           {% endset %}
 
           {% set emailSentHtml %}
-            {{ email.sentDateTime | formatDate('h:mmaaa') }}<br>{{ email.sentDateTime | formatDate('d MMMM yyyy') }}
+            {{ email.sentDateTime | formatDate('HH:mm') }}<br>{{ email.sentDateTime | formatDate('d MMMM yyyy') }}
           {% endset %}
 
           {% set emailStatusHtml %}

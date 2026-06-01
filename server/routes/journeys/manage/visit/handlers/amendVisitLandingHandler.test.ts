@@ -129,7 +129,7 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
           expect(getActionsByKey($, 'Date', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/time-slot/)
 
-          expect(getValueByKey($, 'Time')).toEqual('10:00am to 11:00am (1 hour)')
+          expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00 (1 hour)')
           expect(getActionsByKey($, 'Time', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/time-slot/)
 
           expect(getValueByKey($, 'Visit status')).toEqual('Scheduled')
@@ -236,7 +236,7 @@ describe('Search for an official visit', () => {
 
           expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
           expect(getActionsByKey($, 'Date', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/time-slot/)
-          expect(getValueByKey($, 'Time')).toEqual('10:00am to 11:00am (1 hour)')
+          expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00 (1 hour)')
           expect(getActionsByKey($, 'Time', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/time-slot/)
           expect(getValueByKey($, 'Visit status')).toEqual('Scheduled')
           expect(getValueByKey($, 'Visit reference number')).toEqual('1')

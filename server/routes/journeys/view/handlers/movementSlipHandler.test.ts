@@ -55,7 +55,7 @@ describe('Official visit movement slip', () => {
           expect(getValueByKey($, 'Official visit')).toEqual(null)
           expect(getValueByKey($, 'Visit type')).toEqual('Video')
 
-          expect(getValueByKey($, 'Time')).toEqual('10:00am to 11:00amThursday, 1 January 2026')
+          expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00Thursday, 1 January 2026')
 
           expect($('dt.govuk-summary-list__key').text()).toContain('Official Visitor')
           expect(getValueByKey($, 'Official Visitor')).toEqual('Peter Malicious (Solicitor)')
