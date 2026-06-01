@@ -112,7 +112,7 @@ describe('GET /home', () => {
       .expect(200)
       .expect(res => {
         const $ = cheerio.load(res.text)
-        expect(res.text).toContain('The Visits screens in NOMIS will be switched off in your prison on Monday 1 June')
+        expect(res.text).toContain('You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison')
         const bannerLink = $(
           "a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']",
         ).filter((_, link) => $(link).text().includes('SharePoint page'))
@@ -130,7 +130,7 @@ describe('GET /home', () => {
       .expect(res => {
         const $ = cheerio.load(res.text)
         expect(res.text).not.toContain(
-          'The Visits screens in NOMIS will be switched off in your prison on Monday 1 June',
+          'You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison',
         )
         const bannerLink = $(
           "a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']",
