@@ -52,7 +52,7 @@ describe('Visit type handler', () => {
           // There should not be a progress tracker on this page
           expect($('.moj-progress-bar').length).toBeTruthy()
 
-          expect($('.govuk-hint').text()).toEqual('Schedule an official visit')
+          expect($('.govuk-hint').text()).toEqual('Book an official visit')
           expect(heading).toEqual('What type of official visit?')
 
           expect($('.govuk-back-link').attr('href')).toEqual(`results?page=0`)

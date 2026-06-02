@@ -58,7 +58,7 @@ describe('comments handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
 
-          expect($('.govuk-hint').eq(0).text()).toEqual('Schedule an official visit')
+          expect($('.govuk-hint').eq(0).text()).toEqual('Book an official visit')
           expect(heading).toEqual('Add extra information (optional)')
           expect(getTextById($, 'prisonerNotes')).toEqual('Some previously entered notes')
           expect(getTextById($, 'staffNotes')).toEqual('Some previously entered staff notes')

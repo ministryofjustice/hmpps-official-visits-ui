@@ -13,7 +13,7 @@ export default class PrisonerSearchPage extends AbstractPage {
   private constructor(page: Page) {
     super(page)
     this.header = page.locator('h1', { hasText: 'Who is the official visit for?' })
-    this.caption = page.locator('.govuk-hint', { hasText: 'Schedule an official visit' })
+    this.caption = page.locator('.govuk-hint', { hasText: 'Book an official visit' })
     this.searchBox = page.locator('#searchTerm')
     this.searchButton = page.locator('button', { hasText: 'Search' })
   }

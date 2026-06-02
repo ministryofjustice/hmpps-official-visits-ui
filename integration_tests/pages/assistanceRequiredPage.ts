@@ -9,7 +9,7 @@ export default class AssistanceRequiredPage extends AbstractPage {
   private constructor(page: Page) {
     super(page)
     this.header = page.locator('h1', { hasText: `Will visitors need assistance during their visit? (optional)` })
-    this.caption = page.locator('.govuk-hint', { hasText: 'Schedule an official visit' })
+    this.caption = page.locator('.govuk-hint', { hasText: 'Book an official visit' })
   }
 
   static async verifyOnPage(superPage: Page): Promise<AssistanceRequiredPage> {

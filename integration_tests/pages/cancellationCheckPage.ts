@@ -13,7 +13,7 @@ export default class CancellationCheckPage extends AbstractPage {
   private constructor(page: Page) {
     super(page)
     this.header = page.locator('h1', { hasText: `Are you sure you want to cancel and delete this official visit?` })
-    this.caption = page.locator('.govuk-hint', { hasText: 'Schedule an official visit' })
+    this.caption = page.locator('.govuk-hint', { hasText: 'Book an official visit' })
     this.noButton = page.getByRole('button', { name: 'No, return to creating a visit' })
     this.yesButton = page.getByRole('button', { name: 'Yes, cancel the visit' })
   }

@@ -120,7 +120,7 @@ describe('Time slot handler', () => {
           const heading = getPageHeader($)
           const selectedDate = getTextById($, 'selected-date')
 
-          expect($('.govuk-hint').text()).toEqual('Schedule an official visit')
+          expect($('.govuk-hint').text()).toEqual('Book an official visit')
           expect(heading).toEqual('Select date and time of official visit')
           expect(selectedDate).toEqual('Choose the visit time')
 

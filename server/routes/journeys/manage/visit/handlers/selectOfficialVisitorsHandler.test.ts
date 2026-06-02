@@ -127,7 +127,7 @@ describe('Select official visitors', () => {
 
           // Check page header
           const heading = getPageHeader($)
-          expect($('.govuk-hint').text()).toEqual('Schedule an official visit')
+          expect($('.govuk-hint').text()).toEqual('Book an official visit')
           expect(heading).toEqual("Select official visitors from the prisoner's approved contact list")
 
           // Prisoner restrictions table
