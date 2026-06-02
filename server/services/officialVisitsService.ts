@@ -188,7 +188,7 @@ export default class OfficialVisitsService {
   }
 
   public async sendNotification(visitId: string, body: NotificationRequest, user: HmppsUser) {
-    logger.info(`Send notification for visit id ${visitId} and notification type ${body.notificationType}`)
+    logger.info(`Send notification for visit id ${visitId} and notification type ${body['Notification Type']}`)
     return this.officialVisitsApiClient.sendNotification(Number(visitId), body, user)
   }
 
