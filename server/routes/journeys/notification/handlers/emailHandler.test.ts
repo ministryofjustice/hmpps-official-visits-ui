@@ -33,7 +33,7 @@ afterEach(() => {
 })
 
 const OV_ID = '1'
-const URL = `/notification/${OV_ID}/create`
+const URL = `/notification/enter-email-address/${OV_ID}/create`
 
 describe('notification email handler', () => {
   describe('GET', () => {
@@ -83,7 +83,7 @@ describe('notification email handler', () => {
 
     it('should show visit details text for create action', () => {
       return request(app)
-        .get(`/notification/${OV_ID}/create`)
+        .get(`/notification/enter-email-address/${OV_ID}/create`)
         .expect('Content-Type', /html/)
         .expect(res => {
           expect(res.text).toContain('An email will be sent confirming the details of this official visit.')
@@ -93,7 +93,7 @@ describe('notification email handler', () => {
 
     it('should show visit details text for edit action', () => {
       return request(app)
-        .get(`/notification/${OV_ID}/edit`)
+        .get(`/notification/enter-email-address/${OV_ID}/edit`)
         .expect('Content-Type', /html/)
         .expect(res => {
           expect(res.text).toContain('An email will be sent confirming the details of this official visit.')
@@ -103,7 +103,7 @@ describe('notification email handler', () => {
 
     it('should show cancellation text for cancel action', () => {
       return request(app)
-        .get(`/notification/${OV_ID}/cancel`)
+        .get(`/notification/enter-email-address/${OV_ID}/cancel`)
         .expect('Content-Type', /html/)
         .expect(res => {
           expect(res.text).toContain('An email will be sent confirming the cancellation of this official visit.')
@@ -193,11 +193,11 @@ describe('notification email handler', () => {
         .post(URL)
         .send({ emailAddress: 'example@example.com' })
         .expect(302)
-        .expect('location', '/notification/1/create/check')
+        .expect('location', '/notification/check-email/1/create')
 
       // Follow redirect with same agent to ensure session cookie is preserved
       await agent
-        .get('/notification/1/create/check')
+        .get('/notification/check-email/1/create')
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)

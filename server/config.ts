@@ -164,5 +164,6 @@ export default {
     dpsEnabledPrisons: get('FEATURE_DPS_ENABLED_PRISONS', ''),
     nomisSwitchOffPrisons: get('FEATURE_NOMIS_SWITCH_OFF_PRISONS', ''),
     twoMonthCalendarEnabled: get('FEATURE_TWO_MONTH_CALENDAR_ENABLED', 'false') === 'true',
+    emailNotificationsEnabled: get('FEATURE_EMAIL_NOTIFICATIONS', 'false') === 'true',
   },
 }

@@ -16,13 +16,13 @@ export default function Index({ auditService, officialVisitsService }: Services)
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
   // Enter email address
-  route('/:ovId/:action', new EmailHandler())
+  route('/enter-email-address/:ovId/:action', new EmailHandler())
 
   // Check and send
-  route('/:ovId/:action/check', new CheckHandler(officialVisitsService))
+  route('/check-email/:ovId/:action', new CheckHandler(officialVisitsService))
 
   // Sent confirmation page (GET only)
-  route('/:ovId/:action/sent', new SentHandler())
+  route('/email-confirmation/:ovId/:action', new SentHandler())
 
   return router
 }

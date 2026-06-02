@@ -12,7 +12,7 @@ export default class SentHandler implements PageHandler {
       res.locals['formResponses']?.emailAddress || req.session?.notifications?.[ovId as string]?.emailAddress
 
     if (!emailAddress) {
-      return res.redirect(`/notification/${ovId}/${action}`)
+      return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
     // clear the session data set using the below code in the check handler
