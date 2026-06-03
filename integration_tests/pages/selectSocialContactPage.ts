@@ -11,7 +11,7 @@ export default class SelectSocialContactPage extends AbstractPage {
     this.header = page.locator('h1', {
       hasText: `Select social visitors from the prisoner's approved contact list (optional)`,
     })
-    this.caption = page.locator('.govuk-hint', { hasText: 'Schedule an official visit' })
+    this.caption = page.locator('.govuk-hint', { hasText: 'Book an official visit' })
   }
 
   static async verifyOnPage(superPage: Page): Promise<SelectSocialContactPage> {

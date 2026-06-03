@@ -87,7 +87,7 @@ describe('Equipment handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
-          expect($('.govuk-hint').eq(0).text()).toEqual('Schedule an official visit')
+          expect($('.govuk-hint').eq(0).text()).toEqual('Book an official visit')
           expect(heading).toEqual('Will visitors have equipment with them? (optional)')
 
           expect(getArrayItemPropById($, 'equipment', 0, 'id').val()).toEqual('111')
