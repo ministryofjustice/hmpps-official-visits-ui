@@ -170,16 +170,16 @@ describe('View an official visit', () => {
         })
     })
 
-    it('should render send email alert and button with schedule URL when email notifications are enabled', async () => {
+    it('should render send email alert and button with edit URL when email notifications are enabled', async () => {
       config.featureToggles.emailNotificationsEnabled = true
       appSetup()
 
       const res = await request(app).get(URL)
       const $ = cheerio.load(res.text)
 
-      expect($('#send-email-button').attr('href')).toEqual('/notification/enter-email-address/1/schedule')
+      expect($('#send-email-button').attr('href')).toEqual('/notification/enter-email-address/1/edit')
       expect(res.text).toContain('Information about this visit has changed since a confirmation email was last sent')
-      expect($('.moj-alert a.govuk-link').attr('href')).toEqual('/notification/enter-email-address/1/schedule')
+      expect($('.moj-alert a.govuk-link').attr('href')).toEqual('/notification/enter-email-address/1/edit')
     })
 
     it('should handle null visit.updatedBy', () => {
