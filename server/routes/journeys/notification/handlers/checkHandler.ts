@@ -35,7 +35,7 @@ export default class CheckHandler implements PageHandler {
 
     // Redirect to enter-email page when no valid email is available yet.
     if (!emailAddress) {
-      return res.redirect(`/notification/${ovId}/${action}`)
+      return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
@@ -45,8 +45,8 @@ export default class CheckHandler implements PageHandler {
       emailAddress,
       visit,
       contacts,
-      back: `/notification/${ovId}/${action}`,
-      change: `/notification/${ovId}/${action}`,
+      back: `/notification/enter-email-address/${ovId}/${action}`,
+      change: `/notification/enter-email-address/${ovId}/${action}`,
       ovId,
       action,
     })
@@ -58,7 +58,7 @@ export default class CheckHandler implements PageHandler {
 
     if (!emailAddress) {
       // No email in session - redirect back to enter email
-      return res.redirect(`/notification/${ovId}/${action}`)
+      return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
     const body = {
@@ -68,6 +68,6 @@ export default class CheckHandler implements PageHandler {
 
     await this.officialVisitsService.sendNotification(ovId as string, body, res.locals.user)
 
-    return res.redirect(`/notification/${ovId}/${action}/sent`)
+    return res.redirect(`/notification/email-confirmation/${ovId}/${action}`)
   }
 }

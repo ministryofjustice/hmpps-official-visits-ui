@@ -35,14 +35,14 @@ test.describe('Send a notification', () => {
       active: true,
       authSource: 'nomis',
     })
-    await page.goto(`/notification/${OV_ID}/create`)
+    await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
     await NotAuthorisedPage.verifyOnPage(page)
   })
 
   test.describe('Create journey', () => {
     test('Happy path: enter email → check → sent (create)', async ({ page }) => {
       await login(page)
-      await page.goto(`/notification/${OV_ID}/create`)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
 
       // --- Email page ---
       const emailPage = await NotificationEmailPage.verifyOnPage(page)
@@ -81,7 +81,7 @@ test.describe('Send a notification', () => {
 
     test('Validation: shows error for empty email on create', async ({ page }) => {
       await login(page)
-      await page.goto(`/notification/${OV_ID}/create`)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
 
       const emailPage = await NotificationEmailPage.verifyOnPage(page)
       await emailPage.continueButton.click()
@@ -93,7 +93,7 @@ test.describe('Send a notification', () => {
 
     test('Validation: shows error for invalid email format on create', async ({ page }) => {
       await login(page)
-      await page.goto(`/notification/${OV_ID}/create`)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
 
       const emailPage = await NotificationEmailPage.verifyOnPage(page)
       await emailPage.fillEmail('not-a-valid-email')
@@ -101,7 +101,7 @@ test.describe('Send a notification', () => {
 
       // Browser blocks invalid type=email before submit, so assert native validation is shown.
       await NotificationEmailPage.verifyOnPage(page)
-      await expect(page).toHaveURL(`/notification/${OV_ID}/create`)
+      await expect(page).toHaveURL(`/notification/enter-email-address/${OV_ID}/create`)
       const validationMessage = await emailPage.emailInput.evaluate(
         (input: HTMLInputElement) => input.validationMessage,
       )
@@ -110,7 +110,7 @@ test.describe('Send a notification', () => {
 
     test('Change link on check page navigates back to email page', async ({ page }) => {
       await login(page)
-      await page.goto(`/notification/${OV_ID}/create`)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
 
       const emailPage = await NotificationEmailPage.verifyOnPage(page)
       await emailPage.fillEmail('visitor@example.com')
@@ -120,14 +120,14 @@ test.describe('Send a notification', () => {
       await checkPage.page.getByRole('link', { name: 'Change' }).click()
 
       await NotificationEmailPage.verifyOnPage(page)
-      expect(page.url()).toContain(`/notification/${OV_ID}/create`)
+      expect(page.url()).toContain(`/notification/enter-email-address/${OV_ID}/create`)
     })
   })
 
   test.describe('Amend (edit) journey', () => {
     test('Happy path: enter email → check → sent (edit)', async ({ page }) => {
       await login(page)
-      await page.goto(`/notification/${OV_ID}/edit`)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/edit`)
 
       // --- Email page ---
       const emailPage = await NotificationEmailPage.verifyOnPage(page)
@@ -159,7 +159,7 @@ test.describe('Send a notification', () => {
   test.describe('Cancel journey', () => {
     test('Happy path: enter email → check → sent (cancel)', async ({ page }) => {
       await login(page)
-      await page.goto(`/notification/${OV_ID}/cancel`)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/cancel`)
 
       // --- Email page ---
       const emailPage = await NotificationEmailPage.verifyOnPage(page)
@@ -203,7 +203,7 @@ test.describe('Send a notification', () => {
 
     test('Validation: shows error for empty email on cancel', async ({ page }) => {
       await login(page)
-      await page.goto(`/notification/${OV_ID}/cancel`)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/cancel`)
 
       const emailPage = await NotificationEmailPage.verifyOnPage(page)
       await emailPage.continueButton.click()
@@ -216,20 +216,20 @@ test.describe('Send a notification', () => {
   test.describe('Session guard: redirect when no email in session', () => {
     test('GET check page without email redirects to email entry', async ({ page }) => {
       await login(page)
-      await page.goto(`/notification/${OV_ID}/create/check`)
+      await page.goto(`/notification/check-email/${OV_ID}/create`)
 
       // Should be redirected back to the email entry page
       await NotificationEmailPage.verifyOnPage(page)
-      expect(page.url()).toContain(`/notification/${OV_ID}/create`)
+      expect(page.url()).toContain(`/notification/enter-email-address/${OV_ID}/create`)
     })
 
     test('GET sent page without email redirects to email entry', async ({ page }) => {
       await login(page)
-      await page.goto(`/notification/${OV_ID}/create/sent`)
+      await page.goto(`/notification/email-confirmation/${OV_ID}/create`)
 
       // Should be redirected back to the email entry page
       await NotificationEmailPage.verifyOnPage(page)
-      expect(page.url()).toContain(`/notification/${OV_ID}/create`)
+      expect(page.url()).toContain(`/notification/enter-email-address/${OV_ID}/create`)
     })
   })
 })

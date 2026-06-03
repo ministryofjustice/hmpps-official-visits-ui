@@ -10,6 +10,7 @@ import { mockPrisoner, mockVisitByIdVisit } from '../../../../../testutils/mocks
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
 import { Prisoner } from '../../../../../@types/prisonerSearchApi/types'
+import config from '../../../../../config'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -36,6 +37,7 @@ const appSetup = (journeySession = defaultJourneySession()) => {
 }
 
 beforeEach(() => {
+  config.featureToggles.emailNotificationsEnabled = false
   appSetup()
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue({
     firstName: 'John',
@@ -71,11 +73,26 @@ describe('confirmation handler', () => {
           expect($('a[href="/view/visit/1"]').text()).toEqual('View visit')
           expect($('a[href="/manage/create/search"]').text()).toEqual('Schedule another visit')
           expect($('a[href="/view/visit/1/movement-slip"]').text()).toEqual('Print a movement slip')
+          expect($('a[href="/notification/enter-email-address/1/create"]').length).toEqual(0)
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.CONFIRM_VISIT_PAGE, {
             who: user.username,
             correlationId: expect.any(String),
           })
+        })
+    })
+
+    it('should render send email confirmation link when email notifications are enabled', () => {
+      config.featureToggles.emailNotificationsEnabled = true
+      appSetup()
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('a[href="/notification/enter-email-address/1/create"]').text()).toEqual('Send email confirmation')
         })
     })
   })

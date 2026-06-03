@@ -36,6 +36,6 @@ export default class EmailHandler implements PageHandler {
       createdAt: Date.now(),
     }
 
-    return res.redirect(`/notification/${ovId}/${action}/check`)
+    return res.redirect(`/notification/check-email/${ovId}/${action}`)
   }
 }

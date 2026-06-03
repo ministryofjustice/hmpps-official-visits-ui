@@ -90,6 +90,7 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
   njkEnv.addFilter('parseDate', parseDate)
   njkEnv.addGlobal('DPS_HOME_PAGE_URL', config.serviceUrls.digitalPrison)
   njkEnv.addGlobal('CONTACTS_HOME_PAGE_URL', config.serviceUrls.prisonerContacts)
+  njkEnv.addGlobal('EMAIL_NOTIFICATIONS_ENABLED', config.featureToggles.emailNotificationsEnabled)
   njkEnv.addFilter('formatDate', formatDate)
   njkEnv.addFilter('formatOverEighteen', formatOverEighteen)
   njkEnv.addFilter('formatAddressLines', ({ flat, property, street, area, postcode, noFixedAddress }) =>

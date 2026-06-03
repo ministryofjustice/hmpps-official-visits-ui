@@ -61,7 +61,7 @@ describe('notification check handler', () => {
     })
 
     officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
-    const res = await request(app).get(`/notification/${OV_ID}/create/check`).expect(200)
+    const res = await request(app).get(`/notification/check-email/${OV_ID}/create`).expect(200)
     const $ = cheerio.load(res.text)
 
     expect($('h1').text().trim()).toEqual('Check and send official visit confirmation')
@@ -96,7 +96,7 @@ describe('notification check handler', () => {
     })
 
     officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
-    const res = await request(app).get(`/notification/${OV_ID}/cancel/check`).expect(200)
+    const res = await request(app).get(`/notification/check-email/${OV_ID}/cancel`).expect(200)
 
     expect(res.text).toContain('Check and send official visit cancellation')
     expect(res.text).toContain('An email will be sent confirming the cancellation of this official visit.')
@@ -125,7 +125,7 @@ describe('notification check handler', () => {
     })
 
     officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
-    const res = await request(app).get(`/notification/${OV_ID}/create/check`).expect(200)
+    const res = await request(app).get(`/notification/check-email/${OV_ID}/create`).expect(200)
     const $ = cheerio.load(res.text)
 
     // Should show the flash/formResponses email, not the session value
@@ -147,9 +147,9 @@ describe('notification check handler', () => {
 
     officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
 
-    const res = await request(app).get(`/notification/${OV_ID}/invalid/check`).expect(200)
+    const res = await request(app).get(`/notification/check-email/${OV_ID}/invalid`).expect(200)
     expect(res.text).toContain('Check and send official visit confirmation')
-    expect(res.text).toContain(`/notification/${OV_ID}/invalid`)
+    expect(res.text).toContain(`/notification/enter-email-address/${OV_ID}/invalid`)
   })
 
   it('GET should redirect to enter email page when email is not in form responses or session', async () => {
@@ -169,10 +169,10 @@ describe('notification check handler', () => {
     })
 
     await request(app)
-      .get(`/notification/${ovIdWithoutEmail}/create/check`)
+      .get(`/notification/check-email/${ovIdWithoutEmail}/create`)
       .redirects(0)
       .expect(302)
-      .expect('location', `/notification/${ovIdWithoutEmail}/create`)
+      .expect('location', `/notification/enter-email-address/${ovIdWithoutEmail}/create`)
 
     expect(officialVisitsService.getOfficialVisitById).not.toHaveBeenCalled()
   })
@@ -186,14 +186,17 @@ describe('notification check handler', () => {
     // Simulate posting of email by setting notifications into session via a pre-route
     // Use a helper route to set session; test app exposes /journeySession but not a setter, so use middleware override
     // We'll create a quick request to the email handler to set the notifications then POST to check
-    await agent.post(`/notification/${OV_ID}/create`).send({ emailAddress: 'example@example.com' }).expect(302)
+    await agent
+      .post(`/notification/enter-email-address/${OV_ID}/create`)
+      .send({ emailAddress: 'example@example.com' })
+      .expect(302)
 
     officialVisitsService.sendNotification.mockResolvedValue({} as NotificationResponse)
 
     await agent
-      .post(`/notification/${OV_ID}/create/check`)
+      .post(`/notification/check-email/${OV_ID}/create`)
       .expect(302)
-      .expect('location', `/notification/${OV_ID}/create/sent`)
+      .expect('location', `/notification/email-confirmation/${OV_ID}/create`)
 
     expect(officialVisitsService.sendNotification).toHaveBeenCalledWith(
       OV_ID,
@@ -218,9 +221,9 @@ describe('notification check handler', () => {
     officialVisitsService.sendNotification.mockResolvedValue({} as NotificationResponse)
 
     await request(app)
-      .post(`/notification/${OV_ID}/edit/check`)
+      .post(`/notification/check-email/${OV_ID}/edit`)
       .expect(302)
-      .expect('location', `/notification/${OV_ID}/edit/sent`)
+      .expect('location', `/notification/email-confirmation/${OV_ID}/edit`)
 
     expect(officialVisitsService.sendNotification).toHaveBeenCalledWith(
       OV_ID,
@@ -245,9 +248,9 @@ describe('notification check handler', () => {
     officialVisitsService.sendNotification.mockResolvedValue({} as NotificationResponse)
 
     await request(app)
-      .post(`/notification/${OV_ID}/cancel/check`)
+      .post(`/notification/check-email/${OV_ID}/cancel`)
       .expect(302)
-      .expect('location', `/notification/${OV_ID}/cancel/sent`)
+      .expect('location', `/notification/email-confirmation/${OV_ID}/cancel`)
 
     expect(officialVisitsService.sendNotification).toHaveBeenCalledWith(
       OV_ID,
@@ -261,8 +264,8 @@ describe('notification check handler', () => {
     appSetup(() => ({ officialVisit: sampleVisit }))
 
     await request(app)
-      .post(`/notification/${OV_ID}/create/check`)
+      .post(`/notification/check-email/${OV_ID}/create`)
       .expect(302)
-      .expect('location', `/notification/${OV_ID}/create`)
+      .expect('location', `/notification/enter-email-address/${OV_ID}/create`)
   })
 })

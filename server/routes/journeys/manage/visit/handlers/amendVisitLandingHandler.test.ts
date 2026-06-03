@@ -11,6 +11,7 @@ import PersonalRelationshipsService from '../../../../../services/personalRelati
 import { Prisoner } from '../../../../../@types/prisonerSearchApi/types'
 import { convertToTitleCase } from '../../../../../utils/utils'
 import ManageUserService from '../../../../../services/manageUsersService'
+import config from '../../../../../config'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -40,6 +41,7 @@ const appSetup = () => {
 }
 
 beforeEach(() => {
+  config.featureToggles.emailNotificationsEnabled = false
   appSetup()
   officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
@@ -125,6 +127,10 @@ describe('Search for an official visit', () => {
 
           // No buttons on this page
           expect($('.govuk-button').text()).toBeFalsy()
+          expect($('#send-email-button').length).toBe(0)
+          expect(res.text).not.toContain(
+            'Information about this visit has changed since a confirmation email was last sent',
+          )
 
           expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
           expect(getActionsByKey($, 'Date', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/time-slot/)
@@ -185,6 +191,20 @@ describe('Search for an official visit', () => {
             correlationId: expect.any(String),
           })
         })
+    })
+
+    it('should not render send email alert or button in amend mode when email notifications are enabled', async () => {
+      config.featureToggles.emailNotificationsEnabled = true
+      appSetup()
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect($('#send-email-button').length).toBe(0)
+      expect($('a[href="/notification/enter-email-address/1/schedule"]').length).toBe(0)
+      expect(res.text).not.toContain(
+        'Information about this visit has changed since a confirmation email was last sent',
+      )
     })
 
     it('should handle null visit.updatedBy', () => {

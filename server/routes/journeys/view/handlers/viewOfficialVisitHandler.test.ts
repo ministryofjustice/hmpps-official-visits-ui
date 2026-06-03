@@ -12,6 +12,7 @@ import { Prisoner } from '../../../../@types/prisonerSearchApi/types'
 import { convertToTitleCase } from '../../../../utils/utils'
 import ManageUserService from '../../../../services/manageUsersService'
 import { AuthorisedRoles } from '../../../../middleware/populateUserPermissions'
+import config from '../../../../config'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/prisonerService')
@@ -43,6 +44,7 @@ const appSetup = (
 }
 
 beforeEach(() => {
+  config.featureToggles.emailNotificationsEnabled = false
   appSetup()
   officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
@@ -129,6 +131,10 @@ describe('View an official visit', () => {
 
           expect($('.govuk-button[href="/view/visit/1/movement-slip"]').length).toBe(1)
           expect($('.govuk-button[href="/manage/amend/1"]').length).toBe(1)
+          expect($('#send-email-button').length).toBe(0)
+          expect(res.text).not.toContain(
+            'Information about this visit has changed since a confirmation email was last sent',
+          )
 
           expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
           expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00 (1 hour)')
@@ -162,6 +168,18 @@ describe('View an official visit', () => {
             correlationId: expect.any(String),
           })
         })
+    })
+
+    it('should render send email alert and button with schedule URL when email notifications are enabled', async () => {
+      config.featureToggles.emailNotificationsEnabled = true
+      appSetup()
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect($('#send-email-button').attr('href')).toEqual('/notification/enter-email-address/1/schedule')
+      expect(res.text).toContain('Information about this visit has changed since a confirmation email was last sent')
+      expect($('.moj-alert a.govuk-link').attr('href')).toEqual('/notification/enter-email-address/1/schedule')
     })
 
     it('should handle null visit.updatedBy', () => {
@@ -310,6 +328,23 @@ describe('View an official visit', () => {
           expect(getValueByKey($, 'Completion reason')).toBeNull()
           expect(getValueByKey($, 'Search type')).toBeNull()
         })
+    })
+
+    it('should render send email alert and button with cancel URL for cancelled visits', async () => {
+      config.featureToggles.emailNotificationsEnabled = true
+      appSetup()
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'CANCELLED',
+        visitStatusDescription: 'Cancelled',
+        completionNotes: 'Cancelled for reasons',
+      })
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect($('#send-email-button').attr('href')).toEqual('/notification/enter-email-address/1/cancel')
+      expect($('.moj-alert a.govuk-link').attr('href')).toEqual('/notification/enter-email-address/1/cancel')
     })
 
     it('should display restrictions badge with existing mock data (has restriction without expiry)', () => {

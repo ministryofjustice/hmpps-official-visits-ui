@@ -34,9 +34,9 @@ afterEach(() => {
 describe('notification sent handler', () => {
   it('GET should redirect to enter email page when email is missing', async () => {
     await request(app)
-      .get(`/notification/${OV_ID}/create/sent`)
+      .get(`/notification/email-confirmation/${OV_ID}/create`)
       .expect(302)
-      .expect('location', `/notification/${OV_ID}/create`)
+      .expect('location', `/notification/enter-email-address/${OV_ID}/create`)
   })
 
   it('GET should render sent confirmation with email and links', async () => {
@@ -57,7 +57,7 @@ describe('notification sent handler', () => {
       ],
     })
 
-    const res = await request(app).get(`/notification/${OV_ID}/create/sent`).expect(200)
+    const res = await request(app).get(`/notification/email-confirmation/${OV_ID}/create`).expect(200)
     const $ = cheerio.load(res.text)
 
     const $govuk = $('.govuk-panel--confirmation')
@@ -89,7 +89,7 @@ describe('notification sent handler', () => {
       ],
     })
 
-    const res = await request(app).get(`/notification/${OV_ID}/cancel/sent`).expect(200)
+    const res = await request(app).get(`/notification/email-confirmation/${OV_ID}/cancel`).expect(200)
     const $ = cheerio.load(res.text)
 
     const $govuk = $('.govuk-panel--confirmation')
