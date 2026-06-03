@@ -1483,16 +1483,16 @@ export interface components {
     }
     /** @enum {string} */
     VisitCompletionType:
-    | 'NORMAL'
-    | 'PRISONER_EARLY'
-    | 'PRISONER_REFUSED'
-    | 'STAFF_EARLY'
-    | 'VISITOR_DENIED'
-    | 'VISITOR_EARLY'
-    | 'VISITOR_NO_SHOW'
-    | 'PRISONER_CANCELLED'
-    | 'STAFF_CANCELLED'
-    | 'VISITOR_CANCELLED'
+      | 'NORMAL'
+      | 'PRISONER_EARLY'
+      | 'PRISONER_REFUSED'
+      | 'STAFF_EARLY'
+      | 'VISITOR_DENIED'
+      | 'VISITOR_EARLY'
+      | 'VISITOR_NO_SHOW'
+      | 'PRISONER_CANCELLED'
+      | 'STAFF_CANCELLED'
+      | 'VISITOR_CANCELLED'
     /** @enum {string} */
     VisitStatusType: 'SCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'EXPIRED'
     /** @enum {string} */
@@ -2914,7 +2914,7 @@ export interface components {
        * @example CREATE
        * @enum {string}
        */
-      'Notification Type': 'CREATE' | 'AMEND' | 'CANCEL'
+      notificationType: 'CREATE' | 'AMEND' | 'CANCEL'
       /** @description The recipient email address to send the notification to */
       emailAddresses: string[]
     }
@@ -3266,15 +3266,15 @@ export interface components {
     }
     /** @enum {string} */
     ReferenceDataGroup:
-    | 'ATTENDANCE'
-    | 'DAY'
-    | 'RELATIONSHIP_TYPE'
-    | 'SEARCH_LEVEL'
-    | 'TEST_TYPE'
-    | 'VIS_COMPLETION'
-    | 'VIS_STATUS'
-    | 'VIS_TYPE'
-    | 'VISITOR_TYPE'
+      | 'ATTENDANCE'
+      | 'DAY'
+      | 'RELATIONSHIP_TYPE'
+      | 'SEARCH_LEVEL'
+      | 'TEST_TYPE'
+      | 'VIS_COMPLETION'
+      | 'VIS_STATUS'
+      | 'VIS_TYPE'
+      | 'VISITOR_TYPE'
     /** @description Describes the details of a reference code */
     ReferenceDataItem: {
       /**

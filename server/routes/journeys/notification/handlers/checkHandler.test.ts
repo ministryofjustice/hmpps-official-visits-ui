@@ -197,7 +197,7 @@ describe('notification check handler', () => {
 
     expect(officialVisitsService.sendNotification).toHaveBeenCalledWith(
       OV_ID,
-      expect.objectContaining({ 'Notification Type': 'CREATE', emailAddresses: ['example@example.com'] }),
+      expect.objectContaining({ 'notificationType': 'CREATE', emailAddresses: ['example@example.com'] }),
       user,
     )
   })
@@ -224,7 +224,7 @@ describe('notification check handler', () => {
 
     expect(officialVisitsService.sendNotification).toHaveBeenCalledWith(
       OV_ID,
-      expect.objectContaining({ 'Notification Type': 'AMEND', emailAddresses: ['example@example.com'] }),
+      expect.objectContaining({ 'notificationType': 'AMEND', emailAddresses: ['example@example.com'] }),
       user,
     )
   })
@@ -251,7 +251,7 @@ describe('notification check handler', () => {
 
     expect(officialVisitsService.sendNotification).toHaveBeenCalledWith(
       OV_ID,
-      expect.objectContaining({ 'Notification Type': 'CANCEL', emailAddresses: ['example@example.com'] }),
+      expect.objectContaining({ 'notificationType': 'CANCEL', emailAddresses: ['example@example.com'] }),
       user,
     )
   })
