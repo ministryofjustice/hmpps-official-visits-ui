@@ -62,7 +62,7 @@ export default class CheckHandler implements PageHandler {
     }
 
     const body = {
-      'notificationType': mapActionToNotificationType(action as string),
+      notificationType: mapActionToNotificationType(action as string),
       emailAddresses: [emailAddress],
     } as NotificationRequest
 
