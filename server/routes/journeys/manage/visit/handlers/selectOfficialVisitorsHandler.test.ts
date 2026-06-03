@@ -128,7 +128,7 @@ describe('Select official visitors', () => {
           // Check page header
           const heading = getPageHeader($)
           expect($('.govuk-hint').text()).toEqual('Book an official visit')
-          expect(heading).toEqual("Select official visitors from the prisoner's approved contact list")
+          expect(heading).toEqual("Select visitors from the prisoner's approved official contacts list")
 
           // Prisoner restrictions table
           const restrictionHeaders = getByDataQa($, 'prisoner-restrictions-table').find('thead > tr > th')
@@ -156,28 +156,25 @@ describe('Select official visitors', () => {
           const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')
           expect(visitorHeaders.eq(0).text().trim()).toEqual('Add')
           expect(visitorHeaders.eq(1).text().trim()).toEqual('Name')
-          expect(visitorHeaders.eq(2).text().trim()).toEqual('Age')
-          expect(visitorHeaders.eq(3).text().trim()).toEqual('Relationship')
-          expect(visitorHeaders.eq(4).text().trim()).toEqual('Address')
-          expect(visitorHeaders.eq(5).text().trim()).toEqual('Active restrictions')
+          expect(visitorHeaders.eq(2).text().trim()).toEqual('Relationship')
+          expect(visitorHeaders.eq(3).text().trim()).toEqual('Address')
+          expect(visitorHeaders.eq(4).text().trim()).toEqual('Active restrictions')
 
           const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
           // Row 1
           expect(visitorRows.eq(0).text().trim()).toEqual(
             `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName}`,
           )
-          expect(visitorRows.eq(1).text().trim()).toEqual('Over 18')
-          expect(visitorRows.eq(2).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
-          expect(visitorRows.eq(3).text().trim()).toContain(`Acorn Road`)
-          expect(visitorRows.eq(4).text().trim()).toBeDefined() // Restrictions
+          expect(visitorRows.eq(1).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
           // Row 2
-          expect(visitorRows.eq(5).text().trim()).toEqual(
+          expect(visitorRows.eq(4).text().trim()).toEqual(
             `${mockOfficialVisitors[1].firstName} ${mockOfficialVisitors[1].lastName}`,
           )
-          expect(visitorRows.eq(6).text().trim()).toEqual('Over 18')
-          expect(visitorRows.eq(7).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
-          expect(visitorRows.eq(8).text().trim()).toContain(`Acorn Road`)
-          expect(visitorRows.eq(9).text().trim()).toBeDefined() // Restrictions
+          expect(visitorRows.eq(5).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions
 
           expect($('.govuk-back-link').attr('href')).toEqual(`time-slot?date=2037-01-26`)
           expect($('.govuk-button').text()).toContain('Continue')
@@ -224,7 +221,7 @@ describe('Select official visitors', () => {
           expect(getProgressTrackerItems($)).toHaveLength(5)
 
           const heading = getPageHeader($)
-          expect(heading).toEqual("Select official visitors from the prisoner's approved contact list")
+          expect(heading).toEqual("Select visitors from the prisoner's approved official contacts list")
 
           // Prisoner restrictions - empty
           expect(getByDataQa($, 'empty-restrictions-title').text().trim()).toContain('active restrictions')
@@ -363,7 +360,7 @@ describe('Select official visitors', () => {
           // Check page header
           const heading = getPageHeader($)
           expect($('.govuk-hint').text()).toEqual('Amend an official visit')
-          expect(heading).toEqual("Select official visitors from the prisoner's approved contact list")
+          expect(heading).toEqual("Select visitors from the prisoner's approved official contacts list")
 
           // Check inset text is displayed with correct bullet points
           expect(res.text).toContain('Some visitor details need updating')
@@ -401,28 +398,25 @@ describe('Select official visitors', () => {
           const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')
           expect(visitorHeaders.eq(0).text().trim()).toEqual('Add')
           expect(visitorHeaders.eq(1).text().trim()).toEqual('Name')
-          expect(visitorHeaders.eq(2).text().trim()).toEqual('Age')
-          expect(visitorHeaders.eq(3).text().trim()).toEqual('Relationship')
-          expect(visitorHeaders.eq(4).text().trim()).toEqual('Address')
-          expect(visitorHeaders.eq(5).text().trim()).toEqual('Active restrictions')
+          expect(visitorHeaders.eq(2).text().trim()).toEqual('Relationship')
+          expect(visitorHeaders.eq(3).text().trim()).toEqual('Address')
+          expect(visitorHeaders.eq(4).text().trim()).toEqual('Active restrictions')
 
           const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
           // Row 1
           expect(visitorRows.eq(0).text().trim()).toEqual(
             `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName}`,
           )
-          expect(visitorRows.eq(1).text().trim()).toEqual('Over 18')
-          expect(visitorRows.eq(2).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
-          expect(visitorRows.eq(3).text().trim()).toContain(`Acorn Road`)
-          expect(visitorRows.eq(4).text().trim()).toBeDefined() // Restrictions
+          expect(visitorRows.eq(1).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
           // Row 2
-          expect(visitorRows.eq(5).text().trim()).toEqual(
+          expect(visitorRows.eq(4).text().trim()).toEqual(
             `${mockOfficialVisitors[1].firstName} ${mockOfficialVisitors[1].lastName}`,
           )
-          expect(visitorRows.eq(6).text().trim()).toEqual('Over 18')
-          expect(visitorRows.eq(7).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
-          expect(visitorRows.eq(8).text().trim()).toContain(`Acorn Road`)
-          expect(visitorRows.eq(9).text().trim()).toBeDefined() // Restrictions
+          expect(visitorRows.eq(5).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions
 
           expect($('.govuk-back-link').attr('href')).toEqual(`./`)
           expect($('.govuk-button').text()).toContain('Continue')
@@ -469,7 +463,7 @@ describe('Select official visitors', () => {
           expect(getProgressTrackerItems($)).toHaveLength(5)
 
           const heading = getPageHeader($)
-          expect(heading).toEqual("Select official visitors from the prisoner's approved contact list")
+          expect(heading).toEqual("Select visitors from the prisoner's approved official contacts list")
 
           // Prisoner restrictions - empty
           expect(getByDataQa($, 'empty-restrictions-title').text().trim()).toContain('active restrictions')

@@ -127,7 +127,7 @@ describe('Select social visitors', () => {
           // Check page header
           const heading = getPageHeader($)
           expect($('.govuk-hint').text()).toEqual('Book an official visit')
-          expect(heading).toEqual("Select social visitors from the prisoner's approved contact list (optional)")
+          expect(heading).toEqual("Select visitors from the prisoner's approved social contacts list (optional)")
 
           // Prisoner restrictions table
           const restrictionHeaders = getByDataQa($, 'prisoner-restrictions-table').find('thead > tr > th')
@@ -155,28 +155,25 @@ describe('Select social visitors', () => {
           const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')
           expect(visitorHeaders.eq(0).text().trim()).toEqual('Add')
           expect(visitorHeaders.eq(1).text().trim()).toEqual('Name')
-          expect(visitorHeaders.eq(2).text().trim()).toEqual('Date of birth')
-          expect(visitorHeaders.eq(3).text().trim()).toEqual('Relationship')
-          expect(visitorHeaders.eq(4).text().trim()).toEqual('Address')
-          expect(visitorHeaders.eq(5).text().trim()).toEqual('Active restrictions')
+          expect(visitorHeaders.eq(2).text().trim()).toEqual('Relationship')
+          expect(visitorHeaders.eq(3).text().trim()).toEqual('Address')
+          expect(visitorHeaders.eq(4).text().trim()).toEqual('Active restrictions')
 
           const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
           // Row 1
           expect(visitorRows.eq(0).text().trim()).toContain(
             `${mockSocialVisitors[0].firstName} ${mockSocialVisitors[0].lastName}`,
           )
-          expect(visitorRows.eq(1).text().trim()).toEqual(formatDate(mockSocialVisitors[0].dateOfBirth))
-          expect(visitorRows.eq(2).text().trim()).toEqual(mockSocialVisitors[0].relationshipToPrisonerDescription)
-          expect(visitorRows.eq(3).text().trim()).toContain(`Acorn Road`)
-          expect(visitorRows.eq(4).text().trim()).toBeDefined() // Restrictions
+          expect(visitorRows.eq(1).text().trim()).toEqual(mockSocialVisitors[0].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
           // Row 2
-          expect(visitorRows.eq(5).text().trim()).toContain(
+          expect(visitorRows.eq(4).text().trim()).toContain(
             `${mockSocialVisitors[1].firstName} ${mockSocialVisitors[1].lastName}`,
           )
-          expect(visitorRows.eq(6).text().trim()).toEqual(formatDate(mockSocialVisitors[1].dateOfBirth))
-          expect(visitorRows.eq(7).text().trim()).toEqual(mockSocialVisitors[1].relationshipToPrisonerDescription)
-          expect(visitorRows.eq(8).text().trim()).toContain(`Acorn Road`)
-          expect(visitorRows.eq(9).text().trim()).toBeDefined() // Restrictions
+          expect(visitorRows.eq(5).text().trim()).toEqual(mockSocialVisitors[1].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions
           // contact link displayed only for contacts authorizer role
           expect(getByDataQa($, 'contacts-link').length).toEqual(1)
 
@@ -320,7 +317,7 @@ describe('Select social visitors', () => {
           // Check page header
           const heading = getPageHeader($)
           expect($('.govuk-hint').text()).toEqual('Amend an official visit')
-          expect(heading).toEqual("Select social visitors from the prisoner's approved contact list (optional)")
+          expect(heading).toEqual("Select visitors from the prisoner's approved social contacts list (optional)")
 
           // Check inset text is displayed with bullet points for social visitor and not approved
           expect(res.text).toContain('Some visitor details need updating')
@@ -358,28 +355,25 @@ describe('Select social visitors', () => {
           const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')
           expect(visitorHeaders.eq(0).text().trim()).toEqual('Add')
           expect(visitorHeaders.eq(1).text().trim()).toEqual('Name')
-          expect(visitorHeaders.eq(2).text().trim()).toEqual('Date of birth')
-          expect(visitorHeaders.eq(3).text().trim()).toEqual('Relationship')
-          expect(visitorHeaders.eq(4).text().trim()).toEqual('Address')
-          expect(visitorHeaders.eq(5).text().trim()).toEqual('Active restrictions')
+          expect(visitorHeaders.eq(2).text().trim()).toEqual('Relationship')
+          expect(visitorHeaders.eq(3).text().trim()).toEqual('Address')
+          expect(visitorHeaders.eq(4).text().trim()).toEqual('Active restrictions')
 
           const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
           // Row 1
           expect(visitorRows.eq(0).text().trim()).toContain(
             `${mockSocialVisitors[0].firstName} ${mockSocialVisitors[0].lastName}`,
           )
-          expect(visitorRows.eq(1).text().trim()).toEqual(formatDate(mockSocialVisitors[0].dateOfBirth))
-          expect(visitorRows.eq(2).text().trim()).toEqual(mockSocialVisitors[0].relationshipToPrisonerDescription)
-          expect(visitorRows.eq(3).text().trim()).toContain(`Acorn Road`)
-          expect(visitorRows.eq(4).text().trim()).toBeDefined() // Restrictions
+          expect(visitorRows.eq(1).text().trim()).toEqual(mockSocialVisitors[0].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
           // Row 2
-          expect(visitorRows.eq(5).text().trim()).toContain(
+          expect(visitorRows.eq(4).text().trim()).toContain(
             `${mockSocialVisitors[1].firstName} ${mockSocialVisitors[1].lastName}`,
           )
-          expect(visitorRows.eq(6).text().trim()).toEqual(formatDate(mockSocialVisitors[1].dateOfBirth))
-          expect(visitorRows.eq(7).text().trim()).toEqual(mockSocialVisitors[1].relationshipToPrisonerDescription)
-          expect(visitorRows.eq(8).text().trim()).toContain(`Acorn Road`)
-          expect(visitorRows.eq(9).text().trim()).toBeDefined() // Restrictions
+          expect(visitorRows.eq(5).text().trim()).toEqual(mockSocialVisitors[1].relationshipToPrisonerDescription)
+          expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
+          expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions
           // contact link displayed only for contacts authorizer role
           expect(getByDataQa($, 'contacts-link').length).toEqual(1)
 

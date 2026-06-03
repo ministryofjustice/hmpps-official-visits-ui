@@ -392,7 +392,7 @@ test.describe('Amend official visits', () => {
 
     // Verify navigation to visitors page
     expect(
-      page.locator('h1', { hasText: `Select official visitors from the prisoner's approved contact list` }),
+      page.locator('h1', { hasText: `Select visitors from the prisoner's approved official contacts list` }),
     ).toBeVisible()
     expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
@@ -419,7 +419,7 @@ test.describe('Amend official visits', () => {
 
     // Verify navigation to social visitors page
     expect(
-      page.locator('h1', { hasText: `Select social visitors from the prisoner's approved contact list` }),
+      page.locator('h1', { hasText: `Select visitors from the prisoner's approved social contacts list` }),
     ).toBeVisible()
     expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
@@ -538,7 +538,7 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Add or remove visitors' }).click()
 
     expect(
-      page.locator('h1', { hasText: `Select official visitors from the prisoner's approved contact list` }),
+      page.locator('h1', { hasText: `Select visitors from the prisoner's approved official contacts list` }),
     ).toBeVisible()
     await expect(page.getByText('Some visitor details need updating')).toBeVisible()
     await expect(page.getByText('a visitor is not an approved contact')).toBeVisible()
@@ -579,7 +579,7 @@ test.describe('Amend official visits', () => {
 
     // Verify navigation to visitors page
     expect(
-      page.locator('h1', { hasText: `Select official visitors from the prisoner's approved contact list` }),
+      page.locator('h1', { hasText: `Select visitors from the prisoner's approved official contacts list` }),
     ).toBeVisible()
     expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
@@ -606,7 +606,7 @@ test.describe('Amend official visits', () => {
 
     // Verify navigation to social visitors page
     expect(
-      page.locator('h1', { hasText: `Select social visitors from the prisoner's approved contact list` }),
+      page.locator('h1', { hasText: `Select visitors from the prisoner's approved social contacts list` }),
     ).toBeVisible()
     expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()

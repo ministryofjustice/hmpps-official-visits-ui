@@ -8,7 +8,7 @@ export default class SelectOfficialContactPage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.header = page.locator('h1', { hasText: `Select official visitors from the prisoner's approved contact list` })
+    this.header = page.locator('h1', { hasText: `Select visitors from the prisoner's approved official contacts list` })
     this.caption = page.locator('.govuk-hint', { hasText: 'Book an official visit' })
   }
 
