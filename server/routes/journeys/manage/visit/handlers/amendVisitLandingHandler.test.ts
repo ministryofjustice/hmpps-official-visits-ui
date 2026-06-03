@@ -201,7 +201,7 @@ describe('Search for an official visit', () => {
       const $ = cheerio.load(res.text)
 
       expect($('#send-email-button').length).toBe(0)
-      expect($('a[href="/notification/enter-email-address/1/schedule"]').length).toBe(0)
+      expect($('a[href="/notification/enter-email-address/1/edit"]').length).toBe(0)
       expect(res.text).not.toContain(
         'Information about this visit has changed since a confirmation email was last sent',
       )
