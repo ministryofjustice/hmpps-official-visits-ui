@@ -330,6 +330,16 @@ export default class OfficialVisitsApiClient extends RestClient {
     )
   }
 
+  async getVisitChangeStatus(
+    officialVisitId: number,
+    user: HmppsUser,
+  ): Promise<components['schemas']['VisitChangeStatusResponse']> {
+    return this.get<components['schemas']['VisitChangeStatusResponse']>(
+      { path: `/notification/${officialVisitId}/change-status` },
+      asSystem(user.username),
+    )
+  }
+
   async sendNotification(officialVisitId: number, body: NotificationRequest, user: HmppsUser) {
     return this.post<NotificationResponse>(
       { path: `/notification/${officialVisitId}`, data: body },

@@ -20,7 +20,7 @@
   <h1 class="govuk-heading-l">Official visit</h1>
   {{ miniProfile(prisoner) }}
 
-        {% if EMAIL_NOTIFICATIONS_ENABLED and mode != 'amend' %}
+        {% if EMAIL_NOTIFICATIONS_ENABLED and mode != 'amend' and hasVisitChanged %}
             {% set notificationPath = "/notification/enter-email-address/" + visit.officialVisitId + ("/cancel" if visit.visitStatus == 'CANCELLED' else "/edit") %}
             {{ mojAlert({
               variant: "warning",

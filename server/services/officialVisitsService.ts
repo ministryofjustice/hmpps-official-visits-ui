@@ -187,6 +187,10 @@ export default class OfficialVisitsService {
     return this.officialVisitsApiClient.updateComments(prisonId, visitId, body, user)
   }
 
+  public async getVisitChangeStatus(officialVisitId: number, user: HmppsUser): Promise<{ hasChanged: boolean }> {
+    return this.officialVisitsApiClient.getVisitChangeStatus(officialVisitId, user)
+  }
+
   public async sendNotification(visitId: string, body: NotificationRequest, user: HmppsUser) {
     logger.info(`Send notification for visit id ${visitId} and notification type ${body.notificationType}`)
     return this.officialVisitsApiClient.sendNotification(Number(visitId), body, user)

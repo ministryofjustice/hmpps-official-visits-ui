@@ -48,6 +48,7 @@ beforeEach(() => {
   manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
   officialVisitsService.getAllContacts.mockResolvedValue([])
+  officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
 })
 
 afterEach(() => {
@@ -193,8 +194,9 @@ describe('Search for an official visit', () => {
         })
     })
 
-    it('should not render send email alert or button in amend mode when email notifications are enabled', async () => {
+    it('should not render send email alert or button when hasChanged is false even when email notifications are enabled', async () => {
       config.featureToggles.emailNotificationsEnabled = true
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
       appSetup()
 
       const res = await request(app).get(URL)
