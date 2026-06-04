@@ -53,18 +53,13 @@ describe('EditLocationHandler', () => {
       const res = await request(app).get('/admin/time-slot/1/location/11/edit')
 
       expect(res.status).toBe(200)
-      expect(res.text).toContain('Edit location and location capacities')
+      expect(res.text).toContain('Edit room and visitor limits')
       expect(res.text).toContain('Monday')
-      expect(res.text).toContain('09:00 - 10:00')
-      expect(res.text).toContain(
-        'Make changes to the location or location capacity. For video visits location capacities should be',
-      )
-      expect(res.text).toContain('Maximum adults capacity')
-      expect(res.text).toContain('Number of people that can be in the room')
-      expect(res.text).toContain('Maximum groups capacity')
-      expect(res.text).toContain('Number of separate groups (visits)')
-      expect(res.text).toContain('Maximum video visits capacity')
-      expect(res.text).toContain('Total number of video visit you can book for this location')
+      expect(res.text).toContain('09:00 to 10:00')
+      expect(res.text).toContain('Understanding visitor limits')
+      expect(res.text).toContain('Maximum visitors (this does not include prisoners)')
+      expect(res.text).toContain('Maximum groups')
+      expect(res.text).toContain('Maximum video visits')
       // assert values pre populated
       expect(res.text).toContain('Visit location Location 1')
 
@@ -73,6 +68,14 @@ describe('EditLocationHandler', () => {
       expect(res.text).toMatch(/id="maxVideo"[^>]*value="0"/)
       expect(res.text).toContain('<a href="/admin/time-slot/1/locations" class="govuk-back-link">Back</a>')
       const $ = cheerio.load(res.text)
+      // Understanding visitor limits expandable details with content
+      const details = $('details.govuk-details')
+      expect(details.length).toBe(1)
+      expect(details.find('.govuk-details__summary-text').text().trim()).toBe('Understanding visitor limits')
+      expect(details.find('.govuk-details__text').text()).toContain(
+        'When you book a time slot for an official visit, you can add a maximum number of',
+      )
+      expect(details.find('.govuk-details__text').text()).toContain('each video visit takes up 1 group visit slot')
       const cancelAnchor = $('a[href="/admin/time-slot/1/locations"]').eq(1)
       const cancelText = cancelAnchor.text().replace(/\s+/g, ' ').trim()
       expect(cancelText).toBe('Cancel and return to schedule')

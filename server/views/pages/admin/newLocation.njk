@@ -8,11 +8,9 @@
 
 {% block content %}
     <div>
-        <span class="govuk-hint">Admin</span>
-        <h1 class="govuk-heading-l">Add new location and location capacities
-            for {{ timeSlot.dayCode | translateDay }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
-        <p class="govuk-body">Add a new location and location capacity. For video visits location capacities should be
-            set to 0.</p>
+        <span class="govuk-hint">Manage time slots</span>
+        <h1 class="govuk-heading-l">Add a new room and visitor limits
+            for {{ timeSlot.dayCode | translateDay }} {{ timeSlot.startTime }} to {{ timeSlot.endTime }}</h1>
 
         <form method="POST">
             <div class="govuk-grid-row govuk-body">
@@ -26,15 +24,14 @@
                         items: locations | locationsToOptions | sort(false, false, 'text') | prependEmptyOption('Select a location') | setSelected(formResponses.location or filter.location or '')
                     }) }}
 
+                    {% include "partials/admin/understandingVisitorLimits.njk" %}
+
                     {{ govukInput({
                         id: "maxAdults",
                         name: "maxAdults",
                         label: {
-                            text: "Maximum adults capacity",
+                            text: "Maximum visitors (this does not include prisoners)",
                             classes: "govuk-!-font-weight-bold"
-                        },
-                        hint: {
-                            text: "Number of people that can be in the room"
                         },
                         classes: "govuk-input--width-4",
                         inputmode: "numeric",
@@ -47,11 +44,8 @@
                         id: "maxGroups",
                         name: "maxGroups",
                         label: {
-                            text: "Maximum groups capacity",
+                            text: "Maximum groups",
                             classes: "govuk-!-font-weight-bold"
-                        },
-                        hint: {
-                            text: "Number of separate groups (visits)"
                         },
                         classes: "govuk-input--width-4",
                         inputmode: "numeric",
@@ -64,11 +58,8 @@
                         id: "maxVideo",
                         name: "maxVideo",
                         label: {
-                            text: "Maximum video visits capacity",
+                            text: "Maximum video visits",
                             classes: "govuk-!-font-weight-bold"
-                        },
-                        hint: {
-                            text: "Total number of video visit you can book for this location"
                         },
                         classes: "govuk-input--width-4",
                         inputmode: "numeric",

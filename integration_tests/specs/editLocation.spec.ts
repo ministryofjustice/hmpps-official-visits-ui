@@ -47,7 +47,7 @@ test.describe('Admin: Edit a location', () => {
     await page.getByRole('link', { name: 'Edit' }).click()
 
     await expect(page).toHaveURL('/admin/time-slot/1/location/1/edit')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Edit location/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Edit room and visitor limits/)
 
     await expect(page.getByText('Visit location Room 1')).toBeVisible()
     await page.fill('input[name="maxAdults"]', '5')
