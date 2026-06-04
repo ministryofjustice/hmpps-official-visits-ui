@@ -198,6 +198,28 @@ describe('View an official visit', () => {
       )
     })
 
+    it('should not render send email alert when email notifications are enabled, hasChanged is true but visit is completed', async () => {
+      config.featureToggles.emailNotificationsEnabled = true
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'COMPLETED',
+        visitStatusDescription: 'Completed',
+        completionNotes: 'Visit completed',
+        completionDescription: 'Normal completion',
+        searchTypeDescription: 'Full search',
+      })
+      appSetup()
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect($('#send-email-button').length).toBe(0)
+      expect(res.text).not.toContain(
+        'Information about this visit has changed since a confirmation email was last sent',
+      )
+    })
+
     it('should handle null visit.updatedBy', () => {
       officialVisitsService.getOfficialVisitById.mockResolvedValue({ ...mockVisitByIdVisit, updatedBy: null })
       return request(app)
