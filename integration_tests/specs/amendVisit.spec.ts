@@ -139,6 +139,7 @@ test.describe('Amend official visits', () => {
       }),
     )
 
+    await officialVisitsApi.stubGetVisitChangeStatus({ hasChanged: false })
     await officialVisitsApi.stubGetOfficialVisitById(getMockVisit() as OfficialVisit)
     await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors])
 

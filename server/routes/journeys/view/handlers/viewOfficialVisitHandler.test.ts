@@ -192,7 +192,7 @@ describe('View an official visit', () => {
       const res = await request(app).get(URL)
       const $ = cheerio.load(res.text)
 
-      expect($('#send-email-button').attr('href')).toEqual('/notification/enter-email-address/1/schedule')
+      expect($('#send-email-button').attr('href')).toEqual('/notification/enter-email-address/1/edit')
       expect(res.text).not.toContain(
         'Information about this visit has changed since a confirmation email was last sent',
       )
