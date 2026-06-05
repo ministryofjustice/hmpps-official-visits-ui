@@ -51,6 +51,7 @@ beforeEach(() => {
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
   manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
   officialVisitsService.getAllContacts.mockResolvedValue([baseMockContact])
+  officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
 })
 
 afterEach(() => {
@@ -170,8 +171,9 @@ describe('View an official visit', () => {
         })
     })
 
-    it('should render send email alert and button with edit URL when email notifications are enabled', async () => {
+    it('should render send email alert and button with edit URL when email notifications are enabled and hasChanged is true', async () => {
       config.featureToggles.emailNotificationsEnabled = true
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
       appSetup()
 
       const res = await request(app).get(URL)
@@ -180,6 +182,42 @@ describe('View an official visit', () => {
       expect($('#send-email-button').attr('href')).toEqual('/notification/enter-email-address/1/edit')
       expect(res.text).toContain('Information about this visit has changed since a confirmation email was last sent')
       expect($('.moj-alert a.govuk-link').attr('href')).toEqual('/notification/enter-email-address/1/edit')
+    })
+
+    it('should not render send email alert when email notifications are enabled but hasChanged is false', async () => {
+      config.featureToggles.emailNotificationsEnabled = true
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
+      appSetup()
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect($('#send-email-button').attr('href')).toEqual('/notification/enter-email-address/1/edit')
+      expect(res.text).not.toContain(
+        'Information about this visit has changed since a confirmation email was last sent',
+      )
+    })
+
+    it('should not render send email alert when email notifications are enabled, hasChanged is true but visit is completed', async () => {
+      config.featureToggles.emailNotificationsEnabled = true
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'COMPLETED',
+        visitStatusDescription: 'Completed',
+        completionNotes: 'Visit completed',
+        completionDescription: 'Normal completion',
+        searchTypeDescription: 'Full search',
+      })
+      appSetup()
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect($('#send-email-button').length).toBe(0)
+      expect(res.text).not.toContain(
+        'Information about this visit has changed since a confirmation email was last sent',
+      )
     })
 
     it('should handle null visit.updatedBy', () => {
@@ -332,6 +370,7 @@ describe('View an official visit', () => {
 
     it('should render send email alert and button with cancel URL for cancelled visits', async () => {
       config.featureToggles.emailNotificationsEnabled = true
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
       appSetup()
       officialVisitsService.getOfficialVisitById.mockResolvedValue({
         ...mockVisitByIdVisit,

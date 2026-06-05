@@ -60,6 +60,7 @@ test.describe('Cancel an official visit', () => {
     )
 
     await setupFindByCriteriaStubs()
+    await officialVisitsApi.stubGetVisitChangeStatus({ hasChanged: false })
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
     await officialVisitsApi.stubCompleteVisit({})
     await officialVisitsApi.stubCancelVisit({})
