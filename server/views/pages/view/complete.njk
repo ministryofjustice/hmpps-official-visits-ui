@@ -22,15 +22,16 @@
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
-        {{govukSelect({
-          id: "reason",
-          name: "reason",
-          label: {
-            text: "Select a completion reason from the list",
-            classes: "govuk-fieldset__legend--m"
-          },
-          value: formResponses.reason if formResponses,
-          items: completionCodes | refDataToOptions | addSelectValue('', 'Select a reason') | sort(false, false, 'value')
+        {{ govukSelect({
+            id: "reason",
+            name: "reason",
+            label: {
+              text: "Select a completion reason from the list",
+              classes: "govuk-fieldset__legend--m"
+            },
+            value: formResponses.reason if formResponses,
+            items: completionCodes | refDataToOptions | addSelectValue('', 'Select a reason') | sort(false, false, 'value'),
+            errorMessage: validationErrors | findError("reason")
           })
         }}
 
