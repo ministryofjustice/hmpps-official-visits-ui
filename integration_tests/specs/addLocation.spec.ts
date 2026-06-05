@@ -56,7 +56,7 @@ test.describe('Admin: Add a new location', () => {
 
     // Verify we're on the add page
     await expect(page).toHaveURL('/admin/time-slot/1/location/new')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Add new location/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Add a new room and visitor limits/)
 
     // Select location and fill capacities
     await page.locator('select[name="dpsLocationId"]').selectOption('loc-1')
