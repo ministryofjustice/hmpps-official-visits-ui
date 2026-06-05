@@ -181,6 +181,23 @@ test.describe('Complete official visits', () => {
       `/view/visit/1?backTo=L3ZpZXcvbGlzdD9wYWdlPTEmcHJpc29uZXI9Sm9obiZzdGFydERhdGU9MjAyNi0wMS0wMSZlbmREYXRlPTIwMjYtMDEtMDI=`,
     )
 
+    // Attempt to continue without selecting a completion reason and assert the error shows against the control
+    await page.getByRole('button', { name: 'Continue' }).click()
+
+    const errorSummary = page.locator('.govuk-error-summary')
+    await expect(errorSummary).toBeVisible()
+    await expect(errorSummary.getByRole('link', { name: 'Select a completion reason' })).toHaveAttribute(
+      'href',
+      '#reason',
+    )
+
+    const reasonError = page.locator('#reason-error')
+    await expect(reasonError).toBeVisible()
+    await expect(reasonError).toHaveText(/Select a completion reason/)
+
+    await expect(page.locator('.govuk-form-group--error #reason')).toBeVisible()
+    await expect(page.locator('#reason')).toHaveAttribute('aria-describedby', /reason-error/)
+
     await page.locator('select[name="reason"]').selectOption('NORMAL')
     await page.getByRole('button', { name: 'Continue' }).click()
 
