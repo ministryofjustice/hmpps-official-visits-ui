@@ -38,6 +38,7 @@ beforeEach(() => {
   })
   config.maintenanceMode = false
   config.featureToggles.nomisSwitchOffPrisons = ''
+  config.featureToggles.emailNotificationsEnabled = false
 })
 
 afterEach(() => {
@@ -46,12 +47,13 @@ afterEach(() => {
 
 describe('GET /home', () => {
   it.each([
-    [AuthorisedRoles.DEFAULT, ['view-list']],
-    [AuthorisedRoles.VIEW, ['view-list']],
-    [AuthorisedRoles.MANAGE, ['view-list', 'create']],
-    [AuthorisedRoles.ADMIN, ['view-list', 'admin']],
+    [AuthorisedRoles.DEFAULT, ['view-list', 'sent-emails']],
+    [AuthorisedRoles.VIEW, ['view-list', 'sent-emails']],
+    [AuthorisedRoles.MANAGE, ['view-list', 'sent-emails', 'create']],
+    [AuthorisedRoles.ADMIN, ['view-list', 'sent-emails', 'admin']],
   ])(`should render home page - %s (%s) view`, (role, visibleCards) => {
     auditService.logPageView.mockResolvedValue(null)
+    config.featureToggles.emailNotificationsEnabled = true
     app = appWithAllRoutes({
       services: { auditService },
       userSupplier: () => ({
@@ -74,6 +76,7 @@ describe('GET /home', () => {
         const bookVisitCard = getByDataQa($, 'book-official-visit-card')
         const viewOrCancelVisitCard = getByDataQa($, 'view-or-cancel-official-visits-card')
         const manageTimeSlotsCard = getByDataQa($, 'manage-time-slots-card')
+        const sentEmailsCard = getByDataQa($, 'view-sent-emails-card')
 
         // Check card contents individually
         if (visibleCards.includes('create')) {
@@ -94,6 +97,12 @@ describe('GET /home', () => {
           )
         } else {
           expect(manageTimeSlotsCard.find('.card__link').text()).toBe('')
+        }
+
+        if (visibleCards.includes('sent-emails')) {
+          expect(sentEmailsCard.find('.card__link').text()).toContain('View the status of official visit emails')
+        } else {
+          expect(sentEmailsCard.find('.card__link').text()).toBe('')
         }
 
         expect(auditService.logPageView).toHaveBeenCalledWith(Page.HOME_PAGE, {

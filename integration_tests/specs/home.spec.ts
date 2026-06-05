@@ -66,4 +66,17 @@ test.describe('Official visits homepage', () => {
     expect(page.getByRole('link', { name: 'Book an official visit' })).not.toBeVisible()
     expect(page.getByRole('link', { name: 'Administer days, slots and' })).toBeVisible()
   })
+
+  test('should show email notifications card when feature flag is enabled', async ({ page }) => {
+    await login(page, {
+      name: 'AUser',
+      roles: [`ROLE_${AuthorisedRoles.DEFAULT}`],
+      active: true,
+      authSource: 'nomis',
+    })
+    await page.goto(`/`)
+    await HomePage.verifyOnPage(page)
+
+    expect(page.getByRole('link', { name: 'View the status of official visit emails' })).toBeVisible()
+  })
 })

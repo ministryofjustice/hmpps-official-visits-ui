@@ -66,6 +66,18 @@
                 </div>
               {% endif %}
 
+                {% if EMAIL_NOTIFICATIONS_ENABLED %}
+                    <div class="govuk-grid-column-one-third card-group__item">
+                        {{ card({
+                            "href": "/view/sent-emails",
+                            "clickable": "true",
+                            "heading": "View the status of official visit emails",
+                            "description": "View the status of emails that have been sent to visitors.",
+                            "data-qa": "view-sent-emails-card"
+                        }) }}
+                    </div>
+                {% endif %}
+
             </div>
           </div>
         </div>
