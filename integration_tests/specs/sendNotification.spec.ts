@@ -10,7 +10,6 @@ import NotificationEmailPage from '../pages/notificationEmailPage'
 import NotificationCheckPage from '../pages/notificationCheckPage'
 import NotificationSentPage from '../pages/notificationSentPage'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
-import { NotAuthorisedPage } from '../pages/notAuthorisedPage'
 
 const OV_ID = mockVisitByIdVisit.officialVisitId // 1
 
@@ -28,7 +27,7 @@ test.describe('Send a notification', () => {
     await resetStubs()
   })
 
-  test('RBAC: should deny access to users without MANAGE permission', async ({ page }) => {
+  test('RBAC: should allow access to default users permission', async ({ page }) => {
     await login(page, {
       name: 'AUser',
       roles: [`ROLE_${AuthorisedRoles.DEFAULT}`],
@@ -36,7 +35,10 @@ test.describe('Send a notification', () => {
       authSource: 'nomis',
     })
     await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
-    await NotAuthorisedPage.verifyOnPage(page)
+    const emailPage = await NotificationEmailPage.verifyOnPage(page)
+    await expect(
+      emailPage.page.getByText('An email will be sent confirming the details of this official visit.'),
+    ).toBeVisible()
   })
 
   test.describe('Create journey', () => {
