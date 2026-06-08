@@ -66,7 +66,9 @@ describe('NewVisitSlotHandler', () => {
       expect(details.find('.govuk-details__text').text()).toContain(
         'When you make a location available for official visits, you can add a maximum number of',
       )
-      expect(details.find('.govuk-details__text').text()).toContain('each video visit counts as 1 group, so this reduces group capacity in the location by 1')
+      expect(details.find('.govuk-details__text').text()).toContain(
+        'each video visit counts as 1 group, so this reduces group capacity in the location by 1',
+      )
       expect($('select#dpsLocationId').length).toBeGreaterThan(0)
       const options = $('select#dpsLocationId option')
         .map((i, el) => $(el).attr('value'))

@@ -75,7 +75,9 @@ describe('EditLocationHandler', () => {
       expect(details.find('.govuk-details__text').text()).toContain(
         'When you make a location available for official visits, you can add a maximum number of',
       )
-      expect(details.find('.govuk-details__text').text()).toContain('each video visit counts as 1 group, so this reduces group capacity in the location by 1')
+      expect(details.find('.govuk-details__text').text()).toContain(
+        'each video visit counts as 1 group, so this reduces group capacity in the location by 1',
+      )
       const cancelAnchor = $('a[href="/admin/time-slot/1/locations"]').eq(1)
       const cancelText = cancelAnchor.text().replace(/\s+/g, ' ').trim()
       expect(cancelText).toBe('Cancel and return to schedule')
