@@ -25,6 +25,7 @@
             {{ mojAlert({
               variant: "warning",
               title: "Information about this visit has changed since a confirmation email was last sent",
+              showTitleAsHeading: true,
               dismissible: false,
               html: "You should <a href='" + notificationPath + "' class='govuk-link'>send another email</a> to update visitors with new information."
             }) }}
