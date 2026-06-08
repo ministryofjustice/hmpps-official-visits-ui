@@ -156,7 +156,7 @@ describe('check your answers handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
 
-          expect(heading).toEqual('Check and confirm the official visit details')
+          expect(heading).toEqual('Check and confirm official visit details')
           expect($('h2.govuk-heading-l').text()).toEqual('Visit detailsVisitor details')
 
           expect(res.text).toContain('ACTIVE RESTRICTION IN PLACE')
