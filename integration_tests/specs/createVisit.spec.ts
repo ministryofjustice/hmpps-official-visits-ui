@@ -294,11 +294,21 @@ test.describe('Create an official visit', () => {
 
     expect(await confirmationPage.caption.innerText()).toEqual('Prisoner: John Doe (A1111AA)')
     expect(await confirmationPage.page.getByText('You have successfully').innerText()).toEqual(
-      'You have successfully scheduled an official visit with:',
+      'You have successfully booked an official visit at Moorland (HMP & YOI) with John Doe (A1111AA)',
     )
-    expect(await confirmationPage.page.locator('#visit-details').innerText()).toEqual(
-      'The visit will take place on Thursday, 1 January 2026 from 10:00 to 11:00 (1 hour) in First Location.',
-    )
+
+    // Visit details are shown in a summary list table
+    const visitDetails = confirmationPage.page.locator('[data-qa="visit-details"]')
+    await expect(visitDetails).toBeVisible()
+    const detailKeys = await visitDetails.locator('.govuk-summary-list__key').allInnerTexts()
+    const detailValues = await visitDetails.locator('.govuk-summary-list__value').allInnerTexts()
+    expect(detailKeys.map(t => t.trim())).toEqual(['Visitor name', 'Date', 'Time', 'Location'])
+    expect(detailValues.map(t => t.trim())).toEqual([
+      'Peter Malicious (Solicitor)',
+      'Thursday 1 January 2026',
+      '10:00 to 11:00 (1 hour)',
+      'First Location',
+    ])
   })
 
   test('no approved contacts (no CONTACT_AUTHORISER role)', async ({ page }) => {

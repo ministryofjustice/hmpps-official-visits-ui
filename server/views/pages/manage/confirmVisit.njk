@@ -14,14 +14,24 @@
     <div class="govuk-grid-column-two-thirds">
       {{ govukPanel({ titleText: "New official visit booked", html: "<b>Prisoner:</b> " + prisonerName + " (" + prisoner.prisonerNumber + ")" }) }}
 
-      <p>You have successfully scheduled an official visit with:</p>
-      <ul class="govuk-list govuk-list--bullet">
-        {% for contact in visit.officialVisitors %}
-          <li>{{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }} ({{ contact.relationshipDescription }})</li>
-        {% endfor %}
-      </ul>
+      <p id="confirmation-message">You have successfully booked an official visit at {{ visit.prisonDescription }} with {{ prisonerName }} ({{ prisoner.prisonerNumber }})</p>
 
-      <p id="visit-details">The visit will take place on {{ visit.visitDate | formatDate("EEEE, d MMMM yyyy") }} from {{ (visit.startTime | timeStringTo24HourPretty) + ' to ' + (visit.endTime | timeStringTo24HourPretty) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' }} in {{ visit.locationDescription }}.</p>
+      {% set visitorRows = [] %}
+      {% for contact in visit.officialVisitors %}
+        {% set visitorRows = (visitorRows.push({
+          key: { text: "Visitor name" },
+          value: { text: (contact.firstName + " " + contact.lastName) | convertToTitleCase + " (" + contact.relationshipDescription + ")" }
+        }), visitorRows) %}
+      {% endfor %}
+
+      {{ govukSummaryList({
+        attributes: { "data-qa": "visit-details" },
+        rows: visitorRows.concat([
+          { key: { text: "Date" }, value: { text: visit.visitDate | formatDate("EEEE d MMMM yyyy") } },
+          { key: { text: "Time" }, value: { text: (visit.startTime | timeStringTo24HourPretty) + ' to ' + (visit.endTime | timeStringTo24HourPretty) + ' (' + visit.startTime | durationText(visit.endTime) + ')' } },
+          { key: { text: "Location" }, value: { text: visit.locationDescription } }
+        ])
+      }) }}
 
       <h2 class='govuk-heading-m'>What you can do next</h2>
 

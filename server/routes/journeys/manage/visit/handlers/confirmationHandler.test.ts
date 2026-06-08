@@ -5,7 +5,7 @@ import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetu
 import AuditService, { Page } from '../../../../../services/auditService'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import { getPageHeader, getTextById } from '../../../../testutils/cheerio'
+import { getPageHeader } from '../../../../testutils/cheerio'
 import { mockPrisoner, mockVisitByIdVisit } from '../../../../../testutils/mocks'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
@@ -68,11 +68,25 @@ describe('confirmation handler', () => {
           const heading = getPageHeader($)
 
           expect(heading).toEqual('New official visit booked')
-          expect($('.govuk-list--bullet > li').text()).toEqual('Peter Malicious (Solicitor)')
           expect($('.govuk-panel__body').text().trim()).toEqual('Prisoner: John Doe (A1111AA)')
-          expect(getTextById($, 'visit-details')).toEqual(
-            'The visit will take place on Thursday, 1 January 2026 from 10:00 to 11:00 (1 hour) in First Location.',
+          expect($('#confirmation-message').text().trim()).toEqual(
+            'You have successfully booked an official visit at Moorland (HMP & YOI) with John Doe (A1111AA)',
           )
+
+          // Visit details are shown as a summary list table
+          const detailsKeys = $('[data-qa="visit-details"] .govuk-summary-list__key')
+            .map((_, el) => $(el).text().trim())
+            .get()
+          const detailsValues = $('[data-qa="visit-details"] .govuk-summary-list__value')
+            .map((_, el) => $(el).text().trim())
+            .get()
+          expect(detailsKeys).toEqual(['Visitor name', 'Date', 'Time', 'Location'])
+          expect(detailsValues).toEqual([
+            'Peter Malicious (Solicitor)',
+            'Thursday 1 January 2026',
+            '10:00 to 11:00 (1 hour)',
+            'First Location',
+          ])
 
           expect($('a[href="/view/visit/1"]').text()).toEqual('View visit')
           expect($('a[href="/manage/create/search"]').text()).toEqual('Schedule another visit')
