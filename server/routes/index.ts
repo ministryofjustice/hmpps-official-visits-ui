@@ -23,7 +23,7 @@ export default function routes(_services: Services): Router {
   router.use(redirectCheckAnswersMiddleware([/check-your-answers$/]))
   router.use('/manage', manageVisits(_services))
   router.use('/view', viewVisits(_services))
-  router.use('/notification', requirePermissions('OV', Permission.DEFAULT), notification(_services))
+  router.use('/notification', requirePermissions('OV', Permission.MANAGE), notification(_services))
   router.use('/admin', requirePermissions('OV', Permission.ADMIN), admin(_services))
   router.get('/prisoner-image/:prisonerNumber', new PrisonerImageRoutes(_services.prisonerImageService).GET)
 
