@@ -11,6 +11,7 @@ import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
 import { Prisoner } from '../../../../../@types/prisonerSearchApi/types'
 import config from '../../../../../config'
+import { AuthorisedRoles } from '../../../../../middleware/populateUserPermissions'
 
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
@@ -28,10 +29,13 @@ const defaultJourneySession = () => ({
   } as Partial<OfficialVisitJourney>,
 })
 
-const appSetup = (journeySession = defaultJourneySession()) => {
+const appSetup = (
+  userRoles: AuthorisedRoles[] = [AuthorisedRoles.MANAGE, AuthorisedRoles.CONTACTS_AUTHORISER, AuthorisedRoles.ADMIN],
+  journeySession = defaultJourneySession(),
+) => {
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService },
-    userSupplier: () => user,
+    userSupplier: () => ({ ...user, userRoles }),
     journeySessionSupplier: () => journeySession as Journey,
   })
 }
@@ -82,7 +86,7 @@ describe('confirmation handler', () => {
         })
     })
 
-    it('should render send email confirmation link when email notifications are enabled', () => {
+    it('should render send email confirmation link when email notifications are enabled and user has manage role', () => {
       config.featureToggles.emailNotificationsEnabled = true
       appSetup()
 
@@ -93,6 +97,22 @@ describe('confirmation handler', () => {
           const $ = cheerio.load(res.text)
 
           expect($('a[href="/notification/enter-email-address/1/create"]').text()).toEqual('Send email confirmation')
+        })
+    })
+
+    it('should not render send email confirmation link when email notifications are enabled and user does not have manage role', () => {
+      config.featureToggles.emailNotificationsEnabled = true
+      appSetup([AuthorisedRoles.VIEW])
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('a[href="/notification/enter-email-address/1/create"]').text()).not.toContain(
+            'Send email confirmation',
+          )
         })
     })
   })

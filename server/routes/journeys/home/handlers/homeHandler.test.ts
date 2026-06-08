@@ -47,10 +47,10 @@ afterEach(() => {
 
 describe('GET /home', () => {
   it.each([
-    [AuthorisedRoles.DEFAULT, ['view-list', 'sent-emails']],
-    [AuthorisedRoles.VIEW, ['view-list', 'sent-emails']],
+    [AuthorisedRoles.DEFAULT, ['view-list']],
+    [AuthorisedRoles.VIEW, ['view-list']],
     [AuthorisedRoles.MANAGE, ['view-list', 'sent-emails', 'create']],
-    [AuthorisedRoles.ADMIN, ['view-list', 'sent-emails', 'admin']],
+    [AuthorisedRoles.ADMIN, ['view-list', 'admin']],
   ])(`should render home page - %s (%s) view`, (role, visibleCards) => {
     auditService.logPageView.mockResolvedValue(null)
     config.featureToggles.emailNotificationsEnabled = true

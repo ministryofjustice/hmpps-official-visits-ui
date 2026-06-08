@@ -174,7 +174,7 @@ describe('View an official visit', () => {
     it('should render send email alert and button with edit URL when email notifications are enabled and hasChanged is true', async () => {
       config.featureToggles.emailNotificationsEnabled = true
       officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
-      appSetup()
+      appSetup([AuthorisedRoles.MANAGE])
 
       const res = await request(app).get(URL)
       const $ = cheerio.load(res.text)
@@ -187,7 +187,7 @@ describe('View an official visit', () => {
     it('should not render send email alert when email notifications are enabled but hasChanged is false', async () => {
       config.featureToggles.emailNotificationsEnabled = true
       officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
-      appSetup()
+      appSetup([AuthorisedRoles.MANAGE])
 
       const res = await request(app).get(URL)
       const $ = cheerio.load(res.text)
@@ -209,7 +209,43 @@ describe('View an official visit', () => {
         completionDescription: 'Normal completion',
         searchTypeDescription: 'Full search',
       })
-      appSetup()
+      appSetup([AuthorisedRoles.MANAGE])
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect($('#send-email-button').length).toBe(0)
+      expect(res.text).not.toContain(
+        'Information about this visit has changed since a confirmation email was last sent',
+      )
+    })
+
+    it('should not render send email alert when email notifications are enabled, hasChanged is true but visit is cancelled', async () => {
+      config.featureToggles.emailNotificationsEnabled = true
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'CANCELLED',
+        visitStatusDescription: 'Cancelled',
+        completionNotes: 'Visit cancelled',
+        completionDescription: 'Normal cancellation',
+        searchTypeDescription: 'Full search',
+      })
+      appSetup([AuthorisedRoles.VIEW])
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect($('#send-email-button').length).toBe(0)
+      expect(res.text).not.toContain(
+        'Information about this visit has changed since a confirmation email was last sent',
+      )
+    })
+
+    it('should not render send email alert when email notifications are enabled, hasChanged is true and visit is scheduled but no admin role', async () => {
+      config.featureToggles.emailNotificationsEnabled = true
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
+      appSetup([AuthorisedRoles.VIEW])
 
       const res = await request(app).get(URL)
       const $ = cheerio.load(res.text)
