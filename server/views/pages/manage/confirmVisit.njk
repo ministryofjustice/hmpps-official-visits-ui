@@ -46,7 +46,7 @@
         <li>
           <a href="/view/visit/{{ officialVisitId }}/movement-slip" target="_blank" class="govuk-link govuk-link--no-visited-state">Print a movement slip</a>
         </li>
-          {% if EMAIL_NOTIFICATIONS_ENABLED %}
+          {% if user | hasPermission(PERMISSION.MANAGE) and EMAIL_NOTIFICATIONS_ENABLED %}
             <li>
               <a href="/notification/enter-email-address/{{ officialVisitId }}/create" target="_blank" class="govuk-link govuk-link--no-visited-state">Send email confirmation</a>
             </li>

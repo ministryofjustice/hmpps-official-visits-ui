@@ -75,6 +75,7 @@ export default class SentEmailsHandler implements PageHandler {
 
     return res.render('pages/view/sentEmails', {
       pageTitle: `Official visit emails sent from ${prisonName}`,
+      backUrl: `/`,
       fromDateValue,
       prisonName,
       toDateValue,

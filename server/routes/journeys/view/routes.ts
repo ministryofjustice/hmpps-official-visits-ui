@@ -39,7 +39,7 @@ export default function Index({
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
   route('/list', Permission.DEFAULT, new ViewOfficialVisitListHandler(officialVisitsService))
-  route('/sent-emails', Permission.DEFAULT, new SentEmailsHandler(officialVisitsService), ['fromDate', 'toDate'])
+  route('/sent-emails', Permission.MANAGE, new SentEmailsHandler(officialVisitsService), ['fromDate', 'toDate'])
   route(
     '/visit/:ovId',
     Permission.VIEW,

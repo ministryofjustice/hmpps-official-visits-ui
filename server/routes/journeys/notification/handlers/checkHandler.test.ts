@@ -80,6 +80,8 @@ describe('notification check handler', () => {
     // Description text for non-cancel action
     expect(res.text).toContain('A confirmation email will be sent confirming the details of this official visit.')
     expect(res.text).not.toContain('the cancellation of this official visit')
+    expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
+    expect($('.govuk-link').last().attr('href')).toContain(`/`)
   })
 
   it('GET should show cancellation text in description for cancel action', async () => {

@@ -20,11 +20,12 @@
   <h1 class="govuk-heading-l">Official visit</h1>
   {{ miniProfile(prisoner) }}
 
-        {% if EMAIL_NOTIFICATIONS_ENABLED and mode != 'amend' and hasVisitChanged and visit.visitStatus in ['CANCELLED', 'SCHEDULED'] %}
+        {% if user | hasPermission(PERMISSION.MANAGE) and EMAIL_NOTIFICATIONS_ENABLED and mode != 'amend' and hasVisitChanged and visit.visitStatus in ['CANCELLED', 'SCHEDULED'] %}
             {% set notificationPath = "/notification/enter-email-address/" + visit.officialVisitId + ("/cancel" if visit.visitStatus == 'CANCELLED' else "/edit") %}
             {{ mojAlert({
               variant: "warning",
               title: "Information about this visit has changed since a confirmation email was last sent",
+              showTitleAsHeading: true,
               dismissible: false,
               html: "You should <a href='" + notificationPath + "' class='govuk-link'>send another email</a> to update visitors with new information."
             }) }}
@@ -40,7 +41,7 @@
         "target": "_blank"
       }
     }) }}
-       {% if EMAIL_NOTIFICATIONS_ENABLED and visit.visitStatus in ['CANCELLED', 'SCHEDULED'] %}
+       {% if user | hasPermission(PERMISSION.MANAGE) and EMAIL_NOTIFICATIONS_ENABLED and visit.visitStatus in ['CANCELLED', 'SCHEDULED'] %}
            {{ govukButton({
                id: "send-email-button",
                text: "Send email confirmation",

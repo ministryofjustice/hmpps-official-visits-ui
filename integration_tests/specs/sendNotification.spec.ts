@@ -125,6 +125,17 @@ test.describe('Send a notification', () => {
   })
 
   test.describe('Amend (edit) journey', () => {
+    test('RBAC: should deny access to users without MANAGE permission', async ({ page }) => {
+      await login(page, {
+        name: 'AUser',
+        roles: [`ROLE_${AuthorisedRoles.DEFAULT}`],
+        active: true,
+        authSource: 'nomis',
+      })
+      await page.goto(`/notification/enter-email-address/${OV_ID}/edit`)
+      await NotAuthorisedPage.verifyOnPage(page)
+    })
+
     test('Happy path: enter email → check → sent (edit)', async ({ page }) => {
       await login(page)
       await page.goto(`/notification/enter-email-address/${OV_ID}/edit`)
@@ -157,6 +168,17 @@ test.describe('Send a notification', () => {
   })
 
   test.describe('Cancel journey', () => {
+    test('RBAC: should deny access to users without MANAGE permission', async ({ page }) => {
+      await login(page, {
+        name: 'AUser',
+        roles: [`ROLE_${AuthorisedRoles.DEFAULT}`],
+        active: true,
+        authSource: 'nomis',
+      })
+      await page.goto(`/notification/enter-email-address/${OV_ID}/cancel`)
+      await NotAuthorisedPage.verifyOnPage(page)
+    })
+
     test('Happy path: enter email → check → sent (cancel)', async ({ page }) => {
       await login(page)
       await page.goto(`/notification/enter-email-address/${OV_ID}/cancel`)
