@@ -46,10 +46,7 @@
                id: "send-email-button",
                text: "Send email confirmation",
                href: "/notification/enter-email-address/" + visit.officialVisitId + ("/cancel" if visit.visitStatus == 'CANCELLED' else "/edit"),
-               classes: 'govuk-button govuk-button--secondary',
-               attributes: {
-                   "target": "_blank"
-               }
+               classes: 'govuk-button govuk-button--secondary'
            }) }}
     {% endif %}
     {% if user | hasPermission(PERMISSION.MANAGE) and visit.visitStatus not in ['COMPLETED', 'CANCELLED'] %}
