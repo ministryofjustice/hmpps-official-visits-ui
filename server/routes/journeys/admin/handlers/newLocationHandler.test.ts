@@ -64,9 +64,9 @@ describe('NewVisitSlotHandler', () => {
       expect(details.length).toBe(1)
       expect(details.find('.govuk-details__summary-text').text().trim()).toBe('Understanding visitor limits')
       expect(details.find('.govuk-details__text').text()).toContain(
-        'When you book a time slot for an official visit, you can add a maximum number of',
+        'When you make a location available for official visits, you can add a maximum number of',
       )
-      expect(details.find('.govuk-details__text').text()).toContain('each video visit takes up 1 group visit slot')
+      expect(details.find('.govuk-details__text').text()).toContain('each video visit counts as 1 group, so this reduces group capacity in the location by 1')
       expect($('select#dpsLocationId').length).toBeGreaterThan(0)
       const options = $('select#dpsLocationId option')
         .map((i, el) => $(el).attr('value'))
