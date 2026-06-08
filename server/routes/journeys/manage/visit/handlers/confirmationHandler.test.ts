@@ -110,7 +110,9 @@ describe('confirmation handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('a[href="/notification/enter-email-address/1/create"]').text()).toEqual('Send email confirmation')
+          const $sendEmail = $('a[href="/notification/enter-email-address/1/create"]')
+          expect($sendEmail.text()).toEqual('Send email confirmation')
+          expect($sendEmail.attr('target')).toBeUndefined()
         })
     })
 
