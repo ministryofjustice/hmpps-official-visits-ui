@@ -45,7 +45,7 @@ export default class CheckHandler implements PageHandler {
       emailAddress,
       visit,
       contacts,
-      back: `/notification/enter-email-address/${ovId}/${action}`,
+      back: '/',
       change: `/notification/enter-email-address/${ovId}/${action}`,
       ovId,
       action,

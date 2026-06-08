@@ -117,6 +117,7 @@ describe('sent emails handler', () => {
     expect($('#fromDate').attr('value')).toBeUndefined()
     expect($('#toDate').attr('value')).toBeUndefined()
     expect($('.moj-pagination__results').first().text()).toContain('Showing 1 to 10 of 11 total results')
+    expect(res.text).toContain('<a href="/" class="govuk-back-link">Back</a>')
 
     const headers = $('.govuk-table__header')
     expect(headers.eq(0).text().trim()).toEqual('Visit date and time')
