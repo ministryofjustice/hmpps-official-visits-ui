@@ -74,9 +74,7 @@ describe('Prisoner search results handler', () => {
           expect(getGovukTableCell($, 1, 2).text().trim()).toBe('A1234AA')
           expect(getGovukTableCell($, 1, 3).text().trim()).toBe('1 June 1989')
           expect(getGovukTableCell($, 1, 4).text().trim()).toBe('C-1-1')
-          expect(getGovukTableCell($, 1, 5).text().trim()).toBe('99/12345')
-          expect(getGovukTableCell($, 1, 6).text().trim()).toBe('CRO123')
-          expect(getGovukTableCell($, 1, 7).find('a').attr('href')).toBe(
+          expect(getGovukTableCell($, 1, 5).find('a').attr('href')).toBe(
             'prisoner-select?prisonerNumber=A1234AA&page=0',
           )
 
