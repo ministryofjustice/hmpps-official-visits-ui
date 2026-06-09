@@ -180,6 +180,7 @@ describe('View an official visit', () => {
       const $ = cheerio.load(res.text)
 
       expect($('#send-email-button').attr('href')).toEqual('/notification/enter-email-address/1/edit')
+      expect($('#send-email-button').attr('target')).toBeUndefined()
       expect(res.text).toContain('Information about this visit has changed since a confirmation email was last sent')
       expect($('.moj-alert a.govuk-link').attr('href')).toEqual('/notification/enter-email-address/1/edit')
     })
