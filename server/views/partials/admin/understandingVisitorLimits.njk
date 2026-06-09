@@ -1,7 +1,7 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% set understandingVisitorLimitsHtml %}
-    <p class="govuk-body">When you book a time slot for an official visit, you can add a maximum number of:</p>
+    <p class="govuk-body">When you make a location available for official visits, you can add a maximum number of:</p>
     <ul class="govuk-list govuk-list--bullet">
         <li>visitors</li>
         <li>groups</li>
@@ -9,17 +9,18 @@
     </ul>
 
     <h2 class="govuk-heading-s">Visitors</h2>
-    <p class="govuk-body">The maximum number of people allowed during the time slot. This does not include prisoners.</p>
+    <p class="govuk-body">The maximum number of people allowed in the location. This does not include prisoners.</p>
 
     <h2 class="govuk-heading-s">Groups</h2>
-    <p class="govuk-body">The maximum number of visits allowed during the time slot. A visit can have more than one visitor. For example, a solicitor and an interpreter may need to visit a prisoner together.</p>
+    <p class="govuk-body">The maximum number of visits allowed in the location. A visit can have more than one visitor. For example, a solicitor and an interpreter may need to visit a prisoner together.</p>
 
     <h2 class="govuk-heading-s">Video visits</h2>
-    <p class="govuk-body">The maximum number of video visits allowed during the time slot.</p>
+    <p class="govuk-body">The maximum number of video visits allowed in the location.</p>
 
     <h2 class="govuk-heading-s">How the maximum numbers work</h2>
-    <p class="govuk-body">You can book in-person visits for this slot until you reach either the maximum visitors or groups.</p>
-    <p class="govuk-body">When you book a video visit, the only person attending from the prison will be the prisoner. So this does not affect the maximum visitors. However, each video visit takes up 1 group visit slot.</p>
+    <p class="govuk-body">You can book in-person visits for this location until you reach either the maximum number of visitors or the maximum number of groups.</p>
+    <p class="govuk-body">When you book a video visit, the only person attending from the prison will be the prisoner. This means it will not affect the maximum visitors.</p>
+    <p class="govuk-body">However, each video visit counts as 1 group, so this reduces group capacity in the location by 1.</p>
 
     <h2 class="govuk-heading-s">If you only want a location to host video visits</h2>
     <ol class="govuk-list govuk-list--number">
@@ -35,7 +36,14 @@
         <li>In the Maximum video visits box, enter 0.</li>
     </ol>
 
-    <p class="govuk-body">You can book phone visits in any location where slots are available.</p>
+    <p class="govuk-body">You can book phone visits into any location with available group capacity.</p>
+
+    <h2 class="govuk-heading-s">If you only want a location to host phone visits</h2>
+    <ol class="govuk-list govuk-list--number">
+        <li>In the Maximum visitors box, enter 0.</li>
+        <li>In the Maximum groups box, enter the number of phone visits you want to allow.</li>
+        <li>In the Maximum video visits box, enter 0.</li>
+    </ol>
 {% endset %}
 
 {{ govukDetails({
