@@ -114,7 +114,7 @@
                 }
               ]
             }) },
-            { html: (contact.firstName + " " + contact.lastName) | convertToTitleCase + '<br />' + badgeHtml },
+            { html: '<a href="' + CONTACTS_HOME_PAGE_URL + '/contacts/view/' + contact.contactId + '" class="govuk-link govuk-link--no-visited-state" target="_blank">' + contact | lastNameCommaFirstName + '</a><br />' + contact.contactId + '<br />' + badgeHtml },
             { text: contact.relationshipToPrisonerDescription or '-' },
             { html: addressHtml or 'Not entered' },
             { html: restrictionsHtml or 'None' }
@@ -129,7 +129,7 @@
               firstCellIsHeader: true,
               head: [
                 { text: "Add" },
-                { text: "Name" },
+                { text: "Contact name and person ID" },
                 { text: "Relationship" },
                 { text: "Address" },
                 { text: "Active restrictions" }

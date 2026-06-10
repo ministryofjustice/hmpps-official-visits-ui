@@ -16,7 +16,7 @@ import { Journey } from '../../../../../@types/express'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockOfficialVisitors, mockPrisonerRestrictions, mockPrisoner } from '../../../../../testutils/mocks'
 import { expectErrorMessages, expectNoErrorMessages, expectAlertErrors } from '../../../../testutils/expectErrorMessage'
-import { convertToTitleCase, formatDate } from '../../../../../utils/utils'
+import { convertToTitleCase, formatDate, lastNameCommaFirstName } from '../../../../../utils/utils'
 import config from '../../../../../config'
 import { AuthorisedRoles } from '../../../../../middleware/populateUserPermissions'
 import { JourneyVisitor, OfficialVisitJourney } from '../journey'
@@ -155,23 +155,27 @@ describe('Select official visitors', () => {
           // Official visitor table
           const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')
           expect(visitorHeaders.eq(0).text().trim()).toEqual('Add')
-          expect(visitorHeaders.eq(1).text().trim()).toEqual('Name')
+          expect(visitorHeaders.eq(1).text().trim()).toEqual('Contact name and person ID')
           expect(visitorHeaders.eq(2).text().trim()).toEqual('Relationship')
           expect(visitorHeaders.eq(3).text().trim()).toEqual('Address')
           expect(visitorHeaders.eq(4).text().trim()).toEqual('Active restrictions')
 
           const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
           // Row 1
-          expect(visitorRows.eq(0).text().trim()).toEqual(
-            `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName}`,
+          expect(visitorRows.eq(0).text().trim()).toContain(
+            lastNameCommaFirstName(mockOfficialVisitors[0]),
           )
+          expect(visitorRows.eq(0).text()).toContain(`${mockOfficialVisitors[0].contactId}`)
+          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/view/${mockOfficialVisitors[0].contactId}`)
           expect(visitorRows.eq(1).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
           expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
           // Row 2
-          expect(visitorRows.eq(4).text().trim()).toEqual(
-            `${mockOfficialVisitors[1].firstName} ${mockOfficialVisitors[1].lastName}`,
+          expect(visitorRows.eq(4).text().trim()).toContain(
+            lastNameCommaFirstName(mockOfficialVisitors[1]),
           )
+          expect(visitorRows.eq(4).text()).toContain(`${mockOfficialVisitors[1].contactId}`)
+          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/view/${mockOfficialVisitors[1].contactId}`)
           expect(visitorRows.eq(5).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions
@@ -397,23 +401,27 @@ describe('Select official visitors', () => {
           // Official visitor table
           const visitorHeaders = getByDataQa($, 'visitors-table').find('thead > tr > th')
           expect(visitorHeaders.eq(0).text().trim()).toEqual('Add')
-          expect(visitorHeaders.eq(1).text().trim()).toEqual('Name')
+          expect(visitorHeaders.eq(1).text().trim()).toEqual('Contact name and person ID')
           expect(visitorHeaders.eq(2).text().trim()).toEqual('Relationship')
           expect(visitorHeaders.eq(3).text().trim()).toEqual('Address')
           expect(visitorHeaders.eq(4).text().trim()).toEqual('Active restrictions')
 
           const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
           // Row 1
-          expect(visitorRows.eq(0).text().trim()).toEqual(
-            `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName}`,
+          expect(visitorRows.eq(0).text().trim()).toContain(
+            lastNameCommaFirstName(mockOfficialVisitors[0]),
           )
+          expect(visitorRows.eq(0).text()).toContain(`${mockOfficialVisitors[0].contactId}`)
+          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/view/${mockOfficialVisitors[0].contactId}`)
           expect(visitorRows.eq(1).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
           expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
           // Row 2
-          expect(visitorRows.eq(4).text().trim()).toEqual(
-            `${mockOfficialVisitors[1].firstName} ${mockOfficialVisitors[1].lastName}`,
+          expect(visitorRows.eq(4).text().trim()).toContain(
+            lastNameCommaFirstName(mockOfficialVisitors[1]),
           )
+          expect(visitorRows.eq(4).text()).toContain(`${mockOfficialVisitors[1].contactId}`)
+          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/view/${mockOfficialVisitors[1].contactId}`)
           expect(visitorRows.eq(5).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions
