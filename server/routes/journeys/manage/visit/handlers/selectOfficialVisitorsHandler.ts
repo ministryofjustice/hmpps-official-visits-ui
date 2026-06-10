@@ -82,8 +82,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const contacts = await Promise.all(
       contactsList.map(async contact => {
         const validRelationship =
-          contact.prisonerContactId &&
-          (await this.testValidRelationship(contact.prisonerContactId, res.locals.user))
+          contact.prisonerContactId && (await this.testValidRelationship(contact.prisonerContactId, res.locals.user))
 
         return {
           ...contact,

@@ -166,20 +166,20 @@ describe('Select official visitors', () => {
 
           const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
           // Row 1
-          expect(visitorRows.eq(0).text().trim()).toContain(
-            lastNameCommaFirstName(mockOfficialVisitors[0]),
-          )
+          expect(visitorRows.eq(0).text().trim()).toContain(lastNameCommaFirstName(mockOfficialVisitors[0]))
           expect(visitorRows.eq(0).text()).toContain(`${mockOfficialVisitors[0].contactId}`)
-          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/manage/${mockOfficialVisitors[0].contactId}/relationship/${mockOfficialVisitors[0].prisonerContactId}`)
+          expect(visitorRows.eq(0).find('a').attr('href')).toContain(
+            `/contacts/manage/${mockOfficialVisitors[0].contactId}/relationship/${mockOfficialVisitors[0].prisonerContactId}`,
+          )
           expect(visitorRows.eq(1).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
           expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
           // Row 2
-          expect(visitorRows.eq(4).text().trim()).toContain(
-            lastNameCommaFirstName(mockOfficialVisitors[1]),
-          )
+          expect(visitorRows.eq(4).text().trim()).toContain(lastNameCommaFirstName(mockOfficialVisitors[1]))
           expect(visitorRows.eq(4).text()).toContain(`${mockOfficialVisitors[1].contactId}`)
-          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/manage/${mockOfficialVisitors[1].contactId}/relationship/${mockOfficialVisitors[1].prisonerContactId}`)
+          expect(visitorRows.eq(4).find('a').attr('href')).toContain(
+            `/contacts/manage/${mockOfficialVisitors[1].contactId}/relationship/${mockOfficialVisitors[1].prisonerContactId}`,
+          )
           expect(visitorRows.eq(5).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions
@@ -412,20 +412,20 @@ describe('Select official visitors', () => {
 
           const visitorRows = getByDataQa($, 'visitors-table').find('tbody > tr > td')
           // Row 1
-          expect(visitorRows.eq(0).text().trim()).toContain(
-            lastNameCommaFirstName(mockOfficialVisitors[0]),
-          )
+          expect(visitorRows.eq(0).text().trim()).toContain(lastNameCommaFirstName(mockOfficialVisitors[0]))
           expect(visitorRows.eq(0).text()).toContain(`${mockOfficialVisitors[0].contactId}`)
-          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/manage/${mockOfficialVisitors[0].contactId}/relationship/${mockOfficialVisitors[0].prisonerContactId}`)
+          expect(visitorRows.eq(0).find('a').attr('href')).toContain(
+            `/contacts/manage/${mockOfficialVisitors[0].contactId}/relationship/${mockOfficialVisitors[0].prisonerContactId}`,
+          )
           expect(visitorRows.eq(1).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
           expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
           // Row 2
-          expect(visitorRows.eq(4).text().trim()).toContain(
-            lastNameCommaFirstName(mockOfficialVisitors[1]),
-          )
+          expect(visitorRows.eq(4).text().trim()).toContain(lastNameCommaFirstName(mockOfficialVisitors[1]))
           expect(visitorRows.eq(4).text()).toContain(`${mockOfficialVisitors[1].contactId}`)
-          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/manage/${mockOfficialVisitors[1].contactId}/relationship/${mockOfficialVisitors[1].prisonerContactId}`)
+          expect(visitorRows.eq(4).find('a').attr('href')).toContain(
+            `/contacts/manage/${mockOfficialVisitors[1].contactId}/relationship/${mockOfficialVisitors[1].prisonerContactId}`,
+          )
           expect(visitorRows.eq(5).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions

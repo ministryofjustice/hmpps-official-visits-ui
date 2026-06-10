@@ -59,7 +59,10 @@ export default function AmendRoutes({
   // These are the subsequent steps in the journey to create an official visit
   route(`/visit-type`, new VisitTypeHandler(officialVisitsService))
   route(`/time-slot`, new TimeSlotHandler(officialVisitsService, activitiesService))
-  route(`/select-official-visitors`, new SelectOfficialVisitorsHandler(officialVisitsService, personalRelationshipsService, false))
+  route(
+    `/select-official-visitors`,
+    new SelectOfficialVisitorsHandler(officialVisitsService, personalRelationshipsService, false),
+  )
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService, personalRelationshipsService))
   route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
   route('/equipment', new EquipmentHandler(officialVisitsService))
