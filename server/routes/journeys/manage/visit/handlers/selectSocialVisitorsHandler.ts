@@ -3,6 +3,8 @@ import { isFuture } from 'date-fns'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
+import config from '../../../../../config'
 import { JourneyVisitor } from '../journey'
 import { cyaGuard, recallContacts, saveVisitors } from '../createJourneyState'
 import { getBackLink } from './utils'
@@ -12,7 +14,10 @@ import { prisonAllowsSocialVisitors } from '../../../../../utils/utils'
 export default class SelectSocialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_SOCIAL_VISITORS_PAGE
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor(
+    private readonly officialVisitsService: OfficialVisitsService,
+    private readonly personalRelationshipsService: PersonalRelationshipsService,
+  ) {}
 
   private getSelectableContacts = async (
     req: Request,
@@ -62,7 +67,23 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     const rawErrors = req.flash('alertErrors')[0]
     const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
-    const contacts = recallContacts(req.session.journey, 'S', selectableContacts)
+    const contactsList = recallContacts(req.session.journey, 'S', selectableContacts)
+
+    const contacts = await Promise.all(
+      contactsList.map(async contact => {
+        const validRelationship =
+          contact.prisonerContactId &&
+          (await this.testValidRelationship(contact.prisonerContactId, res.locals.user))
+
+        return {
+          ...contact,
+          relationshipUrl: validRelationship
+            ? `${config.serviceUrls.prisonerContacts}/prisoner/${prisonerNumber}/contacts/manage/${contact.contactId}/relationship/${contact.prisonerContactId}`
+            : `${config.serviceUrls.prisonerContacts}/prisoner/${prisonerNumber}/contacts/list`,
+        }
+      }),
+    )
+
     const hasIssueVisitors = contacts.some(v => Object.values(v.issues).some(o => o))
     const hasNoRelationshipVisitors = contacts.some(v => v.issues.noRelationship)
     const hasNotApprovedVisitors = contacts.some(v => v.issues.notApproved)
@@ -123,5 +144,14 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
 
     req.session.journey.officialVisit.socialVisitorsPageCompleted = true
     return res.redirect(`assistance-required`)
+  }
+
+  async testValidRelationship(prisonerContactId: number, user: HmppsUser) {
+    try {
+      await this.personalRelationshipsService.getPrisonerContactRelationship(prisonerContactId, user)
+      return true
+    } catch {
+      return false
+    }
   }
 }

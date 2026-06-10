@@ -5,6 +5,7 @@ import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetu
 import AuditService, { Page } from '../../../../../services/auditService'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import {
   getPageHeader,
   getProgressTrackerLabels,
@@ -24,10 +25,12 @@ import { AuthorisedRoles } from '../../../../../middleware/populateUserPermissio
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
 jest.mock('../../../../../services/officialVisitsService')
+jest.mock('../../../../../services/personalRelationshipsService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerService = new PrisonerService(null) as jest.Mocked<PrisonerService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
+const personalRelationshipsService = new PersonalRelationshipsService(null) as jest.Mocked<PersonalRelationshipsService>
 
 let app: Express
 
@@ -55,7 +58,7 @@ const appSetup = (
   userRoles: AuthorisedRoles[] = user.userRoles as AuthorisedRoles[],
 ) => {
   app = appWithAllRoutes({
-    services: { auditService, prisonerService, officialVisitsService },
+    services: { auditService, prisonerService, officialVisitsService, personalRelationshipsService },
     userSupplier: () => ({ ...user, userRoles }),
     journeySessionSupplier: () => journeySession as Journey,
   })
@@ -64,6 +67,7 @@ const appSetup = (
 beforeEach(() => {
   appSetup()
   officialVisitsService.getAllSocialContacts.mockResolvedValue(mockSocialVisitors)
+  personalRelationshipsService.getPrisonerContactRelationship.mockResolvedValue({} as never)
   officialVisitsService.getAvailableSlots.mockResolvedValue([
     {
       timeSlotId: 1,
@@ -165,7 +169,7 @@ describe('Select social visitors', () => {
             lastNameCommaFirstName(mockSocialVisitors[0]),
           )
           expect(visitorRows.eq(0).text()).toContain(`${mockSocialVisitors[0].contactId}`)
-          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/view/${mockSocialVisitors[0].contactId}`)
+          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/manage/${mockSocialVisitors[0].contactId}/relationship/${mockSocialVisitors[0].prisonerContactId}`)
           expect(visitorRows.eq(1).text().trim()).toEqual(mockSocialVisitors[0].relationshipToPrisonerDescription)
           expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
@@ -174,7 +178,7 @@ describe('Select social visitors', () => {
             lastNameCommaFirstName(mockSocialVisitors[1]),
           )
           expect(visitorRows.eq(4).text()).toContain(`${mockSocialVisitors[1].contactId}`)
-          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/view/${mockSocialVisitors[1].contactId}`)
+          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/manage/${mockSocialVisitors[1].contactId}/relationship/${mockSocialVisitors[1].prisonerContactId}`)
           expect(visitorRows.eq(5).text().trim()).toEqual(mockSocialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions
@@ -369,7 +373,7 @@ describe('Select social visitors', () => {
             lastNameCommaFirstName(mockSocialVisitors[0]),
           )
           expect(visitorRows.eq(0).text()).toContain(`${mockSocialVisitors[0].contactId}`)
-          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/view/${mockSocialVisitors[0].contactId}`)
+          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/manage/${mockSocialVisitors[0].contactId}/relationship/${mockSocialVisitors[0].prisonerContactId}`)
           expect(visitorRows.eq(1).text().trim()).toEqual(mockSocialVisitors[0].relationshipToPrisonerDescription)
           expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
@@ -378,7 +382,7 @@ describe('Select social visitors', () => {
             lastNameCommaFirstName(mockSocialVisitors[1]),
           )
           expect(visitorRows.eq(4).text()).toContain(`${mockSocialVisitors[1].contactId}`)
-          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/view/${mockSocialVisitors[1].contactId}`)
+          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/manage/${mockSocialVisitors[1].contactId}/relationship/${mockSocialVisitors[1].prisonerContactId}`)
           expect(visitorRows.eq(5).text().trim()).toEqual(mockSocialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions

@@ -5,6 +5,7 @@ import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetu
 import AuditService, { Page } from '../../../../../services/auditService'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import {
   getPageHeader,
   getProgressTrackerLabels,
@@ -24,10 +25,12 @@ import { JourneyVisitor, OfficialVisitJourney } from '../journey'
 jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
 jest.mock('../../../../../services/officialVisitsService')
+jest.mock('../../../../../services/personalRelationshipsService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerService = new PrisonerService(null) as jest.Mocked<PrisonerService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
+const personalRelationshipsService = new PersonalRelationshipsService(null) as jest.Mocked<PersonalRelationshipsService>
 
 let app: Express
 
@@ -57,7 +60,7 @@ const appSetup = (
 ) => {
   config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
   app = appWithAllRoutes({
-    services: { auditService, prisonerService, officialVisitsService },
+    services: { auditService, prisonerService, officialVisitsService, personalRelationshipsService },
     userSupplier: () => ({ ...user, userRoles }),
     journeySessionSupplier: () => journeySession as Journey,
   })
@@ -66,6 +69,7 @@ const appSetup = (
 beforeEach(() => {
   appSetup()
   officialVisitsService.getAllOfficialContacts.mockResolvedValue(mockOfficialVisitors)
+  personalRelationshipsService.getPrisonerContactRelationship.mockResolvedValue({} as never)
   officialVisitsService.getAvailableSlots.mockResolvedValue([
     {
       timeSlotId: 1,
@@ -166,7 +170,7 @@ describe('Select official visitors', () => {
             lastNameCommaFirstName(mockOfficialVisitors[0]),
           )
           expect(visitorRows.eq(0).text()).toContain(`${mockOfficialVisitors[0].contactId}`)
-          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/view/${mockOfficialVisitors[0].contactId}`)
+          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/manage/${mockOfficialVisitors[0].contactId}/relationship/${mockOfficialVisitors[0].prisonerContactId}`)
           expect(visitorRows.eq(1).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
           expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
@@ -175,7 +179,7 @@ describe('Select official visitors', () => {
             lastNameCommaFirstName(mockOfficialVisitors[1]),
           )
           expect(visitorRows.eq(4).text()).toContain(`${mockOfficialVisitors[1].contactId}`)
-          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/view/${mockOfficialVisitors[1].contactId}`)
+          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/manage/${mockOfficialVisitors[1].contactId}/relationship/${mockOfficialVisitors[1].prisonerContactId}`)
           expect(visitorRows.eq(5).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions
@@ -412,7 +416,7 @@ describe('Select official visitors', () => {
             lastNameCommaFirstName(mockOfficialVisitors[0]),
           )
           expect(visitorRows.eq(0).text()).toContain(`${mockOfficialVisitors[0].contactId}`)
-          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/view/${mockOfficialVisitors[0].contactId}`)
+          expect(visitorRows.eq(0).find('a').attr('href')).toContain(`/contacts/manage/${mockOfficialVisitors[0].contactId}/relationship/${mockOfficialVisitors[0].prisonerContactId}`)
           expect(visitorRows.eq(1).text().trim()).toEqual(mockOfficialVisitors[0].relationshipToPrisonerDescription)
           expect(visitorRows.eq(2).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(3).text().trim()).toBeDefined() // Restrictions
@@ -421,7 +425,7 @@ describe('Select official visitors', () => {
             lastNameCommaFirstName(mockOfficialVisitors[1]),
           )
           expect(visitorRows.eq(4).text()).toContain(`${mockOfficialVisitors[1].contactId}`)
-          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/view/${mockOfficialVisitors[1].contactId}`)
+          expect(visitorRows.eq(4).find('a').attr('href')).toContain(`/contacts/manage/${mockOfficialVisitors[1].contactId}/relationship/${mockOfficialVisitors[1].prisonerContactId}`)
           expect(visitorRows.eq(5).text().trim()).toEqual(mockOfficialVisitors[1].relationshipToPrisonerDescription)
           expect(visitorRows.eq(6).text().trim()).toContain(`Acorn Road`)
           expect(visitorRows.eq(7).text().trim()).toBeDefined() // Restrictions
