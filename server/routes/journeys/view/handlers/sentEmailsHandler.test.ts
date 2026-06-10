@@ -1,12 +1,14 @@
 import type { Express } from 'express'
 import request from 'supertest'
 import * as cheerio from 'cheerio'
+import { subDays } from 'date-fns'
 import { appWithAllRoutes, flashProvider, user } from '../../../testutils/appSetup'
 import AuditService, { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { PagedModelSentEmailRecord } from '../../../../@types/officialVisitsApi/types'
 import { getGovukTableCell, getPageHeader } from '../../../testutils/cheerio'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
+import { formatDate } from '../../../../utils/utils'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/officialVisitsService')
@@ -48,7 +50,8 @@ const RESULTS: PagedModelSentEmailRecord = {
       visitDate: '2026-05-21',
       visitStartTime: '13:30',
       visitEndTime: '16:00',
-      prisonerName: 'Harrison, Tim',
+      firstName: 'Tim',
+      lastName: 'Harrison',
       prisonerNumber: 'G4793VF',
       emailAddress: 'prabash.balasuriya@justice.gov.uk',
       emailStatus: 'SENT',
@@ -62,7 +65,8 @@ const RESULTS: PagedModelSentEmailRecord = {
       visitDate: '2026-05-20',
       visitStartTime: '13:30',
       visitEndTime: '16:00',
-      prisonerName: 'Doe, Jane',
+      firstName: 'Jane',
+      lastName: 'Doe',
       prisonerNumber: 'A1234AA',
       emailAddress: 'jane.doe@example.com',
       emailStatus: 'FAILED',
@@ -76,7 +80,8 @@ const RESULTS: PagedModelSentEmailRecord = {
       visitDate: '2026-05-19',
       visitStartTime: '13:30',
       visitEndTime: '16:00',
-      prisonerName: 'Malicious, Peter',
+      firstName: 'Peter',
+      lastName: 'Malicious',
       prisonerNumber: 'B2345BB',
       emailAddress: 'peter.malicious@example.com',
       emailStatus: 'SENT',
@@ -114,8 +119,10 @@ describe('sent emails handler', () => {
     expect(getPageHeader($)).toEqual('Official visit emails sent from HMP Example (HMI)')
     expect($('.govuk-body').first().text()).toContain('View the status of emails that have been sent to visitors')
     expect($('.search-form .govuk-heading-s').text().trim()).toEqual('Search by date range')
-    expect($('#fromDate').attr('value')).toBeUndefined()
-    expect($('#toDate').attr('value')).toBeUndefined()
+    const fromDate = subDays(new Date(), 7)
+    expect($('#fromDate').attr('value')).toEqual(formatDate(fromDate, 'dd/MM/yyyy'))
+    const toDate = new Date()
+    expect($('#toDate').attr('value')).toEqual(formatDate(toDate, 'dd/MM/yyyy'))
     expect($('.moj-pagination__results').first().text()).toContain('Showing 1 to 10 of 11 total results')
     expect(res.text).toContain('<a href="/" class="govuk-back-link">Back</a>')
 
@@ -141,7 +148,10 @@ describe('sent emails handler', () => {
 
     expect(officialVisitsService.getSentEmails).toHaveBeenCalledWith(
       user.activeCaseLoadId,
-      {},
+      {
+        fromDate: formatDate(fromDate, 'yyyy-MM-dd'),
+        toDate: formatDate(toDate || new Date(), 'yyyy-MM-dd'),
+      },
       1,
       10,
       expect.objectContaining(user),
