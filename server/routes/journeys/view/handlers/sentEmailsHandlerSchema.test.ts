@@ -37,4 +37,19 @@ describe('sentEmailsHandlerSchema', () => {
       )
     }
   })
+
+  it('rejects a from date that is after the to date', async () => {
+    const result = await schema.safeParseAsync({ fromDate: '20/05/2026', toDate: '15/05/2026' })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            message: 'To date must be the same or after the from date',
+            path: ['toDate'],
+          }),
+        ]),
+      )
+    }
+  })
 })
