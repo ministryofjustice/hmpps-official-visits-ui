@@ -728,6 +728,49 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/subject-access-request': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Provides content for a prisoner to satisfy the needs of a subject access request on their behalf
+     * @description Requires role SAR_DATA_ACCESS or additional role as specified by hmpps.sar.additionalAccessRole configuration.
+     *
+     *     Requires one of the following roles:
+     *     * SAR_DATA_ACCESS
+     */
+    get: operations['getSarContentByReference']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/subject-access-request/template': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * @description Requires one of the following roles:
+     *     * SAR_DATA_ACCESS
+     */
+    get: operations['getServiceTemplate']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/reference-data/group/{groupCode}': {
     parameters: {
       query?: never
@@ -939,6 +982,31 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/official-visit/id/{officialVisitId}/audited-events': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get the audited events for an official visit
+     * @description Get the audited event details of an official visit
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS_RW
+     */
+    get: operations['getOfficialVisitAuditedEvents']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/notification/{officialVisitId}/change-status': {
     parameters: {
       query?: never
@@ -947,7 +1015,7 @@ export interface paths {
       cookie?: never
     }
     /**
-     * Check if an official visit has been modified since the last notification was sent.
+     * Check whether the visit has changed since the last notification was sent, or whether the email was sent after the visit was created.
      * @description Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
      *     * ROLE_OFFICIAL_VISITS__R
@@ -2930,10 +2998,15 @@ export interface components {
        */
       visitEndTime: string
       /**
-       * @description The prisoner's full name
-       * @example John Smith
+       * @description The first name of the visitor
+       * @example Bob
        */
-      prisonerName: string
+      firstName?: string | null
+      /**
+       * @description The last name of the visitor
+       * @example Harris
+       */
+      lastName?: string | null
       /**
        * @description The prisoner's number
        * @example G1234AB
@@ -3202,6 +3275,40 @@ export interface components {
       lastName?: string | null
       /** Format: uuid */
       dpsLocationId: string
+    }
+    Attachment: {
+      /**
+       * Format: int32
+       * @description The number of the attachment which will match any corresponding reference in the content section
+       */
+      attachmentNumber: number
+      /** @description The name or description of the attachment which will be included in the report */
+      name: string
+      /** @description The content type of the attachment */
+      contentType: string
+      /** @description The url to be used to download the attachment file */
+      url: string
+      /**
+       * Format: int32
+       * @description The size of the attachment file in bytes
+       */
+      filesize?: number | null
+      /** @description The filename of attachment file */
+      filename: string
+      /** @description The additional headers to use when calling the url for fetching this attachment */
+      headers?: components['schemas']['AttachmentHeader'][] | null
+    }
+    AttachmentHeader: {
+      /** @description The name of the header */
+      name: string
+      /** @description The value of the header */
+      value: string
+    }
+    HmppsSubjectAccessRequestContent: {
+      /** @description The content of the subject access request response */
+      content: unknown
+      /** @description The details of any attachments for the subject access request response */
+      attachments?: components['schemas']['Attachment'][] | null
     }
     /** @enum {string} */
     ReferenceDataGroup:
@@ -3631,6 +3738,85 @@ export interface components {
       phoneNumber?: string | null
       /** @description The visitors email address if present */
       emailAddress?: string | null
+    }
+    AuditedEventChange: {
+      /**
+       * @description The name of the field affected by the audited event
+       * @example start_time
+       */
+      field: string
+      /**
+       * @description The old value of the field affected by the audited event
+       * @example 12:00
+       */
+      oldValue?: string | null
+      /**
+       * @description The new value of the field affected by the audited event
+       * @example 17:00
+       */
+      newValue?: string | null
+    }
+    AuditedEventResponse: {
+      /**
+       * Format: int64
+       * @description The audited event identifier
+       * @example 1
+       */
+      auditedEventId: number
+      /**
+       * Format: int64
+       * @description The official visit identifier
+       * @example 1
+       */
+      officialVisitId: number
+      /**
+       * @description A short summary of the audit event
+       * @example Visit updated
+       */
+      eventSummary: string
+      /**
+       * @description The type of audit event
+       * @example UPDATE
+       * @enum {string}
+       */
+      eventType: 'CREATE' | 'UPDATE'
+      /**
+       * @description The changes related to an update, otherwise empty
+       * @example [
+       *       {
+       *         'field': 'start_time',
+       *         'oldValue': '12:00',
+       *         'newValue': '17:00'
+       *       },
+       *       {
+       *         'field': 'end_time',
+       *         'oldValue': '14:00',
+       *         'newValue': '19:00'
+       *       }
+       *     ]
+       */
+      eventChanges: components['schemas']['AuditedEventChange'][]
+      /**
+       * Format: date-time
+       * @description The date and time the audited event was recorded
+       * @example 2026-05-04 09:50
+       */
+      eventDateTime: string
+      /**
+       * @description The username of the user responsible for the audited event
+       * @example X999X
+       */
+      eventUsername: string
+      /**
+       * @description The full name of the user responsible for the audited event
+       * @example Fred Bloggs
+       */
+      eventUserFullName: string
+      /**
+       * @description A boolean indicator to determine if the audited event is considered a significant change to the official visit.
+       * @example true
+       */
+      significantChange: boolean
     }
     VisitChangeStatusResponse: {
       /**
@@ -5575,6 +5761,127 @@ export interface operations {
       }
     }
   }
+  getSarContentByReference: {
+    parameters: {
+      query?: {
+        /** @description NOMIS Prison Reference Number */
+        prn?: string
+        /** @description nDelius Case Reference Number */
+        crn?: string
+        /** @description Optional parameter denoting minimum date of event occurrence which should be returned in the response */
+        fromDate?: string
+        /** @description Optional parameter denoting maximum date of event occurrence which should be returned in the response */
+        toDate?: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Request successfully processed - content found */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HmppsSubjectAccessRequestContent']
+        }
+      }
+      /** @description Request successfully processed - no content found */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': Record<string, never>
+        }
+      }
+      /** @description Subject Identifier is not recognised by this service */
+      209: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': Record<string, never>
+        }
+      }
+      /** @description The client does not have authorisation to make this request */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unexpected error occurred */
+      500: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getServiceTemplate: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Request successfully processed - return template file content */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'plain/text': string
+        }
+      }
+      /** @description The client does not have authorisation to make this request */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Unexpected error occurred */
+      500: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   getReferenceDataByGroup: {
     parameters: {
       query?: {
@@ -6007,6 +6314,59 @@ export interface operations {
       }
     }
   }
+  getOfficialVisitAuditedEvents: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The official visit ID
+         * @example 123456
+         */
+        officialVisitId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Returns a list of audited events */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AuditedEventResponse'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Official visit not found */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   getVisitChangeStatus: {
     parameters: {
       query?: never
@@ -6022,7 +6382,7 @@ export interface operations {
     }
     requestBody?: never
     responses: {
-      /** @description Check completed - returns whether the visit has changed since the last notification was sent */
+      /** @description Check completed — returns whether the visit has changed since the last notification was sent, or whether the email was sent after the visit was created. */
       200: {
         headers: {
           [name: string]: unknown

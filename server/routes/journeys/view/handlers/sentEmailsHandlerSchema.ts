@@ -2,6 +2,7 @@ import { isValid } from 'date-fns'
 import z from 'zod'
 import { createSchema } from '../../../../middleware/validationMiddleware'
 import { parseDatePickerDate } from '../../../../utils/utils'
+import { getMinDateChecker } from '../../../validators/validateDate'
 
 export const schema = createSchema(
   {
@@ -17,6 +18,18 @@ export const schema = createSchema(
 
     if (data.toDate && !isValid(parseDatePickerDate(data.toDate))) {
       ctx.addIssue({ code: 'custom', message: 'To date must be a real date', path: ['toDate'] })
+    }
+    if (data.fromDate && data.toDate) {
+      const fromDate = parseDatePickerDate(data.fromDate)
+      const toDate = parseDatePickerDate(data.toDate)
+
+      if (!getMinDateChecker(fromDate)(toDate)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'To date must be the same or after the from date',
+          path: ['toDate'],
+        })
+      }
     }
   })
   .transform(data => ({

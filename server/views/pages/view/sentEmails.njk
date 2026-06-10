@@ -52,7 +52,7 @@
         {% set rows = [] %}
         {% for email in results.content %}
           {% set prisonerHtml %}
-            <a class="govuk-link govuk-link--no-visited-state" href="/view/visit/{{ email.officialVisitId }}">{{ email.prisonerName }}</a><br>{{ email.prisonerNumber }}
+            <a class="govuk-link govuk-link--no-visited-state" target="_blank" href="/view/visit/{{ email.officialVisitId }}"> {{ (email.lastName + ", " + email.firstName) | convertToTitleCase }}</a><br>{{ email.prisonerNumber }}
           {% endset %}
 
           {% set dateAndTimeHtml %}

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { subDays } from 'date-fns'
 import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
@@ -50,16 +51,18 @@ export default class SentEmailsHandler implements PageHandler {
 
     const formResponses = (res.locals['formResponses'] ?? {}) as { fromDate?: string; toDate?: string }
 
-    const fromDateValue = formResponses.fromDate || formatInputDate(search.fromDate)
-    const toDateValue = formResponses.toDate || formatInputDate(search.toDate)
+    const fromDate = search.fromDate || subDays(new Date(), 7)
+    const fromDateValue = formResponses.fromDate || formatInputDate(fromDate)
+    const toDate = search.toDate || new Date()
+    const toDateValue = formResponses.toDate || formatInputDate(toDate)
 
     const criteria: SentEmailSearchCriteriaRequest = {}
-    if (search.fromDate) {
-      const formattedFromDate = formatDate(search.fromDate, 'yyyy-MM-dd')
+    if (fromDate) {
+      const formattedFromDate = formatDate(fromDate, 'yyyy-MM-dd')
       if (formattedFromDate) criteria.fromDate = formattedFromDate
     }
-    if (search.toDate) {
-      const formattedToDate = formatDate(search.toDate, 'yyyy-MM-dd')
+    if (toDate) {
+      const formattedToDate = formatDate(toDate || new Date(), 'yyyy-MM-dd')
       if (formattedToDate) criteria.toDate = formattedToDate
     }
 
