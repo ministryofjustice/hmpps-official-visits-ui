@@ -22,8 +22,8 @@ import {
   OfficialVisitUpdateVisitorsRequest,
   OverlappingVisitsResponse,
   ReferenceDataItem,
-  SentEmailSearchCriteriaRequest,
-  PagedModelSentEmailRecord,
+  NotificationSearchRequest,
+  PagedModelSentNotification,
   TimeSlot,
   TimeSlotSummary,
   TimeSlotSummaryItem,
@@ -347,18 +347,18 @@ export default class OfficialVisitsApiClient extends RestClient {
     )
   }
 
-  async searchSentEmails(
+  async searchSentNotifications(
     prisonCode: string,
-    criteria: SentEmailSearchCriteriaRequest,
+    request: NotificationSearchRequest,
     page: number,
     size: number,
     user: HmppsUser,
   ) {
-    return this.post<PagedModelSentEmailRecord>(
+    return this.post<PagedModelSentNotification>(
       {
-        path: `/notification/prison/${prisonCode}/sent-emails`,
+        path: `/notification/prison/${prisonCode}/sent-notifications`,
         query: { page, size },
-        data: criteria,
+        data: request,
       },
       asSystem(user.username),
     )

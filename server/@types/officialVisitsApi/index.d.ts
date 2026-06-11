@@ -390,7 +390,6 @@ export interface paths {
      *
      *     Requires one of the following roles:
      *     * OFFICIAL_VISITS_MIGRATION
-     *     * OFFICIAL_VISITS_ADMIN
      */
     post: operations['repairPrisonerVisits']
     delete?: never
@@ -540,7 +539,7 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Endpoint to support the sending of notifications for official visits.
+     * Send notifications for an official visit
      * @description Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
      *     * ROLE_OFFICIAL_VISITS__RW
@@ -562,13 +561,13 @@ export interface paths {
     get?: never
     put?: never
     /**
-     * Endpoint to retrieve a list of sent email notifications with search and pagination support.
+     * Retrieve a list of sent notifications with search parameters and pagination support.
      * @description Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
      *     * ROLE_OFFICIAL_VISITS__R
      *     * ROLE_OFFICIAL_VISITS_RW
      */
-    post: operations['searchSentEmails']
+    post: operations['searchSentNotifications']
     delete?: never
     options?: never
     head?: never
@@ -707,20 +706,19 @@ export interface paths {
      * Endpoint to return one official visit by ID
      * @description Requires one of the following roles:
      *     * OFFICIAL_VISITS_MIGRATION
-     *     * OFFICIAL_VISITS_ADMIN
      */
     get: operations['getOfficialVisitById']
     put?: never
     post?: never
     /**
      * Delete an official visit by ID
-     * @description Delete an official visit including all related information.
+     * @description Requires role: OFFICIAL_VISITS_MIGRATION.
+     *           Delete an official visit including all related information.
      *           This endpoint is idempotent, so if the visit is not present it will silently succeed.
      *
      *
      *     Requires one of the following roles:
      *     * OFFICIAL_VISITS_MIGRATION
-     *     * OFFICIAL_VISITS_ADMIN
      */
     delete: operations['syncDeleteOfficialVisit']
     options?: never
@@ -830,9 +828,8 @@ export interface paths {
      * Return all official visits for a prisoner between two dates with optional current term flag
      * @description Requires one of the following roles:
      *     * OFFICIAL_VISITS_MIGRATION
-     *     * OFFICIAL_VISITS_ADMIN
      */
-    get: operations['getAllOfficialVisitForPrisoner']
+    get: operations['getAllOfficialVisitsForPrisoner']
     put?: never
     post?: never
     delete?: never
@@ -852,7 +849,6 @@ export interface paths {
      * Return a paged list of all official visit IDs
      * @description Requires one of the following roles:
      *     * OFFICIAL_VISITS_MIGRATION
-     *     * OFFICIAL_VISITS_ADMIN
      */
     get: operations['getAllOfficialVisitIds']
     put?: never
@@ -874,7 +870,6 @@ export interface paths {
      * Return one official visit by ID
      * @description Requires one of the following roles:
      *     * OFFICIAL_VISITS_MIGRATION
-     *     * OFFICIAL_VISITS_ADMIN
      */
     get: operations['getOfficialVisitById_1']
     put?: never
@@ -982,6 +977,29 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/official-visit/id/{officialVisitId}/notifications': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get all notifications sent for an official visit ID.
+     * @description Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS_RW
+     */
+    get: operations['getNotificationsByOfficialVisitId']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/official-visit/id/{officialVisitId}/audited-events': {
     parameters: {
       query?: never
@@ -1067,7 +1085,7 @@ export interface paths {
      *
      *
      *     Requires one of the following roles:
-     *     * OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
      */
     get: operations['getAllTimeSlotsAndVisitSlots']
     put?: never
@@ -1201,7 +1219,9 @@ export interface paths {
     trace?: never
   }
 }
+
 export type webhooks = Record<string, never>
+
 export interface components {
   schemas: {
     /** @description Request to Update a new prison visit slot for official visits */
@@ -2946,8 +2966,8 @@ export interface components {
       /** @description The recipients the notification was sent to */
       recipients: components['schemas']['NotificationRecipient'][]
     }
-    /** @description The request containing sent-email search criteria */
-    SentEmailSearchCriteria: {
+    /** @description Notification search request */
+    NotificationSearchRequest: {
       /**
        * Format: date
        * @description The start date filter (optional)
@@ -2961,11 +2981,11 @@ export interface components {
        */
       toDate?: string | null
     }
-    PagedModelSentEmailRecord: {
-      content?: components['schemas']['SentEmailRecord'][]
+    PagedModelSentNotification: {
+      content?: components['schemas']['SentNotification'][]
       page?: components['schemas']['PageMetadata']
     }
-    SentEmailRecord: {
+    SentNotification: {
       /**
        * Format: int64
        * @description The official visit ID
@@ -3739,6 +3759,59 @@ export interface components {
       /** @description The visitors email address if present */
       emailAddress?: string | null
     }
+    OfficialVisitNotification: {
+      /**
+       * Format: int64
+       * @description The notification id
+       * @example 1
+       */
+      notificationId: number
+      /**
+       * Format: int64
+       * @description The official visit id
+       * @example 1
+       */
+      officialVisitId: number
+      /**
+       * @description The template id
+       * @example 1
+       */
+      templateId: string
+      /**
+       * @description The email address
+       * @example exmple@example.com
+       */
+      emailAddress: string
+      /**
+       * @description The reason
+       * @example the reason
+       */
+      reason: string
+      /**
+       * Format: uuid
+       * @description The gov notify notification id
+       * @example 12345678-1234-1234-1234-123456789012
+       */
+      govNotifyNotificationId: string
+      /**
+       * @description The email status
+       * @example SENT
+       * @enum {string}
+       */
+      emailStatus: 'PENDING' | 'SENT' | 'PERMANENT_FAILURE' | 'TEMPORARY_FAILURE' | 'TECHNICAL_FAILURE' | 'UNKNOWN'
+      /**
+       * Format: date-time
+       * @description The created time
+       * @example 09:00
+       */
+      createdTime: string
+      /**
+       * Format: date-time
+       * @description The status updated time
+       * @example 10:00
+       */
+      statusUpdatedTime?: string | null
+    }
     AuditedEventChange: {
       /**
        * @description The name of the field affected by the audited event
@@ -3931,7 +4004,9 @@ export interface components {
   headers: never
   pathItems: never
 }
+
 export type $defs = Record<string, never>
+
 export interface operations {
   syncGetVisitSlotById: {
     parameters: {
@@ -5369,10 +5444,10 @@ export interface operations {
       }
     }
   }
-  searchSentEmails: {
+  searchSentNotifications: {
     parameters: {
       query?: {
-        /** @description Zero-based page index (0..N) */
+        /** @description Zero-based page index (0..n) */
         page?: number
         /** @description The size of the page to be returned */
         size?: number
@@ -5389,7 +5464,7 @@ export interface operations {
     }
     requestBody: {
       content: {
-        'application/json': components['schemas']['SentEmailSearchCriteria']
+        'application/json': components['schemas']['NotificationSearchRequest']
       }
     }
     responses: {
@@ -5399,7 +5474,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['PagedModelSentEmailRecord']
+          'application/json': components['schemas']['PagedModelSentNotification']
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */
@@ -5972,7 +6047,7 @@ export interface operations {
       }
     }
   }
-  getAllOfficialVisitForPrisoner: {
+  getAllOfficialVisitsForPrisoner: {
     parameters: {
       query?: {
         /** @description Current term only, true of false. Defaults to true. */
@@ -6305,6 +6380,53 @@ export interface operations {
       }
       /** @description Official visit not found */
       404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getNotificationsByOfficialVisitId: {
+    parameters: {
+      query?: {
+        /** @description Sort results by created time desc or asc, default to ASC */
+        sortDirection?: 'ASC' | 'DESC'
+      }
+      header?: never
+      path: {
+        /**
+         * @description The official visit identifier
+         * @example 1
+         */
+        officialVisitId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description A list of notification rows for the official visit */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OfficialVisitNotification'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
         headers: {
           [name: string]: unknown
         }
