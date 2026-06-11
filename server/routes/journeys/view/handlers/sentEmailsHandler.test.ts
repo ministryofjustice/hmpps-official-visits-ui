@@ -132,12 +132,13 @@ describe('sent emails handler', () => {
     expect(headers.eq(2).text().trim()).toEqual('Email address')
     expect(headers.eq(3).text().trim()).toEqual('Email status')
     expect(headers.eq(4).text().trim()).toEqual('Email sent')
+    expect(headers.eq(5).text().trim()).toEqual('Action')
 
     expect(getGovukTableCell($, 1, 1).text()).toContain('13:30 to 16:00')
     expect(getGovukTableCell($, 1, 1).text()).toContain('21 May 2026')
     expect(getGovukTableCell($, 1, 2).text()).toContain('Harrison, Tim')
     expect(getGovukTableCell($, 1, 2).text()).toContain('G4793VF')
-    expect(getGovukTableCell($, 1, 2).find('a').attr('href')).toEqual('/view/visit/4006')
+    expect(getGovukTableCell($, 1, 2).find('a').attr('href')).toContain('/prisoner/G4793VF')
     expect(getGovukTableCell($, 1, 3).text()).toEqual('prabash.balasuriya@justice.gov.uk')
     expect(getGovukTableCell($, 1, 4).find('.govuk-tag').text().trim()).toEqual('SENT')
     expect(getGovukTableCell($, 1, 4).find('.govuk-tag').hasClass('govuk-tag--green')).toEqual(true)
@@ -145,6 +146,8 @@ describe('sent emails handler', () => {
     expect(getGovukTableCell($, 2, 4).find('.govuk-tag').hasClass('govuk-tag--red')).toEqual(true)
     expect(getGovukTableCell($, 1, 5).text()).toContain('12:23')
     expect(getGovukTableCell($, 1, 5).text()).toContain('10 May 2026')
+    expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual('/view/visit/4006')
+    expect(getGovukTableCell($, 1, 6).text()).toContain('View')
 
     expect(officialVisitsService.getSentEmails).toHaveBeenCalledWith(
       user.activeCaseLoadId,
