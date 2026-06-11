@@ -52,7 +52,7 @@
         {% set rows = [] %}
         {% for email in results.content %}
           {% set prisonerHtml %}
-            <a class="govuk-link govuk-link--no-visited-state" target="_blank" href="/view/visit/{{ email.officialVisitId }}"> {{ (email.lastName + ", " + email.firstName) | convertToTitleCase }}</a><br>{{ email.prisonerNumber }}
+            <a class="govuk-link govuk-link--no-visited-state" target="_blank" href="{{prisonerProfileUrl}}/prisoner/{{ email.prisonerNumber }}"> {{ (email.lastName + ", " + email.firstName) | convertToTitleCase }}</a><br>{{ email.prisonerNumber }}
           {% endset %}
 
           {% set dateAndTimeHtml %}
@@ -70,12 +70,17 @@
             }) }}
           {% endset %}
 
+           {% set actionHtml %}
+              <a class="govuk-link govuk-link--no-visited-state" href="/view/visit/{{ email.officialVisitId }}">View</a><br>
+           {% endset %}
+
           {% set rows = (rows.push([
             { html: dateAndTimeHtml },
             { html: prisonerHtml },
             { text: email.emailAddress },
             { html: emailStatusHtml },
-            { html: emailSentHtml }
+            { html: emailSentHtml },
+            { html: actionHtml }
           ]), rows) %}
         {% endfor %}
 
@@ -87,7 +92,8 @@
             { text: 'Prisoner' },
             { text: 'Email address' },
             { text: 'Email status' },
-            { text: 'Email sent' }
+            { text: 'Email sent' },
+            { text: 'Action' }
           ],
           rows: rows
         }) }}
