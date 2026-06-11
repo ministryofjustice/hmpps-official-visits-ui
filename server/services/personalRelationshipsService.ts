@@ -26,4 +26,13 @@ export default class PersonalRelationshipsService {
   async getPrisonerContactRelationship(prisonerContactId: number, user: HmppsUser) {
     return this.personalRelationshipsApiClient.getPrisonerContactRelationship(prisonerContactId, user)
   }
+
+  async isValidRelationship(prisonerContactId: number, user: HmppsUser): Promise<boolean> {
+    try {
+      await this.getPrisonerContactRelationship(prisonerContactId, user)
+      return true
+    } catch {
+      return false
+    }
+  }
 }

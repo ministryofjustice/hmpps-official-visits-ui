@@ -6,6 +6,8 @@ import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import { schema } from './selectOfficialVisitorsSchema'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
+import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
+import config from '../../../../../config'
 import { JourneyVisitor } from '../journey'
 import { cyaGuard, recallContacts, saveVisitors } from '../createJourneyState'
 import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
@@ -18,6 +20,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
 
   constructor(
     private readonly officialVisitsService: OfficialVisitsService,
+    private readonly personalRelationshipsService: PersonalRelationshipsService,
     useSchema: boolean = true,
   ) {
     if (useSchema) {
@@ -74,7 +77,22 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const rawErrors = req.flash('alertErrors')[0]
     const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
-    const contacts = recallContacts(req.session.journey, 'O', selectableContacts)
+    const contactsList = recallContacts(req.session.journey, 'O', selectableContacts)
+
+    const contacts = await Promise.all(
+      contactsList.map(async contact => {
+        const validRelationship =
+          contact.prisonerContactId &&
+          (await this.personalRelationshipsService.isValidRelationship(contact.prisonerContactId, res.locals.user))
+
+        return {
+          ...contact,
+          relationshipUrl: validRelationship
+            ? `${config.serviceUrls.prisonerContacts}/prisoner/${prisonerNumber}/contacts/manage/${contact.contactId}/relationship/${contact.prisonerContactId}`
+            : `${config.serviceUrls.prisonerContacts}/prisoner/${prisonerNumber}/contacts/list`,
+        }
+      }),
+    )
 
     const hasIssueVisitors = contacts.some(v => Object.values(v.issues).some(o => o))
     const hasNoRelationshipVisitors = contacts.some(v => v.issues.noRelationship)
@@ -85,7 +103,7 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const previousDate = req.session.journey.officialVisit?.selectedTimeSlot?.visitDate
     const previousTime = req.session.journey.officialVisit?.selectedTimeSlot?.startTime
     res.render('pages/manage/selectOfficialVisitors', {
-      contacts: recallContacts(req.session.journey, 'O', selectableContacts),
+      contacts,
       selectedContacts,
       backUrl: getBackLink(req, res, `time-slot${previousDate ? `?date=${previousDate}` : ''}`),
       prisoner: req.session.journey.officialVisit.prisoner,

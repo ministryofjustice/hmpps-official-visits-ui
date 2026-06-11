@@ -10,7 +10,6 @@ import { JourneyVisitor } from '../journey'
 import { OfficialVisit, RestrictionSummary } from '../../../../../@types/officialVisitsApi/types'
 import { prisonAllowsSocialVisitors } from '../../../../../utils/utils'
 import config from '../../../../../config'
-import { HmppsUser } from '../../../../../interfaces/hmppsUser'
 
 export default class AmendVisitLandingHandler implements PageHandler {
   public PAGE_NAME = Page.AMEND_LANDING_PAGE
@@ -71,7 +70,8 @@ export default class AmendVisitLandingHandler implements PageHandler {
         )
 
         const validRelationship =
-          visitor.prisonerContactId && (await this.testValidRelationship(visitor.prisonerContactId, user))
+          visitor.prisonerContactId &&
+          (await this.personalRelationshipsService.isValidRelationship(visitor.prisonerContactId, user))
 
         return {
           ...visitor,
@@ -175,14 +175,5 @@ export default class AmendVisitLandingHandler implements PageHandler {
       hasIssueVisitors,
       shouldShowIssues: isFuture(new Date(`${visit.visitDate} ${visit.startTime}`)) && !visit.completionCode,
     })
-  }
-
-  async testValidRelationship(prisonerContactId: number, user: HmppsUser) {
-    try {
-      await this.personalRelationshipsService.getPrisonerContactRelationship(prisonerContactId, user)
-      return true
-    } catch {
-      return false
-    }
   }
 }

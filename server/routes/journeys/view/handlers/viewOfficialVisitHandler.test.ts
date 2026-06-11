@@ -48,6 +48,7 @@ beforeEach(() => {
   appSetup()
   officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
+  personalRelationshipsService.isValidRelationship.mockResolvedValue(true)
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
   manageUsersService.getUserByUsername.mockResolvedValue(mockUser)
   officialVisitsService.getAllContacts.mockResolvedValue([baseMockContact])
@@ -659,7 +660,7 @@ describe('View an official visit', () => {
 
     it('should show fallback contact list URL when relationship is invalid (API throws)', async () => {
       officialVisitsService.getOfficialVisitById.mockResolvedValue(baseFutureVisit)
-      personalRelationshipsService.getPrisonerContactRelationship.mockRejectedValue(new Error('Not found'))
+      personalRelationshipsService.isValidRelationship.mockResolvedValue(false)
 
       const res = await request(app).get(`${URL}?continue=true`)
       expect(res.text).toContain('/contacts/list')
