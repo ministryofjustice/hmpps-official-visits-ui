@@ -82,7 +82,8 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     const contacts = await Promise.all(
       contactsList.map(async contact => {
         const validRelationship =
-          contact.prisonerContactId && (await this.testValidRelationship(contact.prisonerContactId, res.locals.user))
+          contact.prisonerContactId &&
+          (await this.personalRelationshipsService.isValidRelationship(contact.prisonerContactId, res.locals.user))
 
         return {
           ...contact,
@@ -156,14 +157,5 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     }
 
     return res.redirect(socialVisitorsPageEnabled(req) ? `select-social-visitors` : `assistance-required`)
-  }
-
-  async testValidRelationship(prisonerContactId: number, user: HmppsUser) {
-    try {
-      await this.personalRelationshipsService.getPrisonerContactRelationship(prisonerContactId, user)
-      return true
-    } catch {
-      return false
-    }
   }
 }

@@ -10,7 +10,6 @@ import TelemetryService from '../../../../services/telemetryService'
 import { OfficialVisit, RestrictionSummary } from '../../../../@types/officialVisitsApi/types'
 import { prisonAllowsSocialVisitors } from '../../../../utils/utils'
 import config from '../../../../config'
-import { HmppsUser } from '../../../../interfaces/hmppsUser'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_PAGE
@@ -57,7 +56,8 @@ export default class ViewOfficialVisitHandler implements PageHandler {
         )
 
         const validRelationship =
-          visitor.prisonerContactId && (await this.testValidRelationship(visitor.prisonerContactId, user))
+          visitor.prisonerContactId &&
+          (await this.personalRelationshipsService.isValidRelationship(visitor.prisonerContactId, user))
 
         return {
           ...visitor,
@@ -142,15 +142,6 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       hasVisitChanged: visitChangeStatus.hasChanged,
       shouldShowIssues: isFuture(new Date(`${visit.visitDate} ${visit.startTime}`)) && !visit.completionCode,
     })
-  }
-
-  async testValidRelationship(prisonerContactId: number, user: HmppsUser) {
-    try {
-      await this.personalRelationshipsService.getPrisonerContactRelationship(prisonerContactId, user)
-      return true
-    } catch {
-      return false
-    }
   }
 }
 

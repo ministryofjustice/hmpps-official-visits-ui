@@ -67,7 +67,7 @@ const appSetup = (
 beforeEach(() => {
   appSetup()
   officialVisitsService.getAllSocialContacts.mockResolvedValue(mockSocialVisitors)
-  personalRelationshipsService.getPrisonerContactRelationship.mockResolvedValue({} as never)
+  personalRelationshipsService.isValidRelationship.mockResolvedValue(true)
   officialVisitsService.getAvailableSlots.mockResolvedValue([
     {
       timeSlotId: 1,
