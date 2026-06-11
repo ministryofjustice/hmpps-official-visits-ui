@@ -147,6 +147,7 @@ describe('sent emails handler', () => {
     expect(getGovukTableCell($, 1, 5).text()).toContain('12:23')
     expect(getGovukTableCell($, 1, 5).text()).toContain('10 May 2026')
     expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual('/view/visit/4006')
+    expect(getGovukTableCell($, 1, 6).text()).toContain('View')
 
     expect(officialVisitsService.getSentEmails).toHaveBeenCalledWith(
       user.activeCaseLoadId,
