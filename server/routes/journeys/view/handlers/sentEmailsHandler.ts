@@ -5,11 +5,11 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { formatDate } from '../../../../utils/utils'
 import { schema, SchemaType } from './sentEmailsHandlerSchema'
-import { SentEmailSearchCriteriaRequest, PagedModelSentEmailRecord } from '../../../../@types/officialVisitsApi/types'
+import { NotificationSearchRequest, PagedModelSentNotification } from '../../../../@types/officialVisitsApi/types'
 
 const PAGE_SIZE = 10
 
-const EMPTY_RESULTS: PagedModelSentEmailRecord = {
+const EMPTY_RESULTS: PagedModelSentNotification = {
   content: [],
   page: {
     number: 0,
@@ -56,25 +56,25 @@ export default class SentEmailsHandler implements PageHandler {
     const toDate = search.toDate || new Date()
     const toDateValue = formResponses.toDate || formatInputDate(toDate)
 
-    const criteria: SentEmailSearchCriteriaRequest = {}
+    const request: NotificationSearchRequest = {}
     if (fromDate) {
       const formattedFromDate = formatDate(fromDate, 'yyyy-MM-dd')
-      if (formattedFromDate) criteria.fromDate = formattedFromDate
+      if (formattedFromDate) request.fromDate = formattedFromDate
     }
     if (toDate) {
       const formattedToDate = formatDate(toDate || new Date(), 'yyyy-MM-dd')
-      if (formattedToDate) criteria.toDate = formattedToDate
+      if (formattedToDate) request.toDate = formattedToDate
     }
 
-    const results: PagedModelSentEmailRecord = res.locals.validationErrors
+    const results: PagedModelSentNotification = res.locals.validationErrors
       ? EMPTY_RESULTS
-      : await (this.officialVisitsService.getSentEmails(
+      : await (this.officialVisitsService.getSentNotifications(
           prisonCode,
-          criteria,
+          request,
           page,
           PAGE_SIZE,
           res.locals.user,
-        ) as Promise<PagedModelSentEmailRecord>)
+        ) as Promise<PagedModelSentNotification>)
 
     return res.render('pages/view/sentEmails', {
       pageTitle: `Official visit emails sent from ${prisonName}`,

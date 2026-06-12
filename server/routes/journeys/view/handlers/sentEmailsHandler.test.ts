@@ -5,7 +5,7 @@ import { subDays } from 'date-fns'
 import { appWithAllRoutes, flashProvider, user } from '../../../testutils/appSetup'
 import AuditService, { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
-import { PagedModelSentEmailRecord } from '../../../../@types/officialVisitsApi/types'
+import { PagedModelSentNotification } from '../../../../@types/officialVisitsApi/types'
 import { getGovukTableCell, getPageHeader } from '../../../testutils/cheerio'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
 import { formatDate } from '../../../../utils/utils'
@@ -41,7 +41,7 @@ afterEach(() => {
 
 const URL = '/view/sent-emails'
 
-const RESULTS: PagedModelSentEmailRecord = {
+const RESULTS: PagedModelSentNotification = {
   content: [
     {
       officialVisitId: 4006,
@@ -97,7 +97,7 @@ const RESULTS: PagedModelSentEmailRecord = {
   },
 }
 
-const PAGE_2_RESULTS: PagedModelSentEmailRecord = {
+const PAGE_2_RESULTS: PagedModelSentNotification = {
   ...RESULTS,
   content: [RESULTS.content[0], RESULTS.content[1], RESULTS.content[2]],
   page: {
@@ -110,7 +110,7 @@ const PAGE_2_RESULTS: PagedModelSentEmailRecord = {
 
 describe('sent emails handler', () => {
   it('GET should render the sent emails page with every table value and pagination', async () => {
-    officialVisitsService.getSentEmails.mockResolvedValue(RESULTS)
+    officialVisitsService.getSentNotifications.mockResolvedValue(RESULTS)
 
     const res = await request(app).get(URL).expect(200)
     const $ = cheerio.load(res.text)
@@ -149,7 +149,7 @@ describe('sent emails handler', () => {
     expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual('/view/visit/4006')
     expect(getGovukTableCell($, 1, 6).text()).toContain('View')
 
-    expect(officialVisitsService.getSentEmails).toHaveBeenCalledWith(
+    expect(officialVisitsService.getSentNotifications).toHaveBeenCalledWith(
       user.activeCaseLoadId,
       {
         fromDate: formatDate(fromDate, 'yyyy-MM-dd'),
@@ -166,7 +166,7 @@ describe('sent emails handler', () => {
   })
 
   it('GET should preserve date range search values and paginate with query params', async () => {
-    officialVisitsService.getSentEmails.mockResolvedValue(PAGE_2_RESULTS)
+    officialVisitsService.getSentNotifications.mockResolvedValue(PAGE_2_RESULTS)
 
     const res = await request(app).get(`${URL}?page=2&fromDate=15/05/2026&toDate=20/05/2026`).expect(200)
     const $ = cheerio.load(res.text)
@@ -180,7 +180,7 @@ describe('sent emails handler', () => {
       '?fromDate=15%2F05%2F2026&toDate=20%2F05%2F2026&page=3',
     )
 
-    expect(officialVisitsService.getSentEmails).toHaveBeenCalledWith(
+    expect(officialVisitsService.getSentNotifications).toHaveBeenCalledWith(
       user.activeCaseLoadId,
       {
         fromDate: '2026-05-15',

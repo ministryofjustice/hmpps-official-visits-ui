@@ -8,7 +8,7 @@ import {
   OfficialVisitUpdateCommentRequest,
   OfficialVisitUpdateSlotRequest,
   OfficialVisitUpdateVisitorsRequest,
-  PagedModelSentEmailRecord,
+  PagedModelSentNotification,
   TimeSlotSummary,
 } from '../@types/officialVisitsApi/types'
 import { mockFindByCriteriaResults } from '../testutils/mocks'
@@ -238,7 +238,7 @@ describe('OfficialVisitsService', () => {
   })
 
   it('should retrieve sent emails via API client endpoint', async () => {
-    const apiResponse: PagedModelSentEmailRecord = {
+    const apiResponse: PagedModelSentNotification = {
       content: [
         {
           officialVisitId: 4006,
@@ -264,9 +264,9 @@ describe('OfficialVisitsService', () => {
       },
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    officialVisitsApiClient.searchSentEmails.mockResolvedValue(apiResponse as any)
+    officialVisitsApiClient.searchSentNotifications.mockResolvedValue(apiResponse as any)
 
-    const result = await officialVisitsService.getSentEmails(
+    const result = await officialVisitsService.getSentNotifications(
       'MDI',
       {
         fromDate: '2026-05-18',
@@ -277,8 +277,8 @@ describe('OfficialVisitsService', () => {
       user,
     )
 
-    expect(officialVisitsApiClient.searchSentEmails).toHaveBeenCalledTimes(1)
-    expect(officialVisitsApiClient.searchSentEmails).toHaveBeenCalledWith(
+    expect(officialVisitsApiClient.searchSentNotifications).toHaveBeenCalledTimes(1)
+    expect(officialVisitsApiClient.searchSentNotifications).toHaveBeenCalledWith(
       'MDI',
       {
         fromDate: '2026-05-18',
@@ -296,7 +296,7 @@ describe('OfficialVisitsService', () => {
   })
 
   it('should throw if prison code is missing when retrieving sent emails', async () => {
-    await expect(officialVisitsService.getSentEmails('', {}, 1, 10, user)).rejects.toThrow(
+    await expect(officialVisitsService.getSentNotifications('', {}, 1, 10, user)).rejects.toThrow(
       'Cannot retrieve sent emails without a prison code',
     )
   })

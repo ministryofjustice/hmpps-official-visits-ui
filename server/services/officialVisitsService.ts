@@ -20,8 +20,8 @@ import {
   CreateVisitSlotRequest,
   OverlappingVisitsResponse,
   NotificationRequest,
-  SentEmailSearchCriteriaRequest,
-  PagedModelSentEmailRecord,
+  NotificationSearchRequest,
+  PagedModelSentNotification,
 } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
@@ -196,19 +196,19 @@ export default class OfficialVisitsService {
     return this.officialVisitsApiClient.sendNotification(Number(visitId), body, user)
   }
 
-  public async getSentEmails(
+  public async getSentNotifications(
     prisonId: string,
-    criteria: SentEmailSearchCriteriaRequest,
+    request: NotificationSearchRequest,
     page: number,
     size: number,
     user: HmppsUser,
-  ): Promise<PagedModelSentEmailRecord> {
+  ): Promise<PagedModelSentNotification> {
     if (!prisonId?.trim()) {
       throw new Error('Cannot retrieve sent emails without a prison code')
     }
 
-    logger.info(`Get sent emails called by ${user.userId} with criteria ${JSON.stringify(criteria)}`)
-    return this.officialVisitsApiClient.searchSentEmails(prisonId, criteria, page - 1, size, user)
+    logger.info(`Get sent notifications called by ${user.userId} with request ${JSON.stringify(request)}`)
+    return this.officialVisitsApiClient.searchSentNotifications(prisonId, request, page - 1, size, user)
   }
 
   public async getPrisonTimeSlotById(prisonTimeSlotId: number, user: HmppsUser) {
