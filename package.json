@@ -136,6 +136,7 @@
     },
     "openapi-typescript": {
       "typescript": "$typescript"
-    }
+    },
+    "brace-expansion": "5.0.6"
   }
 }
