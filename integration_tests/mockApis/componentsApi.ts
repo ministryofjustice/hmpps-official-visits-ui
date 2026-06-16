@@ -13,10 +13,7 @@ export default {
       },
     }),
 
-  stubComponents: (
-    caseLoadId = 'LEI',
-    description = 'Leeds (HMP)',
-  ): SuperAgentRequest =>
+  stubComponents: (caseLoadId = 'LEI', description = 'Leeds (HMP)'): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
