@@ -41,7 +41,7 @@ const appSetup = (
 }
 
 beforeEach(() => {
-  config.featureToggles.emailNotificationsEnabled = false
+  config.featureToggles.emailNotificationsPrisons = ''
   appSetup()
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue({
     firstName: 'John',
@@ -101,7 +101,7 @@ describe('confirmation handler', () => {
     })
 
     it('should render send email confirmation link when email notifications are enabled and user has manage role', () => {
-      config.featureToggles.emailNotificationsEnabled = true
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
       appSetup()
 
       return request(app)
@@ -117,7 +117,7 @@ describe('confirmation handler', () => {
     })
 
     it('should not render send email confirmation link when email notifications are enabled and user does not have manage role', () => {
-      config.featureToggles.emailNotificationsEnabled = true
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
       appSetup([AuthorisedRoles.VIEW])
 
       return request(app)

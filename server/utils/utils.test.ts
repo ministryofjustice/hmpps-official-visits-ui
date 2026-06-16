@@ -33,6 +33,7 @@ import {
   socialVisitorsPageEnabled,
   timeRangesOverlap,
   buildCalendarMonths,
+  emailNotificationsEnabled,
 } from './utils'
 import config from '../config'
 import { JourneyVisitor } from '../routes/journeys/manage/visit/journey'
@@ -657,5 +658,42 @@ describe('buildCalendarMonths', () => {
 
     expect(result.nextMonthHref).toBe('?date=2026-02-01')
     expect(result.previousMonthHref).toBe('?date=2025-12-01')
+  })
+})
+
+describe('emailNotificationsEnabled', () => {
+  let originalValue: string
+
+  beforeEach(() => {
+    originalValue = config.featureToggles.emailNotificationsPrisons
+  })
+
+  afterEach(() => {
+    config.featureToggles.emailNotificationsPrisons = originalValue
+  })
+
+  it('should return true when the prison is in the enabled list', () => {
+    config.featureToggles.emailNotificationsPrisons = 'MDI,LEI'
+    expect(emailNotificationsEnabled('MDI')).toBe(true)
+  })
+
+  it('should return false when the prison is not in the enabled list', () => {
+    config.featureToggles.emailNotificationsPrisons = 'MDI,LEI'
+    expect(emailNotificationsEnabled('HEI')).toBe(false)
+  })
+
+  it('should return false when the enabled list is empty', () => {
+    config.featureToggles.emailNotificationsPrisons = ''
+    expect(emailNotificationsEnabled('MDI')).toBe(false)
+  })
+
+  it('should return true for a single prison in the list', () => {
+    config.featureToggles.emailNotificationsPrisons = 'MDI'
+    expect(emailNotificationsEnabled('MDI')).toBe(true)
+  })
+
+  it('should return false for undefined caseLoadId', () => {
+    config.featureToggles.emailNotificationsPrisons = 'MDI'
+    expect(emailNotificationsEnabled(undefined)).toBe(false)
   })
 })

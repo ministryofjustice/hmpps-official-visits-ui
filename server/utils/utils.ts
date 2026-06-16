@@ -227,6 +227,10 @@ export const prisonEnabled = (caseLoadId: string) => {
   return config.featureToggles.dpsEnabledPrisons.split(',').includes(caseLoadId)
 }
 
+export const emailNotificationsEnabled = (caseLoadId: string) => {
+  return config.featureToggles.emailNotificationsPrisons.split(',').includes(caseLoadId)
+}
+
 export const nomisSwitchOffEnabled = (caseLoadId: string) => {
   return config.featureToggles.nomisSwitchOffPrisons.split(',').includes(caseLoadId)
 }

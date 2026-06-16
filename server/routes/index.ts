@@ -12,18 +12,33 @@ import PrisonerImageRoutes from './prisonerImage/prisonerImageRoutes'
 import { populateUserPermissions } from '../middleware/populateUserPermissions'
 import { requirePermissions } from '../middleware/requirePermissions'
 import { Permission } from '../interfaces/hmppsUser'
+import { emailNotificationsEnabled } from '../utils/utils'
 
 export default function routes(_services: Services): Router {
   const router = Router()
   router.use((req, res, next) => (config.maintenanceMode ? res.render('pages/maintenanceMode') : next()))
   router.use(populateUserPermissions)
+  router.use((req, res, next) => {
+    res.locals.emailNotificationsEnabled = emailNotificationsEnabled(res.locals.user?.activeCaseLoadId)
+    next()
+  })
   // Demonstrate using requirePermissions middleware - lock all routes off of / to DEFAULT permission
   router.use('/', requirePermissions('OV', Permission.DEFAULT), home(_services))
   router.use(preventNavigationToExpiredJourneys([/confirmation(\/[0-9a-zA-Z-]+)$/]))
   router.use(redirectCheckAnswersMiddleware([/check-your-answers$/]))
   router.use('/manage', manageVisits(_services))
   router.use('/view', viewVisits(_services))
-  router.use('/notification', requirePermissions('OV', Permission.MANAGE), notification(_services))
+  router.use(
+    '/notification',
+    requirePermissions('OV', Permission.MANAGE),
+    (req, res, next) => {
+      if (!res.locals.emailNotificationsEnabled) {
+        return res.redirect('/')
+      }
+      return next()
+    },
+    notification(_services),
+  )
   router.use('/admin', requirePermissions('OV', Permission.ADMIN), admin(_services))
   router.get('/prisoner-image/:prisonerNumber', new PrisonerImageRoutes(_services.prisonerImageService).GET)
 
