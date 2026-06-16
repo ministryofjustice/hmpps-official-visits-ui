@@ -36,12 +36,12 @@ const appSetup = () => {
       personalRelationshipsService,
       manageUsersService,
     },
-    userSupplier: () => user,
+    userSupplier: () => ({ ...user, activeCaseLoadId: 'HEI' }),
   })
 }
 
 beforeEach(() => {
-  config.featureToggles.emailNotificationsEnabled = false
+  config.featureToggles.emailNotificationsPrisons = ''
   appSetup()
   officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
@@ -196,7 +196,7 @@ describe('Search for an official visit', () => {
     })
 
     it('should not render send email alert or button when hasChanged is false even when email notifications are enabled', async () => {
-      config.featureToggles.emailNotificationsEnabled = true
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
       officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
       appSetup()
 

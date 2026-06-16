@@ -13,7 +13,10 @@ export default {
       },
     }),
 
-  stubComponents: (): SuperAgentRequest =>
+  stubComponents: (
+    caseLoadId = 'LEI',
+    description = 'Leeds (HMP)',
+  ): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
@@ -28,14 +31,14 @@ export default {
           meta: {
             caseLoads: [
               {
-                caseLoadId: 'LEI',
-                description: 'Leeds (HMP)',
+                caseLoadId,
+                description,
                 currentlyActive: true,
               },
             ],
             activeCaseLoad: {
-              caseLoadId: 'LEI',
-              description: 'Leeds (HMP)',
+              caseLoadId,
+              description,
               currentlyActive: true,
             },
             services: [],

@@ -39,12 +39,12 @@ const appSetup = (
       personalRelationshipsService,
       manageUsersService,
     },
-    userSupplier: () => ({ ...user, userRoles }),
+    userSupplier: () => ({ ...user, userRoles, activeCaseLoadId: 'HEI' }),
   })
 }
 
 beforeEach(() => {
-  config.featureToggles.emailNotificationsEnabled = false
+  config.featureToggles.emailNotificationsPrisons = ''
   appSetup()
   officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
@@ -101,6 +101,34 @@ const baseSocialContact = {
   relationshipToPrisonerCode: 'FRI',
   relationshipToPrisonerDescription: 'Friend',
 }
+
+describe('Notification route feature guard', () => {
+  it('should redirect to home when email notifications are disabled for the user prison', async () => {
+    config.featureToggles.emailNotificationsPrisons = ''
+    appSetup([AuthorisedRoles.MANAGE])
+
+    const res = await request(app).get('/notification/enter-email-address/1/create')
+    expect(res.status).toBe(302)
+    expect(res.headers.location).toBe('/')
+  })
+
+  it('should not redirect when email notifications are enabled for the user prison', async () => {
+    config.featureToggles.emailNotificationsPrisons = 'HEI'
+    appSetup([AuthorisedRoles.MANAGE])
+
+    const res = await request(app).get('/notification/enter-email-address/1/create')
+    expect(res.status).not.toBe(302)
+  })
+
+  it('should redirect when email notifications are enabled for a different prison', async () => {
+    config.featureToggles.emailNotificationsPrisons = 'MDI'
+    appSetup([AuthorisedRoles.MANAGE])
+
+    const res = await request(app).get('/notification/enter-email-address/1/create')
+    expect(res.status).toBe(302)
+    expect(res.headers.location).toBe('/')
+  })
+})
 
 describe('View an official visit', () => {
   describe('GET', () => {
@@ -173,7 +201,7 @@ describe('View an official visit', () => {
     })
 
     it('should render send email alert and button with edit URL when email notifications are enabled and hasChanged is true', async () => {
-      config.featureToggles.emailNotificationsEnabled = true
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
       officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
       appSetup([AuthorisedRoles.MANAGE])
 
@@ -187,7 +215,7 @@ describe('View an official visit', () => {
     })
 
     it('should not render send email alert when email notifications are enabled but hasChanged is false', async () => {
-      config.featureToggles.emailNotificationsEnabled = true
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
       officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
       appSetup([AuthorisedRoles.MANAGE])
 
@@ -201,7 +229,7 @@ describe('View an official visit', () => {
     })
 
     it('should not render send email alert when email notifications are enabled, hasChanged is true but visit is completed', async () => {
-      config.featureToggles.emailNotificationsEnabled = true
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
       officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
       officialVisitsService.getOfficialVisitById.mockResolvedValue({
         ...mockVisitByIdVisit,
@@ -223,7 +251,7 @@ describe('View an official visit', () => {
     })
 
     it('should not render send email alert when email notifications are enabled, hasChanged is true but visit is cancelled', async () => {
-      config.featureToggles.emailNotificationsEnabled = true
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
       officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
       officialVisitsService.getOfficialVisitById.mockResolvedValue({
         ...mockVisitByIdVisit,
@@ -245,7 +273,7 @@ describe('View an official visit', () => {
     })
 
     it('should not render send email alert when email notifications are enabled, hasChanged is true and visit is scheduled but no admin role', async () => {
-      config.featureToggles.emailNotificationsEnabled = true
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
       officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
       appSetup([AuthorisedRoles.VIEW])
 
@@ -407,7 +435,7 @@ describe('View an official visit', () => {
     })
 
     it('should render send email alert and button with cancel URL for cancelled visits', async () => {
-      config.featureToggles.emailNotificationsEnabled = true
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
       officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
       appSetup()
       officialVisitsService.getOfficialVisitById.mockResolvedValue({
