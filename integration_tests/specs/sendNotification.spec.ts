@@ -14,6 +14,34 @@ import { NotAuthorisedPage } from '../pages/notAuthorisedPage'
 
 const OV_ID = mockVisitByIdVisit.officialVisitId // 1
 
+test.describe('Notification feature toggle', () => {
+  test.beforeEach(async () => {
+    await hmppsAuth.stubSignInPage()
+    await manageUsersApi.stubGetByUsername()
+    await prisonApi.stubGetPrisonerImage()
+    await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
+  })
+
+  test.afterEach(async () => {
+    await resetStubs()
+  })
+
+  test('should redirect to home when notifications are disabled for the user prison', async ({ page }) => {
+    await componentsApi.stubComponents('BXI', 'Brixton (HMP)')
+    await login(page)
+    await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
+    await expect(page).toHaveURL('/')
+  })
+
+  test('should allow access to notifications when enabled for the user prison', async ({ page }) => {
+    await componentsApi.stubComponents('LEI', 'Leeds (HMP)')
+    await login(page)
+    await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
+    await expect(page).not.toHaveURL('/')
+    await NotificationEmailPage.verifyOnPage(page)
+  })
+})
+
 test.describe('Send a notification', () => {
   test.beforeEach(async () => {
     await hmppsAuth.stubSignInPage()

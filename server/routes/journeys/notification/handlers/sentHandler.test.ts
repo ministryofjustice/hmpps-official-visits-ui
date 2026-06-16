@@ -4,6 +4,7 @@ import request from 'supertest'
 import * as cheerio from 'cheerio'
 import { appWithAllRoutes, user } from '../../../testutils/appSetup'
 import AuditService from '../../../../services/auditService'
+import config from '../../../../config'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/telemetryService')
@@ -24,6 +25,7 @@ const appSetup = (middlewares: RequestHandler[] = []) => {
 }
 
 beforeEach(() => {
+  config.featureToggles.emailNotificationsPrisons = 'HEI'
   appSetup()
 })
 

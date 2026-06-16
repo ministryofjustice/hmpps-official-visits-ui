@@ -7,6 +7,7 @@ import { Permission } from '../../../../interfaces/hmppsUser'
 import AuditService, { Page } from '../../../../services/auditService'
 import { getPageHeader } from '../../../testutils/cheerio'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
+import config from '../../../../config'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/telemetryService')
@@ -25,6 +26,7 @@ const appSetup = (middlewares: RequestHandler[] = []) => {
 }
 
 beforeEach(() => {
+  config.featureToggles.emailNotificationsPrisons = 'HEI'
   appSetup()
 })
 

@@ -38,7 +38,7 @@ beforeEach(() => {
   })
   config.maintenanceMode = false
   config.featureToggles.nomisSwitchOffPrisons = ''
-  config.featureToggles.emailNotificationsEnabled = false
+  config.featureToggles.emailNotificationsPrisons = ''
 })
 
 afterEach(() => {
@@ -53,7 +53,7 @@ describe('GET /home', () => {
     [AuthorisedRoles.ADMIN, ['view-list', 'admin']],
   ])(`should render home page - %s (%s) view`, (role, visibleCards) => {
     auditService.logPageView.mockResolvedValue(null)
-    config.featureToggles.emailNotificationsEnabled = true
+    config.featureToggles.emailNotificationsPrisons = 'MDI'
     app = appWithAllRoutes({
       services: { auditService },
       userSupplier: () => ({
