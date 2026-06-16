@@ -36,7 +36,7 @@ const appSetup = () => {
       personalRelationshipsService,
       manageUsersService,
     },
-    userSupplier: () => ({ ...user, activeCaseLoadId: 'HEI' }),
+    userSupplier: () => user,
   })
 }
 

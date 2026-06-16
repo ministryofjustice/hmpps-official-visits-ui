@@ -7,6 +7,7 @@ import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { NotificationResponse } from '../../../../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../../manage/visit/journey'
 import { mockVisitByIdVisit } from '../../../../testutils/mocks'
+import config from '../../../../config'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/officialVisitsService')
@@ -39,6 +40,7 @@ const appSetup = (journeySessionSupplier = () => ({})) => {
 }
 
 beforeEach(() => {
+  config.featureToggles.emailNotificationsPrisons = 'HEI'
   appSetup(() => ({ officialVisit: sampleVisit }))
 })
 

@@ -44,6 +44,7 @@ export const user: HmppsUser = {
   displayName: 'First Last',
   authSource: 'nomis',
   staffId: 1234,
+  activeCaseLoadId: 'HEI',
   userRoles: [AuthorisedRoles.MANAGE, AuthorisedRoles.CONTACTS_AUTHORISER],
   permissions: { OV: Permission.DEFAULT | Permission.VIEW | Permission.MANAGE | Permission.CONTACTS_AUTHORISER },
 }

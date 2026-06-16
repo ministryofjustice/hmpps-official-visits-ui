@@ -35,7 +35,7 @@ const appSetup = (
 ) => {
   app = appWithAllRoutes({
     services: { auditService, prisonerService, officialVisitsService },
-    userSupplier: () => ({ ...user, userRoles, activeCaseLoadId: 'HEI' }),
+    userSupplier: () => ({ ...user, userRoles }),
     journeySessionSupplier: () => journeySession as Journey,
   })
 }
