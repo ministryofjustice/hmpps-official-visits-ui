@@ -57,8 +57,7 @@ describe('Official visit movement slip', () => {
 
           expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00Thursday, 1 January 2026')
 
-          expect($('dt.govuk-summary-list__key').text()).toContain('Official Visitor')
-          expect(getValueByKey($, 'Official Visitor')).toEqual('Peter Malicious (Solicitor)')
+          expect(getValueByKey($, 'Location')).toEqual('First Location')
           const printBtn = $('#print-button')
           expect(printBtn.length).toBe(1)
           expect(printBtn.attr('href')).toBe('#')

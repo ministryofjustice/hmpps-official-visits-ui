@@ -51,8 +51,8 @@
           value: { text: visit.visitTypeDescription }
         },
         {
-          key: { text: "Official Visitor" if visit.officialVisitors.length == 1 else "Official Visitors" },
-          value: { html: visit.officialVisitors | toVisitorNameAndRelationship("<br />") }
+          key: { text: "Location" },
+          value: { text: visit.locationDescription }
         }
       ] | filterNonFalsy
     }) }}
