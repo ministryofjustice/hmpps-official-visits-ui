@@ -725,7 +725,9 @@ describe('View an official visit', () => {
       expect(res.text).toContain('Some visitor details need updating')
       expect(res.text).toContain('social visitors cannot join official visits')
       expect(res.text).toContain("You can update visitor details in the prisoner's contact record.")
-      expect(res.text).toContain("You'll need the Official Visits - Manage role to remove visitors from this visit.")
+      expect(res.text).toContain(
+        "You'll need the Official Visits Manage Bookings role to remove visitors from this visit.",
+      )
     })
 
     it('should show correct inset text when user has only manage role', async () => {
@@ -762,7 +764,7 @@ describe('View an official visit', () => {
       expect(res.text).toContain(
         "the Contacts Authoriser role to update visitor details in the prisoner's contact record",
       )
-      expect(res.text).toContain('the Official Visits - Manage role to remove visitors from this visit')
+      expect(res.text).toContain('the Official Visits Manage Bookings role to remove visitors from this visit')
     })
   })
 })
