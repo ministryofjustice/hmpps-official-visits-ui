@@ -21,7 +21,7 @@
         <p>You can update visitor details in the prisoner's contact record or remove visitors from this visit.</p>
       {% elif user | hasPermission(PERMISSION.CONTACTS_AUTHORISER) %}
         <p>You can update visitor details in the prisoner's contact record.</p>
-        <p>You'll need the Official Visits - Manage role to remove visitors from this visit.</p>
+        <p>You'll need the Official Visits Manage Bookings role to remove visitors from this visit.</p>
       {% elif user | hasPermission(PERMISSION.MANAGE) %}
         <p>You can remove visitors from this visit.</p>
         <p>You'll need the Contacts Authoriser role to update visitor details in the prisoner's contact record.</p>
@@ -29,7 +29,7 @@
         <p>You'll need:</p>
         <ul class="govuk-list govuk-list--bullet">
           <li>the Contacts Authoriser role to update visitor details in the prisoner's contact record</li>
-          <li>the Official Visits - Manage role to remove visitors from this visit</li>
+          <li>the Official Visits Manage Bookings role to remove visitors from this visit</li>
         </ul>
       {% endif %}
 
