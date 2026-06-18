@@ -68,7 +68,7 @@ describe('Prisoner search handler', () => {
             {
               fieldId: 'searchTerm',
               href: '#searchTerm',
-              text: 'Enter at least 2 characters to search for a prisoner name or prisoner number',
+              text: 'Enter at least 2 characters to search for a prisoner name or prison number',
             },
           ]),
         )
@@ -83,7 +83,7 @@ describe('Prisoner search handler', () => {
             {
               fieldId: 'searchTerm',
               href: '#searchTerm',
-              text: 'Enter at least 2 characters to search for a prisoner name or prisoner number',
+              text: 'Enter at least 2 characters to search for a prisoner name or prison number',
             },
           ]),
         )
