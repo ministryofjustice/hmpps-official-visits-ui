@@ -10,6 +10,7 @@ import CancelOfficialVisitHandler from './handlers/cancelVisitHandler'
 import { requirePermissions } from '../../../middleware/requirePermissions'
 import { Permission } from '../../../interfaces/hmppsUser'
 import OfficialVisitMovementSlipHandler from './handlers/movementSlipHandler'
+import MovementSlipsHandler from './handlers/movementSlipsHandler'
 import SentEmailsHandler from './handlers/sentEmailsHandler'
 
 export default function Index({
@@ -39,6 +40,7 @@ export default function Index({
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
   route('/list', Permission.DEFAULT, new ViewOfficialVisitListHandler(officialVisitsService))
+  route('/movement-slips', Permission.VIEW, new MovementSlipsHandler(officialVisitsService))
   route('/sent-emails', Permission.MANAGE, new SentEmailsHandler(officialVisitsService), ['fromDate', 'toDate'])
   route(
     '/visit/:ovId',

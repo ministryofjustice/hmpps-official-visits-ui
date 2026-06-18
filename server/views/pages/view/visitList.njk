@@ -185,6 +185,11 @@
       <div class="govuk-grid-column-three-quarters" id="table-column">
         <div class="moj-action-bar moj-action-bar-indent">
           <div class="moj-action-bar__filter"></div>
+          {{ govukButton({
+            text: "Print movement slips",
+            href: movementSlipsLink,
+            classes: 'govuk-button--secondary govuk-!-margin-bottom-0'
+          }) }}
         </div>
         {% if pagination.totalElements > 0 %}
 

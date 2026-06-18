@@ -101,6 +101,14 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
         endDate: filterParams.endDate,
         ...(filterParams.prisoner ? { prisoner: filterParams.prisoner } : {}),
       }).toString(),
+      movementSlipsLink: `/view/movement-slips?${new URLSearchParams({
+        startDate: filterParams.startDate,
+        endDate: filterParams.endDate,
+        ...(filterParams.prisoner ? { prisoner: filterParams.prisoner } : {}),
+        ...(filterParams.status ? { status: filterParams.status.join(',') } : {}),
+        ...(filterParams.type ? { type: filterParams.type.join(',') } : {}),
+        ...(filterParams.location ? { location: filterParams.location.join(',') } : {}),
+      }).toString()}`,
     })
   }
 
