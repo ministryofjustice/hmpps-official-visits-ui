@@ -31,18 +31,17 @@
   {% endif %}
 
   {% for visit in visits %}
-    <div class="govuk-grid-row dotted-border govuk-!-padding-6 {% if not loop.last %}govuk-!-margin-bottom-6{% endif %}">
-      <h1 class="govuk-body govuk-!-font-size-24">
+    <div class="govuk-grid-row dotted-border govuk-!-padding-top-4 govuk-!-padding-left-4 govuk-!-padding-right-4 govuk-!-padding-bottom-2 movement-slip {% if not loop.last %}govuk-!-margin-bottom-4{% endif %}">
+      <h1 class="govuk-body govuk-!-margin-bottom-0">
         <b>{{ visit.prisonDescription }}</b> Movement authorisation slip</h1>
-      <h2 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ visit.prisoner | firstNameSpaceLastName }}, {{ visit.prisoner.prisonerNumber }}</h2>
+      <h2 class="govuk-heading-l govuk-!-margin-bottom-2 govuk-!-padding-top-2">{{ visit.prisoner | firstNameSpaceLastName }}, {{ visit.prisoner.prisonerNumber }}</h2>
       <span class="govuk-hint">{{ visit.prisoner.prisonCode }}-{{ visit.prisoner.cellLocation }}</span>
 
       {{ govukSummaryList({
-        classes: 'govuk-!-margin-top-4',
+        classes: 'govuk-!-margin-top-2 govuk-!-margin-bottom-2',
         rows: [
           {
-            key: { text: "Official visit" },
-            value: { text: '' }
+            key: { text: 'Official visit'}
           },
           {
             key: { text: "Time" },
