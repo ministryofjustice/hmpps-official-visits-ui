@@ -513,7 +513,7 @@ describe('Select social visitors', () => {
     it('should render the no capacity error', () =>
       renderWithAlertErrors({ noCapacity: true }).expect(res => {
         expect(res.text).toContain('You’ve added the maximum number of visitors')
-        expect(res.text).toContain('You cannot add more visitors to this time slot.')
+        expect(res.text).toContain('You cannot add more visitors to this location.')
         expect(res.text).toContain('choose another time slot')
       }))
 

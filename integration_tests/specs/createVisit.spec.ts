@@ -396,7 +396,7 @@ test.describe('Create an official visit', () => {
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
     await expect(page.getByText('You’ve added the maximum number of visitors')).toBeVisible()
-    await expect(page.getByText('You cannot add more visitors to this time slot.')).toBeVisible()
+    await expect(page.getByText('You cannot add more visitors to this location.')).toBeVisible()
   })
 
   test('shows the prisoner overlap error when the prisoner has another visit booked', async ({ page }) => {
