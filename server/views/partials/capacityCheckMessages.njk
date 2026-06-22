@@ -16,10 +16,10 @@
     {{ mojAlert({
       variant: "error",
       role: "alert",
-      title: "Capacity for visit slot selected is exceeded",
+      title: "You’ve added the maximum number of visitors",
       showTitleAsHeading: true,
       dismissible: false,
-      html: "The visit slot has exceeded maximum visitor capacity. <a href=\"time-slot\" class=\"govuk-link\">Choose another time slot</a>",
+      html: "You cannot add more visitors to this time slot. You can either remove visitors or <a href=\"time-slot\" class=\"govuk-link\">choose another time slot</a>",
       classes: 'govuk-!-margin-bottom-6'
     }) }}
   {% endif %}

@@ -368,7 +368,91 @@ test.describe('Create an official visit', () => {
     const href = await page.getByRole('link', { name: 'View and add contacts' }).getAttribute('href')
     expect(href).toMatch(/https:\/\/contacts-dev.hmpps.service.justice.gov.uk\/prisoner\/A1111AA\/contacts\/list/)
   })
+
+  test('shows the no capacity error when the selected visitors exceed slot capacity', async ({ page }) => {
+    await officialVisitsApi.stubAvailableSlots([
+      {
+        visitSlotId: 1,
+        timeSlotId: 1,
+        prisonCode: 'MDI',
+        dayCode: 'WED',
+        dayDescription: 'Wednesday',
+        startTime: '08:00',
+        endTime: '17:00',
+        dpsLocationId: 'xxx',
+        locationDescription: 'Legal visits room 2',
+        availableAdults: 1,
+        availableGroups: 1,
+        availableVideoSessions: 1,
+        visitDate: format(new Date(), 'yyyy-MM-dd'),
+      } as AvailableSlot,
+    ])
+
+    const selectOfficialContactPage = await navigateToSelectOfficialVisitors(page, uuidV4())
+
+    await selectOfficialContactPage.checkContact(0)
+    await selectOfficialContactPage.checkContact(1)
+    await selectOfficialContactPage.continueButton.click()
+
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
+    await expect(page.getByText('You’ve added the maximum number of visitors')).toBeVisible()
+    await expect(page.getByText('You cannot add more visitors to this time slot.')).toBeVisible()
+  })
+
+  test('shows the prisoner overlap error when the prisoner has another visit booked', async ({ page }) => {
+    const selectOfficialContactPage = await navigateToSelectOfficialVisitors(page, uuidV4())
+    await officialVisitsApi.stubCheckForOverlappingVisits({
+      prisonerNumber: 'A1111AA',
+      overlappingPrisonerVisits: [2],
+      contacts: [],
+    })
+
+    await selectOfficialContactPage.checkContact(0)
+    await selectOfficialContactPage.continueButton.click()
+
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
+    await expect(page.getByText('This prisoner already has a visit booked')).toBeVisible()
+    await expect(page.getByText('The prisoner has another visit booked at this time.')).toBeVisible()
+  })
+
+  test('shows the visitor overlap error when a visitor has another visit booked', async ({ page }) => {
+    const selectOfficialContactPage = await navigateToSelectOfficialVisitors(page, uuidV4())
+
+    await officialVisitsApi.stubCheckForOverlappingVisits({
+      prisonerNumber: 'A1111AA',
+      overlappingPrisonerVisits: [],
+      contacts: [{ contactId: 101, overlappingContactVisits: [5] }],
+    })
+
+    await selectOfficialContactPage.checkContact(0)
+    await selectOfficialContactPage.continueButton.click()
+
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
+    await expect(page.getByText('A visitor already has a visit booked')).toBeVisible()
+    await expect(page.getByText('A visitor has another visit booked at this time.')).toBeVisible()
+  })
 })
+
+async function navigateToSelectOfficialVisitors(page: Page, uuid: string): Promise<SelectOfficialContactPage> {
+  await login(page)
+  await page.goto(`/manage/create/${uuid}/search`)
+  const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)
+  await prisonerSearchPage.searchBox.fill('John')
+  await prisonerSearchPage.searchButton.click()
+
+  const prisonerSearchResultsPage = await PrisonerSearchResultsPage.verifyOnPage(page)
+  await prisonerSearchResultsPage.selectThisPrisoner()
+
+  const visitTypePage = await VisitTypePage.verifyOnPage(page)
+  await visitTypePage.selectRadioButton('In person')
+  await visitTypePage.continueButton.click()
+
+  const timeSlotPage = await TimeSlotPage.verifyOnPage(page)
+  await timeSlotPage.selectRadioButton('08:00 to 17:00')
+  await timeSlotPage.continueButton.click()
+
+  return SelectOfficialContactPage.verifyOnPage(page)
+}
 
 /** Check that cancel takes us to the cancellation check page with the correct steps checked and that "no" takes us back to the page we came from */
 async function checkCancelPage(srcPage: AbstractPage, verify: (page: Page) => Promise<unknown>, stepsChecked: number) {

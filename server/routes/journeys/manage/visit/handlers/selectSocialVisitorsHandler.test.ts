@@ -1,7 +1,7 @@
 import type { Express } from 'express'
 import request from 'supertest'
 import * as cheerio from 'cheerio'
-import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetup'
+import { appWithAllRoutes, flashProvider, journeyId, user } from '../../../../testutils/appSetup'
 import AuditService, { Page } from '../../../../../services/auditService'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
@@ -496,6 +496,49 @@ describe('Select social visitors', () => {
         "You'll need the Contacts Authoriser role to update visitor details in the prisoner's contact record.",
       )
     })
+  })
+
+  describe('capacity check alert messages', () => {
+    const renderWithAlertErrors = (alertErrors: Record<string, boolean>) => {
+      flashProvider.mockImplementation((key: string) => (key === 'alertErrors' ? [JSON.stringify(alertErrors)] : []))
+      return request(app).get(URL).expect('Content-Type', /html/)
+    }
+
+    it('should render the empty visitors error', () =>
+      renderWithAlertErrors({ empty: true }).expect(res => {
+        expect(res.text).toContain('You cannot remove all visitors from an official visit')
+        expect(res.text).toContain('A visit must have at least one official visitor.')
+      }))
+
+    it('should render the no capacity error', () =>
+      renderWithAlertErrors({ noCapacity: true }).expect(res => {
+        expect(res.text).toContain('You’ve added the maximum number of visitors')
+        expect(res.text).toContain('You cannot add more visitors to this time slot.')
+        expect(res.text).toContain('choose another time slot')
+      }))
+
+    it('should render the duplicate visitors error', () =>
+      renderWithAlertErrors({ hasDuplicateContactIds: true }).expect(res => {
+        expect(res.text).toContain('Duplicate visitors selected')
+        expect(res.text).toContain('You have selected the same contact more than once.')
+      }))
+
+    it('should render the prisoner overlap error', () =>
+      renderWithAlertErrors({ hasPrisonerOverlap: true }).expect(res => {
+        expect(res.text).toContain('This prisoner already has a visit booked')
+        expect(res.text).toContain('The prisoner has another visit booked at this time.')
+      }))
+
+    it('should render the visitor overlap error', () =>
+      renderWithAlertErrors({ hasVisitorOverlap: true }).expect(res => {
+        expect(res.text).toContain('A visitor already has a visit booked')
+        expect(res.text).toContain('A visitor has another visit booked at this time.')
+      }))
+
+    it('should render the no relationship error', () =>
+      renderWithAlertErrors({ noRelationship: true }).expect(res => {
+        expect(res.text).toContain('Remove visitor with no recorded relationship with the prisoner')
+      }))
   })
 
   describe('POST', () => {
