@@ -5,7 +5,7 @@ import { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { schema } from './viewOfficialVisitListSchema'
 import { ReferenceDataItem, VisitStatusType, VisitType } from '../../../../@types/officialVisitsApi/types'
-import { toDateString } from '../../../../utils/utils'
+import { bulkMovementSlipsEnabled, toDateString } from '../../../../utils/utils'
 
 export default class ViewOfficialVisitListHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_LIST_PAGE
@@ -109,6 +109,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
         ...(filterParams.type ? { type: filterParams.type.join(',') } : {}),
         ...(filterParams.location ? { location: filterParams.location.join(',') } : {}),
       }).toString()}`,
+      showMovementSlips: bulkMovementSlipsEnabled(res.locals.user.activeCaseLoadId),
     })
   }
 

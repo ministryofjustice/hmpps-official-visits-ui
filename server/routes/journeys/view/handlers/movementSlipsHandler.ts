@@ -5,7 +5,7 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { schema } from './viewOfficialVisitListSchema'
 import { ReferenceDataItem, VisitStatusType, VisitType } from '../../../../@types/officialVisitsApi/types'
-import { toDateString } from '../../../../utils/utils'
+import { bulkMovementSlipsEnabled, toDateString } from '../../../../utils/utils'
 
 export default class MovementSlipsHandler implements PageHandler {
   public PAGE_NAME = Page.MOVEMENT_SLIPS
@@ -17,6 +17,10 @@ export default class MovementSlipsHandler implements PageHandler {
   GET = async (req: Request, res: Response) => {
     const { user } = res.locals
     const prisonCode = req.session.activeCaseLoadId
+
+    if (!bulkMovementSlipsEnabled(user.activeCaseLoadId)) {
+      return res.redirect('/view/list')
+    }
 
     const statusOpts = await this.officialVisitsService.getReferenceData(res, 'VIS_STATUS')
     const typeOpts = await this.officialVisitsService.getReferenceData(res, 'VIS_TYPE')

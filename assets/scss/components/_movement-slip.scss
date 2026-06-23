@@ -17,3 +17,8 @@
 .movement-slip .govuk-hint {
   font-size: 0.8rem;
 }
+
+.movement-slip {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
