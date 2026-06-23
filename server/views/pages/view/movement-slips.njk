@@ -1,7 +1,7 @@
 {% extends "partials/layout.njk" %}
 
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "partials/movementSlip.njk" import movementSlip %}
 
 {% set pageTitle = "Movement slips" %}
 
@@ -31,32 +31,6 @@
   {% endif %}
 
   {% for visit in visits %}
-    <div class="govuk-grid-row dotted-border govuk-!-padding-top-4 govuk-!-padding-left-4 govuk-!-padding-right-4 govuk-!-padding-bottom-2 movement-slip {% if not loop.last %}govuk-!-margin-bottom-4{% endif %}">
-      <h1 class="govuk-body govuk-!-margin-bottom-2"><b>{{ visit.prisonDescription }}</b> Movement authorisation slip</h1>
-
-      {{ govukSummaryList({
-        classes: 'govuk-!-margin-top-2 govuk-!-margin-bottom-2',
-        rows: [
-          {
-            key: { text: 'Prisoner'},
-            value: { text: visit.prisoner | firstNameSpaceLastName + ', ' + visit.prisoner.prisonerNumber }
-          },
-          {
-            key: { text: "Time and date" },
-            value: { html: (visit.startTime | timeStringTo24HourPretty) + ' to ' + (visit.endTime | timeStringTo24HourPretty) + ', ' + visit.visitDate | formatDate("iiii, d MMMM yyyy") }
-          },
-          {
-            key: { text: "Visit type" },
-            value: { text: visit.visitTypeDescription }
-          },
-          {
-            key: { text: "Location" },
-            value: { text: visit.locationDescription }
-          }
-        ] | filterNonFalsy
-      }) }}
-
-      <p class="govuk-hint float-right govuk-!-margin-bottom-0">Printed at {{ now | formatDate("HH:mm") }} on {{ now | formatDate("iiii, d MMMM yyyy") }}</p>
-    </div>
+    {{ movementSlip(visit, visit.prisoner, now, not loop.last) }}
   {% endfor %}
 {% endblock %}
