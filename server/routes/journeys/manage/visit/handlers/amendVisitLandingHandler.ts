@@ -50,7 +50,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
 
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
 
-    const [restrictions, prisoner, contacts] = await Promise.all([
+    const [restrictions, prisoner, contacts, visitChangeStatus] = await Promise.all([
       this.personalRelationshipsService.getPrisonerRestrictions(
         visit.prisonerVisited.prisonerNumber,
         0,
@@ -61,6 +61,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
       ),
       this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerVisited.prisonerNumber, user),
       this.officialVisitsService.getAllContacts(visit.prisonerVisited.prisonerNumber, user),
+      this.officialVisitsService.getVisitChangeStatus(Number(ovId), user),
     ])
 
     const enrichedVisitors = await Promise.all(
@@ -173,6 +174,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
       hasNotApprovedVisitors,
       hasSocialVisitors,
       hasIssueVisitors,
+      hasVisitChanged: visitChangeStatus.hasChanged,
       shouldShowIssues: isFuture(new Date(`${visit.visitDate} ${visit.startTime}`)) && !visit.completionCode,
     })
   }
