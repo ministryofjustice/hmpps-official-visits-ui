@@ -64,6 +64,7 @@ test.describe('Cancel an official visit', () => {
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
     await officialVisitsApi.stubCompleteVisit({})
     await officialVisitsApi.stubCancelVisit({})
+    await personalRelationshipsApi.stubRelationship(7332364)
   })
 
   test.afterEach(async () => {

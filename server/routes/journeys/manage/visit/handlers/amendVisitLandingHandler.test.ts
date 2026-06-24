@@ -210,6 +210,19 @@ describe('Search for an official visit', () => {
       )
     })
 
+    it('should render send email alert when hasChanged is true even when email notifications are enabled', async () => {
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
+      appSetup()
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect($('#send-email-button').length).toBe(0)
+      expect($('a[href="/notification/enter-email-address/1/edit"]').length).toBe(1)
+      expect(res.text).toContain('Information about this visit has changed since a confirmation email was last sent')
+    })
+
     it('should handle null visit.updatedBy', () => {
       officialVisitsService.getOfficialVisitById.mockResolvedValue({ ...mockVisitByIdVisit, updatedBy: null })
       return request(app)
