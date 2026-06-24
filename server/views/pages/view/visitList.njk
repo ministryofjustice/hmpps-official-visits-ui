@@ -189,6 +189,9 @@
             {{ govukButton({
               text: "Print movement slips",
               href: movementSlipsLink,
+              attributes: {
+                "target": "_blank"
+              },
               classes: 'govuk-button--secondary govuk-!-margin-bottom-0 float-right'
             }) }}
           {% endif %}
