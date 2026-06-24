@@ -152,6 +152,9 @@ test.describe('Amend official visits', () => {
       contacts: [],
     })
     await personalRelationshipsApi.stubRelationship(1)
+    await personalRelationshipsApi.stubRelationship(2)
+    await personalRelationshipsApi.stubRelationship(3)
+    await personalRelationshipsApi.stubRelationship(999)
   })
 
   test.afterEach(async () => {
