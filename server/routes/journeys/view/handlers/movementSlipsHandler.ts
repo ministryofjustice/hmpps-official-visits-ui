@@ -10,7 +10,7 @@ import { bulkMovementSlipsEnabled, toDateString } from '../../../../utils/utils'
 export default class MovementSlipsHandler implements PageHandler {
   public PAGE_NAME = Page.MOVEMENT_SLIPS
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
+  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
 
   QUERY = schema
 
@@ -47,14 +47,12 @@ export default class MovementSlipsHandler implements PageHandler {
       prisoner?: string
       startDate: string
       endDate: string
-      status?: VisitStatusType[]
       type?: VisitType[]
       location?: string[]
     } = {
       ...(req.body.prisoner ? { prisoner: req.body.prisoner as string } : {}),
       startDate: (req.body.startDate as string) || new Date().toISOString().substring(0, 10),
       endDate: (req.body.endDate as string) || new Date(addDays(new Date(), 7)).toISOString().substring(0, 10),
-      ...validateRefDataItems<VisitStatusType>('status', req.body.status as string, statusOpts),
       ...validateRefDataItems<VisitType>('type', req.body.type as string, typeOpts),
       ...validateRefDataItems('location', req.body.location as string, locations),
     }
@@ -63,7 +61,7 @@ export default class MovementSlipsHandler implements PageHandler {
       startDate: filterParams.startDate,
       endDate: filterParams.endDate,
       ...(filterParams.prisoner ? { searchTerm: filterParams.prisoner } : {}),
-      ...(filterParams.status ? { visitStatuses: filterParams.status } : {}),
+      visitStatuses: ['SCHEDULED'] as VisitStatusType[],
       ...(filterParams.type ? { visitTypes: filterParams.type } : {}),
       ...(filterParams.location ? { locationIds: filterParams.location } : {}),
     }

@@ -105,7 +105,6 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
         startDate: filterParams.startDate,
         endDate: filterParams.endDate,
         ...(filterParams.prisoner ? { prisoner: filterParams.prisoner } : {}),
-        ...(filterParams.status ? { status: filterParams.status.join(',') } : {}),
         ...(filterParams.type ? { type: filterParams.type.join(',') } : {}),
         ...(filterParams.location ? { location: filterParams.location.join(',') } : {}),
       }).toString()}`,

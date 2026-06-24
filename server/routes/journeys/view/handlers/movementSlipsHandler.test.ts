@@ -93,7 +93,7 @@ describe('Movement slips', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
           expect($('.dotted-border').length).toBe(0)
-          expect($('.govuk-body').text()).toContain('No visits found')
+          expect($('.govuk-body').text()).toContain('No scheduled visits found')
         })
     })
 
