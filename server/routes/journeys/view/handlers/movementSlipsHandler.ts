@@ -22,7 +22,6 @@ export default class MovementSlipsHandler implements PageHandler {
       return res.redirect('/view/list')
     }
 
-    const statusOpts = await this.officialVisitsService.getReferenceData(res, 'VIS_STATUS')
     const typeOpts = await this.officialVisitsService.getReferenceData(res, 'VIS_TYPE')
 
     const slots = await this.officialVisitsService.getAvailableSlots(
