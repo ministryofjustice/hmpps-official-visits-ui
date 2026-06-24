@@ -405,6 +405,7 @@ describe('View an official visit', () => {
           expect(getValueByKey($, 'Search type')).toEqual('Full search')
           expect($('.govuk-button:contains("Amend visit")').length).toBe(0)
           expect($('.govuk-button:contains("Cancel visit")').length).toBe(0)
+          expect($('.govuk-button[href="/view/visit/1/movement-slip"]').length).toBe(0)
         })
     })
 
@@ -431,6 +432,7 @@ describe('View an official visit', () => {
           expect($('.govuk-button:contains("Cancel visit")').length).toBe(0)
           expect(getValueByKey($, 'Completion reason')).toBeNull()
           expect(getValueByKey($, 'Search type')).toBeNull()
+          expect($('.govuk-button[href="/view/visit/1/movement-slip"]').length).toBe(0)
         })
     })
 

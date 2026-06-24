@@ -33,14 +33,16 @@
   {{ unauthorisedVisitorsInset(user, hasIssueVisitors, shouldShowIssues, hasSocialVisitors, hasNotApprovedVisitors, hasNoRelationshipVisitors, PERMISSION) }}
 
   {% if mode != 'amend' %}
-      {{ govukButton({
-      text: "Print movement slip",
-      href: "/view/visit/" + visit.officialVisitId + "/movement-slip",
-      classes: 'govuk-button govuk-button--secondary',
-      attributes: {
-        "target": "_blank"
-      }
-    }) }}
+      {% if visit.visitStatus not in ['COMPLETED', 'CANCELLED'] %}
+          {{ govukButton({
+          text: "Print movement slip",
+          href: "/view/visit/" + visit.officialVisitId + "/movement-slip",
+          classes: 'govuk-button govuk-button--secondary',
+          attributes: {
+            "target": "_blank"
+          }
+        }) }}
+      {% endif %}
        {% if user | hasPermission(PERMISSION.MANAGE) and emailNotificationsEnabled and visit.visitStatus in ['CANCELLED', 'SCHEDULED'] %}
            {{ govukButton({
                id: "send-email-button",
