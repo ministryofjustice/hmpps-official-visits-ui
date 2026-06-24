@@ -10,7 +10,7 @@ import { bulkMovementSlipsEnabled, toDateString } from '../../../../utils/utils'
 export default class MovementSlipsHandler implements PageHandler {
   public PAGE_NAME = Page.MOVEMENT_SLIPS
 
-  constructor(private readonly officialVisitsService: OfficialVisitsService) { }
+  constructor(private readonly officialVisitsService: OfficialVisitsService) {}
 
   QUERY = schema
 
