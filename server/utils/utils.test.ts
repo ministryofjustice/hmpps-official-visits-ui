@@ -34,6 +34,7 @@ import {
   timeRangesOverlap,
   buildCalendarMonths,
   emailNotificationsEnabled,
+  bulkMovementSlipsEnabled,
 } from './utils'
 import config from '../config'
 import { JourneyVisitor } from '../routes/journeys/manage/visit/journey'
@@ -695,5 +696,37 @@ describe('emailNotificationsEnabled', () => {
   it('should return false for undefined caseLoadId', () => {
     config.featureToggles.emailNotificationsPrisons = 'MDI'
     expect(emailNotificationsEnabled(undefined)).toBe(false)
+  })
+})
+
+describe('bulkMovementSlipsEnabled', () => {
+  let originalValue: string
+
+  beforeEach(() => {
+    originalValue = config.featureToggles.bulkMovementSlipsPrisons
+  })
+
+  afterEach(() => {
+    config.featureToggles.bulkMovementSlipsPrisons = originalValue
+  })
+
+  it('should return true when the prison is in the enabled list', () => {
+    config.featureToggles.bulkMovementSlipsPrisons = 'MDI,LEI'
+    expect(bulkMovementSlipsEnabled('MDI')).toBe(true)
+  })
+
+  it('should return false when the prison is not in the enabled list', () => {
+    config.featureToggles.bulkMovementSlipsPrisons = 'MDI,LEI'
+    expect(bulkMovementSlipsEnabled('HEI')).toBe(false)
+  })
+
+  it('should return false when the enabled list is empty', () => {
+    config.featureToggles.bulkMovementSlipsPrisons = ''
+    expect(bulkMovementSlipsEnabled('MDI')).toBe(false)
+  })
+
+  it('should return false for undefined caseLoadId', () => {
+    config.featureToggles.bulkMovementSlipsPrisons = 'MDI'
+    expect(bulkMovementSlipsEnabled(undefined)).toBe(false)
   })
 })

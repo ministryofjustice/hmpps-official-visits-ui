@@ -1,0 +1,36 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "partials/movementSlip.njk" import movementSlip %}
+
+{% set pageTitle = "Movement slips" %}
+
+{% block pageScripts %}
+  <script type="text/javascript" nonce="{{ cspNonce }}">
+    const printOptionsButton = document.getElementById('print-button');
+    if (printOptionsButton) {
+      printOptionsButton.classList.remove('govuk-!-display-none')
+      printOptionsButton.onclick = () => {
+        window.print()
+      }
+    }
+    </script>
+{% endblock %}
+
+{% block content %}
+
+  {{ govukButton({
+      id: "print-button",
+      text: "Print movement slips",
+      href: "#",
+      classes: 'govuk-button blue-button govuk-!-display-none-print'
+  }) }}
+
+  {% if visits.length == 0 %}
+    <p class="govuk-body">No visits found for the selected filters.</p>
+  {% endif %}
+
+  {% for visit in visits %}
+    {{ movementSlip(visit, visit.prisoner, now, not loop.last) }}
+  {% endfor %}
+{% endblock %}

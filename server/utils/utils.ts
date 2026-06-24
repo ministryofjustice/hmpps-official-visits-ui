@@ -235,6 +235,10 @@ export const nomisSwitchOffEnabled = (caseLoadId: string) => {
   return config.featureToggles.nomisSwitchOffPrisons.split(',').includes(caseLoadId)
 }
 
+export const bulkMovementSlipsEnabled = (caseLoadId: string) => {
+  return config.featureToggles.bulkMovementSlipsPrisons.split(',').includes(caseLoadId)
+}
+
 export const socialVisitorsPageEnabled = (req: Request) => {
   const hasSocialVisitors = req.session.journey.officialVisit.socialVisitors?.length > 0
   const isPrisonEnabled = prisonAllowsSocialVisitors(req)

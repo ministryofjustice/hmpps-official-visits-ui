@@ -5,6 +5,7 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "moj/components/alert/macro.njk" import mojAlert %}
+{% from "partials/movementSlip.njk" import movementSlip %}
 
 {% set pageTitle = "Movement slip" %}
 
@@ -29,34 +30,38 @@
       classes: 'govuk-button blue-button govuk-!-display-none-print'
   }) }}
 
-  <div class="govuk-grid-row dotted-border govuk-!-padding-6">
-    <h1 class="govuk-body govuk-!-font-size-24">
-      <b>{{ visit.prisonDescription }}</b> Movement authorisation slip</h1>
-    <h2 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ visit.prisonerVisited | firstNameSpaceLastName }}, {{ visit.prisonerVisited.prisonerNumber }}</h2>
-    <span class="govuk-hint">{{ visit.prisonerVisited.prisonCode }}-{{ visit.prisonerVisited.cellLocation }}</span>
+  {% if useNewLayout %}
+    {{ movementSlip(visit, visit.prisonerVisited, now) }}
+  {% else %}
+    <div class="govuk-grid-row dotted-border govuk-!-padding-6">
+      <h1 class="govuk-body govuk-!-font-size-24">
+        <b>{{ visit.prisonDescription }}</b> Movement authorisation slip</h1>
+      <h2 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ visit.prisonerVisited | firstNameSpaceLastName }}, {{ visit.prisonerVisited.prisonerNumber }}</h2>
+      <span class="govuk-hint">{{ visit.prisonerVisited.prisonCode }}-{{ visit.prisonerVisited.cellLocation }}</span>
 
-    {{ govukSummaryList({
-      classes: 'govuk-!-margin-top-4',
-      rows: [
-        {
-          key: { text: "Official visit" },
-          value: { text: '' }
-        },
-        {
-          key: { text: "Time" },
-          value: { html: (visit.startTime | timeStringTo24HourPretty) + ' to ' + (visit.endTime | timeStringTo24HourPretty) + '<br />' + visit.visitDate | formatDate("iiii, d MMMM yyyy") }
-        },
-        {
-          key: { text: "Visit type" },
-          value: { text: visit.visitTypeDescription }
-        },
-        {
-          key: { text: "Location" },
-          value: { text: visit.locationDescription }
-        }
-      ] | filterNonFalsy
-    }) }}
+      {{ govukSummaryList({
+        classes: 'govuk-!-margin-top-4',
+        rows: [
+          {
+            key: { text: "Official visit" },
+            value: { text: '' }
+          },
+          {
+            key: { text: "Time" },
+            value: { html: (visit.startTime | timeStringTo24HourPretty) + ' to ' + (visit.endTime | timeStringTo24HourPretty) + '<br />' + visit.visitDate | formatDate("iiii, d MMMM yyyy") }
+          },
+          {
+            key: { text: "Visit type" },
+            value: { text: visit.visitTypeDescription }
+          },
+          {
+            key: { text: "Location" },
+            value: { text: visit.locationDescription }
+          }
+        ] | filterNonFalsy
+      }) }}
 
-    <p class="govuk-hint float-right govuk-!-margin-bottom-0">Printed at {{ now | formatDate("HH:mm") }} on {{ now | formatDate("iiii, d MMMM yyyy") }}</p>
-  </div>
+      <p class="govuk-hint float-right govuk-!-margin-bottom-0">Printed at {{ now | formatDate("HH:mm") }} on {{ now | formatDate("iiii, d MMMM yyyy") }}</p>
+    </div>
+  {% endif %}
 {% endblock %}
