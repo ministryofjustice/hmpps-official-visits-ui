@@ -22,6 +22,7 @@ import {
   NotificationRequest,
   NotificationSearchRequest,
   PagedModelSentNotification,
+  OfficialVisitNotifications,
 } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
@@ -189,6 +190,13 @@ export default class OfficialVisitsService {
 
   public async getVisitChangeStatus(officialVisitId: number, user: HmppsUser): Promise<{ hasChanged: boolean }> {
     return this.officialVisitsApiClient.getVisitChangeStatus(officialVisitId, user)
+  }
+
+  public async getNotificationsByOfficialVisitId(
+    officialVisitId: number,
+    user: HmppsUser,
+  ): Promise<OfficialVisitNotifications> {
+    return this.officialVisitsApiClient.getNotificationsByOfficialVisitId(officialVisitId, user)
   }
 
   public async sendNotification(visitId: string, body: NotificationRequest, user: HmppsUser) {

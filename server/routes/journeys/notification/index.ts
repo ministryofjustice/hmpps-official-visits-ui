@@ -16,7 +16,7 @@ export default function Index({ auditService, officialVisitsService }: Services)
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
   // Enter email address
-  route('/enter-email-address/:ovId/:action', new EmailHandler())
+  route('/enter-email-address/:ovId/:action', new EmailHandler(officialVisitsService))
 
   // Check and send
   route('/check-email/:ovId/:action', new CheckHandler(officialVisitsService))

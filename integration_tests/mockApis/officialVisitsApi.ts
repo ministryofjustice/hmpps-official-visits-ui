@@ -8,6 +8,7 @@ import {
   FindByCriteriaResults,
   NotificationResponse,
   OfficialVisit,
+  OfficialVisitNotifications,
   ReferenceDataItem,
   TimeSlot,
   TimeSlotSummary,
@@ -175,4 +176,8 @@ export default {
     simpleApiMock(`/official-visits-api/notification/\\d+/change-status`, response),
   stubSendNotification: (officialVisitId: number, response: RecursivePartial<NotificationResponse> = {}) =>
     simplePostApiMock(`/official-visits-api/notification/${officialVisitId}`, response),
+  getNotificationsByOfficialVisitId: (
+    prisonTimeSlotId: number,
+    response: RecursivePartial<OfficialVisitNotifications>,
+  ) => simpleApiMock(`/official-visits-api/official-visit/id/${prisonTimeSlotId}/notifications.*`, response),
 }
