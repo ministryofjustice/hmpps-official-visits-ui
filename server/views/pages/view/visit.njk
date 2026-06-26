@@ -51,7 +51,7 @@
                classes: 'govuk-button govuk-button--secondary'
            }) }}
     {% endif %}
-    {% if user | hasPermission(PERMISSION.MANAGE) and visit.visitStatus not in ['COMPLETED', 'CANCELLED'] %}
+    {% if user | hasPermission(PERMISSION.MANAGE) and visit.visitStatus not in ['COMPLETED', 'CANCELLED'] and not isPastVisit %}
       {{ govukButton({
         text: "Amend visit",
         href: "/manage/amend/" + visit.officialVisitId + paramBackTo,

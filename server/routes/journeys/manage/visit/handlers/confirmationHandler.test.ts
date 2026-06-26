@@ -83,7 +83,7 @@ describe('confirmation handler', () => {
           expect(detailsKeys).toEqual(['Visitor name', 'Date', 'Time', 'Location'])
           expect(detailsValues).toEqual([
             'Peter Malicious (Solicitor)',
-            'Thursday 1 January 2026',
+            'Friday 25 December 2099',
             '10:00 to 11:00 (1 hour)',
             'First Location',
           ])

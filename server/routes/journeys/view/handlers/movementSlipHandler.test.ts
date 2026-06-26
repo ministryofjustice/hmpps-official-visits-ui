@@ -57,7 +57,7 @@ describe('Official visit movement slip', () => {
           expect(getValueByKey($, 'Official visit')).toEqual(null)
           expect(getValueByKey($, 'Visit type')).toEqual('Video')
 
-          expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00Thursday, 1 January 2026')
+          expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00Friday, 25 December 2099')
 
           expect(getValueByKey($, 'Location')).toEqual('First Location')
           const printBtn = $('#print-button')
@@ -89,7 +89,7 @@ describe('Official visit movement slip', () => {
           )
 
           expect(getValueByKey($, 'Prisoner')).toEqual('Tim Harrison, G4793VF')
-          expect(getValueByKey($, 'Time and date')).toEqual('10:00 to 11:00, Thursday, 1 January 2026')
+          expect(getValueByKey($, 'Time and date')).toEqual('10:00 to 11:00, Friday, 25 December 2099')
           expect(getValueByKey($, 'Visit type')).toEqual('Video')
           expect(getValueByKey($, 'Location')).toEqual('First Location')
 

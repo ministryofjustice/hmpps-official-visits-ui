@@ -8,7 +8,7 @@ import PersonalRelationshipsService from '../../../../services/personalRelations
 import ManageUserService from '../../../../services/manageUsersService'
 import TelemetryService from '../../../../services/telemetryService'
 import { OfficialVisit, RestrictionSummary } from '../../../../@types/officialVisitsApi/types'
-import { prisonAllowsSocialVisitors } from '../../../../utils/utils'
+import { isVisitDateAndStartTimeInThePast, prisonAllowsSocialVisitors } from '../../../../utils/utils'
 import config from '../../../../config'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
@@ -141,6 +141,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       hasIssueVisitors,
       hasVisitChanged: visitChangeStatus.hasChanged,
       shouldShowIssues: isFuture(new Date(`${visit.visitDate} ${visit.startTime}`)) && !visit.completionCode,
+      isPastVisit: isVisitDateAndStartTimeInThePast(visit.visitDate, visit.startTime),
     })
   }
 }

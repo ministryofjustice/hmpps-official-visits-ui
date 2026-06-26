@@ -134,7 +134,7 @@ describe('Search for an official visit', () => {
             'Information about this visit has changed since a confirmation email was last sent',
           )
 
-          expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
+          expect(getValueByKey($, 'Date')).toEqual('Friday, 25 December 2099')
           expect(getActionsByKey($, 'Date', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/time-slot/)
 
           expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00 (1 hour)')
@@ -270,7 +270,7 @@ describe('Search for an official visit', () => {
           expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
-          expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
+          expect(getValueByKey($, 'Date')).toEqual('Friday, 25 December 2099')
           expect(getActionsByKey($, 'Date', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/time-slot/)
           expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00 (1 hour)')
           expect(getActionsByKey($, 'Time', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/time-slot/)
@@ -338,7 +338,7 @@ describe('Search for an official visit', () => {
         .expect(res => {
           expect(res.text).not.toContain('ACTIVE RESTRICTION IN PLACE')
           expect(res.text).not.toContain('ACTIVE RESTRICTIONS IN PLACE')
-          expect(res.text).not.toContain('moj-badge--red')
+          expect(res.text).not.toContain('prisoner-restrictions-table')
         })
     })
 
@@ -457,6 +457,29 @@ describe('Search for an official visit', () => {
       const res = await request(app).get(URL)
       expect(res.text).not.toContain('Some visitor details need updating')
       expect(res.text).not.toContain('SOCIAL VISITOR')
+    })
+
+    it('should redirect to the view visit page when the visit date and start time are in the past', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitDate: '2020-01-01',
+      })
+
+      const res = await request(app).get(URL)
+      expect(res.status).toEqual(302)
+      expect(res.headers.location).toEqual('/view/visit/1')
+    })
+
+    it('should still redirect a past visit regardless of its status', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitDate: '2020-01-01',
+        visitStatus: 'SCHEDULED',
+      })
+
+      const res = await request(app).get(URL)
+      expect(res.status).toEqual(302)
+      expect(res.headers.location).toEqual('/view/visit/1')
     })
 
     it('should not show inset text or MOJ badges when visit is completed', async () => {

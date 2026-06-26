@@ -383,7 +383,7 @@ export const mockVisitByIdVisit: OfficialVisit = {
   visitStatusDescription: 'Scheduled',
   visitTypeCode: 'VIDEO',
   visitTypeDescription: 'Video',
-  visitDate: '2026-01-01',
+  visitDate: '2099-12-25',
   startTime: '10:00',
   endTime: '11:00',
   dpsLocationId: 'bef2bbbe-a144-420b-bd23-c10847e61c15',
