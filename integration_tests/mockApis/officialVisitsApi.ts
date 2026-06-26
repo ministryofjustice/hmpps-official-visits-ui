@@ -32,6 +32,27 @@ export default {
   stubRefData: (group: string, response: ReferenceDataItem[]) =>
     simpleApiMock(`/official-visits-api/reference-data/group/${group}`, response),
   stubAvailableSlots: (response: AvailableSlot[]) => simpleApiMock(`/official-visits-api/available-slots/.*`, response),
+  // Simulates the API rejecting a slot lookup because the date is no longer on or after today - i.e. the
+  // visit has moved into the past. Higher priority so it overrides any previously registered slots stub.
+  stubAvailableSlotsPastDateError: () =>
+    stubFor({
+      priority: 1,
+      request: {
+        method: 'GET',
+        urlPattern: `/official-visits-api/available-slots/.*`,
+      },
+      response: {
+        status: 400,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 400,
+          errorCode: null,
+          userMessage: "The from date must be on or after today's date",
+          developerMessage: "The from date must be on or after today's date",
+          moreInfo: null,
+        },
+      },
+    }),
   stubGetPrisonTimeSlotSummaryById: (prisonTimeSlotId: number, response: Record<string, unknown>) =>
     simpleApiMock(`/official-visits-api/admin/time-slot/${prisonTimeSlotId}/summary`, response),
   stubTimeSlotSummary: (response: Record<string, unknown>) =>

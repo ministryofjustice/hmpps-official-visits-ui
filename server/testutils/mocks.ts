@@ -433,6 +433,30 @@ export const mockVisitByIdVisit: OfficialVisit = {
   },
 }
 
+export const mockVisitByIdVisitContact = {
+  prisonerContactId: 7332364,
+  contactId: 20085647,
+  prisonerNumber: 'G4793VF',
+  lastName: 'Malicious',
+  firstName: 'Peter',
+  relationshipTypeCode: 'O',
+  relationshipTypeDescription: 'Official',
+  relationshipToPrisonerCode: 'SOL',
+  relationshipCode: 'SOL',
+  relationshipToPrisonerDescription: 'Solicitor',
+  isApprovedVisitor: true,
+  isNextOfKin: false,
+  isEmergencyContact: false,
+  isRelationshipActive: true,
+  currentTerm: true,
+  isStaff: false,
+  restrictionSummary: {
+    active: [] as { restrictionType: string; restrictionTypeDescription: string }[],
+    totalActive: 0,
+    totalExpired: 0,
+  },
+}
+
 export const mockUser = {
   active: true,
   authSource: 'nomis',
