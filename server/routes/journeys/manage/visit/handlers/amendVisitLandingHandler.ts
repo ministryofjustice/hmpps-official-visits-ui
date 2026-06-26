@@ -50,7 +50,6 @@ export default class AmendVisitLandingHandler implements PageHandler {
 
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
 
-    // Visits whose date and start time are in the past cannot be amended, regardless of status.
     if (isVisitDateAndStartTimeInThePast(visit.visitDate, visit.startTime)) {
       return res.redirect(`/view/visit/${visit.officialVisitId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`)
     }

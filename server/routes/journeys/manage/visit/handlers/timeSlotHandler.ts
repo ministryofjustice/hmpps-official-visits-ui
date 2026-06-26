@@ -101,6 +101,7 @@ export default class TimeSlotHandler implements PageHandler {
       backUrl: getBackLink(req, res, `visit-type`),
       prisoner: req.session.journey.officialVisit.prisoner,
       checks: errors,
+      visitId: req.params.ovId,
     })
   }
 

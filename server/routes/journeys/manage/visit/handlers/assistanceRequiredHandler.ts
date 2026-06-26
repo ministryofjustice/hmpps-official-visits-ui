@@ -39,6 +39,7 @@ export default class AssistanceRequiredHandler implements PageHandler {
       submitAction:
         res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit)) ? 'Save' : 'Continue',
       checks: errors,
+      visitId: req.params.ovId,
     })
   }
 

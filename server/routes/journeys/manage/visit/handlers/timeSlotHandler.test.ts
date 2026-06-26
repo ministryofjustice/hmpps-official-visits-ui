@@ -360,6 +360,23 @@ describe('Time slot handler', () => {
         .expect(() => expectFlashMessage('updateVerb', 'amended'))
     })
 
+    it('should surface a visitInPast error when the API rejects amending a past visit', async () => {
+      const referer = `/manage/amend/1/${UUID}/time-slot`
+      officialVisitsService.getAvailableSlots.mockRejectedValue({
+        data: { userMessage: "The from date must be on or after today's date" },
+      })
+
+      await request(app)
+        .post(referer)
+        .set('Referer', referer)
+        .send({ visitSlot: '1' })
+        .expect(302)
+        .expect('location', referer)
+        .expect(() => expectAlertErrors({ visitInPast: true }))
+
+      expect(officialVisitsService.updateVisitTypeAndSlot).not.toHaveBeenCalled()
+    })
+
     // ... (rest of the code remains the same)
     it('should call updateVisitTypeAndSlot service when in amend mode', async () => {
       const amendJourneySession = () => ({
