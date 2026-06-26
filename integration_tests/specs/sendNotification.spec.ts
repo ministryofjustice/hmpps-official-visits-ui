@@ -11,6 +11,7 @@ import NotificationCheckPage from '../pages/notificationCheckPage'
 import NotificationSentPage from '../pages/notificationSentPage'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
 import { NotAuthorisedPage } from '../pages/notAuthorisedPage'
+import { OfficialVisitNotifications } from '../../server/@types/officialVisitsApi/types'
 
 const OV_ID = mockVisitByIdVisit.officialVisitId // 1
 
@@ -20,6 +21,7 @@ test.describe('Notification feature toggle', () => {
     await manageUsersApi.stubGetByUsername()
     await prisonApi.stubGetPrisonerImage()
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
+    await officialVisitsApi.getNotificationsByOfficialVisitId(OV_ID, [] as OfficialVisitNotifications)
   })
 
   test.afterEach(async () => {
@@ -48,6 +50,7 @@ test.describe('Send a notification', () => {
     await manageUsersApi.stubGetByUsername()
     await componentsApi.stubComponents()
     await prisonApi.stubGetPrisonerImage()
+    await officialVisitsApi.getNotificationsByOfficialVisitId(OV_ID, [] as OfficialVisitNotifications)
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
     await officialVisitsApi.stubSendNotification(OV_ID)
   })

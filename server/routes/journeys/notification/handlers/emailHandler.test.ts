@@ -8,17 +8,21 @@ import AuditService, { Page } from '../../../../services/auditService'
 import { getPageHeader } from '../../../testutils/cheerio'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
 import config from '../../../../config'
+import OfficialVisitsService from '../../../../services/officialVisitsService'
+import { OfficialVisitNotifications } from '../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/telemetryService')
+jest.mock('../../../../services/officialVisitsService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
+const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
 
 let app: Express
 
 const appSetup = (middlewares: RequestHandler[] = []) => {
   app = appWithAllRoutes({
-    services: { auditService },
+    services: { auditService, officialVisitsService },
     userSupplier: () => user,
     journeySessionSupplier: () => ({}),
     middlewares,
@@ -28,6 +32,7 @@ const appSetup = (middlewares: RequestHandler[] = []) => {
 beforeEach(() => {
   config.featureToggles.emailNotificationsPrisons = 'HEI'
   appSetup()
+  officialVisitsService.getNotificationsByOfficialVisitId.mockResolvedValue([{}] as OfficialVisitNotifications)
 })
 
 afterEach(() => {
@@ -131,6 +136,24 @@ describe('notification email handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
           expect($('#emailAddress').attr('value')).toEqual('example@example.com')
+        })
+    })
+
+    it('should pre propulate with previous email when there is previous notification', () => {
+      const previousNotification = { emailAddress: 'test@example.com' }
+
+      officialVisitsService.getNotificationsByOfficialVisitId.mockResolvedValue([
+        previousNotification,
+      ] as OfficialVisitNotifications)
+
+      return request(app)
+        .get(`/notification/enter-email-address/${OV_ID}/create`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect(res.text).toContain('An email will be sent confirming the details of this official visit.')
+          expect(res.text).not.toContain('the cancellation of this official visit')
+          expect($('#emailAddress').attr('value')).toEqual(previousNotification.emailAddress)
         })
     })
   })
