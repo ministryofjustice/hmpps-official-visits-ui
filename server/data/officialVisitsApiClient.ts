@@ -31,6 +31,8 @@ import {
   UpdateVisitSlotRequest,
   VisitLocation,
   VisitSlot,
+  OfficialVisitNotifications,
+  VisitChangeStatusResponse,
 } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
 
@@ -330,12 +332,20 @@ export default class OfficialVisitsApiClient extends RestClient {
     )
   }
 
-  async getVisitChangeStatus(
+  async getVisitChangeStatus(officialVisitId: number, user: HmppsUser): Promise<VisitChangeStatusResponse> {
+    return this.get<VisitChangeStatusResponse>(
+      { path: `/notification/${officialVisitId}/change-status` },
+      asSystem(user.username),
+    )
+  }
+
+  async getNotificationsByOfficialVisitId(
     officialVisitId: number,
     user: HmppsUser,
-  ): Promise<components['schemas']['VisitChangeStatusResponse']> {
-    return this.get<components['schemas']['VisitChangeStatusResponse']>(
-      { path: `/notification/${officialVisitId}/change-status` },
+    sortDirection: string = 'DESC',
+  ): Promise<OfficialVisitNotifications> {
+    return this.get<OfficialVisitNotifications>(
+      { path: `/official-visit/id/${officialVisitId}/notifications`, query: { sortDirection } },
       asSystem(user.username),
     )
   }
