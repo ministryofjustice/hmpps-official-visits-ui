@@ -32,8 +32,6 @@ export default {
   stubRefData: (group: string, response: ReferenceDataItem[]) =>
     simpleApiMock(`/official-visits-api/reference-data/group/${group}`, response),
   stubAvailableSlots: (response: AvailableSlot[]) => simpleApiMock(`/official-visits-api/available-slots/.*`, response),
-  // Simulates the API rejecting a slot lookup because the date is no longer on or after today - i.e. the
-  // visit has moved into the past. Higher priority so it overrides any previously registered slots stub.
   stubAvailableSlotsPastDateError: () =>
     stubFor({
       priority: 1,
