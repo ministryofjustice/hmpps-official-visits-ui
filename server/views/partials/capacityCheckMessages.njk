@@ -1,14 +1,11 @@
 {% from "moj/components/alert/macro.njk" import mojAlert %}
 {% macro capacityCheckMessages(opts, visitId, prisonerNumber) %}
   {% if opts.visitInPast %}
-    {% set visitInPastHtml = "This visit's date and time are in the past, so it can no longer be amended." %}
-    {% if visitId %}
-      {% set visitInPastHtml = visitInPastHtml + " <a href=\"/view/visit/" + visitId + "\" class=\"govuk-link\">Return to the visit</a> to view its details." %}
-    {% endif %}
+    {% set visitInPastHtml = "This visit is in the past so you can no longer update it." %}
     {{ mojAlert({
       variant: "error",
       role: "alert",
-      title: "You cannot amend a visit in the past",
+      title: "You cannot update this visit",
       showTitleAsHeading: true,
       dismissible: false,
       html: visitInPastHtml,

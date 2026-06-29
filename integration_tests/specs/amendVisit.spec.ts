@@ -383,7 +383,7 @@ test.describe('Amend official visits', () => {
 
     await page.getByRole('button', { name: 'Save' }).click()
 
-    await expect(page.getByRole('heading', { name: 'You cannot amend a visit in the past' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'You cannot update this visit' })).toBeVisible()
     await expect(page.getByText('date and time are in the past')).toBeVisible()
     await expect(page.getByRole('link', { name: 'Return to the visit' })).toBeVisible()
 
