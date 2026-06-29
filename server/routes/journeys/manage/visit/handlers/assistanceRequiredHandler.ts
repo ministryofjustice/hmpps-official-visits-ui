@@ -2,12 +2,11 @@ import { NextFunction, Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import { ApprovedContact, ContactRelationship, VisitorType } from '../../../../../@types/officialVisitsApi/types'
+import { ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
 import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
 import { getBackLink } from './utils'
 import { schema } from './assistanceRequiredSchema'
-import { OfficialVisitJourney } from '../journey'
-import { cyaGuard } from '../createJourneyState'
+import { JourneyVisitor } from '../journey'
 
 export default class AssistanceRequiredHandler implements PageHandler {
   public PAGE_NAME = Page.ASSISTANCE_REQUIRED_PAGE
@@ -22,9 +21,6 @@ export default class AssistanceRequiredHandler implements PageHandler {
       ...(req.session.journey.officialVisit.socialVisitors || []),
     ].filter(o => o.contactId)
 
-    const { officialVisit } = req.session.journey
-    const changeThisPage = req.session.journey.amendVisit?.changePage === 'assistance-required'
-
     const rawErrors = req.flash('alertErrors')[0]
     const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
@@ -36,8 +32,7 @@ export default class AssistanceRequiredHandler implements PageHandler {
         socialVisitorsPageEnabled(req as Request) ? `select-social-visitors` : `select-official-visitors`,
       ),
       prisoner: req.session.journey.officialVisit.prisoner,
-      submitAction:
-        res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit)) ? 'Save' : 'Continue',
+      submitAction: 'Continue',
       checks: errors,
       visitId: req.params.ovId,
     })
@@ -49,51 +44,16 @@ export default class AssistanceRequiredHandler implements PageHandler {
     officialVisit.socialVisitors = getSelected(officialVisit?.socialVisitors, req.body as ContactRelationship[])
 
     officialVisit.assistancePageCompleted = true
-    const changeThisPage = req.session.journey.amendVisit?.changePage === 'assistance-required'
 
-    if (res.locals.mode === 'amend' && (changeThisPage || !equipmentPageEnabled(officialVisit))) {
-      const errors = await cyaGuard(req, res, this.officialVisitsService)
-      if (Object.keys(errors).length > 0) {
-        return res.alertValidationError(errors)
-      }
-
-      const allVisitors = [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])]
-      const officialVisitors = allVisitors.map(visitor => ({
-        officialVisitorId: visitor.officialVisitorId || 0,
-        visitorTypeCode: 'CONTACT' as VisitorType,
-        contactId: visitor.contactId,
-        prisonerContactId: visitor.prisonerContactId,
-        relationshipCode: visitor.relationshipToPrisonerCode,
-        leadVisitor: visitor.leadVisitor,
-        assistedVisit: visitor.assistedVisit,
-        assistedNotes: visitor.assistanceNotes,
-        ...(visitor.equipmentNotes ? { visitorEquipment: { description: visitor.equipmentNotes } } : {}),
-      }))
-      const ovId = req.params.ovId as string
-      const journeyId = req.params.journeyId as string
-      await this.officialVisitsService.updateVisitors(
-        officialVisit.prisonCode,
-        ovId,
-        { officialVisitors },
-        res.locals.user,
-      )
-      req.flash('updateVerb', 'amended')
-      return res.redirect(`/manage/amend/${ovId}/${journeyId}`)
-    }
-    return res.redirect(equipmentPageEnabled(officialVisit) ? `equipment` : `comments`)
+    return res.redirect('visitor-details')
   }
 }
 
-const equipmentPageEnabled = (officialVisit: OfficialVisitJourney) => {
-  return officialVisit.visitType === 'IN_PERSON'
-}
-
-const getSelected = (contacts: ApprovedContact[], body: ContactRelationship[]) => {
+const getSelected = (contacts: JourneyVisitor[], body: ContactRelationship[]) => {
   return (contacts || []).map(contact => {
     const foundContact = body.find(o => o.contactId === contact.contactId)
     return {
       ...contact,
-      assistanceNotes: foundContact?.assistanceNotes,
       assistedVisit: foundContact?.assistedVisit || false,
     }
   })

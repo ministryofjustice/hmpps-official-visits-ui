@@ -304,12 +304,12 @@
               } if mode == 'amend'
             },
             {
-              key: { text: "Assistance details" },
+              key: { text: "Further details" },
               value: { text: contact.assistanceNotes or "None"},
               actions: {
                 items: [
                   {
-                    href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/assistance-required?change=true",
+                    href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/visitor-details?change=true",
                     text: "Change",
                     classes: "govuk-link--no-visited-state",
                     visuallyHiddenText: "notes about the assistance required"

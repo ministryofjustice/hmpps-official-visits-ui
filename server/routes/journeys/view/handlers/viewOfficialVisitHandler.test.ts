@@ -182,7 +182,7 @@ describe('View an official visit', () => {
 
           expect(getValueByKey($, 'Contact type')).toEqual('Official')
           expect(getValueByKey($, 'Does this visitor need assistance?')).toEqual('Yes')
-          expect(getValueByKey($, 'Assistance details')).toEqual('Assistance details')
+          expect(getValueByKey($, 'Further details')).toEqual('Further details')
           expect(getValueByKey($, 'Does this visitor need equipment?')).toEqual('Yes')
           expect(getValueByKey($, 'Equipment')).toEqual('Laptop')
           expect(getValueByKey($, 'Email')).toEqual('test@test.com')
@@ -348,7 +348,7 @@ describe('View an official visit', () => {
 
           expect(getValueByKey($, 'Contact type')).toEqual('Official')
           expect(getValueByKey($, 'Does this visitor need assistance?')).toEqual('Yes')
-          expect(getValueByKey($, 'Assistance details')).toEqual('None')
+          expect(getValueByKey($, 'Further details')).toEqual('None')
           expect(getValueByKey($, 'Does this visitor need equipment?')).toEqual('No')
           expect(getValueByKey($, 'Equipment')).toEqual('None')
           expect(getValueByKey($, 'Email')).toEqual('None')

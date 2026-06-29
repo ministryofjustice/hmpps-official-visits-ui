@@ -83,7 +83,7 @@ const mockOfficialVisitJourney = {
       relationshipTypeDescription: 'Official',
       relationshipToPrisonerCode: 'SOL',
       relationshipToPrisonerDescription: 'Solicitor',
-      assistanceNotes: 'Assistance details',
+      assistanceNotes: 'Further details',
       assistedVisit: true,
       equipmentNotes: 'Equipment details',
       equipment: true,
@@ -181,7 +181,7 @@ describe('check your answers handler', () => {
 
           expect(getValueByKey($, 'Contact type')).toEqual('Official')
           expect(getValueByKey($, 'Does this visitor need assistance?')).toEqual('Yes')
-          expect(getValueByKey($, 'Assistance details')).toEqual('Assistance details')
+          expect(getValueByKey($, 'Further details')).toEqual('Further details')
           expect(getValueByKey($, 'Does this visitor need equipment?')).toEqual('Yes')
           expect(getValueByKey($, 'Equipment')).toEqual('Equipment details')
 

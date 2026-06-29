@@ -23,7 +23,7 @@ export default class EquipmentHandler implements PageHandler {
 
     res.render('pages/manage/equipment', {
       contacts,
-      backUrl: getBackLink(req, res, `assistance-required`),
+      backUrl: getBackLink(req, res, `visitor-details`),
       prisoner: req.session.journey.officialVisit.prisoner,
       checks: errors,
       visitId: req.params.ovId,
