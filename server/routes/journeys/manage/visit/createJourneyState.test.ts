@@ -11,7 +11,9 @@ import {
   hasPrisonerOverlap,
   hasVisitorOverlap,
   checkForDuplicateContactIds,
+  cyaGuard,
 } from './createJourneyState'
+import OfficialVisitsService from '../../../../services/officialVisitsService'
 
 describe('Create Journey Guard', () => {
   const mockJourney = () => {
@@ -409,6 +411,64 @@ describe('Duplicate Contact Check Functions', () => {
       const officialVisitors: ApprovedContact[] = []
       const socialVisitors: ApprovedContact[] = []
       expect(checkForDuplicateContactIds(officialVisitors, socialVisitors)).toBe(false)
+    })
+  })
+})
+
+describe('cyaGuard - visit in the past', () => {
+  const buildContext = (selectedTimeSlot: Partial<AvailableSlot>) => {
+    const req = {
+      session: {
+        journey: {
+          officialVisit: {
+            officialVisitId: 1,
+            visitType: 'VIDEO' as VisitType,
+            prisoner: { prisonCode: 'MDI', prisonerNumber: 'A1234BC' },
+            officialVisitors: [{ contactId: 1 }],
+            socialVisitors: [],
+            selectedTimeSlot,
+          },
+        },
+      },
+    } as unknown as Parameters<typeof cyaGuard>[0]
+    const res = { locals: { user: {} } } as unknown as Parameters<typeof cyaGuard>[1]
+    return { req, res }
+  }
+
+  const futureSlot: Partial<AvailableSlot> = { visitSlotId: 1, visitDate: '2099-01-01', startTime: '10:00' }
+  const pastSlot: Partial<AvailableSlot> = { visitSlotId: 1, visitDate: '2020-01-01', startTime: '10:00' }
+
+  it('returns visitInPast when the API rejects with the "from date must be on or after today" message', async () => {
+    const { req, res } = buildContext(futureSlot)
+    const ovService = {
+      getAvailableSlots: jest.fn().mockRejectedValue({
+        data: { userMessage: "The from date must be on or after today's date" },
+      }),
+      checkForOverlappingVisits: jest.fn(),
+    } as unknown as OfficialVisitsService
+
+    expect(await cyaGuard(req, res, ovService)).toEqual({ visitInPast: true })
+  })
+
+  it('returns visitInPast when the selected slot date and start time are in the past', async () => {
+    const { req, res } = buildContext(pastSlot)
+    const ovService = {
+      getAvailableSlots: jest.fn().mockRejectedValue({ data: { userMessage: 'Some other error' } }),
+      checkForOverlappingVisits: jest.fn(),
+    } as unknown as OfficialVisitsService
+
+    expect(await cyaGuard(req, res, ovService)).toEqual({ visitInPast: true })
+  })
+
+  it('rethrows unrelated errors for a future visit', async () => {
+    const { req, res } = buildContext(futureSlot)
+    const ovService = {
+      getAvailableSlots: jest.fn().mockRejectedValue({ data: { userMessage: 'Something else went wrong' } }),
+      checkForOverlappingVisits: jest.fn(),
+    } as unknown as OfficialVisitsService
+
+    await expect(cyaGuard(req, res, ovService)).rejects.toEqual({
+      data: { userMessage: 'Something else went wrong' },
     })
   })
 })

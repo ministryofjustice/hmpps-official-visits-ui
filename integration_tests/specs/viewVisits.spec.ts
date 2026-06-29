@@ -13,6 +13,7 @@ import {
   mockPrisonerRestrictions,
   mockSocialVisitors,
   mockVisitByIdVisit,
+  mockVisitByIdVisitContact,
 } from '../../server/testutils/mocks'
 import ViewVisitPage from '../pages/viewVisitPage'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
@@ -137,7 +138,7 @@ test.describe('View official visits', () => {
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
     await officialVisitsApi.stubCompleteVisit({})
     await officialVisitsApi.stubCancelVisit({})
-    await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors])
+    await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors, mockVisitByIdVisitContact])
     await personalRelationshipsApi.stubRelationship(7332364)
   })
 
@@ -258,7 +259,7 @@ test.describe('View official visits', () => {
       /3\s*restrictions\s*and\s*0\s*alerts/,
     )
 
-    await expect(summaryValue(page, 'Date')).toHaveText('Thursday, 1 January 2026')
+    await expect(summaryValue(page, 'Date')).toHaveText('Friday, 25 December 2099')
     await expect(summaryValue(page, 'Time')).toHaveText('10:00 to 11:00 (1 hour)')
     await expect(summaryValue(page, 'Visit status')).toHaveText('Scheduled')
     await expect(summaryValue(page, 'Visit reference number')).toHaveText('1')

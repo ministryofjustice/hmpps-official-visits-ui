@@ -72,7 +72,7 @@ describe('notification check handler', () => {
     expect(res.text).toContain('Tim Harrison')
     expect(res.text).toContain('Video')
     // Date formatted
-    expect(res.text).toContain('Thursday, 1 January 2026')
+    expect(res.text).toContain('Friday, 25 December 2099')
     // Time formatted and duration
     expect(res.text).toContain('10:00 to 11:00 (1 hour)')
     expect(res.text).toContain('First Location')

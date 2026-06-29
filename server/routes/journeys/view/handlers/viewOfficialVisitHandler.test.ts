@@ -166,7 +166,7 @@ describe('View an official visit', () => {
             'Information about this visit has changed since a confirmation email was last sent',
           )
 
-          expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
+          expect(getValueByKey($, 'Date')).toEqual('Friday, 25 December 2099')
           expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00 (1 hour)')
           expect(getValueByKey($, 'Visit status')).toEqual('Scheduled')
           expect(getValueByKey($, 'Visit reference number')).toEqual('1')
@@ -333,7 +333,7 @@ describe('View an official visit', () => {
           expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
-          expect(getValueByKey($, 'Date')).toEqual('Thursday, 1 January 2026')
+          expect(getValueByKey($, 'Date')).toEqual('Friday, 25 December 2099')
           expect(getValueByKey($, 'Time')).toEqual('10:00 to 11:00 (1 hour)')
           expect(getValueByKey($, 'Visit status')).toEqual('Scheduled')
           expect(getValueByKey($, 'Visit reference number')).toEqual('1')
@@ -433,6 +433,31 @@ describe('View an official visit', () => {
           expect(getValueByKey($, 'Completion reason')).toBeNull()
           expect(getValueByKey($, 'Search type')).toBeNull()
           expect($('.govuk-button[href="/view/visit/1/movement-slip"]').length).toBe(0)
+        })
+    })
+
+    it('should not display the Amend visit button when the visit date and start time are in the past', () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitDate: '2020-01-01',
+      })
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.govuk-button:contains("Amend visit")').length).toBe(0)
+        })
+    })
+
+    it('should display the Amend visit button when the visit date and start time are in the future', () => {
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.govuk-button:contains("Amend visit")').length).toBe(1)
         })
     })
 

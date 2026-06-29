@@ -14,6 +14,7 @@ import {
   mockPrisonerRestrictions,
   mockSocialVisitors,
   mockVisitByIdVisit,
+  mockVisitByIdVisitContact,
 } from '../../server/testutils/mocks'
 import ViewVisitPage from '../pages/viewVisitPage'
 import CancelVisitPage from '../pages/cancelVisitPage'
@@ -27,7 +28,7 @@ test.describe('Cancel an official visit', () => {
     await prisonApi.stubGetPrisonerImage()
     await prisonerSearchApi.stubGetByPrisonerNumber(mockPrisoner)
     await personalRelationshipsApi.stubRestrictions({ content: mockPrisonerRestrictions })
-    await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors])
+    await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors, mockVisitByIdVisitContact])
     await prisonerSearchApi.stubSearchInCaseload({
       content: [mockPrisoner],
       first: true,

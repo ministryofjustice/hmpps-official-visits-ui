@@ -16,6 +16,7 @@ import {
   getWeekOfDatesStartingMonday,
   timeStringTo24HourPretty,
   isDateAndInThePast,
+  isVisitDateAndStartTimeInThePast,
   formatAddressLines,
   getTimeDiff,
   lastNameCommaFirstName,
@@ -188,6 +189,21 @@ describe('isDateAndInThePast', () => {
   })
   it('should be true if date is in the past', () => {
     expect(isDateAndInThePast('2023-01-01')).toStrictEqual(true)
+  })
+})
+
+describe('isVisitDateAndStartTimeInThePast', () => {
+  it('should be false if visit date is missing', () => {
+    expect(isVisitDateAndStartTimeInThePast(undefined, '10:00')).toStrictEqual(false)
+  })
+  it('should be false if start time is missing', () => {
+    expect(isVisitDateAndStartTimeInThePast('2099-01-01', undefined)).toStrictEqual(false)
+  })
+  it('should be false if visit date and start time are in the future', () => {
+    expect(isVisitDateAndStartTimeInThePast('2099-01-01', '10:00')).toStrictEqual(false)
+  })
+  it('should be true if visit date and start time are in the past', () => {
+    expect(isVisitDateAndStartTimeInThePast('2020-01-01', '10:00')).toStrictEqual(true)
   })
 })
 

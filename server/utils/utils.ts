@@ -17,6 +17,7 @@ import {
   endOfMonth,
   startOfMonth,
   isAfter,
+  isFuture,
 } from 'date-fns'
 import { enGB } from 'date-fns/locale'
 import { Request } from 'express'
@@ -132,6 +133,13 @@ export const isDateAndInThePast = (date?: string): boolean => {
     return expirationDate.getTime() < new Date().getTime()
   }
   return false
+}
+
+export const isVisitDateAndStartTimeInThePast = (visitDate?: string, startTime?: string): boolean => {
+  if (!visitDate || !startTime) {
+    return false
+  }
+  return !isFuture(new Date(`${visitDate} ${startTime}`))
 }
 
 export const getParsedDateFromQueryString = (dateFromQueryString: string, defaultDate = new Date()): string => {

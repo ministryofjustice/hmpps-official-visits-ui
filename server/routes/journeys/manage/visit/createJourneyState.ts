@@ -1,16 +1,30 @@
 /* eslint-disable no-param-reassign */
 import { Request, Response } from 'express'
+import { SanitisedError } from '@ministryofjustice/hmpps-rest-client'
 import { Journey } from '../../../../@types/express'
 import {
   ApprovedContact,
   AvailableSlot,
+  ErrorResponse,
   OverlappingVisitsResponse,
   ReferenceDataItem,
   VisitType,
 } from '../../../../@types/officialVisitsApi/types'
 import { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
+import { isVisitDateAndStartTimeInThePast } from '../../../../utils/utils'
 import { JourneyPrisoner, JourneyVisitor } from './journey'
+
+const VISIT_IN_PAST_API_MESSAGE = "The from date must be on or after today's date"
+
+function isVisitInPastError(error: unknown, selectedSlot?: Partial<AvailableSlot>): boolean {
+  if (isVisitDateAndStartTimeInThePast(selectedSlot?.visitDate, selectedSlot?.startTime)) {
+    return true
+  }
+  const sanitisedError = error as SanitisedError<ErrorResponse>
+  const message = sanitisedError?.data?.userMessage || sanitisedError?.message || ''
+  return message.includes(VISIT_IN_PAST_API_MESSAGE)
+}
 
 const progressTrackerPages: Record<string, number> = {
   [Page.PRISONER_SEARCH_PAGE]: 0,
@@ -165,7 +179,15 @@ export async function cyaGuard(req: Request, res: Response, ovService: OfficialV
     return errors
   }
 
-  const capacityCheckResult = await checkTimeSlotCapacity(req, res, ovService)
+  let capacityCheckResult: boolean
+  try {
+    capacityCheckResult = await checkTimeSlotCapacity(req, res, ovService)
+  } catch (error) {
+    if (isVisitInPastError(error, visit.selectedTimeSlot)) {
+      return { visitInPast: true }
+    }
+    throw error
+  }
   const hasDuplicateContactIds = checkForDuplicateContactIds(visit.officialVisitors || [], visit.socialVisitors || [])
 
   const overlapResult = await ovService.checkForOverlappingVisits(

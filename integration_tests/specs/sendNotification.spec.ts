@@ -94,7 +94,7 @@ test.describe('Send a notification', () => {
       // Visit details from mockVisitByIdVisit
       await expect(checkPage.page.getByText('Tim Harrison')).toBeVisible()
       await expect(checkPage.page.getByText('Video')).toBeVisible()
-      await expect(checkPage.page.getByText('Thursday, 1 January 2026')).toBeVisible()
+      await expect(checkPage.page.getByText('Friday, 25 December 2099')).toBeVisible()
       // Send button label for create
       await expect(checkPage.sendButton).toHaveText('Send official visit confirmation')
 

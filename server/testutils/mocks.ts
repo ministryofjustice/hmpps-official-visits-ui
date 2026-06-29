@@ -383,7 +383,7 @@ export const mockVisitByIdVisit: OfficialVisit = {
   visitStatusDescription: 'Scheduled',
   visitTypeCode: 'VIDEO',
   visitTypeDescription: 'Video',
-  visitDate: '2026-01-01',
+  visitDate: '2099-12-25',
   startTime: '10:00',
   endTime: '11:00',
   dpsLocationId: 'bef2bbbe-a144-420b-bd23-c10847e61c15',
@@ -430,6 +430,30 @@ export const mockVisitByIdVisit: OfficialVisit = {
     dateOfBirth: '1986-06-27',
     cellLocation: '2-1-007',
     middleNames: 'JETHRONE MASON',
+  },
+}
+
+export const mockVisitByIdVisitContact = {
+  prisonerContactId: 7332364,
+  contactId: 20085647,
+  prisonerNumber: 'G4793VF',
+  lastName: 'Malicious',
+  firstName: 'Peter',
+  relationshipTypeCode: 'O',
+  relationshipTypeDescription: 'Official',
+  relationshipToPrisonerCode: 'SOL',
+  relationshipCode: 'SOL',
+  relationshipToPrisonerDescription: 'Solicitor',
+  isApprovedVisitor: true,
+  isNextOfKin: false,
+  isEmergencyContact: false,
+  isRelationshipActive: true,
+  currentTerm: true,
+  isStaff: false,
+  restrictionSummary: {
+    active: [] as { restrictionType: string; restrictionTypeDescription: string }[],
+    totalActive: 0,
+    totalExpired: 0,
   },
 }
 

@@ -8,7 +8,7 @@ import PersonalRelationshipsService from '../../../../../services/personalRelati
 import ManageUserService from '../../../../../services/manageUsersService'
 import { JourneyVisitor } from '../journey'
 import { OfficialVisit, RestrictionSummary } from '../../../../../@types/officialVisitsApi/types'
-import { prisonAllowsSocialVisitors } from '../../../../../utils/utils'
+import { isVisitDateAndStartTimeInThePast, prisonAllowsSocialVisitors } from '../../../../../utils/utils'
 import config from '../../../../../config'
 
 export default class AmendVisitLandingHandler implements PageHandler {
@@ -49,6 +49,10 @@ export default class AmendVisitLandingHandler implements PageHandler {
     const b64BackTo = req.session.journey.amendVisit?.backTo || (req.query.backTo as string)
 
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
+
+    if (isVisitDateAndStartTimeInThePast(visit.visitDate, visit.startTime)) {
+      return res.redirect(`/view/visit/${visit.officialVisitId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`)
+    }
 
     const [restrictions, prisoner, contacts, visitChangeStatus] = await Promise.all([
       this.personalRelationshipsService.getPrisonerRestrictions(

@@ -363,6 +363,32 @@ test.describe('Amend official visits', () => {
     expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
   })
 
+  test('should block the amendment and show an error if the visit moves into the past before it is submitted', async ({
+    page,
+  }) => {
+    await login(page)
+
+    await page.goto(`/manage/amend/1/${journeyId}`)
+    await AmendVisitPage.verifyOnPage(page)
+
+    await page.getByRole('link', { name: 'Add or remove visitors' }).click()
+    await page.getByRole('button', { name: 'Continue' }).click()
+    await page.getByRole('button', { name: 'Continue' }).click()
+
+    await expect(
+      page.locator('h1', { hasText: `Will visitors need assistance during their visit? (optional)` }),
+    ).toBeVisible()
+
+    await officialVisitsApi.stubAvailableSlotsPastDateError()
+
+    await page.getByRole('button', { name: 'Save' }).click()
+
+    await expect(page.getByRole('heading', { name: 'You cannot update this visit' })).toBeVisible()
+    await expect(page.getByText('This visit is in the past so you can no longer update it.')).toBeVisible()
+
+    await expect(page.getByRole('region', { name: 'success: Visit amended' })).not.toBeVisible()
+  })
+
   test('should navigate to official visitors and show all related pages when "add or remove visitors" is clicked', async ({
     page,
   }) => {

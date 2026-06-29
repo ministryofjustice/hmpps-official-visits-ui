@@ -26,6 +26,7 @@ export default class EquipmentHandler implements PageHandler {
       backUrl: getBackLink(req, res, `assistance-required`),
       prisoner: req.session.journey.officialVisit.prisoner,
       checks: errors,
+      visitId: req.params.ovId,
     })
   }
 
