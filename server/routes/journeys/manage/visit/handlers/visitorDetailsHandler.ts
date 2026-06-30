@@ -66,11 +66,7 @@ const isAssistanceChange = (req: Request) => {
   return change === 'assistance-required' || change === 'visitor-details'
 }
 
-const saveAmendedVisitors = async (
-  req: Request,
-  res: Response,
-  officialVisitsService: OfficialVisitsService,
-) => {
+const saveAmendedVisitors = async (req: Request, res: Response, officialVisitsService: OfficialVisitsService) => {
   const { officialVisit } = req.session.journey
   const allVisitors = [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])]
   const officialVisitors: OfficialVisitor[] = allVisitors.map(visitor => ({
