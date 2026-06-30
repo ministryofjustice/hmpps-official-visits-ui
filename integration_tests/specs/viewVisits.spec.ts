@@ -29,6 +29,35 @@ import {
   statuses,
   visitTypes,
 } from '../mockData/data'
+import { AuditedEvent } from '../../server/@types/officialVisitsApi/types'
+
+const auditedEvents: AuditedEvent[] = [
+  {
+    auditedEventId: 1,
+    officialVisitId: 1,
+    eventSummary: 'Visit updated',
+    eventType: 'UPDATE',
+    eventChanges: [
+      {
+        field: 'visitor_removed',
+        newValue: 'Jack Malicious',
+      },
+      {
+        field: 'visitor_updated',
+        oldValue: 'Peter Malicious',
+        newValue: 'John Smith',
+      },
+      {
+        field: 'visitor_removed',
+        newValue: 'Jack Smith',
+      },
+    ],
+    eventDateTime: '2026-10-25T14:30:00.000000',
+    eventUsername: 'AUSER',
+    eventUserFullName: 'A User',
+    significantChange: true,
+  },
+]
 
 const setupFindByCriteriaStubs = async () => {
   const mockVisitData = generateMockData()
@@ -136,6 +165,31 @@ test.describe('View official visits', () => {
     await setupFindByCriteriaStubs()
     await officialVisitsApi.stubGetVisitChangeStatus({ hasChanged: false })
     await officialVisitsApi.stubGetOfficialVisitById(mockVisitByIdVisit)
+    await officialVisitsApi.stubGetOfficialVisitAuditedEvents(auditedEvents)
+    await officialVisitsApi.getNotificationsByOfficialVisitId(1, [
+      {
+        notificationId: 2,
+        officialVisitId: 1,
+        templateId: 'template-2',
+        emailAddress: 'visitor@example.com',
+        reason: 'Confirmation email sent',
+        govNotifyNotificationId: '11111111-1111-1111-1111-111111111111',
+        emailStatus: 'SENT',
+        createdTime: '2026-10-25T15:30:00.000000',
+        statusUpdatedTime: '2026-10-25T15:30:00.000000',
+      },
+      {
+        notificationId: 3,
+        officialVisitId: 1,
+        templateId: 'template-3',
+        emailAddress: 'visitor@example.com',
+        reason: 'Temporary delivery failure',
+        govNotifyNotificationId: '22222222-2222-2222-2222-222222222222',
+        emailStatus: 'TEMPORARY_FAILURE',
+        createdTime: '2026-10-25T13:30:00.000000',
+        statusUpdatedTime: '2026-10-25T13:30:00.000000',
+      },
+    ])
     await officialVisitsApi.stubCompleteVisit({})
     await officialVisitsApi.stubCancelVisit({})
     await officialVisitsApi.stubAllContacts([...mockOfficialVisitors, ...mockSocialVisitors, mockVisitByIdVisitContact])
@@ -287,5 +341,29 @@ test.describe('View official visits', () => {
       'href',
       'http://localhost:9091/prisoner/G4793VF/contacts/manage/20085647/relationship/7332364',
     )
+
+    await page.getByRole('button', { name: 'View all changes made for' }).click()
+
+    expect(page.url()).toBe('http://localhost:3007/view/visit/1/history')
+    await expect(page.locator('.govuk-hint')).toHaveText('Manage existing official visits')
+    await expect(page.locator('h1.govuk-heading-l')).toHaveText('Official visit')
+    await expect(page.locator('.moj-timeline__title').first()).toHaveText('Email notification sent')
+    await expect(page.locator('.moj-timeline__title').nth(1)).toHaveText('Visit updated')
+    await expect(page.locator('.moj-timeline__title').nth(2)).toHaveText('Email notification temporarily failed')
+    await expect(page.locator('.moj-timeline__byline').first()).toContainText('visitor@example.com')
+    await expect(page.locator('.moj-timeline__byline').nth(1)).toContainText('A User')
+    await expect(page.locator('.moj-timeline__date').first()).toHaveText('25 October 2026 at 15:30')
+    await expect(page.locator('.moj-timeline__date').nth(1)).toHaveText('25 October 2026 at 14:30')
+    await expect(page.locator('.moj-timeline__date').nth(2)).toHaveText('25 October 2026 at 13:30')
+    await expect(
+      page.getByText('Email address: visitor@example.com Reason: Confirmation email sent Status: SENT'),
+    ).toBeVisible()
+    await expect(
+      page.getByText('Email address: visitor@example.com Reason: Temporary delivery failure Status:'),
+    ).toBeVisible()
+    await expect(page.getByText('Visit updated by A User')).toBeVisible()
+    await expect(page.getByText('Visitor removed set to Jack Malicious')).toBeVisible()
+    await expect(page.getByText('Visitor updated changed from Peter Malicious to John Smith')).toBeVisible()
+    await expect(page.getByText('Visitor removed set to Jack Smith')).toBeVisible()
   })
 })

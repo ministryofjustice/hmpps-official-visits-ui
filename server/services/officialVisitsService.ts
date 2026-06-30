@@ -23,6 +23,7 @@ import {
   NotificationSearchRequest,
   PagedModelSentNotification,
   OfficialVisitNotifications,
+  AuditedEvent,
 } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
@@ -33,6 +34,10 @@ export default class OfficialVisitsService {
 
   public async getOfficialVisitById(visitId: number, user: HmppsUser): Promise<OfficialVisit> {
     return this.officialVisitsApiClient.getOfficialVisitById(visitId, user)
+  }
+
+  public async getOfficialVisitAuditedEvents(visitId: number, user: HmppsUser): Promise<AuditedEvent[]> {
+    return this.officialVisitsApiClient.getOfficialVisitAuditedEvents(visitId, user)
   }
 
   public async createVisit(sessionVisit: OfficialVisitJourney, user: HmppsUser): Promise<CreateOfficialVisitResponse> {

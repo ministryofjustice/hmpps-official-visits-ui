@@ -12,7 +12,7 @@ import PrisonerImageRoutes from './prisonerImage/prisonerImageRoutes'
 import { populateUserPermissions } from '../middleware/populateUserPermissions'
 import { requirePermissions } from '../middleware/requirePermissions'
 import { Permission } from '../interfaces/hmppsUser'
-import { emailNotificationsEnabled } from '../utils/utils'
+import { auditTimelineEnabled, emailNotificationsEnabled } from '../utils/utils'
 
 export default function routes(_services: Services): Router {
   const router = Router()
@@ -20,6 +20,7 @@ export default function routes(_services: Services): Router {
   router.use(populateUserPermissions)
   router.use((req, res, next) => {
     res.locals.emailNotificationsEnabled = emailNotificationsEnabled(res.locals.user?.activeCaseLoadId)
+    res.locals.viewVisitHistoryEnabled = auditTimelineEnabled(res.locals.user?.activeCaseLoadId)
     next()
   })
   // Demonstrate using requirePermissions middleware - lock all routes off of / to DEFAULT permission

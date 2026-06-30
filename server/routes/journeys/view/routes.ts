@@ -12,6 +12,7 @@ import { Permission } from '../../../interfaces/hmppsUser'
 import OfficialVisitMovementSlipHandler from './handlers/movementSlipHandler'
 import MovementSlipsHandler from './handlers/movementSlipsHandler'
 import SentEmailsHandler from './handlers/sentEmailsHandler'
+import OfficialVisitHistoryHandler from './handlers/visitHistoryHandler'
 
 export default function Index({
   auditService,
@@ -57,6 +58,11 @@ export default function Index({
     '/visit/:ovId/complete',
     Permission.MANAGE,
     new CompleteOfficialVisitHandler(officialVisitsService, telemetryService),
+  )
+  route(
+    '/visit/:ovId/history',
+    Permission.MANAGE,
+    new OfficialVisitHistoryHandler(officialVisitsService, telemetryService),
   )
   route('/visit/:ovId/cancel', Permission.MANAGE, new CancelOfficialVisitHandler(officialVisitsService))
   route('/visit/:ovId/movement-slip', Permission.VIEW, new OfficialVisitMovementSlipHandler(officialVisitsService))
