@@ -25,13 +25,11 @@ export default class VisitorDetailsHandler implements PageHandler {
     const rawErrors = req.flash('alertErrors')[0]
     const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
-    const willSave = res.locals.mode === 'amend' && (isAssistanceChange(req) || !isInPersonVisit(officialVisit))
-
     res.render('pages/manage/visitorDetails', {
       contacts,
       backUrl: getBackLink(req, res, `assistance-required`),
       prisoner: officialVisit.prisoner,
-      submitAction: willSave ? 'Save' : 'Continue',
+      submitAction: shouldSave(req, res) ? 'Save' : 'Continue',
       checks: errors,
       visitId: req.params.ovId,
     })
@@ -43,7 +41,7 @@ export default class VisitorDetailsHandler implements PageHandler {
     officialVisit.socialVisitors = setNotes(officialVisit.socialVisitors, req.body as ContactRelationship[])
 
     if (res.locals.mode === 'amend') {
-      if (isAssistanceChange(req) || !isInPersonVisit(officialVisit)) {
+      if (shouldSave(req, res)) {
         const errors = await cyaGuard(req, res, this.officialVisitsService)
         if (Object.keys(errors).length > 0) {
           return res.alertValidationError(errors)
@@ -64,6 +62,11 @@ const isInPersonVisit = (officialVisit: OfficialVisitJourney) => {
 const isAssistanceChange = (req: Request) => {
   const change = req.session.journey.amendVisit?.changePage
   return change === 'assistance-required' || change === 'visitor-details'
+}
+
+const shouldSave = (req: Request, res: Response) => {
+  const { officialVisit } = req.session.journey
+  return res.locals.mode === 'amend' && (isAssistanceChange(req) || !isInPersonVisit(officialVisit))
 }
 
 const saveAmendedVisitors = async (req: Request, res: Response, officialVisitsService: OfficialVisitsService) => {
@@ -90,12 +93,6 @@ const saveAmendedVisitors = async (req: Request, res: Response, officialVisitsSe
 const setNotes = (contacts: JourneyVisitor[], body: ContactRelationship[]) => {
   return (contacts || []).map(contact => {
     const foundContact = body.find(o => o.contactId === contact.contactId)
-    if (!foundContact) {
-      return contact
-    }
-    return {
-      ...contact,
-      assistanceNotes: foundContact.assistanceNotes,
-    }
+    return { ...contact, assistanceNotes: foundContact?.assistanceNotes }
   })
 }

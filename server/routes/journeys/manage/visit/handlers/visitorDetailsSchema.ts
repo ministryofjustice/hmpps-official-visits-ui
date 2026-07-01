@@ -5,7 +5,7 @@ import { ContactRelationship } from '../../../../../@types/officialVisitsApi/typ
 
 const ERROR_MAX = 'Information about assistance must be 240 characters or less'
 
-export const schema = async (req: Request) => {
+export const schema = async (_req: Request) => {
   return createSchema({
     visitorDetails: z.array(
       z.object({
@@ -25,24 +25,15 @@ export const schema = async (req: Request) => {
         }
       })
     })
-    .transform(({ visitorDetails }) => {
-      const contacts = [
-        ...(req.session.journey.officialVisit.socialVisitors || []),
-        ...(req.session.journey.officialVisit.officialVisitors || []),
-      ]
-
-      return contacts
-        .map(contact => {
-          const formContact = visitorDetails.find(o => Number(o.id) === contact.contactId)
-          return {
-            contactId: contact.contactId,
-            assistanceNotes: formContact?.notes,
-            // Only contacts that need assistance appear on this page
-            present: !!formContact,
-          } as ContactRelationship & { present: boolean }
-        })
-        .filter(o => o.present)
-    })
+    .transform(({ visitorDetails }) =>
+      visitorDetails.map(
+        contact =>
+          ({
+            contactId: Number(contact.id),
+            assistanceNotes: contact.notes,
+          }) as ContactRelationship,
+      ),
+    )
 }
 
 export type SchemaType = z.infer<Awaited<ReturnType<typeof schema>>>
