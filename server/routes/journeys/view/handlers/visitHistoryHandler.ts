@@ -36,6 +36,31 @@ const FIELD_LABELS: Record<string, string> = {
 
 type ChangeSemantics = 'added' | 'removed' | 'updated'
 
+type ApiNotificationStatus =
+  | 'PENDING'
+  | 'SENT'
+  | 'PERMANENT_FAILURE'
+  | 'TEMPORARY_FAILURE'
+  | 'TECHNICAL_FAILURE'
+  | 'UNKNOWN'
+
+type UserNotificationStatus = 'PENDING' | 'SENT' | 'FAILURE'
+
+const API_TO_USER_STATUS: Record<ApiNotificationStatus, UserNotificationStatus> = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  PERMANENT_FAILURE: 'FAILURE',
+  TEMPORARY_FAILURE: 'FAILURE',
+  TECHNICAL_FAILURE: 'FAILURE',
+  UNKNOWN: 'FAILURE',
+}
+
+const NOTIFICATION_STATUS_DISPLAY: Record<UserNotificationStatus, { label: string; value: string }> = {
+  PENDING: { label: 'Email notification pending', value: 'Pending' },
+  SENT: { label: 'Email notification sent', value: 'Sent' },
+  FAILURE: { label: 'Email notification failed', value: 'Failed' },
+}
+
 type NotificationReasonTypes =
   | 'OFFICIAL_VISIT_CANCELLED'
   | 'OFFICIAL_VISIT_CREATED'
@@ -55,33 +80,8 @@ const FIELD_SEMANTICS: Record<string, ChangeSemantics> = {
   visitor_removed: 'removed',
 }
 
-type NotificationStatus =
-  | 'PENDING'
-  | 'SENT'
-  | 'PERMANENT_FAILURE'
-  | 'TEMPORARY_FAILURE'
-  | 'TECHNICAL_FAILURE'
-  | 'UNKNOWN'
+const isApiNotificationStatus = (value: string): value is ApiNotificationStatus => value in API_TO_USER_STATUS
 
-const NOTIFICATION_STATUS_LABELS: Record<NotificationStatus, string> = {
-  PENDING: 'Email notification pending',
-  SENT: 'Email notification sent',
-  PERMANENT_FAILURE: 'Email notification permanently failed',
-  TEMPORARY_FAILURE: 'Email notification temporarily failed',
-  TECHNICAL_FAILURE: 'Email notification technical failure',
-  UNKNOWN: 'Email notification status unknown',
-}
-
-const NOTIFICATION_STATUS_VALUES: Record<NotificationStatus, string> = {
-  PENDING: 'Pending',
-  SENT: 'Sent',
-  PERMANENT_FAILURE: 'Permanent failure',
-  TEMPORARY_FAILURE: 'Temporary failure',
-  TECHNICAL_FAILURE: 'Technical failure',
-  UNKNOWN: 'Unknown',
-}
-
-const isNotificationStatus = (value: string): value is NotificationStatus => value in NOTIFICATION_STATUS_LABELS
 const isNotificationReason = (value: string): value is NotificationReasonTypes => value in NOTIFICATION_REASON_LABELS
 
 const normalizeText = (value?: string | null): string | undefined => {
@@ -98,9 +98,9 @@ const toTimestampMillis = (isoTimestamp: string): number => {
   return Number.isNaN(parsed) ? 0 : parsed
 }
 
-const resolveNotificationStatus = (status?: string | null): NotificationStatus => {
+const resolveNotificationStatus = (status?: string | null): UserNotificationStatus => {
   const normalized = normalizeText(status)?.toUpperCase()
-  return normalized && isNotificationStatus(normalized) ? normalized : 'UNKNOWN'
+  return normalized && isApiNotificationStatus(normalized) ? API_TO_USER_STATUS[normalized] : 'FAILURE'
 }
 
 const resolveNotificationReason = (reason?: string | null): NotificationReasonTypes => {
@@ -166,15 +166,16 @@ const toNotificationTimelineItem = ({
   const timestamp = getTimestamp(notification.statusUpdatedTime ?? notification.createdTime)
   const emailAddress = normalizeText(notification.emailAddress)
   const reason = resolveNotificationReason(notification.reason)
+  const { label, value } = NOTIFICATION_STATUS_DISPLAY[status]
 
   return {
     label: {
-      text: NOTIFICATION_STATUS_LABELS[status],
+      text: label,
     },
     text: [
       `Email address: ${emailAddress ?? NOT_PROVIDED}`,
       `Reason: ${NOTIFICATION_REASON_LABELS[reason]}`,
-      `Status: ${NOTIFICATION_STATUS_VALUES[status]}`,
+      `Status: ${value}`,
     ].join('\n'),
     datetime: {
       timestamp,

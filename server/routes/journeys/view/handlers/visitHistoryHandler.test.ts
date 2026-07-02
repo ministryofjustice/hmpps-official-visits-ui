@@ -114,7 +114,7 @@ describe('OfficialVisitHistoryHandler', () => {
           const title = '.moj-timeline__title'
           expect($(title).eq(0).text().trim()).toBe('Email notification sent')
           expect($(title).eq(1).text().trim()).toBe('Visit updated')
-          expect($(title).eq(2).text().trim()).toBe('Email notification temporarily failed')
+          expect($(title).eq(2).text().trim()).toBe('Email notification failed')
           const subLine = '.moj-timeline__byline'
           expect($(subLine).eq(0).text()).toContain('by Admin')
           expect($(subLine).eq(1).text()).toContain('Joe Bloggs')
@@ -129,7 +129,7 @@ describe('OfficialVisitHistoryHandler', () => {
           expect($(description).text()).toContain('Visitor updated changed from Joe Bloggs to Jane Bloggs')
           expect($(description).text()).toContain('Start Time changed from 14:00 to 15:00')
           expect($(description).text()).toContain('Reason: Email notification for updated visit')
-          expect($(description).text()).toContain('Status: Temporary failure')
+          expect($(description).text()).toContain('Status: Failed')
 
           expect(officialVisitsService.getOfficialVisitById).toHaveBeenCalledWith(ovId, user)
           expect(officialVisitsService.getNotificationsByOfficialVisitId).toHaveBeenCalledWith(ovId, user)
@@ -192,13 +192,13 @@ describe('OfficialVisitHistoryHandler', () => {
             .map((_index, element) => $(element).text())
             .get()
 
-          expect(titles).toEqual(expect.arrayContaining(['Email notification status unknown', 'Activity updated']))
+          expect(titles).toEqual(expect.arrayContaining(['Email notification failed', 'Activity updated']))
           expect(bylines[0]).toContain('by System')
           expect(bylines[1]).toContain('System')
           expect(dates).toEqual(expect.arrayContaining(['1 January 1970 at 00:00']))
           expect(descriptions.join(' ')).toContain('Email address: Not provided')
           expect(descriptions.join(' ')).toContain('Reason: Not provided')
-          expect(descriptions.join(' ')).toContain('Status: Unknown')
+          expect(descriptions.join(' ')).toContain('Status: Failed')
           expect(descriptions.join(' ')).toContain('Visitor removed')
           expect(descriptions.join(' ')).toContain('Visit Slot changed from 11733 to 11679')
           expect(descriptions.join(' ')).toContain('Field')

@@ -178,6 +178,7 @@ test.describe('View official visits', () => {
         reason: 'Confirmation email sent',
         govNotifyNotificationId: '11111111-1111-1111-1111-111111111111',
         emailStatus: 'SENT',
+        createdBy: 'Admin',
         createdTime: '2026-10-25T15:30:00.000000',
         statusUpdatedTime: '2026-10-25T15:30:00.000000',
       },
@@ -189,6 +190,7 @@ test.describe('View official visits', () => {
         reason: 'Temporary delivery failure',
         govNotifyNotificationId: '22222222-2222-2222-2222-222222222222',
         emailStatus: 'TEMPORARY_FAILURE',
+        createdBy: 'Admin',
         createdTime: '2026-10-25T13:30:00.000000',
         statusUpdatedTime: '2026-10-25T13:30:00.000000',
       },
@@ -352,16 +354,14 @@ test.describe('View official visits', () => {
     await expect(page.locator('h1.govuk-heading-l')).toHaveText('Official visit')
     await expect(page.locator('.moj-timeline__title').first()).toHaveText('Email notification sent')
     await expect(page.locator('.moj-timeline__title').nth(1)).toHaveText('Visit updated')
-    await expect(page.locator('.moj-timeline__title').nth(2)).toHaveText('Email notification temporarily failed')
-    await expect(page.locator('.moj-timeline__byline').first()).toContainText('by System')
+    await expect(page.locator('.moj-timeline__title').nth(2)).toHaveText('Email notification failed')
+    await expect(page.locator('.moj-timeline__byline').first()).toContainText('by Test Use')
     await expect(page.locator('.moj-timeline__byline').nth(1)).toContainText('A User')
     await expect(page.locator('.moj-timeline__date').first()).toHaveText('25 October 2026 at 15:30')
     await expect(page.locator('.moj-timeline__date').nth(1)).toHaveText('25 October 2026 at 14:30')
     await expect(page.locator('.moj-timeline__date').nth(2)).toHaveText('25 October 2026 at 13:30')
     await expect(page.getByText('Email address: visitor@example.com\nReason: Not provided\nStatus: Sent')).toBeVisible()
-    await expect(
-      page.getByText('Email address: visitor@example.com Reason: Not provided Status: Temporary'),
-    ).toBeVisible()
+    await expect(page.getByText('Email address: visitor@example.com Reason: Not provided Status: Failed')).toBeVisible()
     await expect(page.getByText('Visit updated by A User')).toBeVisible()
     await expect(page.getByText('Visitor removed set to Jack Malicious')).toBeVisible()
     await expect(page.getByText('Visitor updated changed from Peter Malicious to John Smith')).toBeVisible()
