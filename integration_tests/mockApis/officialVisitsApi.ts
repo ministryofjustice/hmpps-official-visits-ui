@@ -3,6 +3,7 @@ import { stubFor } from './wiremock'
 import { RecursivePartial, simpleApiMock, simplePostApiMock } from '../testHelpers'
 import {
   AvailableSlot,
+  AuditedEvent,
   CancelTypeRequest,
   CompleteVisitRequest,
   FindByCriteriaResults,
@@ -78,6 +79,8 @@ export default {
   },
   stubGetOfficialVisitById: (response: OfficialVisit) =>
     simpleApiMock(`/official-visits-api/official-visit/id/\\d+`, response),
+  stubGetOfficialVisitAuditedEvents: (response: AuditedEvent[]) =>
+    simpleApiMock(`/official-visits-api/official-visit/id/\\d+/audited-events`, response),
   stubCreateVisit: (response: OfficialVisit) =>
     simplePostApiMock(`/official-visits-api/official-visit/prison/LEI`, response),
   stubCompleteVisit: (response: RecursivePartial<CompleteVisitRequest>) =>

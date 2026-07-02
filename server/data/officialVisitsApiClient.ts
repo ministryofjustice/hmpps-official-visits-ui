@@ -33,6 +33,7 @@ import {
   VisitSlot,
   OfficialVisitNotifications,
   VisitChangeStatusResponse,
+  AuditedEvent,
 } from '../@types/officialVisitsApi/types'
 import { components } from '../@types/officialVisitsApi'
 
@@ -71,6 +72,13 @@ export default class OfficialVisitsApiClient extends RestClient {
 
   async getOfficialVisitById(officialVisitId: number, user: HmppsUser): Promise<OfficialVisit> {
     return this.get<OfficialVisit>({ path: `/official-visit/id/${officialVisitId}` }, asSystem(user.username))
+  }
+
+  async getOfficialVisitAuditedEvents(officialVisitId: number, user: HmppsUser): Promise<AuditedEvent[]> {
+    return this.get<AuditedEvent[]>(
+      { path: `/official-visit/id/${officialVisitId}/audited-events` },
+      asSystem(user.username),
+    )
   }
 
   async getReferenceData(code: components['schemas']['ReferenceDataGroup'], user: HmppsUser) {

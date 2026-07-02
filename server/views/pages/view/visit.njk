@@ -266,6 +266,14 @@
     ] | filterNonFalsy
   }) }}
 
+    {% if visitHistoryTimelineEnabled %}
+        {{ govukButton({
+            text: "View all changes made for visit",
+            href: "/view/visit/" + visit.officialVisitId + "/history",
+            classes: 'govuk-button govuk-button--secondary'
+        }) }}
+    {% endif %}
+
   {% if mode == 'amend' %}
     <a href="/manage/amend/{{visit.officialVisitId}}/{{journeyId}}/select-official-visitors?change=true" class="govuk-link govuk-body float-right govuk-link--no-visited-state">Add or remove visitors</a>
   {% endif %}

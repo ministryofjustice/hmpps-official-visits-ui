@@ -551,7 +551,7 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  '/notification/prison/{prisonCode}/sent-emails': {
+  '/notification/prison/{prisonCode}/sent-notifications': {
     parameters: {
       query?: never
       header?: never
@@ -1033,13 +1033,13 @@ export interface paths {
       cookie?: never
     }
     /**
-     * Check whether the visit has changed since the last notification was sent, or whether the email was sent after the visit was created.
+     * Check if a visit has changed significantly since the last notification was sent
      * @description Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
      *     * ROLE_OFFICIAL_VISITS__R
      *     * ROLE_OFFICIAL_VISITS_RW
      */
-    get: operations['getVisitChangeStatus']
+    get: operations['getVisitChangedSinceLastNotification']
     put?: never
     post?: never
     delete?: never
@@ -1219,9 +1219,7 @@ export interface paths {
     trace?: never
   }
 }
-
 export type webhooks = Record<string, never>
-
 export interface components {
   schemas: {
     /** @description Request to Update a new prison visit slot for official visits */
@@ -3806,6 +3804,11 @@ export interface components {
        */
       createdTime: string
       /**
+       * @description The created by
+       * @example Fred Bloggs
+       */
+      createdBy: string
+      /**
        * Format: date-time
        * @description The status updated time
        * @example 10:00
@@ -3843,16 +3846,27 @@ export interface components {
        */
       officialVisitId: number
       /**
+       * @description The source of the auditing event
+       * @example DPS
+       * @enum {string}
+       */
+      eventSource: 'DPS' | 'NOMIS'
+      /**
        * @description A short summary of the audit event
        * @example Visit updated
        */
       eventSummary: string
       /**
+       * @description A more detailed summary of the audit event
+       * @example Visit updated
+       */
+      eventDetail: string
+      /**
        * @description The type of audit event
        * @example UPDATE
        * @enum {string}
        */
-      eventType: 'CREATE' | 'UPDATE'
+      eventType: 'CREATE' | 'UPDATE' | 'CANCELLED' | 'COMPLETED' | 'OTHER'
       /**
        * @description The changes related to an update, otherwise empty
        * @example [
@@ -3885,6 +3899,12 @@ export interface components {
        * @example Fred Bloggs
        */
       eventUserFullName: string
+      /**
+       * Format: int32
+       * @description The version number of the audited event, 2 is the current latest version
+       * @example 2
+       */
+      eventVersion: number
       /**
        * @description A boolean indicator to determine if the audited event is considered a significant change to the official visit.
        * @example true
@@ -4004,9 +4024,7 @@ export interface components {
   headers: never
   pathItems: never
 }
-
 export type $defs = Record<string, never>
-
 export interface operations {
   syncGetVisitSlotById: {
     parameters: {
@@ -5406,7 +5424,7 @@ export interface operations {
       }
     }
     responses: {
-      /** @description The response containing the details of all notifications sent */
+      /** @description The response containing the details of notifications sent */
       201: {
         headers: {
           [name: string]: unknown
@@ -5433,7 +5451,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description No official visit found to send the notification for. */
+      /** @description The official visit was not found */
       404: {
         headers: {
           [name: string]: unknown
@@ -6489,13 +6507,13 @@ export interface operations {
       }
     }
   }
-  getVisitChangeStatus: {
+  getVisitChangedSinceLastNotification: {
     parameters: {
       query?: never
       header?: never
       path: {
         /**
-         * @description The identifier of the official visit to check for changes.
+         * @description The identifier of the official visit to check
          * @example 1
          */
         officialVisitId: number
@@ -6504,7 +6522,7 @@ export interface operations {
     }
     requestBody?: never
     responses: {
-      /** @description Check completed — returns whether the visit has changed since the last notification was sent, or whether the email was sent after the visit was created. */
+      /** @description Returns the visit changed status true if the visit has changed significantly since the last notification, otherwise false */
       200: {
         headers: {
           [name: string]: unknown
@@ -6531,7 +6549,7 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse']
         }
       }
-      /** @description No official visit found with the given ID. */
+      /** @description The official visit was not found */
       404: {
         headers: {
           [name: string]: unknown

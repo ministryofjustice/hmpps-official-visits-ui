@@ -51,3 +51,4 @@ export type NotificationSearchRequest = components['schemas']['NotificationSearc
 export type PagedModelSentNotification = components['schemas']['PagedModelSentNotification']
 export type VisitChangeStatusResponse = components['schemas']['VisitChangeStatusResponse']
 export type OfficialVisitNotifications = components['schemas']['OfficialVisitNotification'][]
+export type AuditedEvent = components['schemas']['AuditedEventResponse']

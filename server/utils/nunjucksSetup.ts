@@ -114,7 +114,10 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
   njkEnv.addFilter('addSelectValue', (items: any[], value: string, text: string) =>
     items.concat([{ value, text, selected: false }]),
   )
-  njkEnv.addFilter('mojDate', (date: string) => date?.split('-').reverse().join('/'))
+  njkEnv.addFilter('mojDate', (date: string, type?: string) => {
+    if (type === 'datetime') return formatDate(date, "d MMMM yyyy 'at' HH:mm")
+    return date?.split('-').reverse().join('/')
+  })
   njkEnv.addFilter('lastNameCommaFirstName', lastNameCommaFirstName)
   njkEnv.addFilter('firstNameSpaceLastName', firstNameSpaceLastName)
   njkEnv.addFilter('weekDayName', getDayName)
