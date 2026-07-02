@@ -34,6 +34,7 @@ const progressTrackerPages: Record<string, number> = {
   [Page.SELECT_OFFICIAL_VISITORS_PAGE]: 2,
   [Page.SELECT_SOCIAL_VISITORS_PAGE]: 2,
   [Page.ASSISTANCE_REQUIRED_PAGE]: 3,
+  [Page.VISITOR_DETAILS_PAGE]: 3,
   [Page.EQUIPMENT_PAGE]: 3,
   [Page.COMMENTS_PAGE]: 3,
   [Page.CHECK_YOUR_ANSWERS_PAGE]: 4,

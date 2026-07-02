@@ -21,6 +21,7 @@ import {
 import SelectOfficialContactPage from '../pages/selectOfficialContactPage'
 import SelectSocialContactPage from '../pages/selectSocialContactPage'
 import AssistanceRequiredPage from '../pages/assistanceRequiredPage'
+import VisitorDetailsPage from '../pages/visitorDetailsPage'
 import EquipmentPage from '../pages/equipmentPage'
 import CommentsPage from '../pages/commentsPage'
 import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
@@ -248,13 +249,19 @@ test.describe('Create an official visit', () => {
     await assistanceRequiredPage.selectCheckbox(
       `${mockOfficialVisitors[0].firstName} ${mockOfficialVisitors[0].lastName} (${mockOfficialVisitors[0].relationshipToPrisonerDescription})`,
     )
-    await assistanceRequiredPage.fillBoxForContact(0, 'Assistance required')
 
     await assistanceRequiredPage.selectCheckbox(
       `${mockSocialVisitors[1].firstName} ${mockSocialVisitors[1].lastName} (${mockSocialVisitors[1].relationshipToPrisonerDescription})`,
     )
-    await assistanceRequiredPage.fillBoxForContact(1, 'Assistance required (social)')
     await assistanceRequiredPage.continueButton.click()
+
+    expect(page.url()).toMatch(/\/manage\/create\/.*\/visitor-details/)
+
+    const visitorDetailsPage = await VisitorDetailsPage.verifyOnPage(page)
+    await checkCancelPage(visitorDetailsPage, VisitorDetailsPage.verifyOnPage, 3)
+    await visitorDetailsPage.fillBoxForContact(0, 'Assistance required')
+    await visitorDetailsPage.fillBoxForContact(1, 'Assistance required (social)')
+    await visitorDetailsPage.continueButton.click()
 
     expect(page.url()).toMatch(/\/manage\/create\/.*\/equipment/)
     await page.goto(`/manage/create/${uuid}/check-your-answers`)

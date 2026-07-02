@@ -2,12 +2,12 @@
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "partials/progress-tracker.njk" import progressTracker %}
-{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
 {% from "partials/continueCancel.njk" import continueCancel %}
 {% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
 {% from "partials/capacityCheckMessages.njk" import capacityCheckMessages %}
 
-{% set pageTitle = "Do any visitors need assistance?" %}
+{% set pageTitle = "Further visitor details" %}
 
 {% block content %}
 
@@ -18,24 +18,29 @@
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">{{'Book' if mode == 'create' else 'Amend'}} an official visit</span>
       <h1 class="govuk-heading-l">{{pageTitle}} (optional)</h1>
+      <p>Add any important information about assistance needed for the official visit.</p>
+      <p>Wing staff will be notified there is assistance needed for the visitor on the printed unlock list, but for confidentiality the full text will only be visible when you view the details of the official visit in this service.</p>
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
         {% for contact in contacts %}
-          <input type="hidden" id="assistanceRequired[{{loop.index0}}][id]" name="assistanceRequired[{{loop.index0}}][id]" value="{{contact.contactId}}">
-          {{ govukCheckboxes({
-            items: [{
-              name: "assistanceRequired[" + loop.index0 + "][selected]",
-              id: "assistanceRequired[" + loop.index0 + "][selected]",
-              value: true,
+          <input type="hidden" id="visitorDetails[{{loop.index0}}][id]" name="visitorDetails[{{loop.index0}}][id]" value="{{contact.contactId}}">
+          {{ govukCharacterCount({
+            maxlength: 240,
+            rows: 5,
+            label: {
               text: (contact.firstName + " " + contact.lastName) | convertToTitleCase + " (" + contact.relationshipToPrisonerDescription + ")",
-              checked: formResponses.assistanceRequired[loop.index0].selected if formResponses.assistanceRequired else contact.assistedVisit
-            }]
+              classes: "govuk-label--s"
+            },
+            id: "visitorDetails[" + loop.index0 + "][notes]",
+            name: "visitorDetails[" + loop.index0 + "][notes]",
+            value: formResponses.visitorDetails[loop.index0].notes if formResponses.visitorDetails else contact.assistanceNotes,
+            errorMessage: validationErrors | findError("visitorDetails[" + loop.index0 + "][notes]")
           }) }}
         {% endfor %}
 
         {{ continueCancel({
-          stepsChecked: stepsChecked, 
+          stepsChecked: stepsChecked,
           continueText: submitAction,
           cancelText: 'Cancel and return to homepage' if mode == 'create' else 'Cancel and return to visit details',
           cancelHref: './' if mode == 'amend'

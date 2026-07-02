@@ -106,7 +106,7 @@ describe('Equipment handler', () => {
           expect($('.govuk-checkboxes__label').eq(0).text()).toContain('John Dasolicitor (Solicitor)')
           expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Jane Dafriend (Friend)')
 
-          expect($('.govuk-back-link').attr('href')).toEqual(`assistance-required`)
+          expect($('.govuk-back-link').attr('href')).toEqual(`visitor-details`)
           expect($('.govuk-button').text()).toContain('Continue')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to homepage')
           expect($('.govuk-link').last().attr('href')).toContain(`cancellation-check?stepsChecked=3`)

@@ -8,10 +8,9 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import { getArrayItemPropById, getPageHeader } from '../../../../testutils/cheerio'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
 import { mockSchedule, mockPrisoner } from '../../../../../testutils/mocks'
-import { expectErrorMessages, expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
+import { expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
-import { VisitType } from '../../../../../@types/officialVisitsApi/types'
 import config from '../../../../../config'
 
 jest.mock('../../../../../services/auditService')
@@ -136,7 +135,7 @@ describe('Assistance required handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
           expect($('.govuk-hint').eq(0).text()).toEqual('Book an official visit')
-          expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
+          expect(heading).toEqual('Do any visitors need assistance? (optional)')
 
           expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').val()).toEqual('111')
           expect(getArrayItemPropById($, 'assistanceRequired', 1, 'id').val()).toEqual('112')
@@ -148,18 +147,10 @@ describe('Assistance required handler', () => {
           expect(getArrayItemPropById($, 'assistanceRequired', 2, 'id').attr('checked')).toBeFalsy()
           expect(getArrayItemPropById($, 'assistanceRequired', 3, 'id').attr('checked')).toBeFalsy()
 
-          expect($('.govuk-label[for="assistanceRequired\\[0\\]\\[notes\\]"]').text()).toContain(
-            'Add any additional information (optional)',
-          )
-          expect($('.govuk-label[for="assistanceRequired\\[1\\]\\[notes\\]"]').text()).toContain(
-            'Add any additional information (optional)',
-          )
-          expect($('.govuk-label[for="assistanceRequired\\[2\\]\\[notes\\]"]').text()).toContain(
-            'Add any additional information (optional)',
-          )
-          expect($('.govuk-label[for="assistanceRequired\\[3\\]\\[notes\\]"]').text()).toContain(
-            'Add any additional information (optional)',
-          )
+          expect($('.govuk-label[for="assistanceRequired\\[0\\]\\[notes\\]"]')).toHaveLength(0)
+          expect($('.govuk-label[for="assistanceRequired\\[1\\]\\[notes\\]"]')).toHaveLength(0)
+          expect($('.govuk-label[for="assistanceRequired\\[2\\]\\[notes\\]"]')).toHaveLength(0)
+          expect($('.govuk-label[for="assistanceRequired\\[3\\]\\[notes\\]"]')).toHaveLength(0)
 
           expect($('.govuk-checkboxes__label').eq(0).text()).toContain('John Dasolicitor (Solicitor)')
           expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Johnny Dasolicitor (Solicitor)')
@@ -187,7 +178,7 @@ describe('Assistance required handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
 
-          expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
+          expect(heading).toEqual('Do any visitors need assistance? (optional)')
           expect($('.govuk-back-link').attr('href')).toEqual('select-social-visitors')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.ASSISTANCE_REQUIRED_PAGE, {
@@ -207,7 +198,7 @@ describe('Assistance required handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
           expect($('.govuk-hint').eq(0).text()).toEqual('Amend an official visit')
-          expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
+          expect(heading).toEqual('Do any visitors need assistance? (optional)')
 
           expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').val()).toEqual('111')
           expect(getArrayItemPropById($, 'assistanceRequired', 1, 'id').val()).toEqual('112')
@@ -219,18 +210,10 @@ describe('Assistance required handler', () => {
           expect(getArrayItemPropById($, 'assistanceRequired', 2, 'id').attr('checked')).toBeFalsy()
           expect(getArrayItemPropById($, 'assistanceRequired', 3, 'id').attr('checked')).toBeFalsy()
 
-          expect($('.govuk-label[for="assistanceRequired\\[0\\]\\[notes\\]"]').text()).toContain(
-            'Add any additional information (optional)',
-          )
-          expect($('.govuk-label[for="assistanceRequired\\[1\\]\\[notes\\]"]').text()).toContain(
-            'Add any additional information (optional)',
-          )
-          expect($('.govuk-label[for="assistanceRequired\\[2\\]\\[notes\\]"]').text()).toContain(
-            'Add any additional information (optional)',
-          )
-          expect($('.govuk-label[for="assistanceRequired\\[3\\]\\[notes\\]"]').text()).toContain(
-            'Add any additional information (optional)',
-          )
+          expect($('.govuk-label[for="assistanceRequired\\[0\\]\\[notes\\]"]')).toHaveLength(0)
+          expect($('.govuk-label[for="assistanceRequired\\[1\\]\\[notes\\]"]')).toHaveLength(0)
+          expect($('.govuk-label[for="assistanceRequired\\[2\\]\\[notes\\]"]')).toHaveLength(0)
+          expect($('.govuk-label[for="assistanceRequired\\[3\\]\\[notes\\]"]')).toHaveLength(0)
 
           expect($('.govuk-checkboxes__label').eq(0).text()).toContain('John Dasolicitor (Solicitor)')
           expect($('.govuk-checkboxes__label').eq(1).text()).toContain('Johnny Dasolicitor (Solicitor)')
@@ -238,7 +221,7 @@ describe('Assistance required handler', () => {
           expect($('.govuk-checkboxes__label').eq(3).text()).toContain('Jane Dafriend (Friend)')
 
           expect($('.govuk-back-link').attr('href')).toEqual(`./`)
-          expect($('.govuk-button').text()).toContain('Save')
+          expect($('.govuk-button').text()).toContain('Continue')
           expect($('.govuk-link').last().text()).toContain('Cancel and return to visit details')
           expect($('.govuk-link').last().attr('href')).toContain(`./`)
 
@@ -258,7 +241,7 @@ describe('Assistance required handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
 
-          expect(heading).toEqual('Will visitors need assistance during their visit? (optional)')
+          expect(heading).toEqual('Do any visitors need assistance? (optional)')
           expect($('.govuk-back-link').attr('href')).toEqual('select-social-visitors')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.ASSISTANCE_REQUIRED_PAGE, {
@@ -270,112 +253,40 @@ describe('Assistance required handler', () => {
   })
 
   describe('POST', () => {
-    it('should disallow submission if notes are too long', () => {
-      return request(app)
-        .post(URL)
-        .send({
-          assistanceRequired: [
-            { id: '111', notes: 'a'.repeat(241) },
-            { id: '112', notes: 'a'.repeat(241) },
-            { id: '113', notes: 'a'.repeat(241) },
-            { id: '222', notes: 'a'.repeat(241) },
-          ],
-        })
-        .expect(302)
-        .expect('location', '/')
-        .expect(() =>
-          expectErrorMessages([
-            {
-              fieldId: 'assistanceRequired[0][notes]',
-              href: '#assistanceRequired[0][notes]',
-              text: 'Information about assistance must be 240 characters or less',
-            },
-            {
-              fieldId: 'assistanceRequired[1][notes]',
-              href: '#assistanceRequired[1][notes]',
-              text: 'Information about assistance must be 240 characters or less',
-            },
-            {
-              fieldId: 'assistanceRequired[2][notes]',
-              href: '#assistanceRequired[2][notes]',
-              text: 'Information about assistance must be 240 characters or less',
-            },
-            {
-              fieldId: 'assistanceRequired[3][notes]',
-              href: '#assistanceRequired[3][notes]',
-              text: 'Information about assistance must be 240 characters or less',
-            },
-          ]),
-        )
-    })
-
-    it('should allow empty submission and redirect to equipment page when visit type is IN_PERSON', () => {
-      return request(app)
-        .post(URL)
-        .send({
-          assistanceRequired: [
-            { id: '111', notes: '' },
-            { id: '112', notes: '' },
-            { id: '113', notes: '' },
-            { id: '222', notes: '' },
-          ],
-        })
-        .expect(302)
-        .expect('location', 'equipment')
-        .expect(() => expectNoErrorMessages())
-    })
-
-    it('should allow empty submission and redirect to comments when visit type is not IN_PERSON', () => {
-      const journey = defaultJourneySession()
-      journey.officialVisit.visitType = 'SOCIAL' as VisitType
-      appSetup(journey)
-
-      return request(app)
-        .post(URL)
-        .send({
-          assistanceRequired: [
-            { id: '111', notes: '' },
-            { id: '112', notes: '' },
-            { id: '113', notes: '' },
-            { id: '222', notes: '' },
-          ],
-        })
-        .expect(302)
-        .expect('location', 'comments')
-        .expect(() => expectNoErrorMessages())
-    })
-
-    it('should accept a form submission', async () => {
+    it('should record the assistance selections and redirect to the details page', async () => {
       await request(app)
         .post(URL)
         .send({
           assistanceRequired: [
-            // Assisted visit with note
-            { id: '111', selected: 'true', notes: 'flag is true and here is a note' },
-            // Not assisted visit but note is present
-            { id: '112', notes: 'flag is false but note is still recorded' },
-            // Assisted visit with no note
-            { id: '113', selected: 'true', notes: '' },
-            // Not assisted visit with no note
-            { id: '222', notes: '' },
+            { id: '111', selected: 'true' },
+            { id: '112' },
+            { id: '113', selected: 'true' },
+            { id: '222' },
           ],
         })
         .expect(302)
-        .expect('location', 'equipment')
+        .expect('location', 'visitor-details')
         .expect(() => expectNoErrorMessages())
 
       const journeySession = (await getJourneySession(app, 'officialVisit')) as OfficialVisitJourney
-      expect(journeySession.officialVisitors[0].assistanceNotes).toEqual('flag is true and here is a note')
       expect(journeySession.officialVisitors[0].assistedVisit).toEqual(true)
-      expect(journeySession.officialVisitors[1].assistanceNotes).toEqual('flag is false but note is still recorded')
       expect(journeySession.officialVisitors[1].assistedVisit).toEqual(false)
-      expect(journeySession.officialVisitors[2].assistanceNotes).toEqual(undefined)
       expect(journeySession.officialVisitors[2].assistedVisit).toEqual(true)
-      expect(journeySession.socialVisitors[0].assistanceNotes).toEqual(undefined)
       expect(journeySession.socialVisitors[0].assistedVisit).toEqual(false)
     })
 
-    it('should accept a form submission (amend)', async () => {
+    it('should redirect to the details page even when no visitor needs assistance', () => {
+      return request(app)
+        .post(URL)
+        .send({
+          assistanceRequired: [{ id: '111' }, { id: '112' }, { id: '113' }, { id: '222' }],
+        })
+        .expect(302)
+        .expect('location', 'visitor-details')
+        .expect(() => expectNoErrorMessages())
+    })
+
+    it('should not save but redirect to the details page in amend mode', async () => {
       const amendJourneySession = () => ({
         ...defaultJourneySession(),
         amendVisit: {
@@ -383,137 +294,17 @@ describe('Assistance required handler', () => {
         },
       })
 
-      // Mock the available slots to return the slot with increased capacity
-      officialVisitsService.getAvailableSlots.mockResolvedValue([
-        {
-          timeSlotId: 1,
-          visitSlotId: 1,
-          prisonCode: 'MDI',
-          dayCode: 'MON',
-          dayDescription: 'Monday',
-          visitDate: '2026-01-26',
-          startTime: '13:30',
-          endTime: '16:00',
-          dpsLocationId: 'loc1',
-          availableVideoSessions: 2,
-          availableAdults: 10, // Increased capacity
-          availableGroups: 2,
-        },
-      ])
-
       appSetup(amendJourneySession())
 
       await request(app)
         .post(`/manage/amend/1/${journeyId()}/assistance-required?change=true`)
         .send({
-          assistanceRequired: [
-            // Assisted visit with note
-            { id: '111', selected: 'true', notes: 'flag is true and here is a note' },
-            // Not assisted visit but note is present
-            { id: '112', notes: 'flag is false but note is still recorded' },
-            // Assisted visit with no note
-            { id: '113', selected: 'true', notes: '' },
-            // Not assisted visit with no note
-            { id: '222', notes: '' },
-          ],
+          assistanceRequired: [{ id: '111', selected: 'true' }, { id: '112' }, { id: '113' }, { id: '222' }],
         })
         .expect(302)
-        .expect('location', '/manage/amend/1/9211b69b-826f-4f48-a43f-8af59dddf39f')
+        .expect('location', 'visitor-details')
 
-      const journeySession = (await getJourneySession(app, 'officialVisit')) as OfficialVisitJourney
-      expect(journeySession.officialVisitors[0].assistanceNotes).toEqual('flag is true and here is a note')
-      expect(journeySession.officialVisitors[0].assistedVisit).toEqual(true)
-      expect(journeySession.officialVisitors[1].assistanceNotes).toEqual('flag is false but note is still recorded')
-      expect(journeySession.officialVisitors[1].assistedVisit).toEqual(false)
-      expect(journeySession.officialVisitors[2].assistanceNotes).toEqual(undefined)
-      expect(journeySession.officialVisitors[2].assistedVisit).toEqual(true)
-      expect(journeySession.socialVisitors[0].assistanceNotes).toEqual(undefined)
-      expect(journeySession.socialVisitors[0].assistedVisit).toEqual(false)
-    })
-
-    it('should call updateVisitors service when in amend mode', async () => {
-      const amendJourneySession = () => ({
-        ...defaultJourneySession(),
-        amendVisit: {
-          changePage: 'assistance-required',
-        },
-      })
-
-      // Mock the available slots to return the slot with increased capacity
-      officialVisitsService.getAvailableSlots.mockResolvedValue([
-        {
-          timeSlotId: 1,
-          visitSlotId: 1,
-          prisonCode: 'MDI',
-          dayCode: 'MON',
-          dayDescription: 'Monday',
-          visitDate: '2026-01-26',
-          startTime: '13:30',
-          endTime: '16:00',
-          dpsLocationId: 'loc1',
-          availableVideoSessions: 2,
-          availableAdults: 10, // Increased capacity
-          availableGroups: 2,
-        },
-      ])
-
-      appSetup(amendJourneySession())
-
-      await request(app)
-        .post(`/manage/amend/1/${journeyId()}/assistance-required?change=true`)
-        .send({
-          assistanceRequired: [
-            { id: '111', selected: 'true', notes: 'wheelchair access required' },
-            { id: '112', notes: '' },
-            { id: '113', selected: 'true', notes: '' },
-            { id: '222', notes: '' },
-          ],
-        })
-        .expect(302)
-        .expect('location', '/manage/amend/1/9211b69b-826f-4f48-a43f-8af59dddf39f')
-
-      expect(officialVisitsService.updateVisitors).toHaveBeenCalledWith(
-        'MDI',
-        '1',
-        {
-          officialVisitors: [
-            {
-              officialVisitorId: 1,
-              visitorTypeCode: 'CONTACT',
-              contactId: 111,
-              relationshipCode: 'SOL',
-              leadVisitor: true,
-              assistedVisit: true,
-              assistedNotes: 'wheelchair access required',
-            },
-            {
-              officialVisitorId: 2,
-              visitorTypeCode: 'CONTACT',
-              contactId: 112,
-              relationshipCode: 'SOL',
-              leadVisitor: false,
-              assistedVisit: false,
-            },
-            {
-              officialVisitorId: 3,
-              visitorTypeCode: 'CONTACT',
-              contactId: 113,
-              relationshipCode: 'SOL',
-              leadVisitor: false,
-              assistedVisit: true,
-            },
-            {
-              officialVisitorId: 4,
-              visitorTypeCode: 'CONTACT',
-              contactId: 222,
-              relationshipCode: 'FRI',
-              leadVisitor: false,
-              assistedVisit: false,
-            },
-          ],
-        },
-        user,
-      )
+      expect(officialVisitsService.updateVisitors).not.toHaveBeenCalled()
     })
   })
 })

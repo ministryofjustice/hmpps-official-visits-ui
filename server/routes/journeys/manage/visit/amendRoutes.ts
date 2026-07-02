@@ -8,6 +8,7 @@ import VisitTypeHandler from './handlers/visitTypeHandler'
 import SelectOfficialVisitorsHandler from './handlers/selectOfficialVisitorsHandler'
 import SelectSocialVisitorsHandler from './handlers/selectSocialVisitorsHandler'
 import AssistanceRequiredHandler from './handlers/assistanceRequiredHandler'
+import VisitorDetailsHandler from './handlers/visitorDetailsHandler'
 import EquipmentHandler from './handlers/equipmentHandler'
 import CommentsHandler from './handlers/commentsHandler'
 import AmendVisitLandingHandler from './handlers/amendVisitLandingHandler'
@@ -65,6 +66,7 @@ export default function AmendRoutes({
   )
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService, personalRelationshipsService))
   route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
+  route('/visitor-details', new VisitorDetailsHandler(officialVisitsService))
   route('/equipment', new EquipmentHandler(officialVisitsService))
   route('/comments', new CommentsHandler(officialVisitsService))
 

@@ -13,6 +13,7 @@ import VisitTypeHandler from './handlers/visitTypeHandler'
 import SelectOfficialVisitorsHandler from './handlers/selectOfficialVisitorsHandler'
 import SelectSocialVisitorsHandler from './handlers/selectSocialVisitorsHandler'
 import AssistanceRequiredHandler from './handlers/assistanceRequiredHandler'
+import VisitorDetailsHandler from './handlers/visitorDetailsHandler'
 import EquipmentHandler from './handlers/equipmentHandler'
 import CommentsHandler from './handlers/commentsHandler'
 import journeyStateGuard, { JourneyStateGuard } from '../../../../middleware/journey/journeyStateGuard'
@@ -75,6 +76,7 @@ export default function CreateRoutes({
   )
   route('/select-social-visitors', new SelectSocialVisitorsHandler(officialVisitsService, personalRelationshipsService))
   route('/assistance-required', new AssistanceRequiredHandler(officialVisitsService))
+  route('/visitor-details', new VisitorDetailsHandler(officialVisitsService))
   route('/equipment', new EquipmentHandler(officialVisitsService))
   route('/comments', new CommentsHandler(officialVisitsService))
   route(`/check-your-answers`, new CheckYourAnswersHandler(officialVisitsService))
@@ -113,6 +115,9 @@ const guard: JourneyStateGuard = {
       return req.session.journey.officialVisit?.socialVisitorsPageCompleted ? undefined : '/select-social-visitors'
     }
     return req.session.journey.officialVisit?.officialVisitors?.length ? undefined : '/select-official-visitors'
+  },
+  'visitor-details': req => {
+    return req.session.journey.officialVisit?.assistancePageCompleted ? undefined : '/assistance-required'
   },
   equipment: req => {
     return req.session.journey.officialVisit?.assistancePageCompleted ? undefined : '/assistance-required'

@@ -417,7 +417,7 @@ export const mockVisitByIdVisit: OfficialVisit = {
       visitorEquipment: {
         description: 'Laptop',
       },
-      assistanceNotes: 'Assistance details',
+      assistanceNotes: 'Further details',
       phoneNumber: '0123456789',
       emailAddress: 'test@test.com',
     },

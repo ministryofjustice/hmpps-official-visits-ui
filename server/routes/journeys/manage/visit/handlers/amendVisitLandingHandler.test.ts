@@ -167,9 +167,9 @@ describe('Search for an official visit', () => {
             /\/manage\/amend\/1(.+)\/assistance-required/,
           )
 
-          expect(getValueByKey($, 'Assistance details')).toEqual('Assistance details')
-          expect(getActionsByKey($, 'Assistance details', 0, 0).attr('href')).toMatch(
-            /\/manage\/amend\/1(.+)\/assistance-required/,
+          expect(getValueByKey($, 'Further details')).toEqual('Further details')
+          expect(getActionsByKey($, 'Further details', 0, 0).attr('href')).toMatch(
+            /\/manage\/amend\/1(.+)\/visitor-details/,
           )
 
           expect(getValueByKey($, 'Does this visitor need equipment?')).toEqual('Yes')
@@ -294,9 +294,9 @@ describe('Search for an official visit', () => {
           expect(getActionsByKey($, 'Does this visitor need assistance?', 0, 0).attr('href')).toMatch(
             /\/manage\/amend\/1(.+)\/assistance-required/,
           )
-          expect(getValueByKey($, 'Assistance details')).toEqual('None')
-          expect(getActionsByKey($, 'Assistance details', 0, 0).attr('href')).toMatch(
-            /\/manage\/amend\/1(.+)\/assistance-required/,
+          expect(getValueByKey($, 'Further details')).toEqual('None')
+          expect(getActionsByKey($, 'Further details', 0, 0).attr('href')).toMatch(
+            /\/manage\/amend\/1(.+)\/visitor-details/,
           )
           expect(getValueByKey($, 'Does this visitor need equipment?')).toEqual('No')
           expect(getActionsByKey($, 'Does this visitor need equipment?', 0, 0).attr('href')).toMatch(
