@@ -55,6 +55,9 @@ const auditedEvents: AuditedEvent[] = [
     eventDateTime: '2026-10-25T14:30:00.000000',
     eventUsername: 'AUSER',
     eventUserFullName: 'A User',
+    eventSource: 'DPS',
+    eventDetail: 'Visit Updated',
+    eventVersion: 2,
     significantChange: true,
   },
 ]
@@ -350,16 +353,14 @@ test.describe('View official visits', () => {
     await expect(page.locator('.moj-timeline__title').first()).toHaveText('Email notification sent')
     await expect(page.locator('.moj-timeline__title').nth(1)).toHaveText('Visit updated')
     await expect(page.locator('.moj-timeline__title').nth(2)).toHaveText('Email notification temporarily failed')
-    await expect(page.locator('.moj-timeline__byline').first()).toContainText('visitor@example.com')
+    await expect(page.locator('.moj-timeline__byline').first()).toContainText('by System')
     await expect(page.locator('.moj-timeline__byline').nth(1)).toContainText('A User')
     await expect(page.locator('.moj-timeline__date').first()).toHaveText('25 October 2026 at 15:30')
     await expect(page.locator('.moj-timeline__date').nth(1)).toHaveText('25 October 2026 at 14:30')
     await expect(page.locator('.moj-timeline__date').nth(2)).toHaveText('25 October 2026 at 13:30')
+    await expect(page.getByText('Email address: visitor@example.com\nReason: Not provided\nStatus: Sent')).toBeVisible()
     await expect(
-      page.getByText('Email address: visitor@example.com Reason: Confirmation email sent Status: SENT'),
-    ).toBeVisible()
-    await expect(
-      page.getByText('Email address: visitor@example.com Reason: Temporary delivery failure Status:'),
+      page.getByText('Email address: visitor@example.com Reason: Not provided Status: Temporary'),
     ).toBeVisible()
     await expect(page.getByText('Visit updated by A User')).toBeVisible()
     await expect(page.getByText('Visitor removed set to Jack Malicious')).toBeVisible()

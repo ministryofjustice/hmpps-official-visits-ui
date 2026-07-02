@@ -5,6 +5,8 @@ import OfficialVisitsService from '../../../../services/officialVisitsService'
 import TelemetryService from '../../../../services/telemetryService'
 import { AuditedEvent, OfficialVisitNotifications } from '../../../../@types/officialVisitsApi/types'
 import { convertToTitleCase } from '../../../../utils/utils'
+import ManageUserService from '../../../../services/manageUsersService'
+import { HmppsUser } from '../../../../interfaces/hmppsUser'
 
 type TimelineItem = {
   label: { text: string }
@@ -33,6 +35,19 @@ const FIELD_LABELS: Record<string, string> = {
 }
 
 type ChangeSemantics = 'added' | 'removed' | 'updated'
+
+type NotificationReasonTypes =
+  | 'OFFICIAL_VISIT_CANCELLED'
+  | 'OFFICIAL_VISIT_CREATED'
+  | 'OFFICIAL_VISIT_UPDATED'
+  | 'UNKNOWN'
+
+const NOTIFICATION_REASON_LABELS: Record<NotificationReasonTypes, string> = {
+  OFFICIAL_VISIT_CANCELLED: 'Email notification for cancelled visit',
+  OFFICIAL_VISIT_CREATED: 'Email notification for created visit',
+  OFFICIAL_VISIT_UPDATED: 'Email notification for updated visit',
+  UNKNOWN: NOT_PROVIDED,
+}
 
 const FIELD_SEMANTICS: Record<string, ChangeSemantics> = {
   visitor_added: 'added',
@@ -67,6 +82,7 @@ const NOTIFICATION_STATUS_VALUES: Record<NotificationStatus, string> = {
 }
 
 const isNotificationStatus = (value: string): value is NotificationStatus => value in NOTIFICATION_STATUS_LABELS
+const isNotificationReason = (value: string): value is NotificationReasonTypes => value in NOTIFICATION_REASON_LABELS
 
 const normalizeText = (value?: string | null): string | undefined => {
   const trimmed = value?.trim()
@@ -85,6 +101,11 @@ const toTimestampMillis = (isoTimestamp: string): number => {
 const resolveNotificationStatus = (status?: string | null): NotificationStatus => {
   const normalized = normalizeText(status)?.toUpperCase()
   return normalized && isNotificationStatus(normalized) ? normalized : 'UNKNOWN'
+}
+
+const resolveNotificationReason = (reason?: string | null): NotificationReasonTypes => {
+  const normalized = normalizeText(reason)?.toUpperCase()
+  return normalized && isNotificationReason(normalized) ? normalized : 'UNKNOWN'
 }
 
 const formatFieldName = (field: string): string => {
@@ -134,11 +155,17 @@ const toTimelineItem = (event: AuditedEvent): TimelineItemWithSort => {
   }
 }
 
-const toNotificationTimelineItem = (notification: OfficialVisitNotifications[number]): TimelineItemWithSort => {
+const toNotificationTimelineItem = ({
+  notification,
+  creatorName,
+}: {
+  notification: OfficialVisitNotifications[number]
+  creatorName: string
+}): TimelineItemWithSort => {
   const status = resolveNotificationStatus(notification.emailStatus)
   const timestamp = getTimestamp(notification.statusUpdatedTime ?? notification.createdTime)
   const emailAddress = normalizeText(notification.emailAddress)
-  const reason = withFallback(normalizeText(notification.reason), NOT_PROVIDED)
+  const reason = resolveNotificationReason(notification.reason)
 
   return {
     label: {
@@ -146,7 +173,7 @@ const toNotificationTimelineItem = (notification: OfficialVisitNotifications[num
     },
     text: [
       `Email address: ${emailAddress ?? NOT_PROVIDED}`,
-      `Reason: ${reason}`,
+      `Reason: ${NOTIFICATION_REASON_LABELS[reason]}`,
       `Status: ${NOTIFICATION_STATUS_VALUES[status]}`,
     ].join('\n'),
     datetime: {
@@ -154,17 +181,41 @@ const toNotificationTimelineItem = (notification: OfficialVisitNotifications[num
       type: 'datetime',
     },
     byline: {
-      text: emailAddress ?? NOTIFICATION_STATUS_LABELS[status],
+      text: creatorName,
     },
     sortTimestamp: toTimestampMillis(timestamp),
   }
 }
 
+const resolveNotificationCreators = async (
+  notifications: OfficialVisitNotifications,
+  manageUsersService: ManageUserService,
+  user: HmppsUser,
+): Promise<Array<{ notification: OfficialVisitNotifications[number]; creatorName: string }>> => {
+  return Promise.all(
+    notifications.map(async notification => {
+      const createdBy = normalizeText(notification.createdBy)
+      if (!createdBy) {
+        return {
+          notification,
+          creatorName: DEFAULT_USER_LABEL,
+        }
+      }
+
+      const createdUser = await manageUsersService.getUserByUsername(createdBy, user)
+      return {
+        notification,
+        creatorName: withFallback(normalizeText(createdUser?.name), DEFAULT_USER_LABEL),
+      }
+    }),
+  )
+}
+
 const buildHistoryTimeline = (
   historyEvents: AuditedEvent[],
-  notifications: OfficialVisitNotifications,
+  notificationsWithCreators: Array<{ notification: OfficialVisitNotifications[number]; creatorName: string }>,
 ): TimelineItem[] =>
-  [...historyEvents.map(toTimelineItem), ...notifications.map(toNotificationTimelineItem)]
+  [...historyEvents.map(toTimelineItem), ...notificationsWithCreators.map(toNotificationTimelineItem)]
     .sort((a, b) => b.sortTimestamp - a.sortTimestamp)
     .map(({ sortTimestamp, ...timelineItem }) => timelineItem)
 
@@ -174,6 +225,7 @@ export default class OfficialVisitHistoryHandler implements PageHandler {
   constructor(
     private readonly officialVisitsService: OfficialVisitsService,
     private readonly telemetryService: TelemetryService,
+    private readonly manageUsersService: ManageUserService,
   ) {}
 
   GET = async (
@@ -196,9 +248,11 @@ export default class OfficialVisitHistoryHandler implements PageHandler {
       this.officialVisitsService.getNotificationsByOfficialVisitId(visitId, user),
     ])
 
-    const history = buildHistoryTimeline(historyEvents, notifications)
+    const notificationsWithCreators = await resolveNotificationCreators(notifications, this.manageUsersService, user)
 
-    this.telemetryService.trackEvent('OFFICIAL_VISIT_VIEW_COMPLETING_VISIT', user, {
+    const history = buildHistoryTimeline(historyEvents, notificationsWithCreators)
+
+    this.telemetryService.trackEvent('OFFICIAL_VISIT_HISTORY_TIMELINE', user, {
       officialVisitId: visit.officialVisitId,
       prisonCode: visit.prisonCode,
       visitTypeCode: visit.visitTypeCode,

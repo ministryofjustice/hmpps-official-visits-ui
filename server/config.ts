@@ -166,6 +166,6 @@ export default {
     twoMonthCalendarEnabled: get('FEATURE_TWO_MONTH_CALENDAR_ENABLED', 'false') === 'true',
     emailNotificationsPrisons: get('FEATURE_EMAIL_NOTIFICATIONS_PRISONS', ''),
     bulkMovementSlipsPrisons: get('FEATURE_BULK_MOVEMENT_SLIPS_PRISONS', ''),
-    auditTimeline: get('FEATURE_SWITCH_AUDIT_TIMELINE', ''),
+    visitHistoryTimelineEnabled: get('FEATURE_VISIT_HISTORY_TIMELINE', ''),
   },
 }

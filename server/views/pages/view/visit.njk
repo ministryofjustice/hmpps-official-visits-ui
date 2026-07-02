@@ -266,7 +266,7 @@
     ] | filterNonFalsy
   }) }}
 
-    {% if viewVisitHistoryEnabled %}
+    {% if visitHistoryTimelineEnabled %}
         {{ govukButton({
             text: "View all changes made for visit",
             href: "/view/visit/" + visit.officialVisitId + "/history",

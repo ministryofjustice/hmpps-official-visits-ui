@@ -247,8 +247,8 @@ export const bulkMovementSlipsEnabled = (caseLoadId: string) => {
   return config.featureToggles.bulkMovementSlipsPrisons.split(',').includes(caseLoadId)
 }
 
-export const auditTimelineEnabled = (caseLoadId: string) => {
-  return config.featureToggles.auditTimeline.split(',').includes(caseLoadId)
+export const visitHistoryTimelineEnabled = (caseLoadId: string) => {
+  return config.featureToggles.visitHistoryTimelineEnabled.split(',').includes(caseLoadId)
 }
 
 export const socialVisitorsPageEnabled = (req: Request) => {
