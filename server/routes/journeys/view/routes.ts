@@ -62,7 +62,13 @@ export default function Index({
   route(
     '/visit/:ovId/history',
     Permission.MANAGE,
-    new OfficialVisitHistoryHandler(officialVisitsService, telemetryService, manageUsersService),
+    new OfficialVisitHistoryHandler(
+      personalRelationshipsService,
+      prisonerService,
+      officialVisitsService,
+      telemetryService,
+      manageUsersService,
+    ),
   )
   route('/visit/:ovId/cancel', Permission.MANAGE, new CancelOfficialVisitHandler(officialVisitsService))
   route('/visit/:ovId/movement-slip', Permission.VIEW, new OfficialVisitMovementSlipHandler(officialVisitsService))
