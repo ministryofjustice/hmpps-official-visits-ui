@@ -36,6 +36,7 @@ import {
   buildCalendarMonths,
   emailNotificationsEnabled,
   bulkMovementSlipsEnabled,
+  convertToSentenceCase,
 } from './utils'
 import config from '../config'
 import { JourneyVisitor } from '../routes/journeys/manage/visit/journey'
@@ -53,6 +54,22 @@ describe('convert to title case', () => {
     ['Hyphenated', 'Robert-John SmiTH-jONes-WILSON', 'Robert-John Smith-Jones-Wilson'],
   ])('%s convertToTitleCase(%s, %s)', (_: string, a: string, expected: string) => {
     expect(convertToTitleCase(a)).toEqual(expected)
+  })
+})
+
+// sentence case tests here
+describe('convert to sentence case', () => {
+  it.each([
+    [null, null, ''],
+    ['empty string', '', ''],
+    ['Visit', 'Visit', 'Visit'],
+    ['Upper Case', 'VISIT', 'Visit'],
+    ['Multiple words', 'VisIT STATUS', 'Visit status'],
+    ['Leading spaces', '  ViSIT', 'Visit'],
+    ['Trailing spaces', 'VisIT  ', 'Visit'],
+    ['Hyphenated', 'Visit-Status visIT-CanceLLed-AUTO', 'Visit-status visit-cancelled-auto'],
+  ])('%s convertToTitleCase(%s, %s)', (_: string, a: string, expected: string) => {
+    expect(convertToSentenceCase(a)).toEqual(expected)
   })
 })
 

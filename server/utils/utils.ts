@@ -40,6 +40,12 @@ const properCaseName = (name: string): string => (isBlank(name) ? '' : name.spli
 export const convertToTitleCase = (sentence: string): string =>
   isBlank(sentence) ? '' : sentence.split(' ').map(properCaseName).join(' ')
 
+export const convertToSentenceCase = (sentence: string): string => {
+  if (isBlank(sentence)) return ''
+  const trimmedSentence = sentence.trim()
+  return trimmedSentence.charAt(0).toUpperCase() + trimmedSentence.slice(1).toLowerCase()
+}
+
 export const lastNameCommaFirstName = (person: { firstName: string; lastName: string }): string => {
   return `${properCaseName(person.lastName)}, ${properCaseName(person.firstName)}`.replace(/(^, )|(, $)/, '')
 }

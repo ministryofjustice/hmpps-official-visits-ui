@@ -57,6 +57,11 @@ beforeEach(() => {
           oldValue: '14:00',
           newValue: '15:00',
         },
+        {
+          field: 'visit_type',
+          oldValue: 'VIDEO',
+          newValue: 'TELEPHONE',
+        },
       ],
       eventDateTime: '2026-10-25T14:30:00.000000',
       eventUsername: 'JBLOGGS',
@@ -127,7 +132,8 @@ describe('OfficialVisitHistoryHandler', () => {
           expect($(description).text()).toContain('Reason: Email notification for created visit')
           expect($(description).text()).toContain('Visitor added')
           expect($(description).text()).toContain('Visitor updated changed from Joe Bloggs to Jane Bloggs')
-          expect($(description).text()).toContain('Start Time changed from 14:00 to 15:00')
+          expect($(description).text()).toContain('Visit type changed from Video to Telephone')
+          expect($(description).text()).toContain('Start time changed from 14:00 to 15:00')
           expect($(description).text()).toContain('Reason: Email notification for updated visit')
           expect($(description).text()).toContain('Status: Failed')
 
@@ -200,7 +206,7 @@ describe('OfficialVisitHistoryHandler', () => {
           expect(descriptions.join(' ')).toContain('Reason: Not provided')
           expect(descriptions.join(' ')).toContain('Status: Failed')
           expect(descriptions.join(' ')).toContain('Visitor removed')
-          expect(descriptions.join(' ')).toContain('Visit Slot changed from 11733 to 11679')
+          expect(descriptions.join(' ')).not.toContain('Visit Slot changed from 11733 to 11679')
           expect(descriptions.join(' ')).toContain('Field')
         })
     })

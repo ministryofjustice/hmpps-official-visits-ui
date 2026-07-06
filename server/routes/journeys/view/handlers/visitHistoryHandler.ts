@@ -4,7 +4,7 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import TelemetryService from '../../../../services/telemetryService'
 import { AuditedEvent, OfficialVisitNotifications } from '../../../../@types/officialVisitsApi/types'
-import { convertToTitleCase } from '../../../../utils/utils'
+import { convertToSentenceCase } from '../../../../utils/utils'
 import ManageUserService from '../../../../services/manageUsersService'
 import { HmppsUser } from '../../../../interfaces/hmppsUser'
 
@@ -80,6 +80,24 @@ const FIELD_SEMANTICS: Record<string, ChangeSemantics> = {
   visitor_removed: 'removed',
 }
 
+const IGNORED_FIELDS = ['visit_slot']
+
+type VisitTypes = 'IN_PERSON' | 'TELEPHONE' | 'VIDEO' | 'UNKNOWN'
+
+const VISIT_TYPES_LABELS: Record<VisitTypes, string> = {
+  IN_PERSON: 'In person',
+  TELEPHONE: 'Telephone',
+  VIDEO: 'Video',
+  UNKNOWN: NOT_PROVIDED,
+}
+
+type VisitStatus = 'SCHEDULED' | 'CANCELLED' | 'UNKNOWN'
+const VISIT_STATUS_LABELS: Record<VisitStatus, string> = {
+  SCHEDULED: 'Scheduled',
+  CANCELLED: 'Cancelled',
+  UNKNOWN: NOT_PROVIDED,
+}
+
 const isApiNotificationStatus = (value: string): value is ApiNotificationStatus => value in API_TO_USER_STATUS
 
 const isNotificationReason = (value: string): value is NotificationReasonTypes => value in NOTIFICATION_REASON_LABELS
@@ -112,33 +130,59 @@ const formatFieldName = (field: string): string => {
   const normalizedField = normalizeText(field)?.toLowerCase()
   if (!normalizedField) return DEFAULT_FIELD_LABEL
 
-  const fallbackLabel = convertToTitleCase(normalizedField.replace(/[_-]+/g, ' '))
+  const fallbackLabel = convertToSentenceCase(normalizedField.replace(/[_-]+/g, ' '))
 
   return FIELD_LABELS[normalizedField] ?? (fallbackLabel || DEFAULT_FIELD_LABEL)
 }
 
+const isVisitType = (value: string): value is VisitTypes => value in VISIT_TYPES_LABELS
+
+const isVisitStatus = (value: string): value is VisitStatus => value in VISIT_STATUS_LABELS
+
 const formatChange = (field: string, oldValue?: string | null, newValue?: string | null): string => {
+  const normalizedField = normalizeText(field)?.toLowerCase() ?? ''
   const fieldName = formatFieldName(field)
   const previousValue = normalizeText(oldValue)
   const updatedValue = normalizeText(newValue)
-  const semantics = FIELD_SEMANTICS[normalizeText(field)?.toLowerCase() ?? '']
+  const semantics = FIELD_SEMANTICS[normalizedField]
 
-  if (previousValue && updatedValue) return `${fieldName} changed from ${previousValue} to ${updatedValue}`
-  if (semantics === 'added' && updatedValue) return fieldName
-  if (updatedValue) return `${fieldName} set to ${updatedValue}`
-  if (semantics === 'removed' && previousValue) return fieldName
-  if (previousValue) return `${fieldName} removed`
+  if (updatedValue) {
+    if (previousValue) {
+      const normalizedPreviousValue = previousValue.toUpperCase()
+      const normalizedUpdatedValue = updatedValue.toUpperCase()
+      if (isVisitType(normalizedPreviousValue) && isVisitType(normalizedUpdatedValue)) {
+        return `${fieldName} changed from ${VISIT_TYPES_LABELS[normalizedPreviousValue]} to ${VISIT_TYPES_LABELS[normalizedUpdatedValue]}`
+      }
+      if (isVisitStatus(normalizedPreviousValue) && isVisitStatus(normalizedUpdatedValue)) {
+        return `${fieldName} changed from ${VISIT_STATUS_LABELS[normalizedPreviousValue]} to ${VISIT_STATUS_LABELS[normalizedUpdatedValue]}`
+      }
+      return `${fieldName} changed from ${previousValue} to ${updatedValue}`
+    }
+
+    return semantics === 'added' ? fieldName : `${fieldName} set to ${updatedValue}`
+  }
+
+  if (previousValue) {
+    return semantics === 'removed' ? fieldName : `${fieldName} removed`
+  }
+
   return fieldName
 }
 
 const toTimelineItem = (event: AuditedEvent): TimelineItemWithSort => {
   const timestamp = getTimestamp(event.eventDateTime)
 
+  const removeIgnoredFields = (change: { field: string }) => {
+    const normalizedField = normalizeText(change.field)?.toLowerCase()
+    return !IGNORED_FIELDS.includes(normalizedField ?? '')
+  }
+
   return {
     label: {
       text: withFallback(normalizeText(event.eventSummary), DEFAULT_ACTIVITY_LABEL),
     },
     text: (event.eventChanges ?? [])
+      .filter(removeIgnoredFields)
       .map(change => formatChange(change.field, change.oldValue, change.newValue))
       .join('\n'),
     datetime: {
