@@ -132,8 +132,8 @@ describe('OfficialVisitHistoryHandler', () => {
           expect($(description).text()).toContain('Reason: Email notification for created visit')
           expect($(description).text()).toContain('Visitor added')
           expect($(description).text()).toContain('Visitor updated changed from Joe Bloggs to Jane Bloggs')
-          expect($(description).text()).toContain('Visit Type changed from Video to Telephone')
-          expect($(description).text()).toContain('Start Time changed from 14:00 to 15:00')
+          expect($(description).text()).toContain('Visit type changed from Video to Telephone')
+          expect($(description).text()).toContain('Start time changed from 14:00 to 15:00')
           expect($(description).text()).toContain('Reason: Email notification for updated visit')
           expect($(description).text()).toContain('Status: Failed')
 

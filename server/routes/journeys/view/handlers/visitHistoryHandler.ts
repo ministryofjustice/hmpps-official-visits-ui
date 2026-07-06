@@ -4,7 +4,7 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import TelemetryService from '../../../../services/telemetryService'
 import { AuditedEvent, OfficialVisitNotifications } from '../../../../@types/officialVisitsApi/types'
-import { convertToTitleCase } from '../../../../utils/utils'
+import { convertToSentenceCase } from '../../../../utils/utils'
 import ManageUserService from '../../../../services/manageUsersService'
 import { HmppsUser } from '../../../../interfaces/hmppsUser'
 
@@ -84,10 +84,17 @@ const IGNORED_FIELDS = ['visit_slot']
 
 type VisitTypes = 'IN_PERSON' | 'TELEPHONE' | 'VIDEO' | 'UNKNOWN'
 
-const VISIT_TYPES_LABELS_LABELS: Record<VisitTypes, string> = {
+const VISIT_TYPES_LABELS: Record<VisitTypes, string> = {
   IN_PERSON: 'In person',
   TELEPHONE: 'Telephone',
   VIDEO: 'Video',
+  UNKNOWN: NOT_PROVIDED,
+}
+
+type VisitStatus = 'SCHEDULED' | 'CANCELLED' | 'UNKNOWN'
+const VISIT_STATUS_LABELS: Record<VisitStatus, string> = {
+  SCHEDULED: 'Scheduled',
+  CANCELLED: 'Cancelled',
   UNKNOWN: NOT_PROVIDED,
 }
 
@@ -123,12 +130,14 @@ const formatFieldName = (field: string): string => {
   const normalizedField = normalizeText(field)?.toLowerCase()
   if (!normalizedField) return DEFAULT_FIELD_LABEL
 
-  const fallbackLabel = convertToTitleCase(normalizedField.replace(/[_-]+/g, ' '))
+  const fallbackLabel = convertToSentenceCase(normalizedField.replace(/[_-]+/g, ' '))
 
   return FIELD_LABELS[normalizedField] ?? (fallbackLabel || DEFAULT_FIELD_LABEL)
 }
 
-const isVisitType = (value: string): value is VisitTypes => value in VISIT_TYPES_LABELS_LABELS
+const isVisitType = (value: string): value is VisitTypes => value in VISIT_TYPES_LABELS
+
+const isVisitStatus = (value: string): value is VisitStatus => value in VISIT_STATUS_LABELS
 
 const formatChange = (field: string, oldValue?: string | null, newValue?: string | null): string => {
   const normalizedField = normalizeText(field)?.toLowerCase() ?? ''
@@ -142,7 +151,10 @@ const formatChange = (field: string, oldValue?: string | null, newValue?: string
       const normalizedPreviousValue = previousValue.toUpperCase()
       const normalizedUpdatedValue = updatedValue.toUpperCase()
       if (isVisitType(normalizedPreviousValue) && isVisitType(normalizedUpdatedValue)) {
-        return `${fieldName} changed from ${VISIT_TYPES_LABELS_LABELS[normalizedPreviousValue]} to ${VISIT_TYPES_LABELS_LABELS[normalizedUpdatedValue]}`
+        return `${fieldName} changed from ${VISIT_TYPES_LABELS[normalizedPreviousValue]} to ${VISIT_TYPES_LABELS[normalizedUpdatedValue]}`
+      }
+      if (isVisitStatus(normalizedPreviousValue) && isVisitStatus(normalizedUpdatedValue)) {
+        return `${fieldName} changed from ${VISIT_STATUS_LABELS[normalizedPreviousValue]} to ${VISIT_STATUS_LABELS[normalizedUpdatedValue]}`
       }
       return `${fieldName} changed from ${previousValue} to ${updatedValue}`
     }
