@@ -7,6 +7,8 @@ import { AuditedEvent, OfficialVisitNotifications } from '../../../../@types/off
 import { convertToSentenceCase } from '../../../../utils/utils'
 import ManageUserService from '../../../../services/manageUsersService'
 import { HmppsUser } from '../../../../interfaces/hmppsUser'
+import PersonalRelationshipsService from '../../../../services/personalRelationshipsService'
+import PrisonerService from '../../../../services/prisonerService'
 
 type TimelineItem = {
   label: { text: string }
@@ -268,6 +270,8 @@ export default class OfficialVisitHistoryHandler implements PageHandler {
   public PAGE_NAME = Page.OFFICIAL_VISIT_HISTORY_PAGE
 
   constructor(
+    private readonly personalRelationshipsService: PersonalRelationshipsService,
+    private readonly prisonerService: PrisonerService,
     private readonly officialVisitsService: OfficialVisitsService,
     private readonly telemetryService: TelemetryService,
     private readonly manageUsersService: ManageUserService,
@@ -293,6 +297,18 @@ export default class OfficialVisitHistoryHandler implements PageHandler {
       this.officialVisitsService.getNotificationsByOfficialVisitId(visitId, user),
     ])
 
+    const [restrictions, prisoner] = await Promise.all([
+      this.personalRelationshipsService.getPrisonerRestrictions(
+        visit.prisonerVisited.prisonerNumber,
+        0,
+        10,
+        user,
+        true,
+        false,
+      ),
+      this.prisonerService.getPrisonerByPrisonerNumber(visit.prisonerVisited.prisonerNumber, user),
+    ])
+
     const notificationsWithCreators = await resolveNotificationCreators(notifications, this.manageUsersService, user)
 
     const history = buildHistoryTimeline(historyEvents, notificationsWithCreators)
@@ -304,7 +320,12 @@ export default class OfficialVisitHistoryHandler implements PageHandler {
     })
 
     return res.render('pages/view/history', {
-      prisoner: visit.prisonerVisited,
+      prisoner: {
+        ...prisoner,
+        restrictions: restrictions?.content || [],
+        alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
+        restrictionsCount: restrictions?.content?.length ?? 0,
+      },
       history,
       backUrl: `/view/visit/${ovId}`,
     })

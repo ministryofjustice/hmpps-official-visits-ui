@@ -352,6 +352,16 @@ test.describe('View official visits', () => {
     expect(page.url()).toBe('http://localhost:3007/view/visit/1/history')
     await expect(page.locator('.govuk-hint')).toHaveText('Manage existing official visits')
     await expect(page.locator('h1.govuk-heading-l')).toHaveText('Official visit')
+
+    await expect(page.locator('[data-qa="mini-profile-person-profile-link"]')).toHaveText('Doe, John')
+    await expect(page.locator('[data-qa="mini-profile-prisoner-number"]')).toHaveText(mockPrisoner.prisonerNumber)
+    await expect(page.locator('[data-qa="mini-profile-dob"]')).toHaveText('1 June 1989')
+    await expect(page.locator('[data-qa="mini-profile-cell-location"]')).toHaveText(mockPrisoner.cellLocation)
+    await expect(page.locator('[data-qa="mini-profile-prison-name"]')).toHaveText(mockPrisoner.prisonName)
+    await expect(page.locator('[data-qa="contact-A1111AA-alerts-restrictions"]')).toHaveText(
+      /3\s*restrictions\s*and\s*0\s*alerts/,
+    )
+
     await expect(page.locator('.moj-timeline__title').first()).toHaveText('Email notification sent')
     await expect(page.locator('.moj-timeline__title').nth(1)).toHaveText('Visit updated')
     await expect(page.locator('.moj-timeline__title').nth(2)).toHaveText('Email notification failed')
