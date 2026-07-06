@@ -4,21 +4,35 @@ import * as cheerio from 'cheerio'
 
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { appWithAllRoutes, user } from '../../../testutils/appSetup'
-import { mockUser, mockVisitByIdVisit } from '../../../../testutils/mocks'
+import { mockPrisoner, mockPrisonerRestrictions, mockUser, mockVisitByIdVisit } from '../../../../testutils/mocks'
 import { OfficialVisitNotifications } from '../../../../@types/officialVisitsApi/types'
 import ManageUserService from '../../../../services/manageUsersService'
+import PrisonerService from '../../../../services/prisonerService'
+import PersonalRelationshipsService from '../../../../services/personalRelationshipsService'
+import { Prisoner } from '../../../../@types/prisonerSearchApi/types'
+import { getByDataQa, getPageHeader } from '../../../testutils/cheerio'
+import { convertToTitleCase } from '../../../../utils/utils'
 
 jest.mock('../../../../services/officialVisitsService')
 jest.mock('../../../../services/manageUsersService')
+jest.mock('../../../../services/prisonerService')
+jest.mock('../../../../services/personalRelationshipsService')
 
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
 const manageUsersService = new ManageUserService(null) as jest.Mocked<ManageUserService>
+const prisonerService = new PrisonerService(null) as jest.Mocked<PrisonerService>
+const personalRelationshipsService = new PersonalRelationshipsService(null) as jest.Mocked<PersonalRelationshipsService>
 
 let app: Express
 
 const appSetup = () => {
   app = appWithAllRoutes({
-    services: { officialVisitsService, manageUsersService },
+    services: {
+      personalRelationshipsService,
+      prisonerService,
+      officialVisitsService,
+      manageUsersService,
+    },
     userSupplier: () => user,
   })
 }
@@ -57,6 +71,11 @@ beforeEach(() => {
           oldValue: '14:00',
           newValue: '15:00',
         },
+        {
+          field: 'visit_type',
+          oldValue: 'VIDEO',
+          newValue: 'TELEPHONE',
+        },
       ],
       eventDateTime: '2026-10-25T14:30:00.000000',
       eventUsername: 'JBLOGGS',
@@ -64,6 +83,8 @@ beforeEach(() => {
       significantChange: true,
     },
   ])
+  personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
+  prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
 })
 
 afterEach(() => {
@@ -109,8 +130,19 @@ describe('OfficialVisitHistoryHandler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text().trim()).toBe('Manage existing official visits')
-          expect($('h1.govuk-heading-l').text().trim()).toBe('Official visit')
+          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect(getPageHeader($)).toEqual('Official visit')
+
+          expect(getByDataQa($, 'mini-profile-person-profile-link').text().trim()).toEqual(
+            convertToTitleCase(`${mockPrisoner.lastName}, ${mockPrisoner.firstName}`),
+          )
+          expect(getByDataQa($, 'mini-profile-prisoner-number').text().trim()).toEqual(mockPrisoner.prisonerNumber)
+          expect(getByDataQa($, 'mini-profile-dob').text().trim()).toEqual('1 June 1989')
+          expect(getByDataQa($, 'mini-profile-cell-location').text().trim()).toEqual(mockPrisoner.cellLocation)
+          expect(getByDataQa($, 'mini-profile-prison-name').text().trim()).toEqual(mockPrisoner.prisonName)
+          expect(getByDataQa($, 'contact-A1337AA-alerts-restrictions').text().replace(/\s+/g, '')).toEqual(
+            '3restrictionsand0alerts',
+          )
           const title = '.moj-timeline__title'
           expect($(title).eq(0).text().trim()).toBe('Email notification sent')
           expect($(title).eq(1).text().trim()).toBe('Visit updated')
@@ -127,7 +159,8 @@ describe('OfficialVisitHistoryHandler', () => {
           expect($(description).text()).toContain('Reason: Email notification for created visit')
           expect($(description).text()).toContain('Visitor added')
           expect($(description).text()).toContain('Visitor updated changed from Joe Bloggs to Jane Bloggs')
-          expect($(description).text()).toContain('Start Time changed from 14:00 to 15:00')
+          expect($(description).text()).toContain('Visit type changed from Video to Telephone')
+          expect($(description).text()).toContain('Start time changed from 14:00 to 15:00')
           expect($(description).text()).toContain('Reason: Email notification for updated visit')
           expect($(description).text()).toContain('Status: Failed')
 
@@ -200,7 +233,7 @@ describe('OfficialVisitHistoryHandler', () => {
           expect(descriptions.join(' ')).toContain('Reason: Not provided')
           expect(descriptions.join(' ')).toContain('Status: Failed')
           expect(descriptions.join(' ')).toContain('Visitor removed')
-          expect(descriptions.join(' ')).toContain('Visit Slot changed from 11733 to 11679')
+          expect(descriptions.join(' ')).not.toContain('Visit Slot changed from 11733 to 11679')
           expect(descriptions.join(' ')).toContain('Field')
         })
     })
