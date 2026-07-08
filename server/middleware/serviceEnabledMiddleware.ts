@@ -6,7 +6,7 @@ export default function serviceEnabledMiddleware(): RequestHandler {
     if (!prisonEnabled(res.locals.user.activeCaseLoadId)) {
       return res.render('pages/notEnabled', {
         user: res.locals.user,
-        serviceName: 'Official Visits',
+        serviceName: 'Official visits',
         prisonName: res.locals.user.activeCaseLoad.description.match(/^([^(]*)/)[1].trim(),
       })
     }

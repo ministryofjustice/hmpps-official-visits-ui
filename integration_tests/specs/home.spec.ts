@@ -12,15 +12,16 @@ test.describe('Official visits homepage', () => {
     await componentsApi.stubComponents()
     await prisonApi.stubGetPrisonerImage()
   })
-  test('should show only view card for DEFAULT role users', async ({ page }) => {
+  test('should show no cards for DEFAULT role users', async ({ page }) => {
     await login(page, { name: 'AUser', roles: [`ROLE_${AuthorisedRoles.DEFAULT}`], active: true, authSource: 'nomis' })
     await page.goto(`/`)
     await HomePage.verifyOnPage(page)
 
-    expect(page.getByRole('link', { name: 'View or cancel existing' })).toBeVisible()
+    expect(page.getByRole('link', { name: 'View official visits', exact: true })).not.toBeVisible()
+    expect(page.getByRole('link', { name: 'Manage official visits' })).not.toBeVisible()
     expect(page.getByRole('link', { name: 'Book an official visit' })).not.toBeVisible()
-    expect(page.getByRole('link', { name: 'Administer days, slots and' })).not.toBeVisible()
-    expect(page.getByRole('link', { name: 'View the status of official visit emails' })).not.toBeVisible()
+    expect(page.getByRole('link', { name: 'Official visiting schedule' })).not.toBeVisible()
+    expect(page.getByRole('link', { name: 'View official visits emails' })).not.toBeVisible()
   })
 
   test('should show view visits card for VIEW role', async ({ page }) => {
@@ -33,13 +34,14 @@ test.describe('Official visits homepage', () => {
     await page.goto(`/`)
     await HomePage.verifyOnPage(page)
 
-    expect(page.getByRole('link', { name: 'View or cancel existing' })).toBeVisible()
+    expect(page.getByRole('link', { name: 'View official visits', exact: true })).toBeVisible()
+    expect(page.getByRole('link', { name: 'Manage official visits' })).not.toBeVisible()
     expect(page.getByRole('link', { name: 'Book an official visit' })).not.toBeVisible()
-    expect(page.getByRole('link', { name: 'Administer days, slots and' })).not.toBeVisible()
-    expect(page.getByRole('link', { name: 'View the status of official visit emails' })).not.toBeVisible()
+    expect(page.getByRole('link', { name: 'Official visiting schedule' })).not.toBeVisible()
+    expect(page.getByRole('link', { name: 'View official visits emails' })).not.toBeVisible()
   })
 
-  test('should show view and book visit cards for MANAGE role', async ({ page }) => {
+  test('should show book, manage and emails cards for MANAGE role', async ({ page }) => {
     await login(page, {
       name: 'AUser',
       roles: [`ROLE_${AuthorisedRoles.DEFAULT}`, `ROLE_${AuthorisedRoles.MANAGE}`],
@@ -49,13 +51,14 @@ test.describe('Official visits homepage', () => {
     await page.goto(`/`)
     await HomePage.verifyOnPage(page)
 
-    expect(page.getByRole('link', { name: 'View or cancel existing' })).toBeVisible()
     expect(page.getByRole('link', { name: 'Book an official visit' })).toBeVisible()
-    expect(page.getByRole('link', { name: 'Administer days, slots and' })).not.toBeVisible()
-    expect(page.getByRole('link', { name: 'View the status of official visit emails' })).toBeVisible()
+    expect(page.getByRole('link', { name: 'Manage official visits' })).toBeVisible()
+    expect(page.getByRole('link', { name: 'View official visits emails' })).toBeVisible()
+    expect(page.getByRole('link', { name: 'View official visits', exact: true })).not.toBeVisible()
+    expect(page.getByRole('link', { name: 'Official visiting schedule' })).not.toBeVisible()
   })
 
-  test('should show view and admin cards for ADMIN role', async ({ page }) => {
+  test('should show schedule card for ADMIN role', async ({ page }) => {
     await login(page, {
       name: 'AUser',
       roles: [`ROLE_${AuthorisedRoles.DEFAULT}`, `ROLE_${AuthorisedRoles.ADMIN}`],
@@ -65,9 +68,9 @@ test.describe('Official visits homepage', () => {
     await page.goto(`/`)
     await HomePage.verifyOnPage(page)
 
-    expect(page.getByRole('link', { name: 'View or cancel existing' })).toBeVisible()
+    expect(page.getByRole('link', { name: 'Official visiting schedule' })).toBeVisible()
     expect(page.getByRole('link', { name: 'Book an official visit' })).not.toBeVisible()
-    expect(page.getByRole('link', { name: 'Administer days, slots and' })).toBeVisible()
-    expect(page.getByRole('link', { name: 'View the status of official visit emails' })).not.toBeVisible()
+    expect(page.getByRole('link', { name: 'Manage official visits' })).not.toBeVisible()
+    expect(page.getByRole('link', { name: 'View official visits emails' })).not.toBeVisible()
   })
 })

@@ -47,10 +47,10 @@ afterEach(() => {
 
 describe('GET /home', () => {
   it.each([
-    [AuthorisedRoles.DEFAULT, ['view-list']],
-    [AuthorisedRoles.VIEW, ['view-list']],
-    [AuthorisedRoles.MANAGE, ['view-list', 'sent-emails', 'create']],
-    [AuthorisedRoles.ADMIN, ['view-list', 'admin']],
+    [AuthorisedRoles.DEFAULT, []],
+    [AuthorisedRoles.VIEW, ['view']],
+    [AuthorisedRoles.MANAGE, ['create', 'manage', 'sent-emails']],
+    [AuthorisedRoles.ADMIN, ['schedule']],
   ])(`should render home page - %s (%s) view`, (role, visibleCards) => {
     auditService.logPageView.mockResolvedValue(null)
     config.featureToggles.emailNotificationsPrisons = 'MDI'
@@ -71,11 +71,12 @@ describe('GET /home', () => {
       .expect(res => {
         const $ = cheerio.load(res.text)
         const heading = getPageHeader($)
-        expect(heading).toContain('Official Visits')
+        expect(heading).toContain('Official visits')
 
         const bookVisitCard = getByDataQa($, 'book-official-visit-card')
-        const viewOrCancelVisitCard = getByDataQa($, 'view-or-cancel-official-visits-card')
-        const manageTimeSlotsCard = getByDataQa($, 'manage-time-slots-card')
+        const manageVisitsCard = getByDataQa($, 'manage-official-visits-card')
+        const viewVisitsCard = getByDataQa($, 'view-official-visits-card')
+        const scheduleCard = getByDataQa($, 'official-visiting-schedule-card')
         const sentEmailsCard = getByDataQa($, 'view-sent-emails-card')
 
         // Check card contents individually
@@ -85,22 +86,26 @@ describe('GET /home', () => {
           expect(bookVisitCard.find('.card__link').text()).toBe('')
         }
 
-        if (visibleCards.includes('view-list')) {
-          expect(viewOrCancelVisitCard.find('.card__link').text()).toContain('View or cancel existing official visits')
+        if (visibleCards.includes('manage')) {
+          expect(manageVisitsCard.find('.card__link').text()).toContain('Manage official visits')
         } else {
-          expect(viewOrCancelVisitCard.find('.card__link').text()).toBe('')
+          expect(manageVisitsCard.find('.card__link').text()).toBe('')
         }
 
-        if (visibleCards.includes('admin')) {
-          expect(manageTimeSlotsCard.find('.card__link').text()).toContain(
-            'Administer days, slots and locations for official visits',
-          )
+        if (visibleCards.includes('view')) {
+          expect(viewVisitsCard.find('.card__link').text()).toContain('View official visits')
         } else {
-          expect(manageTimeSlotsCard.find('.card__link').text()).toBe('')
+          expect(viewVisitsCard.find('.card__link').text()).toBe('')
+        }
+
+        if (visibleCards.includes('schedule')) {
+          expect(scheduleCard.find('.card__link').text()).toContain('Official visiting schedule')
+        } else {
+          expect(scheduleCard.find('.card__link').text()).toBe('')
         }
 
         if (visibleCards.includes('sent-emails')) {
-          expect(sentEmailsCard.find('.card__link').text()).toContain('View the status of official visit emails')
+          expect(sentEmailsCard.find('.card__link').text()).toContain('View official visits emails')
         } else {
           expect(sentEmailsCard.find('.card__link').text()).toBe('')
         }
