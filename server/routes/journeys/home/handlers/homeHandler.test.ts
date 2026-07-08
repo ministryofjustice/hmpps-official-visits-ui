@@ -71,7 +71,7 @@ describe('GET /home', () => {
       .expect(res => {
         const $ = cheerio.load(res.text)
         const heading = getPageHeader($)
-        expect(heading).toContain('Official Visits')
+        expect(heading).toContain('Official visits')
 
         const bookVisitCard = getByDataQa($, 'book-official-visit-card')
         const manageVisitsCard = getByDataQa($, 'manage-official-visits-card')

@@ -52,7 +52,7 @@ describe('serviceEnabledMiddleware', () => {
     expect(next).not.toHaveBeenCalled()
     expect(res.render).toHaveBeenCalledWith('pages/notEnabled', {
       user: res.locals.user,
-      serviceName: 'Official Visits',
+      serviceName: 'Official visits',
       prisonName: 'Leeds',
     })
   })
@@ -67,7 +67,7 @@ describe('serviceEnabledMiddleware', () => {
 
     expect(res.render).toHaveBeenCalledWith('pages/notEnabled', {
       user: res.locals.user,
-      serviceName: 'Official Visits',
+      serviceName: 'Official visits',
       prisonName: 'Some Prison',
     })
   })
@@ -79,7 +79,7 @@ describe('serviceEnabledMiddleware', () => {
 
     expect(res.render).toHaveBeenCalledWith('pages/notEnabled', {
       user: res.locals.user,
-      serviceName: 'Official Visits',
+      serviceName: 'Official visits',
       prisonName: 'Simple Prison Name',
     })
   })
