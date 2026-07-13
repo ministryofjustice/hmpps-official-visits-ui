@@ -224,7 +224,7 @@
         } if mode == 'amend'
       },
       {
-        key: { text: "Prisoner notes" },
+        key: { text: "Notes for prisoner" },
         value: { text: visit.prisonerNotes or 'None' },
         actions: {
           items: [
@@ -232,13 +232,13 @@
               href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/comments?change=true",
               text: "Change",
               classes: "govuk-link--no-visited-state",
-              visuallyHiddenText: "prisoner notes"
+              visuallyHiddenText: "notes for prisoner"
             }
           ]
         } if mode == 'amend'
       },
       {
-        key: { text: "Staff notes" },
+        key: { text: "Notes for staff" },
         value: { text: visit.staffNotes or 'None' },
         actions: {
           items: [
@@ -246,7 +246,7 @@
               href: "/manage/amend/" + visit.officialVisitId + "/" + journeyId + "/comments?change=true",
               text: "Change",
               classes: "govuk-link--no-visited-state",
-              visuallyHiddenText: "staff notes"
+              visuallyHiddenText: "notes for staff"
             }
           ]
         } if mode == 'amend'

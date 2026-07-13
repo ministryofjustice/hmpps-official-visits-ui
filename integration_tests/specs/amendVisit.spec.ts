@@ -200,8 +200,8 @@ test.describe('Amend official visits', () => {
     await expect(summaryValue(page, 'Visit reference number')).toHaveText('1')
     await expect(summaryValue(page, 'Location')).toHaveText('First Location')
     await expect(summaryValue(page, 'Visit type')).toHaveText('Video')
-    await expect(summaryValue(page, 'Prisoner notes')).toHaveText('prisoner notes')
-    await expect(summaryValue(page, 'Staff notes')).toHaveText('staff notes')
+    await expect(summaryValue(page, 'Notes for prisoner')).toHaveText('prisoner notes')
+    await expect(summaryValue(page, 'Notes for staff')).toHaveText('staff notes')
     await expect(summaryValue(page, 'Created by')).toHaveText('Test User (Monday, 19 January 2026)')
     await expect(summaryValue(page, 'Last modified')).toHaveText('Test User (Monday, 19 January 2026)')
     expect(summaryValue(page, 'Visitor concerns', 'visit level visitor concern notes')).toBeTruthy()
@@ -239,8 +239,8 @@ test.describe('Amend official visits', () => {
     await expect(page.getByRole('link', { name: 'Change   time of visit (Visit' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Change   location of visit (Visit' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Change   visit type (Visit' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Change   prisoner notes (' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Change   staff notes (' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Change   notes for prisoner (' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Change   notes for staff (' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Change   whether assistance' }).first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'Change   notes about the assistance required' }).first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'Change   whether equipment is' }).first()).toBeVisible()
@@ -254,7 +254,7 @@ test.describe('Amend official visits', () => {
     await page.goto(`/manage/amend/1/${journeyId}`)
 
     await AmendVisitPage.verifyOnPage(page)
-    await page.getByRole('link', { name: 'Change   prisoner notes (' }).click()
+    await page.getByRole('link', { name: 'Change   notes for prisoner (' }).click()
 
     // Amend specific page changes
     expect(page.locator('h1', { hasText: `Add extra information (optional)` })).toBeVisible()
@@ -262,22 +262,22 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Populated with existing values
-    expect(await page.getByRole('textbox', { name: 'Staff notes' }).textContent()).toEqual('staff notes')
-    expect(await page.getByRole('textbox', { name: 'Prisoner notes' }).textContent()).toEqual('prisoner notes')
+    expect(await page.getByRole('textbox', { name: 'Notes for staff' }).textContent()).toEqual('staff notes')
+    expect(await page.getByRole('textbox', { name: 'Notes for prisoner' }).textContent()).toEqual('prisoner notes')
 
     // Back should go back to amend overview page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
-    await page.getByRole('link', { name: 'Change   prisoner notes (' }).click()
+    await page.getByRole('link', { name: 'Change   notes for prisoner (' }).click()
 
     // Cancel should go back to the amend overview page
     await page.getByRole('link', { name: 'Cancel and return to visit' }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
-    await page.getByRole('link', { name: 'Change   prisoner notes (' }).click()
+    await page.getByRole('link', { name: 'Change   notes for prisoner (' }).click()
 
     // Can Save new values
-    await page.getByRole('textbox', { name: 'Staff notes' }).fill('amended staff notes')
-    await page.getByRole('textbox', { name: 'Prisoner notes' }).fill('amended prisoner notes')
+    await page.getByRole('textbox', { name: 'Notes for staff' }).fill('amended staff notes')
+    await page.getByRole('textbox', { name: 'Notes for prisoner' }).fill('amended prisoner notes')
 
     await page.getByRole('button', { name: 'Save' }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}`)
