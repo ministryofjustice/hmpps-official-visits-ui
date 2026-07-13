@@ -70,6 +70,12 @@ describe('Prisoner search results handler', () => {
           expect(getPageHeader($)).toEqual('Search results  (Page 1 of 1)')
 
           expect($('h3.govuk-heading-m').text().trim()).toBe('There is 1 matching person')
+
+          const headers = $('.govuk-table__header')
+            .map((_, el) => $(el).text().trim())
+            .get()
+          expect(headers).toEqual(['Name', 'Prison number', 'Date of birth', 'Location', 'Action'])
+
           expect(getGovukTableCell($, 1, 1).find('a').text().trim()).toBe('Doe, John')
           expect(getGovukTableCell($, 1, 2).text().trim()).toBe('A1234AA')
           expect(getGovukTableCell($, 1, 3).text().trim()).toBe('1 June 1989')

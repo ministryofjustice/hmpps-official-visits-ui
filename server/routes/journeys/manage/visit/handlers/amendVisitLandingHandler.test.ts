@@ -151,11 +151,13 @@ describe('Search for an official visit', () => {
           expect(getValueByKey($, 'Visit type')).toEqual('Video')
           expect(getActionsByKey($, 'Visit type', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/visit-type/)
 
-          expect(getValueByKey($, 'Prisoner notes')).toEqual('prisoner notes')
-          expect(getActionsByKey($, 'Prisoner notes', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/comments/)
+          expect(getValueByKey($, 'Notes for prisoner')).toEqual('prisoner notes')
+          expect(getActionsByKey($, 'Notes for prisoner', 0, 0).attr('href')).toMatch(
+            /\/manage\/amend\/1(.+)\/comments/,
+          )
 
-          expect(getValueByKey($, 'Staff notes')).toEqual('staff notes')
-          expect(getActionsByKey($, 'Staff notes', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/comments/)
+          expect(getValueByKey($, 'Notes for staff')).toEqual('staff notes')
+          expect(getActionsByKey($, 'Notes for staff', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/comments/)
 
           expect(getValueByKey($, 'Created by')).toEqual('Test User (Monday, 19 January 2026)')
           expect(getValueByKey($, 'Last modified')).toEqual('Test User (Monday, 19 January 2026)')
@@ -280,10 +282,12 @@ describe('Search for an official visit', () => {
           expect(getActionsByKey($, 'Location', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/time-slot/)
           expect(getValueByKey($, 'Visit type')).toEqual('Video')
           expect(getActionsByKey($, 'Visit type', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/visit-type/)
-          expect(getValueByKey($, 'Prisoner notes')).toEqual('None')
-          expect(getActionsByKey($, 'Prisoner notes', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/comments/)
-          expect(getValueByKey($, 'Staff notes')).toEqual('None')
-          expect(getActionsByKey($, 'Staff notes', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/comments/)
+          expect(getValueByKey($, 'Notes for prisoner')).toEqual('None')
+          expect(getActionsByKey($, 'Notes for prisoner', 0, 0).attr('href')).toMatch(
+            /\/manage\/amend\/1(.+)\/comments/,
+          )
+          expect(getValueByKey($, 'Notes for staff')).toEqual('None')
+          expect(getActionsByKey($, 'Notes for staff', 0, 0).attr('href')).toMatch(/\/manage\/amend\/1(.+)\/comments/)
           expect(getValueByKey($, 'Created by')).toEqual('Test User (Monday, 19 January 2026)')
           expect(getValueByKey($, 'Last modified')).toEqual('Test User (Monday, 19 January 2026)')
           // Visitor concerns is the only field that shouldn't show when there is no data

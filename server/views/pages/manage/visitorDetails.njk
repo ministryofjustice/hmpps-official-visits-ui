@@ -18,8 +18,7 @@
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">{{'Book' if mode == 'create' else 'Amend'}} an official visit</span>
       <h1 class="govuk-heading-l">{{pageTitle}} (optional)</h1>
-      <p>Add any important information about assistance needed for the official visit.</p>
-      <p>Wing staff will be notified there is assistance needed for the visitor on the printed unlock list, but for confidentiality the full text will only be visible when you view the details of the official visit in this service.</p>
+      <p>Add any important information about visitors. Do not include equipment here, you can add this on the next page.</p>
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 

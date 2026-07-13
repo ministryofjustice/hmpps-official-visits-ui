@@ -125,7 +125,7 @@ describe('comments handler', () => {
             {
               fieldId: 'prisonerNotes',
               href: '#prisonerNotes',
-              text: 'Prisoner notes must be 240 characters or less',
+              text: 'Notes for prisoner must be 240 characters or less',
             },
           ]),
         )
@@ -140,7 +140,7 @@ describe('comments handler', () => {
             {
               fieldId: 'staffNotes',
               href: '#staffNotes',
-              text: 'Staff notes must be 240 characters or less',
+              text: 'Notes for staff must be 240 characters or less',
             },
           ]),
         )

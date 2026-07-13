@@ -174,8 +174,8 @@ describe('check your answers handler', () => {
           expect(getValueByKey($, 'Date')).toEqual('Monday, 26 January 2026')
           expect(getValueByKey($, 'Time')).toEqual('13:30 to 16:00 (2 hours 30 minutes)')
           expect(getValueByKey($, 'Location')).toEqual('Official Visits')
-          expect(getValueByKey($, 'Prisoner notes')).toEqual('prisoner notes')
-          expect(getValueByKey($, 'Staff notes')).toEqual('staff notes')
+          expect(getValueByKey($, 'Notes for prisoner')).toEqual('prisoner notes')
+          expect(getValueByKey($, 'Notes for staff')).toEqual('staff notes')
 
           expect($('h3').text()).toEqual('Peter Malicious (Solicitor)')
 
