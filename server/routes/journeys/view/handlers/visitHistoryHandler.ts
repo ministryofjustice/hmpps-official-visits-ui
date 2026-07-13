@@ -39,12 +39,7 @@ const FIELD_LABELS: Record<string, string> = {
 type ChangeSemantics = 'added' | 'removed' | 'updated'
 
 type ApiNotificationStatus =
-  | 'PENDING'
-  | 'SENT'
-  | 'PERMANENT_FAILURE'
-  | 'TEMPORARY_FAILURE'
-  | 'TECHNICAL_FAILURE'
-  | 'UNKNOWN'
+  'PENDING' | 'SENT' | 'PERMANENT_FAILURE' | 'TEMPORARY_FAILURE' | 'TECHNICAL_FAILURE' | 'UNKNOWN'
 
 type UserNotificationStatus = 'PENDING' | 'SENT' | 'FAILURE'
 
@@ -64,10 +59,7 @@ const NOTIFICATION_STATUS_DISPLAY: Record<UserNotificationStatus, { label: strin
 }
 
 type NotificationReasonTypes =
-  | 'OFFICIAL_VISIT_CANCELLED'
-  | 'OFFICIAL_VISIT_CREATED'
-  | 'OFFICIAL_VISIT_UPDATED'
-  | 'UNKNOWN'
+  'OFFICIAL_VISIT_CANCELLED' | 'OFFICIAL_VISIT_CREATED' | 'OFFICIAL_VISIT_UPDATED' | 'UNKNOWN'
 
 const NOTIFICATION_REASON_LABELS: Record<NotificationReasonTypes, string> = {
   OFFICIAL_VISIT_CANCELLED: 'Email notification for cancelled visit',
