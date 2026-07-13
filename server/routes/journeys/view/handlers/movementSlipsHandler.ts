@@ -22,7 +22,6 @@ export default class MovementSlipsHandler implements PageHandler {
       return res.redirect('/view/list')
     }
 
-    const statusOpts = await this.officialVisitsService.getReferenceData(res, 'VIS_STATUS')
     const typeOpts = await this.officialVisitsService.getReferenceData(res, 'VIS_TYPE')
 
     const slots = await this.officialVisitsService.getAvailableSlots(
@@ -47,14 +46,12 @@ export default class MovementSlipsHandler implements PageHandler {
       prisoner?: string
       startDate: string
       endDate: string
-      status?: VisitStatusType[]
       type?: VisitType[]
       location?: string[]
     } = {
       ...(req.body.prisoner ? { prisoner: req.body.prisoner as string } : {}),
       startDate: (req.body.startDate as string) || new Date().toISOString().substring(0, 10),
       endDate: (req.body.endDate as string) || new Date(addDays(new Date(), 7)).toISOString().substring(0, 10),
-      ...validateRefDataItems<VisitStatusType>('status', req.body.status as string, statusOpts),
       ...validateRefDataItems<VisitType>('type', req.body.type as string, typeOpts),
       ...validateRefDataItems('location', req.body.location as string, locations),
     }
@@ -63,7 +60,7 @@ export default class MovementSlipsHandler implements PageHandler {
       startDate: filterParams.startDate,
       endDate: filterParams.endDate,
       ...(filterParams.prisoner ? { searchTerm: filterParams.prisoner } : {}),
-      ...(filterParams.status ? { visitStatuses: filterParams.status } : {}),
+      visitStatuses: ['SCHEDULED'] as VisitStatusType[],
       ...(filterParams.type ? { visitTypes: filterParams.type } : {}),
       ...(filterParams.location ? { locationIds: filterParams.location } : {}),
     }
