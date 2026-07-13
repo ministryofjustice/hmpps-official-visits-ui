@@ -350,7 +350,7 @@ test.describe('View official visits', () => {
     await page.getByRole('button', { name: 'View all changes made for' }).click()
 
     expect(page.url()).toBe('http://localhost:3007/view/visit/1/history')
-    await expect(page.locator('.govuk-hint')).toHaveText('Manage existing official visits')
+    await expect(page.locator('.govuk-hint')).toHaveText('Manage official visits')
     await expect(page.locator('h1.govuk-heading-l')).toHaveText('Official visit')
 
     await expect(page.locator('[data-qa="mini-profile-person-profile-link"]')).toHaveText('Doe, John')

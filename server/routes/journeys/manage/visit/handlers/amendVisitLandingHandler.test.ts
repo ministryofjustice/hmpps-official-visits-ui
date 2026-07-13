@@ -108,7 +108,7 @@ describe('Search for an official visit', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
           expect(getByDataQa($, 'mini-profile-person-profile-link').text().trim()).toEqual(
@@ -233,7 +233,7 @@ describe('Search for an official visit', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
           expect(getValueByKey($, 'Created by')).toEqual('Test User (Monday, 19 January 2026)')
@@ -269,7 +269,7 @@ describe('Search for an official visit', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
           expect(getValueByKey($, 'Date')).toEqual('Friday, 25 December 2099')

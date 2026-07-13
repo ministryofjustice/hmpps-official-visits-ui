@@ -20,10 +20,13 @@
           value: reason,
           fieldset: {
             legend: {
-              text: "Select cancellation reason for this visit",
+              text: "Select cancellation reason",
               isPageHeading: true,
               classes: "govuk-fieldset__legend--l"
             }
+          },
+          hint: {
+              text: "Select a reason from the list."
           },
           items: completionCodes | refDataToOptions
         }) }}
@@ -38,7 +41,7 @@
             classes: "govuk-label--m"
           },
           hint: {
-            text: "Add any additional information related to the cancellation of this visit."
+            text: "Add any additional information related to the cancellation of this visit"
           }
         }) }}
 

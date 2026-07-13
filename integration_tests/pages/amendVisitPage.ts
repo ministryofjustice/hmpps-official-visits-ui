@@ -19,7 +19,7 @@ export default class AmendVisitPage extends AbstractPage {
     const amendVisitPage = new AmendVisitPage(page)
     await expect(amendVisitPage.header).toBeVisible()
 
-    await expect(page.locator('.govuk-hint')).toHaveText('Manage existing official visits')
+    await expect(page.locator('.govuk-hint')).toHaveText('Manage official visits')
 
     await expect(amendVisitPage.cancelButton).toBeVisible()
     expect(await page.locator('a', { hasText: 'Change' }).count()).toBeGreaterThan(6)

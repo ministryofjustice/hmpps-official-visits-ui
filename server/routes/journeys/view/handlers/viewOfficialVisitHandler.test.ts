@@ -139,7 +139,7 @@ describe('View an official visit', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
           expect(res.text).toContain('ACTIVE RESTRICTION IN PLACE')
@@ -294,7 +294,7 @@ describe('View an official visit', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
           expect(getValueByKey($, 'Created by')).toEqual('Test User (Monday, 19 January 2026)')
@@ -330,7 +330,7 @@ describe('View an official visit', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
           expect(getValueByKey($, 'Date')).toEqual('Friday, 25 December 2099')
@@ -369,10 +369,10 @@ describe('View an official visit', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
-          expect($('.govuk-button:contains("Amend visit")').attr('href')).toEqual(`/manage/amend/1?backTo=${b64}`)
+          expect($('.govuk-button:contains("Update visit")').attr('href')).toEqual(`/manage/amend/1?backTo=${b64}`)
           expect($('.govuk-link:contains("Cancel visit")').attr('href')).toEqual(`/view/visit/1/cancel?backTo=${b64}`)
           expect($('.govuk-link:contains("Complete visit")').attr('href')).toEqual(
             `/view/visit/1/complete?backTo=${b64}`,
@@ -395,7 +395,7 @@ describe('View an official visit', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
           expect(getValueByKey($, 'Visit status')).toEqual('Completed')
@@ -403,7 +403,7 @@ describe('View an official visit', () => {
           expect(getValueByKey($, 'Completion notes')).toEqual('Visit completed')
           expect(getValueByKey($, 'Completion reason')).toEqual('Normal completion')
           expect(getValueByKey($, 'Search type')).toEqual('Full search')
-          expect($('.govuk-button:contains("Amend visit")').length).toBe(0)
+          expect($('.govuk-button:contains("Update visit")').length).toBe(0)
           expect($('.govuk-button:contains("Cancel visit")').length).toBe(0)
           expect($('.govuk-button[href="/view/visit/1/movement-slip"]').length).toBe(0)
         })
@@ -423,12 +423,12 @@ describe('View an official visit', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
           expect(getValueByKey($, 'Visit status')).toEqual('Cancelled')
           expect(getValueByKey($, 'Cancellation notes')).toEqual('Cancelled for reasons')
-          expect($('.govuk-button:contains("Amend visit")').length).toBe(0)
+          expect($('.govuk-button:contains("Update visit")').length).toBe(0)
           expect($('.govuk-button:contains("Cancel visit")').length).toBe(0)
           expect(getValueByKey($, 'Completion reason')).toBeNull()
           expect(getValueByKey($, 'Search type')).toBeNull()
@@ -436,7 +436,7 @@ describe('View an official visit', () => {
         })
     })
 
-    it('should not display the Amend visit button when the visit date and start time are in the past', () => {
+    it('should not display the Update visit button when the visit date and start time are in the past', () => {
       officialVisitsService.getOfficialVisitById.mockResolvedValue({
         ...mockVisitByIdVisit,
         visitDate: '2020-01-01',
@@ -447,17 +447,17 @@ describe('View an official visit', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.govuk-button:contains("Amend visit")').length).toBe(0)
+          expect($('.govuk-button:contains("Update visit")').length).toBe(0)
         })
     })
 
-    it('should display the Amend visit button when the visit date and start time are in the future', () => {
+    it('should display the Update visit button when the visit date and start time are in the future', () => {
       return request(app)
         .get(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.govuk-button:contains("Amend visit")').length).toBe(1)
+          expect($('.govuk-button:contains("Update visit")').length).toBe(1)
         })
     })
 

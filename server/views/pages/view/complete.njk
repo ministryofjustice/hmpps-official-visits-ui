@@ -13,7 +13,7 @@
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Complete an official visit</span>
-      <h1 class="govuk-heading-l">Provide the visit outcome and attendance details</h1>
+      <h1 class="govuk-heading-l">Select completion reason and mark attendance</h1>
     </div>
   </div>
 
@@ -26,8 +26,7 @@
             id: "reason",
             name: "reason",
             label: {
-              text: "Select a completion reason from the list",
-              classes: "govuk-fieldset__legend--m"
+              text: "Select a reason from the list"
             },
             value: formResponses.reason if formResponses,
             items: completionCodes | refDataToOptions | addSelectValue('', 'Select a reason') | sort(false, false, 'value'),
@@ -102,7 +101,7 @@
             classes: "govuk-label--m"
           },
           hint: {
-            text: "Add any additional information related to the completion of this visit."
+            text: "Add any additional information related to the completion of this visit"
           }
         }) }}
 

@@ -149,7 +149,7 @@ test.describe('Complete official visits', () => {
     await CompleteVisitPage.verifyOnPage(page)
 
     // Label text
-    await expect(page.locator('label[for="reason"]')).toHaveText('Select a completion reason from the list')
+    await expect(page.locator('label[for="reason"]')).toHaveText('Select a reason from the list')
 
     // Reason <select> option values
     const optionValues = await page

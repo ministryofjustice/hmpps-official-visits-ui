@@ -63,13 +63,11 @@ describe('CompleteOfficialVisitHandler', () => {
 
           expect($('.govuk-hint').eq(0).text().trim()).toBe('Complete an official visit')
           expect($('.govuk-hint').eq(1).text().trim()).toBe(
-            'Add any additional information related to the completion of this visit.',
+            'Add any additional information related to the completion of this visit',
           )
-          expect($('h1.govuk-heading-l').text().trim()).toBe('Provide the visit outcome and attendance details')
+          expect($('h1.govuk-heading-l').text().trim()).toBe('Select completion reason and mark attendance')
 
-          expect($('label[for="reason"]').text().replace(/\s+/g, ' ').trim()).toBe(
-            'Select a completion reason from the list',
-          )
+          expect($('label[for="reason"]').text().replace(/\s+/g, ' ').trim()).toBe('Select a reason from the list')
 
           const optionValues = $('select[name="reason"] option')
             .map((_, el) => $(el).attr('value'))

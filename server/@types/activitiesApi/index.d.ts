@@ -8900,7 +8900,11 @@ export interface components {
        * @enum {string}
        */
       eventDescription?:
-        'ACTIVITY_SUSPENDED' | 'ACTIVITY_ENDED' | 'RELEASED' | 'PERMANENT_RELEASE' | 'TEMPORARY_RELEASE'
+        | 'ACTIVITY_SUSPENDED'
+        | 'ACTIVITY_ENDED'
+        | 'RELEASED'
+        | 'PERMANENT_RELEASE'
+        | 'TEMPORARY_RELEASE'
     }
     /** @description The result of an event review search */
     EventReviewSearchResults: {
