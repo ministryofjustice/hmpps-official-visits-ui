@@ -12,12 +12,12 @@ test.describe('Official visits homepage', () => {
     await componentsApi.stubComponents()
     await prisonApi.stubGetPrisonerImage()
   })
-  test('should show no cards for DEFAULT role users', async ({ page }) => {
+  test('should show only the view card for DEFAULT role users', async ({ page }) => {
     await login(page, { name: 'AUser', roles: [`ROLE_${AuthorisedRoles.DEFAULT}`], active: true, authSource: 'nomis' })
     await page.goto(`/`)
     await HomePage.verifyOnPage(page)
 
-    expect(page.getByRole('link', { name: 'View official visits', exact: true })).not.toBeVisible()
+    expect(page.getByRole('link', { name: 'View official visits', exact: true })).toBeVisible()
     expect(page.getByRole('link', { name: 'Manage official visits' })).not.toBeVisible()
     expect(page.getByRole('link', { name: 'Book an official visit' })).not.toBeVisible()
     expect(page.getByRole('link', { name: 'Official visiting schedule' })).not.toBeVisible()

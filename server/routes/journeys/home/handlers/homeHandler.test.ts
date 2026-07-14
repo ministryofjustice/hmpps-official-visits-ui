@@ -47,7 +47,7 @@ afterEach(() => {
 
 describe('GET /home', () => {
   it.each([
-    [AuthorisedRoles.DEFAULT, []],
+    [AuthorisedRoles.DEFAULT, ['view']],
     [AuthorisedRoles.VIEW, ['view']],
     [AuthorisedRoles.MANAGE, ['create', 'manage', 'sent-emails']],
     [AuthorisedRoles.ADMIN, ['schedule']],
