@@ -81,7 +81,7 @@ describe('Search for an official visit', () => {
           const $ = cheerio.load(res.text)
 
           expect($('.govuk-back-link').attr('href')).toEqual('/')
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Search for an official visit')
 
           expect(getTextById($, 'prisoner')).toEqual('')

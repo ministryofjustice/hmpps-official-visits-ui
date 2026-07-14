@@ -130,7 +130,7 @@ describe('OfficialVisitHistoryHandler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('.govuk-hint').text()).toEqual('Manage existing official visits')
+          expect($('.govuk-hint').text()).toEqual('Manage official visits')
           expect(getPageHeader($)).toEqual('Official visit')
 
           expect(getByDataQa($, 'mini-profile-person-profile-link').text().trim()).toEqual(

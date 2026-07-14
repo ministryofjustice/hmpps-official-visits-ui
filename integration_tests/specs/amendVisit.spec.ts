@@ -179,7 +179,7 @@ test.describe('Amend official visits', () => {
     await NotAuthorisedPage.verifyOnPage(page)
   })
 
-  test('should display amend visit landing page', async ({ page }) => {
+  test('should display Update visit landing page', async ({ page }) => {
     await login(page)
     await page.goto(`/manage/amend/1/${journeyId}`)
 
@@ -702,7 +702,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
-    // Back should go back to amend visit overview page
+    // Back should go back to Update visit overview page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.goBack()
@@ -727,7 +727,7 @@ test.describe('Amend official visits', () => {
     expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
-    // Back should go back to amend visit overview page
+    // Back should go back to Update visit overview page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/`)
     await page.goBack()

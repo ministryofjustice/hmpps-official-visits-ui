@@ -53,10 +53,12 @@ describe('cancelVisitHandler', () => {
           const $ = cheerio.load(res.text)
 
           expect($('.govuk-hint').eq(0).text().trim()).toBe('Cancel an official visit')
-          expect($('.govuk-hint').eq(1).text().trim()).toBe(
-            'Add any additional information related to the cancellation of this visit.',
+          expect($('.govuk-hint').eq(1).text().trim()).toBe('Select a reason from the list.')
+
+          expect($('.govuk-hint').eq(2).text().trim()).toBe(
+            'Add any additional information related to the cancellation of this visit',
           )
-          expect($('h1').text().trim()).toBe('Select cancellation reason for this visit')
+          expect($('h1').text().trim()).toBe('Select cancellation reason')
 
           const optionValues = $('input[name="reason"]')
             .map((_, el) => $(el).attr('value'))

@@ -9,7 +9,7 @@ export default class CancelVisitPage extends AbstractPage {
   private constructor(page: Page) {
     super(page)
     this.caption = page.locator('span', { hasText: 'Cancel an official visit' })
-    this.header = page.locator('h1', { hasText: 'Select cancellation reason for this visit' })
+    this.header = page.locator('h1', { hasText: 'Select cancellation reason' })
   }
 
   static async verifyOnPage(page: Page): Promise<CancelVisitPage> {

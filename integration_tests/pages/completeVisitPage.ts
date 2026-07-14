@@ -8,7 +8,7 @@ export default class CompleteVisitPage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.header = page.locator('h1', { hasText: 'Provide the visit outcome and attendance details' })
+    this.header = page.locator('h1', { hasText: 'Select completion reason and mark attendance' })
     this.caption = page.locator('span', { hasText: 'Complete an official visit' })
   }
 

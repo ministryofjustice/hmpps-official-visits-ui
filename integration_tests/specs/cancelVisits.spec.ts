@@ -99,7 +99,7 @@ test.describe('Cancel an official visit', () => {
 
     // Assert we've returned to the visit page and see the success region
     expect(page.url()).toContain('http://localhost:3007/view/visit/1?backTo=')
-    await expect(page.getByRole('region', { name: 'success: Visit marked as' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'success: Visit cancelled' })).toBeVisible()
     await expect(page.getByText('You have cancelled this visit.')).toBeVisible()
     await expect(page.getByRole('link', { name: 'Return to search list' })).toBeVisible()
   })
