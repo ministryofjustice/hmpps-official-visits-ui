@@ -54,7 +54,7 @@
                 </div>
               {% endif %}
 
-              {% if user | hasPermission(PERMISSION.VIEW) and not (user | hasPermission(PERMISSION.MANAGE)) %}
+              {% if (user | hasPermission(PERMISSION.VIEW) or user | hasPermission(PERMISSION.DEFAULT)) and not (user | hasPermission(PERMISSION.MANAGE)) and not (user | hasPermission(PERMISSION.ADMIN)) %}
                 <div class="govuk-grid-column-one-third card-group__item">
                   {{ card({
                     "href": "/view/list",
