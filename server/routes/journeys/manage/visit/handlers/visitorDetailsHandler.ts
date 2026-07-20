@@ -86,7 +86,7 @@ const saveAmendedVisitors = async (req: Request, res: Response, officialVisitsSe
   const ovId = req.params.ovId as string
   const journeyId = req.params.journeyId as string
   await officialVisitsService.updateVisitors(officialVisit.prisonCode, ovId, { officialVisitors }, res.locals.user)
-  req.flash('updateVerb', 'amended')
+  req.flash('updateVerb', 'updated')
   return res.redirect(`/manage/amend/${ovId}/${journeyId}`)
 }
 

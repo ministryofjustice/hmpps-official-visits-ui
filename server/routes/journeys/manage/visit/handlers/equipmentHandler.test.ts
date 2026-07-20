@@ -128,7 +128,7 @@ describe('Equipment handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
 
-          expect($('.govuk-hint').eq(0).text()).toEqual('Amend an official visit')
+          expect($('.govuk-hint').eq(0).text()).toEqual('Update an official visit')
           expect(heading).toEqual('Will visitors have equipment with them? (optional)')
 
           expect(getArrayItemPropById($, 'equipment', 0, 'id').val()).toEqual('111')
@@ -203,7 +203,7 @@ describe('Equipment handler', () => {
         .send({ equipment: [{ id: '111', notes: 'note' }] })
         .expect(302)
         .expect('location', `/manage/amend/1/${journeyId()}`)
-        .expect(() => expectFlashMessage('updateVerb', 'amended'))
+        .expect(() => expectFlashMessage('updateVerb', 'updated'))
 
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.officialVisitors[0].equipmentNotes).toEqual('note')

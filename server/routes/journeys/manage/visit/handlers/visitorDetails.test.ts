@@ -131,7 +131,7 @@ describe('Visitor details handler', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('.govuk-hint').eq(0).text()).toEqual('Amend an official visit')
+          expect($('.govuk-hint').eq(0).text()).toEqual('Update an official visit')
           expect($('.govuk-back-link').attr('href')).toEqual(`./`)
           expect($('.govuk-button').text()).toContain('Save')
         })
@@ -218,7 +218,7 @@ describe('Visitor details handler', () => {
         })
         .expect(302)
         .expect('location', `/manage/amend/1/${journeyId()}`)
-        .expect(() => expectFlashMessage('updateVerb', 'amended'))
+        .expect(() => expectFlashMessage('updateVerb', 'updated'))
 
       expect(officialVisitsService.updateVisitors).toHaveBeenCalledWith(
         'MDI',

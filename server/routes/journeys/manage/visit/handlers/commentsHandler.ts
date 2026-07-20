@@ -44,7 +44,7 @@ export default class CommentsHandler implements PageHandler {
         },
         res.locals.user,
       )
-      req.flash('updateVerb', 'amended')
+      req.flash('updateVerb', 'updated')
       return res.redirect(`/manage/amend/${ovId}/${journeyId}`)
     }
 

@@ -91,8 +91,22 @@ const getMockVisit = () => ({
       createdTime: '2023-01-01T00:00:00',
     },
     // Get Chris Smith (not approved visitor)
-    mockOfficialVisitors.find(o => !o.isApprovedVisitor)!,
-    mockSocialVisitors.find(o => !o.isApprovedVisitor)!,
+    ...[mockOfficialVisitors.find(o => !o.isApprovedVisitor)!].map(contact => ({
+      officialVisitorId: contact.prisonerContactId,
+      prisonerContactId: contact.prisonerContactId,
+      contactId: contact.contactId,
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      relationshipTypeCode: 'OFFICIAL',
+      relationshipTypeDescription: 'Official',
+      relationshipDescription: contact.relationshipToPrisonerDescription,
+      relationshipCode: contact.relationshipToPrisonerCode,
+      visitorTypeCode: 'CONTACT',
+      visitorTypeDescription: 'Contact',
+      leadVisitor: false,
+      createdBy: 'TEST_USER',
+      createdTime: '2023-01-01T00:00:00',
+    })),
   ],
 })
 
@@ -257,9 +271,9 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Change   notes for prisoner (' }).click()
 
     // Amend specific page changes
-    expect(page.locator('h1', { hasText: `Add extra information (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('h1', { hasText: `Add extra information (optional)` })).toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Populated with existing values
     expect(await page.getByRole('textbox', { name: 'Notes for staff' }).textContent()).toEqual('staff notes')
@@ -281,7 +295,7 @@ test.describe('Amend official visits', () => {
 
     await page.getByRole('button', { name: 'Save' }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}`)
-    expect(page.getByRole('region', { name: 'success: Visit amended' }))
+    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should navigate to visit type and visit slot pages when amending visit type', async ({ page }) => {
@@ -292,12 +306,12 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Change   visit type (Visit' }).click()
 
     // Amend specific page changes
-    expect(page.locator('h1', { hasText: `What type of official visit?` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('h1', { hasText: `What type of official visit?` })).toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Pre-selected value
-    expect(page.getByRole('radio', { name: 'Video', exact: true })).toBeChecked()
+    await expect(page.getByRole('radio', { name: 'Video', exact: true })).toBeChecked()
 
     // Back should go back to amend overview page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -317,12 +331,12 @@ test.describe('Amend official visits', () => {
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/time-slot?date=2038-01-01`)
 
     // Amend specific page changes
-    expect(page.locator('h1', { hasText: `Select date and time of official visit` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
-    expect(page.locator('.hmpps-calendar__day--selected')).toBeVisible()
+    await expect(page.locator('h1', { hasText: `Select date and time of official visit` })).toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('.hmpps-calendar__day--selected')).toBeVisible()
     // Pre-selected value
-    expect(page.getByRole('radio', { name: '08:00 to 17:00 First Location' })).toBeChecked()
+    await expect(page.getByRole('radio', { name: '08:00 to 17:00 First Location' })).toBeChecked()
 
     // Back should go back to visit type page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -333,7 +347,7 @@ test.describe('Amend official visits', () => {
     await page.getByRole('radio', { name: '08:00 to 17:00 Second Location' }).check()
     await page.getByRole('button', { name: 'Save' }).click()
 
-    expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should navigate to time slot amend page only when changing time slot', async ({ page }) => {
@@ -344,12 +358,12 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Change   date of visit (Visit' }).click()
 
     // Amend specific page changes
-    expect(page.locator('h1', { hasText: `Select date and time of official visit` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
-    expect(page.locator('.hmpps-calendar__day--selected')).toBeVisible()
+    await expect(page.locator('h1', { hasText: `Select date and time of official visit` })).toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('.hmpps-calendar__day--selected')).toBeVisible()
     // Pre-selected value
-    expect(page.getByRole('radio', { name: '08:00 to 17:00 First Location' })).toBeChecked()
+    await expect(page.getByRole('radio', { name: '08:00 to 17:00 First Location' })).toBeChecked()
 
     // Back should go back to amend overview page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -360,7 +374,7 @@ test.describe('Amend official visits', () => {
     await page.getByRole('radio', { name: '08:00 to 17:00 Second Location' }).check()
     await page.getByRole('button', { name: 'Save' }).click()
 
-    expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should block the amendment and show an error if the visit moves into the past before it is submitted', async ({
@@ -387,7 +401,7 @@ test.describe('Amend official visits', () => {
     await expect(page.getByRole('heading', { name: 'You cannot update this visit' })).toBeVisible()
     await expect(page.getByText('This visit is in the past so you can no longer update it.')).toBeVisible()
 
-    await expect(page.getByRole('region', { name: 'success: Visit amended' })).not.toBeVisible()
+    await expect(page.getByRole('region', { name: 'success: Visit updated' })).not.toBeVisible()
   })
 
   test('should navigate to official visitors and show all related pages when "add or remove visitors" is clicked', async ({
@@ -422,11 +436,11 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Add or remove visitors' }).click()
 
     // Verify navigation to visitors page
-    expect(
+    await expect(
       page.locator('h1', { hasText: `Select visitors from the prisoner's approved official contacts list` }),
     ).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to amend overview page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -439,21 +453,21 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Add or remove visitors' }).click()
 
     // Pre-selected value
-    expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
     // Chris Smith should be visible and checked (unapproved but already on the visit)
-    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
 
     // Select another visitor
     await page.getByRole('checkbox', { name: 'Bertie Smith' }).check()
     await page.getByRole('button', { name: 'Continue' }).click()
 
     // Verify navigation to social visitors page
-    expect(
+    await expect(
       page.locator('h1', { hasText: `Select visitors from the prisoner's approved social contacts list` }),
     ).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to visitors page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -461,19 +475,19 @@ test.describe('Amend official visits', () => {
     await page.goto(`http://localhost:3007/manage/amend/1/${journeyId}/select-social-visitors`)
 
     // Pre-selected value
-    expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
     // Chris Smith should be visible and checked (unapproved but already on the visit)
-    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
 
     // Select another visitor
     await page.getByRole('checkbox', { name: 'Bertie Smith' }).check()
     await page.getByRole('button', { name: 'Continue' }).click()
 
     // Verify navigation to assistance required page
-    expect(page.locator('h1', { hasText: `Do any visitors need assistance? (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('h1', { hasText: `Do any visitors need assistance? (optional)` })).toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to social visitors page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -481,29 +495,29 @@ test.describe('Amend official visits', () => {
     await page.goBack()
 
     // Pre selected values
-    expect(page.getByRole('checkbox', { name: 'Abe Smith (Solicitor)' })).toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith (Police officer)' })).not.toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Abe Smith (Brother)' })).toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith (Brother)' })).not.toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith (Solicitor)' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Bertie Smith (Police officer)' })).not.toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith (Brother)' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Bertie Smith (Brother)' })).not.toBeChecked()
 
     await page.getByRole('button', { name: 'Continue' }).click()
 
-    expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    await expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
 
     await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/assistance-required`)
     await page.goBack()
 
-    expect(page.getByText('Test assistance notes (official)')).toBeVisible()
-    expect(page.getByText('Test assistance notes (social)')).toBeVisible()
+    await expect(page.getByText('Test assistance notes (official)')).toBeVisible()
+    await expect(page.getByText('Test assistance notes (social)')).toBeVisible()
 
     await page.getByRole('button', { name: 'Continue' }).click()
 
     // Verify navigation to equipment page
-    expect(page.locator('h1', { hasText: `Will visitors have equipment with them? (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('h1', { hasText: `Will visitors have equipment with them? (optional)` })).toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to further visitor details page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -511,15 +525,15 @@ test.describe('Amend official visits', () => {
     await page.goBack()
 
     // Pre selected values
-    expect(page.getByRole('checkbox', { name: 'Abe Smith (Solicitor)' })).toBeChecked()
-    expect(page.getByText('Test equipment (official)')).toBeVisible()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith (Police officer)' })).not.toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Abe Smith (Brother)' })).toBeChecked()
-    expect(page.getByText('Test equipment (social)')).toBeVisible()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith (Brother)' })).not.toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith (Solicitor)' })).toBeChecked()
+    await expect(page.getByText('Test equipment (official)')).toBeVisible()
+    await expect(page.getByRole('checkbox', { name: 'Bertie Smith (Police officer)' })).not.toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith (Brother)' })).toBeChecked()
+    await expect(page.getByText('Test equipment (social)')).toBeVisible()
+    await expect(page.getByRole('checkbox', { name: 'Bertie Smith (Brother)' })).not.toBeChecked()
 
     await page.getByRole('button', { name: 'Save' }).click()
-    expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should show unauthorised visitor warnings and errors when amending visitors', async ({ page }) => {
@@ -576,7 +590,7 @@ test.describe('Amend official visits', () => {
 
     await page.getByRole('link', { name: 'Add or remove visitors' }).click()
 
-    expect(
+    await expect(
       page.locator('h1', { hasText: `Select visitors from the prisoner's approved official contacts list` }),
     ).toBeVisible()
     await expect(page.getByText('Some visitor details need updating')).toBeVisible()
@@ -599,13 +613,13 @@ test.describe('Amend official visits', () => {
     await page.getByRole('button', { name: 'Continue' }).click()
     await page.getByRole('button', { name: 'Continue' }).click()
 
-    expect(page.locator('h1', { hasText: `Do any visitors need assistance? (optional)` })).toBeVisible()
+    await expect(page.locator('h1', { hasText: `Do any visitors need assistance? (optional)` })).toBeVisible()
     await page.getByRole('button', { name: 'Continue' }).click()
 
-    expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
+    await expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
 
     await page.getByRole('button', { name: 'Save' }).click()
-    expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should navigate to official visitors and show all related pages when "add or remove visitors" is clicked (no equipment)', async ({
@@ -618,11 +632,11 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Add or remove visitors' }).click()
 
     // Verify navigation to visitors page
-    expect(
+    await expect(
       page.locator('h1', { hasText: `Select visitors from the prisoner's approved official contacts list` }),
     ).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to amend overview page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -635,21 +649,21 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Add or remove visitors' }).click()
 
     // Pre-selected value
-    expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
     // Chris Smith should be visible and checked (unapproved but already on the visit)
-    expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
 
     // Select another visitor
     await page.getByRole('checkbox', { name: 'Bertie Smith' }).check()
     await page.getByRole('button', { name: 'Continue' }).click()
 
     // Verify navigation to social visitors page
-    expect(
+    await expect(
       page.locator('h1', { hasText: `Select visitors from the prisoner's approved social contacts list` }),
     ).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to visitors page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -657,17 +671,19 @@ test.describe('Amend official visits', () => {
     await page.goBack()
 
     // Pre-selected value
-    expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Bertie Smith' })).not.toBeChecked()
+    // Chris Smith should be visible and checked (unapproved but already on the visit)
+    await expect(page.getByRole('checkbox', { name: 'Chris Smith' })).toBeChecked()
 
     // Select another visitor
     await page.getByRole('checkbox', { name: 'Bertie Smith' }).check()
     await page.getByRole('button', { name: 'Continue' }).click()
 
     // Verify navigation to assistance required page
-    expect(page.locator('h1', { hasText: `Do any visitors need assistance? (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('h1', { hasText: `Do any visitors need assistance? (optional)` })).toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to social visitors page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -675,19 +691,19 @@ test.describe('Amend official visits', () => {
     await page.goBack()
 
     // Pre selected values
-    expect(page.getByRole('checkbox', { name: 'Abe Smith (Solicitor)' })).toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith (Police officer)' })).not.toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Abe Smith (Brother)' })).toBeChecked()
-    expect(page.getByRole('checkbox', { name: 'Bertie Smith (Brother)' })).not.toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith (Solicitor)' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Bertie Smith (Police officer)' })).not.toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith (Brother)' })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: 'Bertie Smith (Brother)' })).not.toBeChecked()
 
     await page.getByRole('button', { name: 'Continue' }).click()
 
-    expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
-    expect(page.getByText('Test assistance notes (official)')).toBeVisible()
-    expect(page.getByText('Test assistance notes (social)')).toBeVisible()
+    await expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
+    await expect(page.getByText('Test assistance notes (official)')).toBeVisible()
+    await expect(page.getByText('Test assistance notes (social)')).toBeVisible()
 
     await page.getByRole('button', { name: 'Save' }).click()
-    expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should navigate to Further details page when "change assistance notes" is clicked', async ({ page }) => {
@@ -698,9 +714,9 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Change   notes about the' }).first().click()
 
     // Verify navigation to further visitor details (assistance notes) page
-    expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to Update visit overview page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -708,11 +724,11 @@ test.describe('Amend official visits', () => {
     await page.goBack()
 
     // Pre filled assistance notes
-    expect(page.getByText('Test assistance notes (official)')).toBeVisible()
-    expect(page.getByText('Test assistance notes (social)')).toBeVisible()
+    await expect(page.getByText('Test assistance notes (official)')).toBeVisible()
+    await expect(page.getByText('Test assistance notes (social)')).toBeVisible()
 
     await page.getByRole('button', { name: 'Save' }).click()
-    expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should navigate to equipment page when "change assistance notes" is clicked', async ({ page }) => {
@@ -723,9 +739,9 @@ test.describe('Amend official visits', () => {
     await page.getByRole('link', { name: 'Change   notes about the equipment' }).first().click()
 
     // Verify navigation to assistance required page
-    expect(page.locator('h1', { hasText: `Will visitors have equipment with them? (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
-    expect(page.locator('.moj-progress-bar')).not.toBeVisible()
+    await expect(page.locator('h1', { hasText: `Will visitors have equipment with them? (optional)` })).toBeVisible()
+    await expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
+    await expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to Update visit overview page
     await page.getByRole('link', { name: 'Back', exact: true }).click()
@@ -733,13 +749,13 @@ test.describe('Amend official visits', () => {
     await page.goBack()
 
     // Pre selected values
-    expect(page.getByRole('checkbox', { name: 'Abe Smith (Solicitor)' })).toBeChecked()
-    expect(page.getByText('Test equipment (official)')).toBeVisible()
-    expect(page.getByRole('checkbox', { name: 'Abe Smith (Brother)' })).toBeChecked()
-    expect(page.getByText('Test equipment (social)')).toBeVisible()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith (Solicitor)' })).toBeChecked()
+    await expect(page.getByText('Test equipment (official)')).toBeVisible()
+    await expect(page.getByRole('checkbox', { name: 'Abe Smith (Brother)' })).toBeChecked()
+    await expect(page.getByText('Test equipment (social)')).toBeVisible()
 
     await page.getByRole('button', { name: 'Save' }).click()
-    expect(page.getByRole('region', { name: 'success: Visit amended' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should cancel and return to visit details', async ({ page }) => {

@@ -197,7 +197,7 @@ describe('Assistance required handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
-          expect($('.govuk-hint').eq(0).text()).toEqual('Amend an official visit')
+          expect($('.govuk-hint').eq(0).text()).toEqual('Update an official visit')
           expect(heading).toEqual('Do any visitors need assistance? (optional)')
 
           expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').val()).toEqual('111')
