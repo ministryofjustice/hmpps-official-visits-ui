@@ -69,8 +69,8 @@
 
   {% if updateVerb %}
       {% set updateVerbTitle = "Visit marked as " + updateVerb %}
-      {% if updateVerb == 'amended' %}
-          {% set updateVerbTitle = "Visit amended" %}
+      {% if updateVerb == 'updated' %}
+          {% set updateVerbTitle = "Visit updated" %}
           {% elif updateVerb == 'cancelled' %}
           {% set updateVerbTitle = "Visit cancelled" %}
       {% endif %}

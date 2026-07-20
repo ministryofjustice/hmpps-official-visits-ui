@@ -258,7 +258,7 @@ test.describe('Amend official visits', () => {
 
     // Amend specific page changes
     expect(page.locator('h1', { hasText: `Add extra information (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Populated with existing values
@@ -293,7 +293,7 @@ test.describe('Amend official visits', () => {
 
     // Amend specific page changes
     expect(page.locator('h1', { hasText: `What type of official visit?` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Pre-selected value
@@ -318,7 +318,7 @@ test.describe('Amend official visits', () => {
 
     // Amend specific page changes
     expect(page.locator('h1', { hasText: `Select date and time of official visit` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
     expect(page.locator('.hmpps-calendar__day--selected')).toBeVisible()
     // Pre-selected value
@@ -345,7 +345,7 @@ test.describe('Amend official visits', () => {
 
     // Amend specific page changes
     expect(page.locator('h1', { hasText: `Select date and time of official visit` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
     expect(page.locator('.hmpps-calendar__day--selected')).toBeVisible()
     // Pre-selected value
@@ -425,7 +425,7 @@ test.describe('Amend official visits', () => {
     expect(
       page.locator('h1', { hasText: `Select visitors from the prisoner's approved official contacts list` }),
     ).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to amend overview page
@@ -452,7 +452,7 @@ test.describe('Amend official visits', () => {
     expect(
       page.locator('h1', { hasText: `Select visitors from the prisoner's approved social contacts list` }),
     ).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to visitors page
@@ -472,7 +472,7 @@ test.describe('Amend official visits', () => {
 
     // Verify navigation to assistance required page
     expect(page.locator('h1', { hasText: `Do any visitors need assistance? (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to social visitors page
@@ -489,7 +489,7 @@ test.describe('Amend official visits', () => {
     await page.getByRole('button', { name: 'Continue' }).click()
 
     expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
 
     await page.getByRole('link', { name: 'Back', exact: true }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}/assistance-required`)
@@ -502,7 +502,7 @@ test.describe('Amend official visits', () => {
 
     // Verify navigation to equipment page
     expect(page.locator('h1', { hasText: `Will visitors have equipment with them? (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to further visitor details page
@@ -621,7 +621,7 @@ test.describe('Amend official visits', () => {
     expect(
       page.locator('h1', { hasText: `Select visitors from the prisoner's approved official contacts list` }),
     ).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to amend overview page
@@ -648,7 +648,7 @@ test.describe('Amend official visits', () => {
     expect(
       page.locator('h1', { hasText: `Select visitors from the prisoner's approved social contacts list` }),
     ).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to visitors page
@@ -666,7 +666,7 @@ test.describe('Amend official visits', () => {
 
     // Verify navigation to assistance required page
     expect(page.locator('h1', { hasText: `Do any visitors need assistance? (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to social visitors page
@@ -699,7 +699,7 @@ test.describe('Amend official visits', () => {
 
     // Verify navigation to further visitor details (assistance notes) page
     expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to Update visit overview page
@@ -724,7 +724,7 @@ test.describe('Amend official visits', () => {
 
     // Verify navigation to assistance required page
     expect(page.locator('h1', { hasText: `Will visitors have equipment with them? (optional)` })).toBeVisible()
-    expect(page.locator('.govuk-hint', { hasText: 'Amend an official visit' })).toBeVisible()
+    expect(page.locator('.govuk-hint', { hasText: 'Update an official visit' })).toBeVisible()
     expect(page.locator('.moj-progress-bar')).not.toBeVisible()
 
     // Back should go back to Update visit overview page

@@ -88,7 +88,7 @@ describe('comments handler', () => {
           // There should not be a progress tracker on this page
           expect($('.moj-progress-bar').length).toBeFalsy()
 
-          expect($('.govuk-hint').eq(0).text()).toEqual('Amend an official visit')
+          expect($('.govuk-hint').eq(0).text()).toEqual('Update an official visit')
           expect(heading).toEqual('Add extra information (optional)')
           expect(getTextById($, 'prisonerNotes')).toEqual('Some previously entered notes')
           expect(getTextById($, 'staffNotes')).toEqual('Some previously entered staff notes')

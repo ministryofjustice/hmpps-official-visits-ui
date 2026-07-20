@@ -367,7 +367,7 @@ describe('Select official visitors', () => {
 
           // Check page header
           const heading = getPageHeader($)
-          expect($('.govuk-hint').text()).toEqual('Amend an official visit')
+          expect($('.govuk-hint').text()).toEqual('Update an official visit')
           expect(heading).toEqual("Select visitors from the prisoner's approved official contacts list")
 
           // Check inset text is displayed with correct bullet points

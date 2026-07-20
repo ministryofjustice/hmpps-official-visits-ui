@@ -195,7 +195,7 @@ describe('Time slot handler', () => {
           const heading = getPageHeader($)
           const selectedDate = getTextById($, 'selected-date')
 
-          expect($('.govuk-hint').text()).toEqual('Amend an official visit')
+          expect($('.govuk-hint').text()).toEqual('Update an official visit')
           expect(heading).toEqual('Select date and time of official visit')
           expect(selectedDate).toEqual('Choose the visit time')
 
@@ -357,7 +357,7 @@ describe('Time slot handler', () => {
         .send({ visitSlot: '1' })
         .expect(302)
         .expect('location', `/manage/amend/1/${journeyId()}`)
-        .expect(() => expectFlashMessage('updateVerb', 'amended'))
+        .expect(() => expectFlashMessage('updateVerb', 'updated'))
     })
 
     it('should surface a visitInPast error when the API rejects amending a past visit', async () => {

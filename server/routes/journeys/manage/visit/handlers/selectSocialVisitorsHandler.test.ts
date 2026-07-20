@@ -324,7 +324,7 @@ describe('Select social visitors', () => {
 
           // Check page header
           const heading = getPageHeader($)
-          expect($('.govuk-hint').text()).toEqual('Amend an official visit')
+          expect($('.govuk-hint').text()).toEqual('Update an official visit')
           expect(heading).toEqual("Select visitors from the prisoner's approved social contacts list (optional)")
 
           // Check inset text is displayed with bullet points for social visitor and not approved

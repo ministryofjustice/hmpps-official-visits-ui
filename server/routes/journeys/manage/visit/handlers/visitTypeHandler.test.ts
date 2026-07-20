@@ -81,7 +81,7 @@ describe('Visit type handler', () => {
           expect($('.moj-progress-bar').length).toBeFalsy()
           expect($('.govuk-back-link').attr('href')).toEqual(`./`)
 
-          expect($('.govuk-hint').text()).toEqual('Amend an official visit')
+          expect($('.govuk-hint').text()).toEqual('Update an official visit')
           expect(heading).toEqual('What type of official visit?')
 
           // Amend will always show Continue button because it can't update without time-slot
