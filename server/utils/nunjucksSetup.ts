@@ -111,8 +111,8 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
   njkEnv.addFilter('setSelected', (items: any[], selected: string | string[]) =>
     items.map(o => ({ ...o, selected: o.value === selected[0] })),
   )
-  njkEnv.addFilter('addSelectValue', (items: any[], value: string, text: string) =>
-    items.concat([{ value, text, selected: false }]),
+  njkEnv.addFilter('addSelectValue', (items: any[], value: string, text: string, attributes?: Record<string, string>) =>
+    items.concat([{ value, text, attributes, selected: false }]),
   )
   njkEnv.addFilter('mojDate', (date: string, type?: string) => {
     if (type === 'datetime') return formatDate(date, "d MMMM yyyy 'at' HH:mm")
