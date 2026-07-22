@@ -82,40 +82,40 @@
     {{ govukSelect({
         id: "location",
         name: "location",
-        classes: "min-width-one-quarter",
+        classes: "govuk-!-width-full",
         label: {
           text: "Location",
           classes: "govuk-fieldset__legend--s"
         },
-        items: locations | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.location or filter.location or '')
+        items: locations | addSelectValue('', '', {"aria-label": "All locations"}) | sort(false, false, 'text') | setSelected(formResponses.location or filter.location or '')
       }) }}
 
     {{ govukSelect({
         id: "type",
         name: "type",
-        classes: "min-width-one-quarter",
+        classes: "govuk-!-width-full",
         label: {
           text: "Visit type",
           classes: "govuk-fieldset__legend--s"
         },
-        items: types | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.type or filter.type or '')
+        items: types | addSelectValue('', '', {"aria-label": "All visit types"}) | sort(false, false, 'text') | setSelected(formResponses.type or filter.type or '')
       }) }}
 
     {{ govukSelect({
         id: "status",
         name: "status",
-        classes: "min-width-one-quarter",
+        classes: "govuk-!-width-full",
         label: {
           text: "Visit status",
           classes: "govuk-fieldset__legend--s"
         },
-        items: statuses | addSelectValue('', '') | sort(false, false, 'text') | setSelected(formResponses.status or filter.status or '')
+        items: statuses | addSelectValue('', '', {"aria-label": "All visit statuses"}) | sort(false, false, 'text') | setSelected(formResponses.status or filter.status or '')
       }) }}
 
     {% endset -%}
 
-    <div class="govuk-grid-row govuk-body">
-      <div class="govuk-grid-column-one-quarter" id="filters-column">
+    <div class="moj-filter-layout govuk-body">
+      <div class="moj-filter-layout__filter" id="filters-column">
         {{ mojFilter({
           heading: {
             text: "Filter"
@@ -182,7 +182,7 @@
         ] | filterNonFalsy), rows) %}
       {% endfor %}
 
-      <div class="govuk-grid-column-three-quarters" id="table-column">
+      <div class="moj-filter-layout__content" id="table-column">
         <div class="moj-action-bar moj-action-bar-indent">
           <div class="moj-action-bar__filter"></div>
           {% if showMovementSlips %}
@@ -248,12 +248,6 @@
             selector: '.moj-filter__header-action'
           }
         })
-      const showHideButton = document.querySelector('.moj-action-bar__filter > button')
-      const tableColumn = document.querySelector('#table-column')
-      tableColumn.style.width = showHideButton.getAttribute('aria-expanded') === 'true' ? '75%' : '100%'
-      showHideButton.addEventListener('click', function (event) {
-        tableColumn.style.width = showHideButton.getAttribute('aria-expanded') === 'true' ? '75%' : '100%'
-      })
     }
   </script>
 {% endblock %}

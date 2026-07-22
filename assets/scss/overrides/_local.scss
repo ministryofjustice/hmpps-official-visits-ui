@@ -20,6 +20,17 @@
   width: 100%
 }
 
+// Keep filter selects inside the filter panel when zoomed (WCAG 1.4.10 reflow)
+.moj-filter__options .govuk-select {
+  max-width: 100%;
+}
+
+.moj-filter-layout__filter {
+  @include govuk-media-query(desktop) {
+    max-width: 260px;
+  }
+}
+
 .blue-button {
   background-color: $govuk-link-colour;
 }
