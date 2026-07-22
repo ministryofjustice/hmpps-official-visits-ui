@@ -53,15 +53,15 @@ export default class ListVisitsPage extends AbstractPage {
   }
 
   getLocationFilter() {
-    return this.page.getByLabel('Location')
+    return this.page.getByRole('combobox', { name: 'Location' })
   }
 
   getTypeFilter() {
-    return this.page.getByLabel('Type')
+    return this.page.getByRole('combobox', { name: 'Type' })
   }
 
   getStatusFilter() {
-    return this.page.getByLabel('Status')
+    return this.page.getByRole('combobox', { name: 'Status' })
   }
 
   getRemoveFilter(text: string) {
