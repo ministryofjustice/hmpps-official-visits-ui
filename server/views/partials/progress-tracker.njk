@@ -2,15 +2,23 @@
 
 {% macro progressTracker(stepsChecked) %}
 
+  {% set stepLabels = ['Who is attending', 'Visit time and place', 'Visit type and visitors', 'Optional information', 'Review and confirm'] %}
+  {% set items = [] %}
+  {% for stepLabel in stepLabels %}
+    {% set complete = stepsChecked >= loop.index %}
+    {% set hiddenState = '<span class="govuk-visually-hidden"> (completed)</span>' if complete else '' %}
+    {% set items = (items.push({
+      id: loop.index,
+      label: { html: stepLabel + hiddenState },
+      complete: complete,
+      active: stepsChecked + 1 == loop.index
+    }), items) %}
+  {% endfor %}
+
   <div class="moj-progress-tracker" data-qa="moj-progress-tracker">
     {{ mojProgressBar({
-      items: [
-        { id: 1, label: { text: 'Who is attending' }, complete: stepsChecked > 0 },
-        { id: 2, label: { text: 'Visit time and place' }, complete: stepsChecked > 1 },
-        { id: 3, label: { text: 'Visit type and visitors' }, complete: stepsChecked > 2 },
-        { id: 4, label: { text: 'Optional information' }, complete: stepsChecked > 3 },
-        { id: 5, label: { text: 'Review and confirm' }, complete: stepsChecked > 4 }
-      ]
+      label: 'Progress through creating the visit',
+      items: items
     }) }}
   </div>
 
