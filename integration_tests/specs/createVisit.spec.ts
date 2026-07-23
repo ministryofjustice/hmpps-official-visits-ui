@@ -375,7 +375,7 @@ test.describe('Create an official visit', () => {
     expect(page.getByRole('link', { name: 'View and add contacts' })).toBeVisible()
 
     const href = await page.getByRole('link', { name: 'View and add contacts' }).getAttribute('href')
-    expect(href).toMatch(/https:\/\/contacts-dev.hmpps.service.justice.gov.uk\/prisoner\/A1111AA\/contacts\/list/)
+    expect(href).toBe('http://localhost:9091/prisoner/A1111AA/contacts/list')
   })
 
   test('shows the no capacity error when the selected visitors exceed slot capacity', async ({ page }) => {

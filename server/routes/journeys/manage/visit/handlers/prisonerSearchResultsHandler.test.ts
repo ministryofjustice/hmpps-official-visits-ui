@@ -1,7 +1,8 @@
 import type { Express } from 'express'
 import request from 'supertest'
 import * as cheerio from 'cheerio'
-import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetup'
+import { appWithAllRoutes, flashProvider, journeyId, user } from '../../../../testutils/appSetup'
+import config from '../../../../../config'
 import AuditService, { Page } from '../../../../../services/auditService'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
@@ -178,6 +179,41 @@ describe('Prisoner search results handler', () => {
             size: expect.any(Number),
           })
         })
+    })
+    it.each([
+      ['http://localhost:3001'],
+      ['https://contacts-1.hmpps.service.justice.gov.uk'],
+      ['https://contacts-2.hmpps.service.justice.gov.uk'],
+    ])('should build the contacts link from configuration for environment URL %s', async contactsUrl => {
+      const originalContactsUrl = config.serviceUrls.prisonerContacts
+      config.serviceUrls.prisonerContacts = contactsUrl
+
+      const results = {
+        content: [],
+        number: 0,
+        totalPages: 0,
+        totalElements: 0,
+        first: true,
+        last: true,
+      } as PagePrisoner
+
+      prisonerService.searchInCaseload.mockResolvedValue(results)
+
+      appSetup({ officialVisit: { searchTerm: 'Doe' } })
+      flashProvider.mockImplementation(key => (key === 'noActiveApprovedContacts' ? ['A1234AA'] : []))
+
+      try {
+        return await request(app)
+          .get(`/manage/create/${journeyId()}/results`)
+          .expect('Content-Type', /html/)
+          .expect(res => {
+            const $ = cheerio.load(res.text)
+            const $contactsLink = $('.moj-alert a')
+            expect($contactsLink.attr('href')).toBe(`${contactsUrl}/prisoner/A1234AA/contacts/list`)
+          })
+      } finally {
+        config.serviceUrls.prisonerContacts = originalContactsUrl
+      }
     })
   })
   describe('POST', () => {
