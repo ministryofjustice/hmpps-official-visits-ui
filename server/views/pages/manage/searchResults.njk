@@ -85,9 +85,9 @@
                target="_blank"
                data-qa="search-results-profile-link">
               {{ (result.lastName + ", " + result.firstName) | convertToTitleCase }}
+              <br>
+              <span>(opens profile in new tab)</span>
             </a>
-            <br>
-            <span class="govuk-body">(opens profile in new tab)</span>
           {% endset %}
 
           {% set rows = (rows.push([

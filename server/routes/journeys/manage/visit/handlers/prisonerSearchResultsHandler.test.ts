@@ -77,7 +77,9 @@ describe('Prisoner search results handler', () => {
             .get()
           expect(headers).toEqual(['Name', 'Prison number', 'Date of birth', 'Location', 'Action'])
 
-          expect(getGovukTableCell($, 1, 1).find('a').text().trim()).toBe('Doe, John')
+          const $profileLink = getGovukTableCell($, 1, 1).find('a')
+          expect($profileLink.text().replace(/\s+/g, ' ').trim()).toBe('Doe, John (opens profile in new tab)')
+          expect($profileLink.attr('target')).toBe('_blank')
           expect(getGovukTableCell($, 1, 2).text().trim()).toBe('A1234AA')
           expect(getGovukTableCell($, 1, 3).text().trim()).toBe('1 June 1989')
           expect(getGovukTableCell($, 1, 4).text().trim()).toBe('C-1-1')
