@@ -100,13 +100,11 @@ describe('Visitor details handler', () => {
           expect($('.govuk-hint').eq(0).text()).toEqual('Book an official visit')
           expect(heading).toEqual('Further visitor details (optional)')
 
-          // All visitor note fields sit in a single fieldset whose legend is the page heading
           const $fieldsets = $('fieldset.govuk-fieldset')
           expect($fieldsets).toHaveLength(1)
           expect($fieldsets.find('legend h1').text().trim()).toEqual('Further visitor details (optional)')
           expect($fieldsets.find('textarea').length).toEqual(3)
 
-          // The instructional text is associated with the group, not just visually adjacent
           expect($fieldsets.attr('aria-describedby')).toEqual('visitor-details-hint')
           expect($('#visitor-details-hint').text().trim()).toEqual(
             'Add any important information about visitors. Do not include equipment here, you can add this on the next page.',
@@ -117,7 +115,6 @@ describe('Visitor details handler', () => {
           expect(getArrayItemPropById($, 'visitorDetails', 1, 'id').val()).toEqual('112')
           expect(getArrayItemPropById($, 'visitorDetails', 2, 'id').val()).toEqual('222')
 
-          // Labels describe the purpose of the field, not just name the visitor
           expect($('.govuk-label[for="visitorDetails\\[0\\]\\[notes\\]"]').text().trim()).toEqual(
             'Further details about John Dasolicitor (Solicitor)',
           )

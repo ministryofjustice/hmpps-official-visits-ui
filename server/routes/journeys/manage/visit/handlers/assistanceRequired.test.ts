@@ -137,7 +137,6 @@ describe('Assistance required handler', () => {
           expect($('.govuk-hint').eq(0).text()).toEqual('Book an official visit')
           expect(heading).toEqual('Do any visitors need assistance? (optional)')
 
-          // All visitors sit in a single fieldset whose legend is the page heading
           const $fieldsets = $('fieldset.govuk-fieldset')
           expect($fieldsets).toHaveLength(1)
           expect($fieldsets.find('legend h1').text().trim()).toEqual('Do any visitors need assistance? (optional)')

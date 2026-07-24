@@ -85,7 +85,6 @@ describe('Prisoner search results handler', () => {
           expect(getGovukTableCell($, 1, 4).text().trim()).toBe('C-1-1')
           const $selectLink = getGovukTableCell($, 1, 5).find('a')
           expect($selectLink.attr('href')).toBe('prisoner-select?prisonerNumber=A1234AA&page=0')
-          // The repeated "Select this prisoner" link is distinguishable to screen reader users
           expect($selectLink.text().replace(/\s+/g, ' ').trim()).toBe('Select this prisoner, Doe, John (A1234AA)')
           expect($selectLink.find('.govuk-visually-hidden').text().trim()).toBe(', Doe, John (A1234AA)')
 

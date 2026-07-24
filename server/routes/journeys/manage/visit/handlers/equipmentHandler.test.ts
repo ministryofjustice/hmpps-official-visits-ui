@@ -90,18 +90,15 @@ describe('Equipment handler', () => {
           expect($('.govuk-hint').eq(0).text()).toEqual('Book an official visit')
           expect(heading).toContain('Will visitors have equipment with them? (optional)')
 
-          // The checkboxes are grouped in a fieldset whose legend is the page heading
           const $fieldset = $('fieldset.govuk-fieldset')
           const $legend = $fieldset.children('legend')
           expect($legend.find('h1').text()).toContain('Will visitors have equipment with them? (optional)')
           expect($fieldset.find('input[type="checkbox"]').length).toEqual(2)
 
-          // Screen reader users are warned that selecting a checkbox reveals more inputs
           expect($legend.find('.govuk-visually-hidden').text().trim()).toEqual(
             'Selecting an option will reveal additional related inputs.',
           )
 
-          // The instructional hint is associated with the group, not just visually adjacent
           const hintId = $fieldset.attr('aria-describedby')
           expect(hintId).toBeTruthy()
           expect(
