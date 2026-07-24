@@ -17,22 +17,31 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">{{'Book' if mode == 'create' else 'Update'}} an official visit</span>
-      <h1 class="govuk-heading-l">{{pageTitle}} (optional)</h1>
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
+        {% set contactItems = [] %}
         {% for contact in contacts %}
           <input type="hidden" id="assistanceRequired[{{loop.index0}}][id]" name="assistanceRequired[{{loop.index0}}][id]" value="{{contact.contactId}}">
-          {{ govukCheckboxes({
-            items: [{
-              name: "assistanceRequired[" + loop.index0 + "][selected]",
-              id: "assistanceRequired[" + loop.index0 + "][selected]",
-              value: true,
-              text: (contact.firstName + " " + contact.lastName) | convertToTitleCase + " (" + contact.relationshipToPrisonerDescription + ")",
-              checked: formResponses.assistanceRequired[loop.index0].selected if formResponses.assistanceRequired else contact.assistedVisit
-            }]
-          }) }}
+          {% set contactItems = (contactItems.push({
+            name: "assistanceRequired[" + loop.index0 + "][selected]",
+            id: "assistanceRequired[" + loop.index0 + "][selected]",
+            value: true,
+            text: (contact.firstName + " " + contact.lastName) | convertToTitleCase + " (" + contact.relationshipToPrisonerDescription + ")",
+            checked: formResponses.assistanceRequired[loop.index0].selected if formResponses.assistanceRequired else contact.assistedVisit
+          }), contactItems) %}
         {% endfor %}
+
+        {{ govukCheckboxes({
+          fieldset: {
+            legend: {
+              text: pageTitle + " (optional)",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l"
+            }
+          },
+          items: contactItems
+        }) }}
 
         {{ continueCancel({
           stepsChecked: stepsChecked, 

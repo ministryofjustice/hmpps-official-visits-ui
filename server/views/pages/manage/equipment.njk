@@ -18,8 +18,6 @@
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">{{'Book' if mode == 'create' else 'Update'}} an official visit</span>
-      <h1 class="govuk-heading-l">{{pageTitle}} (optional)</h1>
-      <p>Add any important information about equipment a visitor will bring to the official visit.</p>
       <form method='POST'>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
@@ -52,6 +50,16 @@
 
         {{ govukCheckboxes({
           name: "equipment",
+          fieldset: {
+            legend: {
+              text: pageTitle + " (optional)",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l"
+            }
+          },
+          hint: {
+            text: "Add any important information about equipment a visitor will bring to the official visit."
+          },
           items: contactItems
         }) }}
 

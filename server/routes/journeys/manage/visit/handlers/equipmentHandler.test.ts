@@ -90,6 +90,11 @@ describe('Equipment handler', () => {
           expect($('.govuk-hint').eq(0).text()).toEqual('Book an official visit')
           expect(heading).toEqual('Will visitors have equipment with them? (optional)')
 
+          // The checkboxes are grouped in a fieldset whose legend is the page heading
+          const $legend = $('fieldset.govuk-fieldset > legend')
+          expect($legend.find('h1').text().trim()).toEqual('Will visitors have equipment with them? (optional)')
+          expect($('fieldset.govuk-fieldset').find('input[type="checkbox"]').length).toEqual(2)
+
           expect(getArrayItemPropById($, 'equipment', 0, 'id').val()).toEqual('111')
           expect(getArrayItemPropById($, 'equipment', 1, 'id').val()).toEqual('222')
 

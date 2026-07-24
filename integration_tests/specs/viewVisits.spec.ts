@@ -351,7 +351,7 @@ test.describe('View official visits', () => {
 
     expect(page.url()).toBe('http://localhost:3007/view/visit/1/history')
     await expect(page.locator('.govuk-hint')).toHaveText('Manage official visits')
-    await expect(page.locator('h1.govuk-heading-l')).toHaveText('Official visit')
+    await expect(page.locator('h1.govuk-heading-l')).toHaveText('Official visit change history')
 
     await expect(page.locator('[data-qa="mini-profile-person-profile-link"]')).toHaveText('Doe, John')
     await expect(page.locator('[data-qa="mini-profile-prisoner-number"]')).toHaveText(mockPrisoner.prisonerNumber)

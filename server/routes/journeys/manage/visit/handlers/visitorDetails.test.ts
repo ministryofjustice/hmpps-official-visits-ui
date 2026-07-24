@@ -100,6 +100,12 @@ describe('Visitor details handler', () => {
           expect($('.govuk-hint').eq(0).text()).toEqual('Book an official visit')
           expect(heading).toEqual('Further visitor details (optional)')
 
+          // All visitor note fields sit in a single fieldset whose legend is the page heading
+          const $fieldsets = $('fieldset.govuk-fieldset')
+          expect($fieldsets).toHaveLength(1)
+          expect($fieldsets.find('legend h1').text().trim()).toEqual('Further visitor details (optional)')
+          expect($fieldsets.find('textarea').length).toEqual(3)
+
           // All visitors are listed, including Johnny who does not need assistance
           expect(getArrayItemPropById($, 'visitorDetails', 0, 'id').val()).toEqual('111')
           expect(getArrayItemPropById($, 'visitorDetails', 1, 'id').val()).toEqual('112')
