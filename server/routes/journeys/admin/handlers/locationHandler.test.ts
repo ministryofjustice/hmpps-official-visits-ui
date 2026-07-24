@@ -38,6 +38,7 @@ describe('LocationHandler', () => {
     expect(res.text).toContain('Maximum Adults')
     expect(res.text).toContain(`/admin/time-slot/${timeSlotId}/location/new`)
     expect(res.text).toContain(`/admin/time-slot/${timeSlotId}/location/1/edit`)
+    expect(res.text).toContain('Edit<span class="govuk-visually-hidden"> location Room 1</span></a>')
     expect(res.text).not.toContain(`/admin/time-slot/${timeSlotId}/location/1/delete`)
     expect(res.text).toContain('<a href="/admin/time-slots#monday" class="govuk-back-link">Back</a>')
     const $ = cheerio.load(res.text)

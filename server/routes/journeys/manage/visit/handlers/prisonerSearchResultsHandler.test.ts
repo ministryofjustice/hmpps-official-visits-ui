@@ -83,9 +83,10 @@ describe('Prisoner search results handler', () => {
           expect(getGovukTableCell($, 1, 2).text().trim()).toBe('A1234AA')
           expect(getGovukTableCell($, 1, 3).text().trim()).toBe('1 June 1989')
           expect(getGovukTableCell($, 1, 4).text().trim()).toBe('C-1-1')
-          expect(getGovukTableCell($, 1, 5).find('a').attr('href')).toBe(
-            'prisoner-select?prisonerNumber=A1234AA&page=0',
-          )
+          const $selectLink = getGovukTableCell($, 1, 5).find('a')
+          expect($selectLink.attr('href')).toBe('prisoner-select?prisonerNumber=A1234AA&page=0')
+          expect($selectLink.text().replace(/\s+/g, ' ').trim()).toBe('Select this prisoner, Doe, John (A1234AA)')
+          expect($selectLink.find('.govuk-visually-hidden').text().trim()).toBe(', Doe, John (A1234AA)')
 
           expect(prisonerService.searchInCaseload).toHaveBeenCalledWith('Doe', 'HEI', user, {
             page: 0,

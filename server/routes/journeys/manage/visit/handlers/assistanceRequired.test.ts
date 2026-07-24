@@ -137,6 +137,11 @@ describe('Assistance required handler', () => {
           expect($('.govuk-hint').eq(0).text()).toEqual('Book an official visit')
           expect(heading).toEqual('Do any visitors need assistance? (optional)')
 
+          const $fieldsets = $('fieldset.govuk-fieldset')
+          expect($fieldsets).toHaveLength(1)
+          expect($fieldsets.find('legend h1').text().trim()).toEqual('Do any visitors need assistance? (optional)')
+          expect($fieldsets.find('input[type="checkbox"]').length).toEqual(4)
+
           expect(getArrayItemPropById($, 'assistanceRequired', 0, 'id').val()).toEqual('111')
           expect(getArrayItemPropById($, 'assistanceRequired', 1, 'id').val()).toEqual('112')
           expect(getArrayItemPropById($, 'assistanceRequired', 2, 'id').val()).toEqual('113')

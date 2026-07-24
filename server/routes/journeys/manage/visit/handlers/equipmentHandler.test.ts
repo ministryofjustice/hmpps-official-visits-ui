@@ -88,7 +88,24 @@ describe('Equipment handler', () => {
           const $ = cheerio.load(res.text)
           const heading = getPageHeader($)
           expect($('.govuk-hint').eq(0).text()).toEqual('Book an official visit')
-          expect(heading).toEqual('Will visitors have equipment with them? (optional)')
+          expect(heading).toContain('Will visitors have equipment with them? (optional)')
+
+          const $fieldset = $('fieldset.govuk-fieldset')
+          const $legend = $fieldset.children('legend')
+          expect($legend.find('h1').text()).toContain('Will visitors have equipment with them? (optional)')
+          expect($fieldset.find('input[type="checkbox"]').length).toEqual(2)
+
+          expect($legend.find('.govuk-visually-hidden').text().trim()).toEqual(
+            'Selecting an option will reveal additional related inputs.',
+          )
+
+          const hintId = $fieldset.attr('aria-describedby')
+          expect(hintId).toBeTruthy()
+          expect(
+            $(`#${hintId.replace(/([[\]])/g, '\\$1')}`)
+              .text()
+              .trim(),
+          ).toEqual('Add any important information about equipment a visitor will bring to the official visit.')
 
           expect(getArrayItemPropById($, 'equipment', 0, 'id').val()).toEqual('111')
           expect(getArrayItemPropById($, 'equipment', 1, 'id').val()).toEqual('222')
@@ -129,7 +146,7 @@ describe('Equipment handler', () => {
           const heading = getPageHeader($)
 
           expect($('.govuk-hint').eq(0).text()).toEqual('Update an official visit')
-          expect(heading).toEqual('Will visitors have equipment with them? (optional)')
+          expect(heading).toContain('Will visitors have equipment with them? (optional)')
 
           expect(getArrayItemPropById($, 'equipment', 0, 'id').val()).toEqual('111')
           expect(getArrayItemPropById($, 'equipment', 1, 'id').val()).toEqual('222')
