@@ -131,7 +131,7 @@ describe('OfficialVisitHistoryHandler', () => {
           const $ = cheerio.load(res.text)
 
           expect($('.govuk-hint').text()).toEqual('Manage official visits')
-          expect(getPageHeader($)).toEqual('Official visit change history')
+          expect(getPageHeader($)).toEqual('Official visit')
 
           expect(getByDataQa($, 'mini-profile-person-profile-link').text().trim()).toEqual(
             convertToTitleCase(`${mockPrisoner.lastName}, ${mockPrisoner.firstName}`),
