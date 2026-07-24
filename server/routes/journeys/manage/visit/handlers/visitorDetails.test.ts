@@ -106,18 +106,27 @@ describe('Visitor details handler', () => {
           expect($fieldsets.find('legend h1').text().trim()).toEqual('Further visitor details (optional)')
           expect($fieldsets.find('textarea').length).toEqual(3)
 
+          // The instructional text is associated with the group, not just visually adjacent
+          expect($fieldsets.attr('aria-describedby')).toEqual('visitor-details-hint')
+          expect($('#visitor-details-hint').text().trim()).toEqual(
+            'Add any important information about visitors. Do not include equipment here, you can add this on the next page.',
+          )
+
           // All visitors are listed, including Johnny who does not need assistance
           expect(getArrayItemPropById($, 'visitorDetails', 0, 'id').val()).toEqual('111')
           expect(getArrayItemPropById($, 'visitorDetails', 1, 'id').val()).toEqual('112')
           expect(getArrayItemPropById($, 'visitorDetails', 2, 'id').val()).toEqual('222')
 
-          expect($('.govuk-label[for="visitorDetails\\[0\\]\\[notes\\]"]').text()).toContain(
-            'John Dasolicitor (Solicitor)',
+          // Labels describe the purpose of the field, not just name the visitor
+          expect($('.govuk-label[for="visitorDetails\\[0\\]\\[notes\\]"]').text().trim()).toEqual(
+            'Further details about John Dasolicitor (Solicitor)',
           )
-          expect($('.govuk-label[for="visitorDetails\\[1\\]\\[notes\\]"]').text()).toContain(
-            'Johnny Dasolicitor (Solicitor)',
+          expect($('.govuk-label[for="visitorDetails\\[1\\]\\[notes\\]"]').text().trim()).toEqual(
+            'Further details about Johnny Dasolicitor (Solicitor)',
           )
-          expect($('.govuk-label[for="visitorDetails\\[2\\]\\[notes\\]"]').text()).toContain('Jane Dafriend (Friend)')
+          expect($('.govuk-label[for="visitorDetails\\[2\\]\\[notes\\]"]').text().trim()).toEqual(
+            'Further details about Jane Dafriend (Friend)',
+          )
 
           expect($('.govuk-back-link').attr('href')).toEqual(`assistance-required`)
           expect($('.govuk-button').text()).toContain('Continue')

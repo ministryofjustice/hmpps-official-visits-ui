@@ -22,21 +22,23 @@
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
         {% call govukFieldset({
+          describedBy: "visitor-details-hint",
           legend: {
             text: pageTitle + " (optional)",
             isPageHeading: true,
             classes: "govuk-fieldset__legend--l"
           }
         }) %}
-          <p>Add any important information about visitors. Do not include equipment here, you can add this on the next page.</p>
+          <p id="visitor-details-hint">Add any important information about visitors. Do not include equipment here, you can add this on the next page.</p>
 
           {% for contact in contacts %}
+            {% set contactName = (contact.firstName + " " + contact.lastName) | convertToTitleCase %}
             <input type="hidden" id="visitorDetails[{{loop.index0}}][id]" name="visitorDetails[{{loop.index0}}][id]" value="{{contact.contactId}}">
             {{ govukCharacterCount({
               maxlength: 240,
               rows: 5,
               label: {
-                text: (contact.firstName + " " + contact.lastName) | convertToTitleCase + " (" + contact.relationshipToPrisonerDescription + ")",
+                text: "Further details about " + contactName + " (" + contact.relationshipToPrisonerDescription + ")",
                 classes: "govuk-label--s"
               },
               id: "visitorDetails[" + loop.index0 + "][notes]",

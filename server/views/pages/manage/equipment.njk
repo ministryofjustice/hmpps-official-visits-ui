@@ -52,7 +52,8 @@
           name: "equipment",
           fieldset: {
             legend: {
-              text: pageTitle + " (optional)",
+              html: pageTitle + " (optional)" +
+                '<span class="govuk-visually-hidden"> Selecting an option will reveal additional related inputs.</span>',
               isPageHeading: true,
               classes: "govuk-fieldset__legend--l"
             }

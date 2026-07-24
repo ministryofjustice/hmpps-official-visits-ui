@@ -75,7 +75,7 @@
         {% set rows = [] %}
         {% for result in results.content %}
           {% set actionHtml %}
-            <a href="prisoner-select?prisonerNumber={{ result.prisonerNumber }}&page={{results.number}}" class="govuk-link govuk-link--no-visited-state">Select this prisoner</a>
+            <a href="prisoner-select?prisonerNumber={{ result.prisonerNumber }}&page={{results.number}}" class="govuk-link govuk-link--no-visited-state">Select this prisoner<span class="govuk-visually-hidden">, {{ (result.lastName + ", " + result.firstName) | convertToTitleCase }} ({{ result.prisonerNumber }})</span></a>
           {% endset %}
 
           {% set profileHtml %}
