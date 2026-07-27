@@ -65,7 +65,6 @@ describe('Movement slips', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          // Single page-level h1, with each slip title nested beneath it as an h2
           expect(getPageHeader($)).toBe('Movement slips')
           expect($('h1')).toHaveLength(1)
 
