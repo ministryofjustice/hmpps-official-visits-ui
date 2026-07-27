@@ -32,7 +32,7 @@
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
         {% if calendarData %}
-          <h1 class="govuk-heading-m" id="selected-date">Choose the visit time</h1>
+          <h2 class="govuk-heading-m" id="selected-date">Choose the visit time</h2>
 
           <div class="govuk-grid-column-one-half">
             {{ calendar(calendarData) }}
@@ -95,9 +95,10 @@
             ]), rows) %}
           {% endif %}
 
+          <h2 class="govuk-heading-m" id="prisoner-schedule-heading">{{ (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase | possessiveComma }} schedule</h2>
+
           {{ govukTable({
-            caption: (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase | possessiveComma + " schedule",
-            captionClasses: "govuk-table__caption--m",
+            attributes: { "aria-labelledby": "prisoner-schedule-heading" },
             head: [
               { text: "Time" },
               { text: "Event name" },
@@ -126,13 +127,18 @@
           ), items) %}
         {% endfor %}
 
+        {% set timeSlotHeading = "Select a time slot for " + (selectedDate | formatDate('EEEE, d MMMM yyyy')) %}
+        {% set timeSlotLegendHtml %}
+          <h2 class="govuk-fieldset__heading">{{ timeSlotHeading }}</h2>
+        {% endset %}
+
         {% if items | length > 0 %}
           {{ govukRadios({
             idPrefix: "visitSlot",
             name: "visitSlot",
             fieldset: {
               legend: {
-                text: "Select a time slot",
+                html: timeSlotLegendHtml,
                 classes: "govuk-fieldset__legend--m"
               }
             },
@@ -140,6 +146,8 @@
             errorMessage: validationErrors | findError('visitSlot')
           })}}
         {% else %}
+          <h2 class="govuk-heading-m">{{ timeSlotHeading }}</h2>
+
           {{ govukWarningText({
             text: "No visit sessions on this day.",
             iconFallbackText: "Warning"

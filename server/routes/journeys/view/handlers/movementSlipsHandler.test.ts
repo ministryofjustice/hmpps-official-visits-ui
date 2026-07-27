@@ -65,7 +65,14 @@ describe('Movement slips', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect(getPageHeader($)).toContain('Movement authorisation slip')
+          expect(getPageHeader($)).toBe('Movement slips')
+          expect($('h1')).toHaveLength(1)
+
+          const slipHeadings = $('h2')
+            .map((_i, el) => $(el).text().replace(/\s+/g, ' ').trim())
+            .get()
+          expect(slipHeadings).toHaveLength(2)
+          slipHeadings.forEach(slipHeading => expect(slipHeading).toContain('Movement authorisation slip'))
 
           const slips = $('.dotted-border')
           expect(slips.length).toBe(2)

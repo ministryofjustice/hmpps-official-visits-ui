@@ -232,11 +232,11 @@ describe('Select official visitors', () => {
           expect(heading).toEqual("Select visitors from the prisoner's approved official contacts list")
 
           // Prisoner restrictions - empty
-          expect(getByDataQa($, 'empty-restrictions-title').text().trim()).toContain('active restrictions')
+          expect(getByDataQa($, 'restrictions-title').text().trim()).toContain('active restrictions')
           expect(getByDataQa($, 'empty-restrictions-message').text().trim()).toEqual('No active restrictions')
 
           // Prisoner contacts - empty content
-          expect(getByDataQa($, 'empty-contacts-title').text().trim()).toEqual('Approved official contacts')
+          expect(getByDataQa($, 'contacts-title').text().trim()).toEqual('Approved official contacts')
           expect(getByDataQa($, 'empty-contacts-message').text().trim()).toEqual('No approved official contacts')
           // contact link displayed only for contacts authorizer role
           expect(getByDataQa($, 'contacts-link').length).toEqual(1)
@@ -478,11 +478,11 @@ describe('Select official visitors', () => {
           expect(heading).toEqual("Select visitors from the prisoner's approved official contacts list")
 
           // Prisoner restrictions - empty
-          expect(getByDataQa($, 'empty-restrictions-title').text().trim()).toContain('active restrictions')
+          expect(getByDataQa($, 'restrictions-title').text().trim()).toContain('active restrictions')
           expect(getByDataQa($, 'empty-restrictions-message').text().trim()).toEqual('No active restrictions')
 
           // Prisoner contacts - empty content
-          expect(getByDataQa($, 'empty-contacts-title').text().trim()).toEqual('Approved official contacts')
+          expect(getByDataQa($, 'contacts-title').text().trim()).toEqual('Approved official contacts')
           expect(getByDataQa($, 'empty-contacts-message').text().trim()).toEqual('No approved official contacts')
           // contact link displayed only for contacts authorizer role
           expect(getByDataQa($, 'contacts-link').length).toEqual(1)

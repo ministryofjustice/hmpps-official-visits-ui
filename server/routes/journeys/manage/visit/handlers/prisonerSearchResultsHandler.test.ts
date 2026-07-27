@@ -70,7 +70,7 @@ describe('Prisoner search results handler', () => {
           const $ = cheerio.load(res.text)
           expect(getPageHeader($)).toEqual('Search results  (Page 1 of 1)')
 
-          expect($('h3.govuk-heading-m').text().trim()).toBe('There is 1 matching person')
+          expect($('h2.govuk-heading-m').text().trim()).toBe('There is 1 matching person')
 
           const headers = $('.govuk-table__header')
             .map((_, el) => $(el).text().trim())
@@ -122,7 +122,7 @@ describe('Prisoner search results handler', () => {
           expect(getPageHeader($)).toEqual('Search results  (Page 1 of 0)')
           expect($('.govuk-table__row').length).toBe(0)
 
-          expect($('h3.govuk-heading-m').text().trim()).toBe('There are no results for this search criteria')
+          expect($('h2.govuk-heading-m').text().trim()).toBe('There are no results for this search criteria')
 
           expect(prisonerService.searchInCaseload).toHaveBeenCalledWith('Smith', 'HEI', user, {
             page: 0,

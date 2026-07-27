@@ -106,25 +106,26 @@
   {% endset %}
 
   <div class="govuk-summary-card">
-    {% if rows.length > 0 %}
-      <div class="govuk-summary-card__content" data-qa="prisoner-restrictions-table">
-        {{ govukTable({
-          caption: captionText,
-          captionClasses: "govuk-table__caption--m",
-          firstCellIsHeader: true,
-          head: [
-            { text: "Type of restriction" },
-            { text: "Comments" },
-            { text: "Date from" },
-            { text: "Date to" }
-          ],
-          rows: rows
-        }) }}
-      </div>
-    {% else %}
-      <div class="govuk-summary-card__content govuk-summary-card__title">{{ captionText }}</div>
-      <div class="govuk-body govuk-!-margin-top-0 govuk-!-margin-left-4">No active restrictions</div>
-    {% endif %}
+    <div class="govuk-summary-card__content">
+      <h2 class="govuk-heading-m" id="prisoner-restrictions-heading">{{ captionText }}</h2>
+      {% if rows.length > 0 %}
+        <div data-qa="prisoner-restrictions-table">
+          {{ govukTable({
+            attributes: { "aria-labelledby": "prisoner-restrictions-heading" },
+            firstCellIsHeader: true,
+            head: [
+              { text: "Type of restriction" },
+              { text: "Comments" },
+              { text: "Date from" },
+              { text: "Date to" }
+            ],
+            rows: rows
+          }) }}
+        </div>
+      {% else %}
+        <p class="govuk-body govuk-!-margin-bottom-0">No active restrictions</p>
+      {% endif %}
+    </div>
   </div>
 
   {% if mode != 'amend' %}
@@ -146,7 +147,8 @@
     card: {
       classes: "govuk-!-margin-bottom-7",
       title: {
-        text: "Visit details"
+        text: "Visit details",
+        classes: "govuk-!-font-size-24"
       },
       actions: {
         items: [] if visit.completionCode else visitActions
@@ -283,15 +285,15 @@
   {% if mode == 'amend' %}
     <a href="/manage/amend/{{visit.officialVisitId}}/{{journeyId}}/select-official-visitors?change=true" class="govuk-link govuk-body float-right govuk-link--no-visited-state">Add or remove visitors</a>
   {% endif %}
-  <p class="govuk-heading-m">Visitor details</p>
+  <h2 class="govuk-heading-m">Visitor details</h2>
 
   {% for contact in visit.officialVisitors %}
     {# Declaring the card part of the summary list manually as the card title gets copied into Change links and we don't want this #}
     <div class="govuk-summary-card govulk-!-margin-bottom-7">
       <div class="govuk-summary-card__title-wrapper flex-column">
-        <h2 class="govuk-summary-card__title">
+        <h3 class="govuk-summary-card__title">
           <a class="govuk-link--no-visited-state" target="_blank" href="{{contact.relationshipUrl}}">{{contact | firstNameSpaceLastName}}</a> ({{contact.relationshipDescription}})
-        </h2>
+        </h3>
         {% if shouldShowIssues and (contact.issues.notApproved or contact.issues.noRelationship or contact.issues.socialVisitor) %}
           {{ mojBadge({ text: "CONTACT NOT APPROVED" if contact.issues.notApproved else ("NO RECORDED RELATIONSHIP" if contact.issues.noRelationship else "SOCIAL VISITOR"), classes: "moj-badge--red fit-content" }) }}
         {% endif %}

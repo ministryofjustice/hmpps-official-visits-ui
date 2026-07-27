@@ -152,7 +152,7 @@
                 },
                 items: statuses | filterCategoryItems(filter.status) | addRemoveLinks(filter, 'status')
               } if filter.status
-            ]
+            ] | filterNonFalsy
           },
           optionsHtml: filterOptionsHtml
         }) }}

@@ -26,11 +26,13 @@
       classes: 'govuk-button blue-button govuk-!-display-none-print'
   }) }}
 
+  <h1 class="govuk-heading-l govuk-!-display-none-print">{{ pageTitle }}</h1>
+
   {% if visits.length == 0 %}
     <p class="govuk-body">No visits found for the selected filters.</p>
   {% endif %}
 
   {% for visit in visits %}
-    {{ movementSlip(visit, visit.prisoner, now, not loop.last) }}
+    {{ movementSlip(visit, visit.prisoner, now, not loop.last, 2) }}
   {% endfor %}
 {% endblock %}

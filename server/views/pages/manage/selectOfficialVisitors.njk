@@ -48,25 +48,26 @@
       {% endfor %}
 
       <div class="govuk-summary-card">
-        {% if rows.length > 0 %}
-          <div class="govuk-summary-card__content" data-qa="prisoner-restrictions-table">
-            {{ govukTable({
-              caption: (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma + " active restrictions",
-              captionClasses: "govuk-table__caption--m",
-              firstCellIsHeader: true,
-              head: [
-                { text: "Type of restriction" },
-                { text: "Comments" },
-                { text: "Date from" },
-                { text: "Date to" }
-              ],
-              rows: rows
-            }) }}
-          </div>
-        {% else %}
-          <div class="govuk-summary-card__content govuk-summary-card__title" data-qa="empty-restrictions-title">{{ (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma }} active restrictions</div>
-          <div class="govuk-body govuk-!-margin-top-0 govuk-!-margin-left-4" data-qa="empty-restrictions-message">No active restrictions</div>
-        {% endif %}
+        <div class="govuk-summary-card__content">
+          <h2 class="govuk-heading-m" id="prisoner-restrictions-heading" data-qa="restrictions-title">{{ (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma }} active restrictions</h2>
+          {% if rows.length > 0 %}
+            <div data-qa="prisoner-restrictions-table">
+              {{ govukTable({
+                attributes: { "aria-labelledby": "prisoner-restrictions-heading" },
+                firstCellIsHeader: true,
+                head: [
+                  { text: "Type of restriction" },
+                  { text: "Comments" },
+                  { text: "Date from" },
+                  { text: "Date to" }
+                ],
+                rows: rows
+              }) }}
+            </div>
+          {% else %}
+            <p class="govuk-body govuk-!-margin-bottom-0" data-qa="empty-restrictions-message">No active restrictions</p>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>
@@ -119,11 +120,11 @@
           ]), rows) %}
         {% endfor %}
 
+        <h2 class="govuk-heading-m" id="approved-contacts-heading" data-qa="contacts-title">Approved official contacts</h2>
         {% if rows.length > 0 %}
           <div data-qa="visitors-table">
             {{ govukTable({
-              caption: "Approved official contacts",
-              captionClasses: "govuk-table__caption--m",
+              attributes: { "aria-labelledby": "approved-contacts-heading" },
               firstCellIsHeader: true,
               head: [
                 { text: "Add" },
@@ -136,8 +137,7 @@
             }) }}
           </div>
         {% else %}
-          <div class="govuk-summary-card__title" data-qa="empty-contacts-title">Approved official contacts</div>
-          <div class="govuk-body govuk-!-margin-top-3" data-qa="empty-contacts-message">No approved official contacts</div>
+          <p class="govuk-body govuk-!-margin-top-3" data-qa="empty-contacts-message">No approved official contacts</p>
         {% endif %}
       </div>
     </div>

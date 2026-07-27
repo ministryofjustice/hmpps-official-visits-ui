@@ -157,7 +157,11 @@ describe('check your answers handler', () => {
           const heading = getPageHeader($)
 
           expect(heading).toEqual('Check and confirm official visit details')
-          expect($('h2.govuk-heading-l').text()).toEqual('Visit detailsVisitor details')
+          expect(
+            $('h2.govuk-heading-l')
+              .map((_, el) => $(el).text().trim())
+              .get(),
+          ).toEqual(['Tim Harrison’s active restrictions', 'Visit details', 'Visitor details'])
 
           expect(res.text).toContain('ACTIVE RESTRICTION IN PLACE')
 
