@@ -122,11 +122,11 @@
           ]), rows) %}
         {% endfor %}
 
+        <h2 class="govuk-heading-m" id="approved-contacts-heading">Approved social contacts</h2>
         {% if rows.length > 0 %}
           <div data-qa="visitors-table">
             {{ govukTable({
-              caption: "Approved social contacts",
-              captionClasses: "govuk-table__caption--m",
+              attributes: { "aria-labelledby": "approved-contacts-heading" },
               firstCellIsHeader: true,
               head: [
                 { text: "Add" },
@@ -139,8 +139,7 @@
             }) }}
           </div>
         {% else %}
-          <div class="govuk-summary-card__title">Approved social contacts</div>
-          <div class="govuk-body govuk-!-margin-top-3">No approved social contacts</div>
+          <p class="govuk-body govuk-!-margin-top-3">No approved social contacts</p>
         {% endif %}
       </div>
     </div>
