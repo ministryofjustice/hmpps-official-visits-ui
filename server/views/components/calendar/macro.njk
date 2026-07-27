@@ -1,7 +1,7 @@
 {% macro calendar(params) %}
   <nav class="hmpps-calendar" aria-label="Calendar navigation" role="navigation">
     {% for month in params.months %}
-      <h2 class="govuk-heading-m">{{ month.monthHeading }}</h2>
+      <h3 class="govuk-heading-s">{{ month.monthHeading }}</h3>
 
       <ul class="govuk-list hmpps-calendar__day-headings" aria-hidden="true">
         <li>M<span>on</span></li>

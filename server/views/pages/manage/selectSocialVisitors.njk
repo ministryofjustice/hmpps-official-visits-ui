@@ -48,26 +48,27 @@
 
       {% endfor %}
 
-        <div class="govuk-summary-card">
-        {% if rows.length > 0 %}
-          <div class="govuk-summary-card__content" data-qa="prisoner-restrictions-table">
-            {{ govukTable({
-              caption: (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma + " active restrictions",
-              captionClasses: "govuk-table__caption--m",
-              firstCellIsHeader: true,
-              head: [
-                { text: "Type of restriction" },
-                { text: "Comments" },
-                { text: "Date from" },
-                { text: "Date to" }
-              ],
-              rows: rows
-            }) }}
-          </div>
-        {% else %}
-          <div class="govuk-summary-card__content govuk-summary-card__title">{{ (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma }} active restrictions</div>
-          <div class="govuk-body govuk-!-margin-top-0 govuk-!-margin-left-4">No active restrictions</div>
-        {% endif %}
+      <div class="govuk-summary-card">
+        <div class="govuk-summary-card__content">
+          <h2 class="govuk-heading-m" id="prisoner-restrictions-heading">{{ (prisoner.firstName + ' ' + prisoner.lastName) | convertToTitleCase | possessiveComma }} active restrictions</h2>
+          {% if rows.length > 0 %}
+            <div data-qa="prisoner-restrictions-table">
+              {{ govukTable({
+                attributes: { "aria-labelledby": "prisoner-restrictions-heading" },
+                firstCellIsHeader: true,
+                head: [
+                  { text: "Type of restriction" },
+                  { text: "Comments" },
+                  { text: "Date from" },
+                  { text: "Date to" }
+                ],
+                rows: rows
+              }) }}
+            </div>
+          {% else %}
+            <p class="govuk-body govuk-!-margin-bottom-0">No active restrictions</p>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>

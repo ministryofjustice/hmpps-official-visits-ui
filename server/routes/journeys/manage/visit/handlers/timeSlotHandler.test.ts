@@ -148,7 +148,7 @@ describe('Time slot handler', () => {
           expect($('.hmpps-calendar__navigation a').length).toEqual(1)
 
           // Prisoner's schedule
-          expect($('caption').text()).toEqual('John Smith’s schedule')
+          expect(getTextById($, 'prisoner-schedule-heading')).toEqual('John Smith’s schedule')
 
           // Schedule header
           expect($('.govuk-table__header').eq(0).text()).toEqual('Time')
@@ -226,7 +226,7 @@ describe('Time slot handler', () => {
           expect($('.hmpps-calendar__navigation a').length).toEqual(1)
 
           // Prisoner's schedule
-          expect($('caption').text()).toEqual('John Smith’s schedule')
+          expect(getTextById($, 'prisoner-schedule-heading')).toEqual('John Smith’s schedule')
 
           // Schedule header
           expect($('.govuk-table__header').eq(0).text()).toEqual('Time')
