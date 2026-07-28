@@ -62,7 +62,6 @@
     "moment": "2.30.1",
     "nocache": "^4.0.0",
     "nunjucks": "^3.2.4",
-    "openapi-typescript": "^7.13.0",
     "passport": "^0.7.0",
     "passport-oauth2": "^1.8.0",
     "qs": "6.15.3",
@@ -114,6 +113,7 @@
     "jsonwebtoken": "^9.0.3",
     "lint-staged": "^17.0.7",
     "nock": "^14.0.15",
+    "openapi-typescript": "^7.13.0",
     "playwright-ctrf-json-reporter": "^0.0.29",
     "prettier": "^3.8.4",
     "prettier-plugin-jinja-template": "^2.2.0",
@@ -137,9 +137,10 @@
     "openapi-typescript": {
       "typescript": "$typescript"
     },
-    "brace-expansion": "5.0.7",
+    "brace-expansion": "5.0.8",
     "js-yaml": "4.3.0",
     "shell-quote": "1.10.0",
+    "tar": "7.5.22",
     "@opentelemetry/core": "2.8.0",
     "@opentelemetry/resources": "2.8.0",
     "@opentelemetry/sdk-trace-base": "2.8.0",
