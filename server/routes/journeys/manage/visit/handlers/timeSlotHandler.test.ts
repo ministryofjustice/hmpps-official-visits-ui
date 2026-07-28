@@ -147,6 +147,20 @@ describe('Time slot handler', () => {
           expect($('.hmpps-calendar__navigation').length).toBeTruthy()
           expect($('.hmpps-calendar__navigation a').length).toEqual(1)
 
+          expect($('nav.hmpps-calendar').length).toEqual(0)
+          expect($('section.hmpps-calendar').attr('aria-label')).toEqual('Select a visit date')
+
+          expect($('.hmpps-calendar').children().eq(0).hasClass('hmpps-calendar__navigation')).toBe(true)
+
+          expect($('.hmpps-calendar__navigation a span[aria-hidden="true"]').text()).toEqual('›')
+          expect($('.hmpps-calendar__navigation a').contents().not('span').text().trim()).toEqual('Next Month')
+
+          expect($('.hmpps-calendar__day[aria-current="date"]').length).toEqual(1)
+          expect($('.hmpps-calendar__day[aria-current="date"]').hasClass('hmpps-calendar__day--selected')).toBe(true)
+          expect($('.hmpps-calendar__day[aria-current="date"]').text()).toContain('Thursday 25 December 2025')
+
+          expect($('.govuk-fieldset__heading').text()).toEqual('Select a time slot for Thursday, 25 December 2025')
+
           // Prisoner's schedule
           expect(getTextById($, 'prisoner-schedule-heading')).toEqual('John Smith’s schedule')
 
@@ -224,6 +238,20 @@ describe('Time slot handler', () => {
           // Default page shouldn't show previous month because it'll be in the past
           expect($('.hmpps-calendar__navigation').length).toBeTruthy()
           expect($('.hmpps-calendar__navigation a').length).toEqual(1)
+
+          expect($('nav.hmpps-calendar').length).toEqual(0)
+          expect($('section.hmpps-calendar').attr('aria-label')).toEqual('Select a visit date')
+
+          expect($('.hmpps-calendar').children().eq(0).hasClass('hmpps-calendar__navigation')).toBe(true)
+
+          expect($('.hmpps-calendar__navigation a span[aria-hidden="true"]').text()).toEqual('›')
+          expect($('.hmpps-calendar__navigation a').contents().not('span').text().trim()).toEqual('Next Month')
+
+          expect($('.hmpps-calendar__day[aria-current="date"]').length).toEqual(1)
+          expect($('.hmpps-calendar__day[aria-current="date"]').hasClass('hmpps-calendar__day--selected')).toBe(true)
+          expect($('.hmpps-calendar__day[aria-current="date"]').text()).toContain('Thursday 25 December 2025')
+
+          expect($('.govuk-fieldset__heading').text()).toEqual('Select a time slot for Thursday, 25 December 2025')
 
           // Prisoner's schedule
           expect(getTextById($, 'prisoner-schedule-heading')).toEqual('John Smith’s schedule')

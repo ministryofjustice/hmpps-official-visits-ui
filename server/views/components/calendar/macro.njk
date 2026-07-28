@@ -1,5 +1,16 @@
 {% macro calendar(params) %}
-  <nav class="hmpps-calendar" aria-label="Calendar navigation" role="navigation">
+  <section class="hmpps-calendar" aria-label="{{ params.label | default('Select a visit date') }}">
+    {% if params.previousMonthHref or params.nextMonthHref %}
+      <div class="hmpps-calendar__navigation">
+        {% if params.previousMonthHref %}
+          <a href="{{ params.previousMonthHref }}" class="govuk-link govuk-link--no-visited-state"><span aria-hidden="true">‹</span> Previous Month</a>
+        {% endif %}
+        {% if params.nextMonthHref %}
+          <a href="{{ params.nextMonthHref }}" class="govuk-link govuk-link--no-visited-state">Next Month <span aria-hidden="true">›</span></a>
+        {% endif %}
+      </div>
+    {% endif %}
+
     {% for month in params.months %}
       <h3 class="govuk-heading-s">{{ month.monthHeading }}</h3>
 
@@ -15,7 +26,7 @@
 
       <ul class="govuk-list hmpps-calendar__month">
         {% for day in month.days %}
-          <li class="hmpps-calendar__day{%- if loop.first and month.firstDayStartColumn %} hmpps-calendar__day--start-col-{{ month.firstDayStartColumn }}{% endif -%}{{ ' hmpps-calendar__day--has-link' if day.href }}{{ ' hmpps-calendar__day--selected' if day.selected }}">
+          <li class="hmpps-calendar__day{%- if loop.first and month.firstDayStartColumn %} hmpps-calendar__day--start-col-{{ month.firstDayStartColumn }}{% endif -%}{{ ' hmpps-calendar__day--has-link' if day.href }}{{ ' hmpps-calendar__day--selected' if day.selected }}"{{ ' aria-current="date"' | safe if day.selected }}>
             {% if day.href and not day.selected %}
               <a href="{{ day.href }}">{{ day.dayNumber }}</a>
             {% else %}
@@ -26,16 +37,5 @@
         {% endfor %}
       </ul>
     {% endfor %}
-
-    {% if params.previousMonthHref or params.nextMonthHref %}
-      <div class="hmpps-calendar__navigation">
-        {% if params.previousMonthHref %}
-          <a href="{{ params.previousMonthHref }}" class="govuk-link govuk-link--no-visited-state">‹ Previous Month</a>
-        {% endif %}
-        {% if params.nextMonthHref %}
-          <a href="{{ params.nextMonthHref }}" class="govuk-link govuk-link--no-visited-state">Next Month ›</a>
-        {% endif %}
-      </div>
-    {% endif %}
-  </nav>
+  </section>
 {% endmacro %}
