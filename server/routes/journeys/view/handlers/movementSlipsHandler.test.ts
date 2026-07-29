@@ -88,6 +88,33 @@ describe('Movement slips', () => {
         })
     })
 
+    it('should show a cancelled badge only on slips for cancelled visits', () => {
+      officialVisitsService.getVisits.mockResolvedValue({
+        content: [
+          { ...mockFindByCriteriaVisit, visitStatus: 'CANCELLED' },
+          { ...mockFindByCriteriaVisit, officialVisitId: 2, visitStatus: 'SCHEDULED' },
+        ],
+        page: { totalElements: 2, totalPages: 1, number: 0, size: 1000 },
+      } as FindByCriteriaResults)
+
+      return request(app)
+        .get(`${URL}?startDate=2025-03-01&endDate=2027-03-25`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          const slips = $('.movement-slip')
+          expect(slips.length).toBe(2)
+
+          const badges = $('.movement-slip .moj-badge')
+          expect(badges.length).toBe(1)
+          expect(badges.text().trim()).toBe('Cancelled')
+          expect(badges.hasClass('moj-badge--red')).toBe(true)
+
+          expect(slips.eq(0).find('.moj-badge').length).toBe(1)
+          expect(slips.eq(1).find('.moj-badge').length).toBe(0)
+        })
+    })
+
     it('should show empty message when no visits found', () => {
       officialVisitsService.getVisits.mockResolvedValue({
         content: [],

@@ -1,8 +1,13 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{%- from "moj/components/badge/macro.njk" import mojBadge -%}
 
 {% macro movementSlip(visit, prisoner, now, marginBottom = false, headingLevel = 1) %}
   <div class="govuk-grid-row dotted-border govuk-!-padding-top-4 govuk-!-padding-left-4 govuk-!-padding-right-4 govuk-!-padding-bottom-2 movement-slip {% if marginBottom %}govuk-!-margin-bottom-4{% endif %}">
     <h{{ headingLevel }} class="govuk-body govuk-!-margin-bottom-2"><b>{{ visit.prisonDescription }}</b> Movement authorisation slip</h{{ headingLevel }}>
+
+    {% if visit.visitStatus == 'CANCELLED' %}
+      {{ mojBadge({ text: "Cancelled", classes: "moj-badge--red" }) }}
+    {% endif %}
 
     {{ govukSummaryList({
       classes: 'govuk-!-margin-top-2 govuk-!-margin-bottom-2',
