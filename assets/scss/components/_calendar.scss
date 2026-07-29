@@ -78,3 +78,7 @@
   justify-content: space-between;
   margin-bottom: govuk-spacing(4);
 }
+
+.hmpps-calendar__navigation-next:only-child {
+  margin-left: auto;
+}

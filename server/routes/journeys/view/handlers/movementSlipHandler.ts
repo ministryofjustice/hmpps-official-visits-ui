@@ -2,7 +2,6 @@ import { Request, Response } from 'express'
 import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
-import { bulkMovementSlipsEnabled } from '../../../../utils/utils'
 
 export default class OfficialVisitMovementSlipHandler implements PageHandler {
   public PAGE_NAME = Page.MOVEMENT_SLIP
@@ -23,7 +22,6 @@ export default class OfficialVisitMovementSlipHandler implements PageHandler {
       visit,
       now: new Date(),
       hideBetaBanner: true,
-      useNewLayout: bulkMovementSlipsEnabled(user.activeCaseLoadId),
     })
   }
 }
