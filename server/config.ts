@@ -106,7 +106,7 @@ export default {
         response: Number(get('OFFICIAL_VISITS_API_TIMEOUT_RESPONSE', 20000)),
         deadline: Number(get('OFFICIAL_VISITS_API_TIMEOUT_DEADLINE', 20000)),
       },
-      agent: new AgentConfig(Number(get('OFFICIAL_VISITS_API_TIMEOUT_RESPONSE', 10000))),
+      agent: new AgentConfig(Number(get('OFFICIAL_VISITS_API_TIMEOUT_RESPONSE', 20000))),
     },
     prisonApi: {
       url: get('PRISON_API_URL', 'http://localhost:8080', requiredInProduction),

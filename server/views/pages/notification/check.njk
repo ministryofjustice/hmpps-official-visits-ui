@@ -3,17 +3,13 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
-
+{% set pageTitle = "Check and send official visit cancellation" if action === 'cancel' else "Check and send official visit confirmation" %}
 
 {% block content %}
 <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
       <span class="govuk-hint">Email official visit details to visitors</span>
-      {% if action === 'cancel' %}
-          <h1 class="govuk-heading-l">Check and send official visit cancellation</h1>
-      {% else %}
-           <h1 class="govuk-heading-l">Check and send official visit confirmation</h1>
-      {% endif %}
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
     </div>
   </div>
   <div class="govuk-grid-row govuk-body">

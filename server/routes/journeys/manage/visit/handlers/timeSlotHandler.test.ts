@@ -155,6 +155,8 @@ describe('Time slot handler', () => {
           expect($('.hmpps-calendar__navigation a span[aria-hidden="true"]').text()).toEqual('›')
           expect($('.hmpps-calendar__navigation a').contents().not('span').text().trim()).toEqual('Next Month')
 
+          expect($('.hmpps-calendar__navigation a').hasClass('hmpps-calendar__navigation-next')).toBe(true)
+
           expect($('.hmpps-calendar__day[aria-current="date"]').length).toEqual(1)
           expect($('.hmpps-calendar__day[aria-current="date"]').hasClass('hmpps-calendar__day--selected')).toBe(true)
           expect($('.hmpps-calendar__day[aria-current="date"]').text()).toContain('Thursday 25 December 2025')
@@ -246,6 +248,8 @@ describe('Time slot handler', () => {
 
           expect($('.hmpps-calendar__navigation a span[aria-hidden="true"]').text()).toEqual('›')
           expect($('.hmpps-calendar__navigation a').contents().not('span').text().trim()).toEqual('Next Month')
+
+          expect($('.hmpps-calendar__navigation a').hasClass('hmpps-calendar__navigation-next')).toBe(true)
 
           expect($('.hmpps-calendar__day[aria-current="date"]').length).toEqual(1)
           expect($('.hmpps-calendar__day[aria-current="date"]').hasClass('hmpps-calendar__day--selected')).toBe(true)

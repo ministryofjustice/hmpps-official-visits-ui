@@ -204,12 +204,12 @@
             firstCellIsHeader: false,
             classes: 'table-vertical-align-middle govuk-!-margin-top-6',
             head: [
-              { text: 'Date and time', attributes: { "aria-sort": "none" } },
-              { text: "Location", attributes: { "aria-sort": "none" } },
-              { text: "Visit type", attributes: { "aria-sort": "none" } },
-              { text: "Prisoner", attributes: { "aria-sort": "none" } },
-              { text: "Status", attributes: { "aria-sort": "none" } },
-              { text: "Action", attributes: { "aria-sort": "none" } } if user | hasPermission(PERMISSION.VIEW)
+              { text: 'Date and time' },
+              { text: "Location" },
+              { text: "Visit type" },
+              { text: "Prisoner" },
+              { text: "Status" },
+              { text: "Action" } if user | hasPermission(PERMISSION.VIEW)
             ] | filterNonFalsy,
             rows: rows
           }) }}

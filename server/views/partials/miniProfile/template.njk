@@ -10,47 +10,49 @@
             />
         </div>
         <div class="mini-profile-right">
-            <ul class="mini-profile-info">
-                <li>
-                    <p class="govuk-heading-s govuk-!-margin-bottom-1">
-                        <a id="mini-profile-link"
-                           class="govuk-link--no-visited-state"
-                           href="{{ DPS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}"
-                           target="_blank"
-                           data-qa="mini-profile-person-profile-link">{{ (prisoner.lastName + ', ' + prisoner.firstName) | convertToTitleCase }}
-                        </a>
-                    </p>
-                    <span class="govuk-body" data-qa="mini-profile-prisoner-number">{{ prisoner.prisonerNumber }}</span>
-                </li>
-                <li>
-                     <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Date of birth</span>
-                     <span class="govuk-body" data-qa="mini-profile-dob">{{ prisoner.dateOfBirth | formatDate }}</span>
-                </li>
-                <li>
-                    <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Establishment</span>
-                    <span class="govuk-body" data-qa="mini-profile-prison-name">{{ prisoner.prisonName }}</span>
-                </li>
-                <li>
-                    <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Cell number</span>
-                    <span class="govuk-body" data-qa="mini-profile-cell-location">{{ prisoner.cellLocation }}</span>
-                </li>
- <li>
-     <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Restrictions and Alerts</span>
-      <p class="govuk-body govuk-!-margin-bottom-1">
-          <a id="prisoner-alerts-restrictions-link"
-            class="govuk-link--no-visited-state"
-            href="{{ CONTACTS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}/alerts-restrictions"
-            data-qa="contact-{{ prisoner.prisonerNumber }}-alerts-restrictions" target="_blank">
-            {{ prisoner.restrictionsCount }}
-            {% if prisoner.restrictionsCount == 1 %}restriction{% else %}restrictions{% endif %}
-                and
-               {{ prisoner.alertsCount }}
-               {% if prisoner.alertsCount == 1 %}alert{% else %}alerts{% endif %}
-           </a>
-        </p>
-   </li>
-
-            </ul>
+            <dl class="mini-profile-info">
+                <div class="mini-profile-info__item">
+                    <dt class="govuk-visually-hidden">Name and prison number</dt>
+                    <dd>
+                        <p class="govuk-heading-s govuk-!-margin-bottom-1">
+                            <a id="mini-profile-link"
+                               class="govuk-link--no-visited-state"
+                               href="{{ DPS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}"
+                               target="_blank"
+                               data-qa="mini-profile-person-profile-link">{{ (prisoner.lastName + ', ' + prisoner.firstName) | convertToTitleCase }}
+                            </a>
+                        </p>
+                        <span class="govuk-body" data-qa="mini-profile-prisoner-number">{{ prisoner.prisonerNumber }}</span>
+                    </dd>
+                </div>
+                <div class="mini-profile-info__item">
+                     <dt class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Date of birth</dt>
+                     <dd class="govuk-body" data-qa="mini-profile-dob">{{ prisoner.dateOfBirth | formatDate }}</dd>
+                </div>
+                <div class="mini-profile-info__item">
+                    <dt class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Establishment</dt>
+                    <dd class="govuk-body" data-qa="mini-profile-prison-name">{{ prisoner.prisonName }}</dd>
+                </div>
+                <div class="mini-profile-info__item">
+                    <dt class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Cell number</dt>
+                    <dd class="govuk-body" data-qa="mini-profile-cell-location">{{ prisoner.cellLocation }}</dd>
+                </div>
+                <div class="mini-profile-info__item">
+                    <dt class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Restrictions and Alerts</dt>
+                    <dd class="govuk-body govuk-!-margin-bottom-1">
+                        <a id="prisoner-alerts-restrictions-link"
+                          class="govuk-link--no-visited-state"
+                          href="{{ CONTACTS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}/alerts-restrictions"
+                          data-qa="contact-{{ prisoner.prisonerNumber }}-alerts-restrictions" target="_blank">
+                          {{ prisoner.restrictionsCount }}
+                          {% if prisoner.restrictionsCount == 1 %}restriction{% else %}restrictions{% endif %}
+                              and
+                             {{ prisoner.alertsCount }}
+                             {% if prisoner.alertsCount == 1 %}alert{% else %}alerts{% endif %}
+                         </a>
+                      </dd>
+                </div>
+            </dl>
         </div>
     </div>
 </div>

@@ -41,14 +41,18 @@
   flex-wrap: wrap;
 }
 
-.mini-profile-info li {
+.mini-profile-info__item {
   margin-right: 25px;
   color: #0b0c0c;
 }
 
+.mini-profile-info dd {
+  margin-left: 0;
+}
+
 /* Media query for larger screens */
 @media (max-width: 768px) {
-  .mini-profile-info li {
+  .mini-profile-info__item {
     margin-right: 10px;
   }
 }

@@ -28,7 +28,7 @@ export default class AbstractPage {
 
   async verifyNoAccessViolationsOnPage(disabledRules: string[] = []): Promise<void> {
     const accessibilityScanResults = await new AxeBuilder({ page: this.page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'])
       .disableRules(disabledRules)
       .analyze()
 

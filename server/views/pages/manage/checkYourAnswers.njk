@@ -204,7 +204,7 @@
                 <h3>{{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }} ({{ contact.relationshipToPrisonerDescription }})</h3>
               </div>
               <div class="govuk-summary-list govuk-summary-list__actions govuk-!-font-weight-bold">
-                <a class="govuk-link govuk-link--no-visited-state" href="select-official-visitors">Change<span class="govuk-visually-hidden"></span></a>
+                <a class="govuk-link govuk-link--no-visited-state" href="select-official-visitors">Change<span class="govuk-visually-hidden"> visitors, {{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }}</span></a>
               </div>
             </div>
           </div>
