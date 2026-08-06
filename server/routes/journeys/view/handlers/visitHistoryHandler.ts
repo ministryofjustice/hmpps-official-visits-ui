@@ -101,7 +101,13 @@ const normalizeText = (value?: string | null): string | undefined => {
   return trimmed || undefined
 }
 
-const withFallback = (value: string | undefined, fallback: string): string => value ?? fallback
+const withFallback = (value: string | undefined, fallback: string): string => {
+  // TODO - change this event summary in the API from 'Visitor changed' to 'Visitors updated'
+  if (value === 'Visitor changed') {
+    return 'Visitors updated'
+  }
+  return value ?? fallback
+}
 
 const getTimestamp = (value?: string | null): string => withFallback(normalizeText(value), DEFAULT_TIMESTAMP)
 
@@ -140,6 +146,23 @@ const formatChange = (field: string, oldValue?: string | null, newValue?: string
   const updatedValue = normalizeText(newValue)
   const semantics = FIELD_SEMANTICS[normalizedField]
 
+  // Deal with visitor changes first
+  // TODO: Consider whether reviewed and retained is the right wording here
+  // Can't ignore updates - or we risk an empty timeline event - but nor do we have the detail changes per visitor yet
+  if (['Visitor added', 'Visitor updated', 'Visitor removed'].includes(fieldName)) {
+    switch (fieldName) {
+      case 'Visitor added':
+        return `Visitor ${updatedValue} added to visit`
+      case 'Visitor removed':
+        return `Visitor ${updatedValue} removed from visit`
+      case 'Visitor updated':
+        return `Visitor ${updatedValue} reviewed and retained`
+      default:
+        return `Unknown visitor event`
+    }
+  }
+
+  // Attempt more generic stuff - which didn't work for visitor changes, but does for visit field-level changes
   if (updatedValue) {
     if (previousValue) {
       const normalizedPreviousValue = previousValue.toUpperCase()

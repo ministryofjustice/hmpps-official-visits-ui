@@ -39,50 +39,9 @@ const appSetup = () => {
 
 beforeEach(() => {
   appSetup()
-
   officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
   officialVisitsService.getNotificationsByOfficialVisitId.mockResolvedValue([])
-  manageUsersService.getUserByUsername.mockImplementation(async username => ({
-    ...mockUser,
-    name: username,
-    username,
-  }))
-  officialVisitsService.getOfficialVisitAuditedEvents.mockResolvedValue([
-    {
-      auditedEventId: 1,
-      officialVisitId: ovId,
-      eventSummary: 'Visit updated',
-      eventSource: 'DPS',
-      eventDetail:
-        'Visitor added, Visitor updated changed from Joe Bloggs to Jane Bloggs, Start Time changed from 14:00 to 15:00',
-      eventVersion: 2,
-      eventType: 'UPDATE',
-      eventChanges: [
-        {
-          field: 'visitor_added',
-        },
-        {
-          field: 'visitor_updated',
-          oldValue: 'Joe Bloggs',
-          newValue: 'Jane Bloggs',
-        },
-        {
-          field: 'start_time',
-          oldValue: '14:00',
-          newValue: '15:00',
-        },
-        {
-          field: 'visit_type',
-          oldValue: 'VIDEO',
-          newValue: 'TELEPHONE',
-        },
-      ],
-      eventDateTime: '2026-10-25T14:30:00.000000',
-      eventUsername: 'JBLOGGS',
-      eventUserFullName: 'Joe Bloggs',
-      significantChange: true,
-    },
-  ])
+  manageUsersService.getUserByUsername.mockImplementation(async username => ({ ...mockUser, name: username, username }))
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
   prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue(mockPrisoner as unknown as Prisoner)
 })
@@ -97,6 +56,40 @@ const URL = `/view/visit/${ovId}/history`
 describe('OfficialVisitHistoryHandler', () => {
   describe('GET', () => {
     it('should render the official visit history timeline', async () => {
+      // Event detail
+      officialVisitsService.getOfficialVisitAuditedEvents.mockResolvedValue([
+        {
+          auditedEventId: 1,
+          officialVisitId: ovId,
+          eventSummary: 'Visit updated',
+          eventSource: 'DPS',
+          eventDetail: 'start_time|14:00|15:00;end_time|15:00|16:00;visit_type|VIDEO|TELEPHONE',
+          eventVersion: 2,
+          eventType: 'UPDATE',
+          eventChanges: [
+            {
+              field: 'start_time',
+              oldValue: '14:00',
+              newValue: '15:00',
+            },
+            {
+              field: 'end_time',
+              oldValue: '15:00',
+              newValue: '16:00',
+            },
+            {
+              field: 'visit_type',
+              oldValue: 'VIDEO',
+              newValue: 'TELEPHONE',
+            },
+          ],
+          eventDateTime: '2026-10-25T14:30:00.000000',
+          eventUsername: 'JBLOGGS',
+          eventUserFullName: 'Joe Bloggs',
+          significantChange: true,
+        },
+      ])
+
       officialVisitsService.getNotificationsByOfficialVisitId.mockResolvedValue([
         {
           notificationId: 2,
@@ -157,10 +150,9 @@ describe('OfficialVisitHistoryHandler', () => {
           const description = '.moj-timeline__description'
           expect($(description).text()).toContain('Email address: visitor@example.com')
           expect($(description).text()).toContain('Reason: Email notification for created visit')
-          expect($(description).text()).toContain('Visitor added')
-          expect($(description).text()).toContain('Visitor updated changed from Joe Bloggs to Jane Bloggs')
           expect($(description).text()).toContain('Visit type changed from Video to Telephone')
           expect($(description).text()).toContain('Start time changed from 14:00 to 15:00')
+          expect($(description).text()).toContain('End time changed from 15:00 to 16:00')
           expect($(description).text()).toContain('Reason: Email notification for updated visit')
           expect($(description).text()).toContain('Status: Failed')
 
@@ -175,14 +167,14 @@ describe('OfficialVisitHistoryHandler', () => {
         {
           auditedEventId: 5,
           officialVisitId: ovId,
-          eventSummary: '   ',
+          eventSummary: ' Visitor changed  ',
           eventType: 'UPDATE',
           eventSource: 'DPS',
-          eventDetail:
-            'Visitor added, Visitor updated changed from Joe Bloggs to Jane Bloggs, Start Time changed from 14:00 to 15:00',
+          eventDetail: 'visitor_updated||James Peters;visitor_removed||John Smith;',
           eventVersion: 2,
           eventChanges: [
-            { field: 'visitor_removed', oldValue: '  John Smith  ' },
+            { field: 'visitor_removed', oldValue: null, newValue: '  John Smith  ' },
+            { field: 'visitor_updated', oldValue: null, newValue: 'James Peters' },
             { field: 'visit_slot', oldValue: '11733', newValue: '11679' },
             { field: '   ', oldValue: '   ', newValue: '   ' },
           ],
@@ -225,15 +217,20 @@ describe('OfficialVisitHistoryHandler', () => {
             .map((_index, element) => $(element).text())
             .get()
 
-          expect(titles).toEqual(expect.arrayContaining(['Email notification failed', 'Activity updated']))
+          expect(titles).toEqual(expect.arrayContaining(['Email notification failed', 'Visitors updated']))
           expect(bylines[0]).toContain('by System')
           expect(bylines[1]).toContain('System')
           expect(dates).toEqual(expect.arrayContaining(['1 January 1970 at 00:00']))
           expect(descriptions.join(' ')).toContain('Email address: Not provided')
           expect(descriptions.join(' ')).toContain('Reason: Not provided')
           expect(descriptions.join(' ')).toContain('Status: Failed')
-          expect(descriptions.join(' ')).toContain('Visitor removed')
-          expect(descriptions.join(' ')).not.toContain('Visit Slot changed from 11733 to 11679')
+          expect(descriptions.join(' ')).toContain('Visitor John Smith removed from visit')
+          expect(descriptions.join(' ')).toContain('Visitor James Peters reviewed and retained')
+
+          // This is configured as an ignored change field - not reported on timeline
+          expect(descriptions.join(' ')).not.toContain('Visit slot changed from 11733 to 11679')
+
+          // Unknow field - defaults the field name to Field
           expect(descriptions.join(' ')).toContain('Field')
         })
     })
