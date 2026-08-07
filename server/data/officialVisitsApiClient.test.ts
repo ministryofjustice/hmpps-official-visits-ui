@@ -188,4 +188,40 @@ describe('OfficialVisitsApiClient', () => {
       expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('checkForNonAssociationVisits', () => {
+    it('should post the visit details and return the non-associate visits', async () => {
+      const prisonCode = 'MDI'
+      const expected = [{ prisonerNumber: 'A1232DD', officialVisitId: 23232323 }]
+
+      nock(config.apis.officialVisitsApi.url)
+        .post(`/official-visit/non-association-check/prison/${prisonCode}`, {
+          prisonerNumber: 'A1234AA',
+          visitDate: '2026-04-03',
+        })
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, expected)
+
+      const response = await officialVisitsApiClient.checkForNonAssociationVisits(
+        prisonCode,
+        'A1234AA',
+        '2026-04-03',
+        user,
+      )
+
+      expect(response).toEqual(expected)
+      expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
+    })
+
+    it('should return an empty list when there are no non-associate visits', async () => {
+      nock(config.apis.officialVisitsApi.url)
+        .post('/official-visit/non-association-check/prison/MDI')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, [])
+
+      const response = await officialVisitsApiClient.checkForNonAssociationVisits('MDI', 'A1234AA', '2026-04-03', user)
+
+      expect(response).toEqual([])
+    })
+  })
 })

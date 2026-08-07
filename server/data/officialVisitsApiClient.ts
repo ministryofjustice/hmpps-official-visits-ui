@@ -14,6 +14,7 @@ import {
   CreateVisitSlotRequest,
   FindByCriteria,
   FindByCriteriaResults,
+  NonAssociationVisitResponse,
   NotificationRequest,
   NotificationResponse,
   OfficialVisit,
@@ -334,6 +335,24 @@ export default class OfficialVisitsApiClient extends RestClient {
           endTime,
           contactIds: contactIds || [],
           existingOfficialVisitId: existingOfficialVisitId || 0,
+        },
+      },
+      asSystem(user?.username),
+    )
+  }
+
+  async checkForNonAssociationVisits(
+    prisonCode: string,
+    prisonerNumber: string,
+    visitDate: string,
+    user?: HmppsUser,
+  ): Promise<NonAssociationVisitResponse[]> {
+    return this.post<NonAssociationVisitResponse[]>(
+      {
+        path: `/official-visit/non-association-check/prison/${prisonCode}`,
+        data: {
+          prisonerNumber,
+          visitDate,
         },
       },
       asSystem(user?.username),

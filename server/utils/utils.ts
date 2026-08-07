@@ -198,9 +198,9 @@ export const refDataRadiosMapper = (referenceData: components['schemas']['Refere
 /**
  * Returns a formatted string, for example '09:00' or '23:59'
  * @param time String representing the time component of a date
- * @returns A formatted string representing the time in 24 hour format
+ * @returns A formatted padded time string, for example '09:00' or '23:59'
  */
-export const timeStringTo24HourPretty = (time: string) => {
+export const toHHmm = (time: string) => {
   if (!time) return time
 
   const [hours = '00', minutes = '00'] = time.split(':')

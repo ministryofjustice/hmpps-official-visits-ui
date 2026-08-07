@@ -171,7 +171,7 @@
       },
       {
         key: { text: "Time" },
-        value: { text: (visit.startTime | timeStringTo24HourPretty) + ' to ' + (visit.endTime | timeStringTo24HourPretty) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' },
+        value: { text: (visit.startTime | toHHmm) + ' to ' + (visit.endTime | toHHmm) + ' (' +  visit.startTime | durationText(visit.endTime) + ')' },
         actions: {
           items: [
             {

@@ -1,7 +1,7 @@
 import type { Express } from 'express'
 import request from 'supertest'
 import * as cheerio from 'cheerio'
-import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetup'
+import { appWithAllRoutes, flashProvider, journeyId, user } from '../../../../testutils/appSetup'
 import AuditService, { Page } from '../../../../../services/auditService'
 import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
@@ -99,6 +99,7 @@ beforeEach(() => {
     overlappingPrisonerVisits: [],
     contacts: [],
   })
+  officialVisitsService.checkForNonAssociationVisits.mockResolvedValue([])
 })
 
 afterEach(() => {
@@ -459,6 +460,179 @@ describe('Time slot handler', () => {
         },
         user,
       )
+    })
+  })
+
+  describe('POST (non-association check)', () => {
+    const nonAssociateVisit = {
+      prisonCode: 'MDI',
+      officialVisitId: 23232323,
+      visitDate: '2026-05-02',
+      startTime: '10:00',
+      endTime: '11:00',
+      prisonerNumber: 'A1232DD',
+      dpsLocationId: 'loc-9',
+      locationDescription: 'Room 2',
+      firstName: 'PAUL',
+      lastName: 'CLARKE',
+    }
+
+    it('should warn and not proceed when a non-associate has a visit on the date', async () => {
+      officialVisitsService.checkForNonAssociationVisits.mockResolvedValue([nonAssociateVisit])
+
+      await request(app).post(URL).set('Referer', URL).send({ visitSlot: '1' }).expect(302).expect('location', URL)
+
+      expect(officialVisitsService.checkForNonAssociationVisits).toHaveBeenCalledWith(
+        'MDI',
+        mockPrisoner.prisonerNumber,
+        '2026-01-26',
+        user,
+      )
+      expect(flashProvider).toHaveBeenCalledWith('nonAssociationVisits', JSON.stringify([nonAssociateVisit]))
+      expect(officialVisitsService.updateVisitTypeAndSlot).not.toHaveBeenCalled()
+    })
+
+    it('should record the warned slot so submitting the same slot again proceeds', async () => {
+      officialVisitsService.checkForNonAssociationVisits.mockResolvedValue([nonAssociateVisit])
+
+      await request(app).post(URL).set('Referer', URL).send({ visitSlot: '1' }).expect(302).expect('location', URL)
+
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.nonAssociationWarningShownFor).toEqual('1|2026-01-26')
+    })
+
+    it('should proceed without warning when the same slot has already been warned about', async () => {
+      officialVisitsService.checkForNonAssociationVisits.mockResolvedValue([nonAssociateVisit])
+      appSetup({
+        officialVisit: {
+          prisoner: mockPrisoner,
+          availableSlots: [mockTimeslot],
+          visitType: 'IN_PERSON',
+          selectedTimeSlot: mockTimeslot,
+          nonAssociationWarningShownFor: '1|2026-01-26',
+        } as Partial<OfficialVisitJourney>,
+      })
+
+      await request(app).post(URL).send({ visitSlot: '1' }).expect(302).expect('location', 'select-official-visitors')
+
+      expect(officialVisitsService.checkForNonAssociationVisits).not.toHaveBeenCalled()
+    })
+
+    it('should warn again when a different slot was previously accepted', async () => {
+      officialVisitsService.checkForNonAssociationVisits.mockResolvedValue([nonAssociateVisit])
+      appSetup({
+        officialVisit: {
+          prisoner: mockPrisoner,
+          availableSlots: [mockTimeslot],
+          visitType: 'IN_PERSON',
+          selectedTimeSlot: mockTimeslot,
+          nonAssociationWarningShownFor: '1|2025-11-11',
+        } as Partial<OfficialVisitJourney>,
+      })
+
+      await request(app).post(URL).set('Referer', URL).send({ visitSlot: '1' }).expect(302).expect('location', URL)
+
+      expect(officialVisitsService.checkForNonAssociationVisits).toHaveBeenCalled()
+    })
+
+    it('should warn once per non-associate visit when there is more than one', async () => {
+      officialVisitsService.checkForNonAssociationVisits.mockResolvedValue([
+        nonAssociateVisit,
+        { ...nonAssociateVisit, officialVisitId: 2, prisonerNumber: 'A1233EE', lastName: 'JONES' },
+      ])
+
+      await request(app).post(URL).set('Referer', URL).send({ visitSlot: '1' }).expect(302).expect('location', URL)
+
+      const flashed = JSON.parse(flashProvider.mock.calls.find(([key]) => key === 'nonAssociationVisits')[1] as string)
+      expect(flashed).toHaveLength(2)
+      expect(flashed.map((visit: { lastName: string }) => visit.lastName)).toEqual(['CLARKE', 'JONES'])
+    })
+
+    it('should warn and not update the visit in amend mode', async () => {
+      officialVisitsService.checkForNonAssociationVisits.mockResolvedValue([nonAssociateVisit])
+      const amendUrl = `/manage/amend/1/${UUID}/time-slot`
+
+      await request(app)
+        .post(amendUrl)
+        .set('Referer', amendUrl)
+        .send({ visitSlot: '1' })
+        .expect(302)
+        .expect('location', amendUrl)
+
+      expect(officialVisitsService.updateVisitTypeAndSlot).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('GET (non-association warning)', () => {
+    const nonAssociateVisit = {
+      prisonCode: 'MDI',
+      officialVisitId: 23232323,
+      visitDate: '2026-05-02',
+      startTime: '10:00',
+      endTime: '11:00',
+      prisonerNumber: 'A1232DD',
+      dpsLocationId: 'loc-9',
+      firstName: 'PAUL',
+      lastName: 'CLARKE',
+      locationDescription: 'Room 2',
+    }
+
+    const flashWarning = (warning: unknown[]) =>
+      flashProvider.mockImplementation((key: string) =>
+        key === 'nonAssociationVisits' ? [JSON.stringify(warning)] : [],
+      )
+
+    it('should render the warning as an amber alert with the non-associate details', async () => {
+      flashWarning([nonAssociateVisit])
+
+      const response = await request(app).get(URL).expect(200)
+      const $ = cheerio.load(response.text)
+      const alert = $('.moj-alert')
+
+      expect(alert.hasClass('moj-alert--warning')).toBe(true)
+      expect(alert.text()).toContain('The prisoner has a non-association')
+      expect(alert.text()).toContain('John Smith has a non-association with')
+      expect(alert.text()).toContain('Paul Clarke who has a visit booked on 2 May 2026 10:00 to 11:00 in Room 2.')
+      expect(alert.text()).toContain('Please review the non-association before completing the booking')
+    })
+
+    it('should pluralise the warning when more than one non-associate has a visit booked', async () => {
+      flashWarning([
+        nonAssociateVisit,
+        { ...nonAssociateVisit, officialVisitId: 2, prisonerNumber: 'A1233EE', firstName: 'DAVE', lastName: 'JONES' },
+      ])
+
+      const response = await request(app).get(URL).expect(200)
+      const alert = cheerio.load(response.text)('.moj-alert')
+
+      expect(alert.text()).toContain('The prisoner has non-associations')
+      expect(alert.text()).toContain('John Smith has non-associations with')
+      expect(alert.text()).toContain('Paul Clarke who has a visit booked')
+      expect(alert.text()).toContain('Dave Jones who has a visit booked')
+      expect(alert.text()).toContain('Please review the non-associations before completing the booking')
+    })
+
+    it('should keep the singular wording when the same non-associate has more than one visit booked', async () => {
+      flashWarning([
+        nonAssociateVisit,
+        { ...nonAssociateVisit, officialVisitId: 2, startTime: '14:00', endTime: '15:00' },
+      ])
+
+      const response = await request(app).get(URL).expect(200)
+      const alert = cheerio.load(response.text)('.moj-alert')
+
+      expect(alert.text()).toContain('The prisoner has a non-association')
+      expect(alert.text()).toContain('John Smith has a non-association with')
+      expect(alert.text()).toContain('10:00 to 11:00')
+      expect(alert.text()).toContain('14:00 to 15:00')
+    })
+
+    it('should not render the warning when there is nothing flashed', async () => {
+      flashProvider.mockReturnValue([])
+
+      const response = await request(app).get(URL).expect(200)
+
+      expect(cheerio.load(response.text)('.moj-alert--warning')).toHaveLength(0)
     })
   })
 })
