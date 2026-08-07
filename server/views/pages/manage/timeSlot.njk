@@ -123,7 +123,7 @@
           {% set items = (items.push(
             {
               value: slot.visitSlotId,
-              html: '<b>' + (slot.startTime | timeStringToHoursAndMinutes) + ' to ' + (slot.endTime | timeStringToHoursAndMinutes) + '</b><br />' + slotDescription,
+              html: '<b>' + (slot.startTime | toHHmm) + ' to ' + (slot.endTime | toHHmm) + '</b><br />' + slotDescription,
               checked: selectedTimeSlot == slot.visitSlotId
             }
           ), items) %}

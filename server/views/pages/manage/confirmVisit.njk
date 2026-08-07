@@ -28,7 +28,7 @@
         attributes: { "data-qa": "visit-details" },
         rows: visitorRows.concat([
           { key: { text: "Date" }, value: { text: visit.visitDate | formatDate("EEEE d MMMM yyyy") } },
-          { key: { text: "Time" }, value: { text: (visit.startTime | timeStringToHoursAndMinutes) + ' to ' + (visit.endTime | timeStringToHoursAndMinutes) + ' (' + visit.startTime | durationText(visit.endTime) + ')' } },
+          { key: { text: "Time" }, value: { text: (visit.startTime | toHHmm) + ' to ' + (visit.endTime | toHHmm) + ' (' + visit.startTime | durationText(visit.endTime) + ')' } },
           { key: { text: "Location" }, value: { text: visit.locationDescription } }
         ])
       }) }}

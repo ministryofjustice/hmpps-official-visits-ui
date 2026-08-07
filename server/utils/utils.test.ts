@@ -14,7 +14,7 @@ import {
   toDuration,
   getParsedDateFromQueryString,
   getWeekOfDatesStartingMonday,
-  timeStringToHoursAndMinutes,
+  toHHmm,
   isDateAndInThePast,
   isVisitDateAndStartTimeInThePast,
   formatAddressLines,
@@ -305,7 +305,7 @@ describe('getWeekOfDatesStartingMonday', () => {
   })
 })
 
-describe('timeStringToHoursAndMinutes', () => {
+describe('toHHmm', () => {
   it.each([
     ['00:00', '00:00'],
     ['01:00', '01:00'],
@@ -313,7 +313,7 @@ describe('timeStringToHoursAndMinutes', () => {
     ['13:00', '13:00'],
     ['23:59', '23:59'],
   ])('converts %s to %s', (input, expected) => {
-    expect(timeStringToHoursAndMinutes(input)).toBe(expected)
+    expect(toHHmm(input)).toBe(expected)
   })
 })
 
