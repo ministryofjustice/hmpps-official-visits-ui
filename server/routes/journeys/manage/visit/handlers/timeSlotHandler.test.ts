@@ -591,7 +591,7 @@ describe('Time slot handler', () => {
 
       expect(alert.hasClass('moj-alert--warning')).toBe(true)
       expect(alert.text()).toContain('The prisoner has a non-association')
-      expect(alert.text()).toContain('has a non-association with')
+      expect(alert.text()).toContain('John Smith has a non-association with')
       expect(alert.text()).toContain('Paul Clarke who has a visit booked on 2 May 2026 10:00 to 11:00 in Room 2.')
       expect(alert.text()).toContain('Please review the non-association before completing the booking')
     })
@@ -606,7 +606,7 @@ describe('Time slot handler', () => {
       const alert = cheerio.load(response.text)('.moj-alert')
 
       expect(alert.text()).toContain('The prisoner has non-associations')
-      expect(alert.text()).toContain('has non-associations with')
+      expect(alert.text()).toContain('John Smith has non-associations with')
       expect(alert.text()).toContain('Paul Clarke who has a visit booked')
       expect(alert.text()).toContain('Dave Jones who has a visit booked')
       expect(alert.text()).toContain('Please review the non-associations before completing the booking')
@@ -622,7 +622,7 @@ describe('Time slot handler', () => {
       const alert = cheerio.load(response.text)('.moj-alert')
 
       expect(alert.text()).toContain('The prisoner has a non-association')
-      expect(alert.text()).toContain('has a non-association with')
+      expect(alert.text()).toContain('John Smith has a non-association with')
       expect(alert.text()).toContain('10:00 to 11:00')
       expect(alert.text()).toContain('14:00 to 15:00')
     })
