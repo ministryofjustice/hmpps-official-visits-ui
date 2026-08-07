@@ -7,6 +7,7 @@ import {
   CancelTypeRequest,
   CompleteVisitRequest,
   FindByCriteriaResults,
+  NonAssociationVisitResponse,
   NotificationResponse,
   OfficialVisit,
   OfficialVisitNotifications,
@@ -175,6 +176,8 @@ export default {
       overlappingContactVisits: number[]
     }>
   }) => simplePostApiMock(`/official-visits-api/official-visit/prison/.*/overlapping`, response),
+  stubCheckForNonAssociationVisits: (response: NonAssociationVisitResponse[] = []) =>
+    simplePostApiMock(`/official-visits-api/official-visit/non-association-check/prison/.*`, response),
   stubGetVisitChangeStatus: (response: { hasChanged: boolean } = { hasChanged: false }) =>
     simpleApiMock(`/official-visits-api/notification/\\d+/change-status`, response),
   stubSendNotification: (officialVisitId: number, response: RecursivePartial<NotificationResponse> = {}) =>

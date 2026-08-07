@@ -155,6 +155,7 @@ test.describe('Create an official visit', () => {
       overlappingPrisonerVisits: [],
       contacts: [],
     })
+    await officialVisitsApi.stubCheckForNonAssociationVisits()
     await personalRelationshipsApi.stubRelationship(1)
     await personalRelationshipsApi.stubRelationship(2)
   })
@@ -439,6 +440,54 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/select-official-visitors/)
     await expect(page.getByText('A visitor already has a visit booked')).toBeVisible()
     await expect(page.getByText('A visitor has another visit booked at this time.')).toBeVisible()
+  })
+
+  test('Warns about non-association visits on the time slot page and proceeds on resubmit', async ({ page }) => {
+    await officialVisitsApi.stubCheckForNonAssociationVisits([
+      {
+        prisonCode: 'MDI',
+        officialVisitId: 2,
+        visitDate: '2026-05-02',
+        startTime: '10:00',
+        endTime: '11:00',
+        prisonerNumber: 'A1232DD',
+        dpsLocationId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        locationDescription: 'Legal visits room 8',
+        firstName: 'PAUL',
+        lastName: 'CLARKE',
+      },
+    ])
+
+    await login(page)
+    await page.goto(`/manage/create/${uuidV4()}/search`)
+    const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)
+    await prisonerSearchPage.searchBox.fill('John')
+    await prisonerSearchPage.searchButton.click()
+
+    const prisonerSearchResultsPage = await PrisonerSearchResultsPage.verifyOnPage(page)
+    await prisonerSearchResultsPage.selectThisPrisoner()
+
+    const visitTypePage = await VisitTypePage.verifyOnPage(page)
+    await visitTypePage.selectRadioButton('In person')
+    await visitTypePage.continueButton.click()
+
+    const timeSlotPage = await TimeSlotPage.verifyOnPage(page)
+    const slotRadio = '08:00 to 17:00 Legal Visits Room 2 Groups 1, people 2, video 1'
+    await timeSlotPage.selectRadioButton(slotRadio)
+    await timeSlotPage.continueButton.click()
+
+    // Warned and kept on the time slot page with the chosen slot still selected
+    await TimeSlotPage.verifyOnPage(page)
+    const alert = page.locator('.moj-alert--warning')
+    await expect(alert).toContainText('The prisoner has a non-association')
+    await expect(alert).toContainText(
+      'Paul Clarke who has a visit booked on 2 May 2026 10:00 to 11:00 in Legal visits room 8.',
+    )
+    await expect(page.getByRole('radio', { name: slotRadio })).toBeChecked()
+
+    // Continuing with the same slot again accepts the warning and proceeds
+    await timeSlotPage.continueButton.click()
+    await SelectOfficialContactPage.verifyOnPage(page)
   })
 })
 
