@@ -12,7 +12,7 @@ import {
 } from '../../../../@types/officialVisitsApi/types'
 import { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
-import { isVisitDateAndStartTimeInThePast } from '../../../../utils/utils'
+import { isVisitDateAndStartTimeInThePast, toHHmm } from '../../../../utils/utils'
 import { JourneyPrisoner, JourneyVisitor } from './journey'
 
 const VISIT_IN_PAST_API_MESSAGE = "The from date must be on or after today's date"
@@ -195,8 +195,8 @@ export async function cyaGuard(req: Request, res: Response, ovService: OfficialV
     visit.prisoner.prisonCode,
     visit.prisoner.prisonerNumber,
     visit.selectedTimeSlot.visitDate,
-    visit.selectedTimeSlot.startTime.split(':').slice(0, 2).join(':'),
-    visit.selectedTimeSlot.endTime.split(':').slice(0, 2).join(':'),
+    toHHmm(visit.selectedTimeSlot.startTime),
+    toHHmm(visit.selectedTimeSlot.endTime),
     [...(visit.officialVisitors || []), ...(visit.socialVisitors || [])].map(v => v.contactId),
     visit.officialVisitId || 0,
     res.locals.user,

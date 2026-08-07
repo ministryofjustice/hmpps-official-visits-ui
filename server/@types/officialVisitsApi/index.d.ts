@@ -131,6 +131,62 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/queue-admin/retry-dlq/{dlqName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    put: operations['retryDlq']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/queue-admin/retry-all-dlqs': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put: operations['retryAllDlqs']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/queue-admin/purge-queue/{queueName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    put: operations['purgeQueue']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/official-visit/prison/{prisonCode}/id/{officialVisitId}/visitors': {
     parameters: {
       query?: never
@@ -509,6 +565,30 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/official-visit/non-association-check/prison/{prisonCode}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Endpoint to check whether a prisoner's non-associates already have an official visit.
+     * @description Returns the official visits of any of the prisoner's open non-associations that are scheduled at the same prison on the same date as the visit being checked. When the start and end times are supplied, only the visits overlapping them are returned. Returns an empty list when the prisoner has no open non-associations, or when none of them have a matching visit.
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__RW
+     */
+    post: operations['getNonAssociationVisits']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/notify/callback': {
     parameters: {
       query?: never
@@ -739,6 +819,7 @@ export interface paths {
      *
      *     Requires one of the following roles:
      *     * SAR_DATA_ACCESS
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
      */
     get: operations['getSarContentByReference']
     put?: never
@@ -759,6 +840,7 @@ export interface paths {
     /**
      * @description Requires one of the following roles:
      *     * SAR_DATA_ACCESS
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
      */
     get: operations['getServiceTemplate']
     put?: never
@@ -872,6 +954,26 @@ export interface paths {
      *     * OFFICIAL_VISITS_MIGRATION
      */
     get: operations['getOfficialVisitById_1']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/queue-admin/get-dlq-messages/{dlqName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * @description Requires one of the following roles:
+     *     * OFFICIAL_VISITS_ADMIN
+     */
+    get: operations['getDlqMessages']
     put?: never
     post?: never
     delete?: never
@@ -1778,6 +1880,14 @@ export interface components {
        */
       updateUsername: string
     }
+    RetryDlqResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+    }
+    PurgeQueueResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+    }
     /** @description The request body for updating  visitors details for an official visit */
     OfficialVisitUpdateVisitorsRequest: {
       officialVisitors: components['schemas']['OfficialVisitor'][]
@@ -2582,16 +2692,27 @@ export interface components {
       officialVisitors: components['schemas']['OfficialVisitor'][]
     }
     CreateOfficialVisitResponse: {
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @description The official visit ID
+       */
       officialVisitId: number
+      /** @description The prisoner number */
       prisonerNumber: string
-      visitorAndContactIds: components['schemas']['PairLongLong'][]
+      /** @description The visitor and contact IDs */
+      visitorAndContactIds: components['schemas']['VisitorAndContactId'][]
     }
-    PairLongLong: {
-      /** Format: int64 */
-      first: number
-      /** Format: int64 */
-      second: number
+    VisitorAndContactId: {
+      /**
+       * Format: int64
+       * @description The visitor ID
+       */
+      visitorId: number
+      /**
+       * Format: int64
+       * @description The contact ID (null when no contact was created)
+       */
+      contactId?: number | null
     }
     /** @description The request with the overlapping criteria to check against */
     OverlappingVisitsCriteriaRequest: {
@@ -2891,6 +3012,84 @@ export interface components {
       /** @description Prisoner attendance code description */
       attendanceCodeDescription?: string | null
     }
+    /** @description The request with the details of the visit to check */
+    NonAssociationCheckRequest: {
+      /**
+       * @description The prisoner number (NOMIS ID) of the prisoner being visited
+       * @example A1234AA
+       */
+      prisonerNumber: string
+      /**
+       * Format: date
+       * @description The date of the visit being checked
+       * @example 2026-04-03
+       */
+      visitDate: string
+      /**
+       * @description The start time of the visit being checked. Optional, but must be supplied with the end time. When the times are supplied only visits overlapping them are returned
+       * @example 10:00
+       */
+      startTime?: string | null
+      /**
+       * @description The end time of the visit being checked. Optional, but must be supplied with the start time. When the times are supplied only visits overlapping them are returned
+       * @example 11:00
+       */
+      endTime?: string | null
+    }
+    NonAssociationVisitResponse: {
+      /**
+       * @description The prison code the non-associate's official visit is at
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * Format: int64
+       * @description The unique identifier of the non-associate's official visit
+       * @example 23232323
+       */
+      officialVisitId: number
+      /**
+       * Format: date
+       * @description The date of the non-associate's official visit
+       * @example 2026-03-02
+       */
+      visitDate: string
+      /**
+       * @description The start time of the non-associate's official visit
+       * @example 10:00
+       */
+      startTime: string
+      /**
+       * @description The end time of the non-associate's official visit
+       * @example 11:00
+       */
+      endTime: string
+      /**
+       * @description The prisoner number (NOMIS ID) of the non-associate
+       * @example A1232DD
+       */
+      prisonerNumber: string
+      /**
+       * Format: uuid
+       * @description The DPS location identifier of the non-associate's official visit
+       */
+      dpsLocationId: string
+      /**
+       * @description The description of the prison location the non-associate's official visit is in
+       * @example Legal visits room 8
+       */
+      locationDescription: string
+      /**
+       * @description The first name of the non-associate
+       * @example Steve
+       */
+      firstName: string
+      /**
+       * @description The last name of the non-associate
+       * @example Smith
+       */
+      lastName: string
+    }
     /** @description Gov Notify Callback Notification */
     NotifyCallbackNotificationRequest: {
       /**
@@ -2942,8 +3141,16 @@ export interface components {
       notificationType: 'CREATE' | 'AMEND' | 'CANCEL'
       /** @description The recipient email address to send the notification to */
       emailAddresses: string[]
+      /** @description This could be a PCVL number, a full URL, or some locally-recognised shorthand for the room link. */
+      videoLinkUrl?: string | null
+      /** @description Some personalised email notes about the visit. */
+      notes?: string | null
     }
     NotificationRecipient: {
+      /**
+       * @description The email address of the recipient
+       * @example example@example.com
+       */
       emailAddress: string
       /** Format: int64 */
       notificationId: number
@@ -3402,6 +3609,19 @@ export interface components {
        * @example 111111
        */
       officialVisitId: number
+    }
+    DlqMessage: {
+      body: {
+        [key: string]: unknown
+      }
+      messageId: string
+    }
+    GetDlqResult: {
+      /** Format: int32 */
+      messagesFoundCount: number
+      /** Format: int32 */
+      messagesReturnedCount: number
+      messages: components['schemas']['DlqMessage'][]
     }
     ApprovedContact: {
       /**
@@ -3871,14 +4091,14 @@ export interface components {
        * @description The changes related to an update, otherwise empty
        * @example [
        *       {
-       *         'field': 'start_time',
-       *         'oldValue': '12:00',
-       *         'newValue': '17:00'
+       *         "field": "start_time",
+       *         "oldValue": "12:00",
+       *         "newValue": "17:00"
        *       },
        *       {
-       *         'field': 'end_time',
-       *         'oldValue': '14:00',
-       *         'newValue': '19:00'
+       *         "field": "end_time",
+       *         "oldValue": "14:00",
+       *         "newValue": "19:00"
        *       }
        *     ]
        */
@@ -4352,6 +4572,70 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  retryDlq: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        dlqName: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['RetryDlqResult']
+        }
+      }
+    }
+  }
+  retryAllDlqs: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['RetryDlqResult'][]
+        }
+      }
+    }
+  }
+  purgeQueue: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        queueName: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['PurgeQueueResult']
         }
       }
     }
@@ -5365,6 +5649,54 @@ export interface operations {
       }
     }
   }
+  getNonAssociationVisits: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['NonAssociationCheckRequest']
+      }
+    }
+    responses: {
+      /** @description The official visits of any non-associates on the given date, empty if there are none */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['NonAssociationVisitResponse'][]
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   callback: {
     parameters: {
       query?: never
@@ -6195,6 +6527,30 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getDlqMessages: {
+    parameters: {
+      query?: {
+        maxMessages?: number
+      }
+      header?: never
+      path: {
+        dlqName: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          '*/*': components['schemas']['GetDlqResult']
         }
       }
     }

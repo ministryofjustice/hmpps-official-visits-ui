@@ -165,6 +165,7 @@ test.describe('Amend official visits', () => {
       overlappingPrisonerVisits: [],
       contacts: [],
     })
+    await officialVisitsApi.stubCheckForNonAssociationVisits()
     await personalRelationshipsApi.stubRelationship(1)
     await personalRelationshipsApi.stubRelationship(2)
     await personalRelationshipsApi.stubRelationship(3)

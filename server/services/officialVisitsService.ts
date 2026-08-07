@@ -19,6 +19,7 @@ import {
   VisitorType,
   CreateVisitSlotRequest,
   OverlappingVisitsResponse,
+  NonAssociationVisitResponse,
   NotificationRequest,
   NotificationSearchRequest,
   PagedModelSentNotification,
@@ -286,5 +287,17 @@ export default class OfficialVisitsService {
       existingOfficialVisitId,
       user,
     )
+  }
+
+  public async checkForNonAssociationVisits(
+    prisonCode: string,
+    prisonerNumber: string,
+    visitDate: string,
+    user?: HmppsUser,
+  ): Promise<NonAssociationVisitResponse[]> {
+    logger.info(
+      `Check for non-association visits for prisoner ${prisonerNumber} on ${visitDate} called by ${user?.userId}`,
+    )
+    return this.officialVisitsApiClient.checkForNonAssociationVisits(prisonCode, prisonerNumber, visitDate, user)
   }
 }

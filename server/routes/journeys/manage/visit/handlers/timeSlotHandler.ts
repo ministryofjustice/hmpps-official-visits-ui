@@ -88,7 +88,11 @@ export default class TimeSlotHandler implements PageHandler {
     const rawErrors = req.flash('alertErrors')[0]
     const errors = rawErrors ? JSON.parse(rawErrors) : {}
 
+    const rawNonAssociations = req.flash('nonAssociationVisits')[0]
+    const nonAssociationVisits = rawNonAssociations ? JSON.parse(rawNonAssociations) : null
+
     res.render('pages/manage/timeSlot', {
+      nonAssociationVisits,
       today: new Date().toISOString().substring(0, 10),
       selectedDate,
       calendarData,
@@ -118,6 +122,22 @@ export default class TimeSlotHandler implements PageHandler {
     if (Object.keys(errors).length > 0) {
       return res.alertValidationError(errors)
     }
+
+    const slotKey = `${selectedSlot.visitSlotId}|${selectedSlot.visitDate}`
+    if (visit.nonAssociationWarningShownFor !== slotKey) {
+      const nonAssociationVisits = await this.officialVisitsService.checkForNonAssociationVisits(
+        visit.prisoner.prisonCode,
+        visit.prisoner.prisonerNumber,
+        selectedSlot.visitDate,
+        res.locals.user,
+      )
+
+      if (nonAssociationVisits.length > 0) {
+        req.session.journey.officialVisit.nonAssociationWarningShownFor = slotKey
+        return res.alertWarning('nonAssociationVisits', nonAssociationVisits)
+      }
+    }
+
     const ovId = req.params.ovId as string
     const journeyId = req.params.journeyId as string
     if (res.locals.mode === 'amend') {
