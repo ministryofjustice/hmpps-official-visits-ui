@@ -9,6 +9,7 @@ export default {
   collectCoverageFrom: ['server/**/*.{ts,js,jsx,mjs}'],
   testMatch: ['<rootDir>/(server|job)/**/?(*.)(cy|test).{ts,js,jsx,mjs}'],
   testEnvironment: 'node',
+  setupFiles: ['<rootDir>/server/testutils/disableHttpKeepAlive.ts'],
   reporters: [
     'default',
     [
