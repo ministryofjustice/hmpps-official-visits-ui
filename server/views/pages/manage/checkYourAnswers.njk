@@ -132,7 +132,7 @@
           {
             key: { text: "Time" },
             value: {
-              text: (visit.selectedTimeSlot.startTime | timeStringTo24HourPretty) + ' to ' + (visit.selectedTimeSlot.endTime | timeStringTo24HourPretty) + ' (' +  visit.selectedTimeSlot.startTime | durationText(visit.selectedTimeSlot.endTime) + ')'
+              text: (visit.selectedTimeSlot.startTime | timeStringToHoursAndMinutes) + ' to ' + (visit.selectedTimeSlot.endTime | timeStringToHoursAndMinutes) + ' (' +  visit.selectedTimeSlot.startTime | durationText(visit.selectedTimeSlot.endTime) + ')'
             },
             actions: {
               items: [

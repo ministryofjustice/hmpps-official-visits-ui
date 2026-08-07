@@ -43,6 +43,7 @@ declare module 'express-serve-static-core' {
     addValidationError?(message: string, field?: string): void
     validationFailed?(message?: string, field?: string): void
     alertValidationError?(errors: Record<string, boolean>, redirectUrl?: string): void
+    alertWarning?(key: string, payload: unknown, redirectUrl?: string): void
   }
 }
 

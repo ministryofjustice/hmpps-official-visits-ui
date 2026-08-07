@@ -19,7 +19,7 @@ import {
   isDateAndInThePast,
   lastNameCommaFirstName,
   parseDate,
-  timeStringTo24HourPretty,
+  timeStringToHoursAndMinutes,
   toDuration,
   translateDay,
 } from './utils'
@@ -102,7 +102,7 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
   )
   njkEnv.addFilter('includes', (items: any[], selected: string) => items.includes(selected))
   njkEnv.addFilter('possessiveComma', (name: string) => (name.endsWith('s') ? `${name}’` : `${name}’s`))
-  njkEnv.addFilter('timeStringTo24HourPretty', timeStringTo24HourPretty)
+  njkEnv.addFilter('timeStringToHoursAndMinutes', timeStringToHoursAndMinutes)
   njkEnv.addFilter('durationText', (startTime: string, endTime: string) =>
     toDuration(getTimeDiff(startTime, endTime) / 60000),
   )

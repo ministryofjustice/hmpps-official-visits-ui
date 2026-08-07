@@ -1,0 +1,26 @@
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+
+{% macro nonAssociationWarning(nonAssociationVisits, prisoner) %}
+  {% if nonAssociationVisits and nonAssociationVisits.length %}
+    {% set hasMultiple = (nonAssociationVisits | groupby("prisonerNumber") | length) > 1 %}
+    {% set warningHtml %}
+      <p class="govuk-body">{{ prisoner | firstNameSpaceLastName }} has {{ "non-associations" if hasMultiple else "a non-association" }} with</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for visit in nonAssociationVisits %}
+          <li>{{ visit | firstNameSpaceLastName }} who has a visit booked on {{ visit.visitDate | formatDate }} {{ visit.startTime | timeStringToHoursAndMinutes }} to {{ visit.endTime | timeStringToHoursAndMinutes }}{% if visit.locationDescription %} in {{ visit.locationDescription }}{% endif %}.</li>
+        {% endfor %}
+      </ul>
+      <p class="govuk-body">Please review the {{ "non-associations" if hasMultiple else "non-association" }} before completing the booking</p>
+    {% endset %}
+
+    {{ mojAlert({
+      variant: "warning",
+      role: "alert",
+      title: "The prisoner has non-associations" if hasMultiple else "The prisoner has a non-association",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: warningHtml,
+      classes: 'govuk-!-margin-bottom-6'
+    }) }}
+  {% endif %}
+{% endmacro %}

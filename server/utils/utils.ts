@@ -200,7 +200,7 @@ export const refDataRadiosMapper = (referenceData: components['schemas']['Refere
  * @param time String representing the time component of a date
  * @returns A formatted string representing the time in 24 hour format
  */
-export const timeStringTo24HourPretty = (time: string) => {
+export const timeStringToHoursAndMinutes = (time: string) => {
   if (!time) return time
 
   const [hours = '00', minutes = '00'] = time.split(':')

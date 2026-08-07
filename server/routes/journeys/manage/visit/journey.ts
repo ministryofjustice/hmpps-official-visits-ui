@@ -31,6 +31,7 @@ export type OfficialVisitJourney = {
   socialVisitors?: JourneyVisitor[]
   availableSlots?: AvailableSlot[]
   selectedTimeSlot?: Partial<AvailableSlot>
+  nonAssociationWarningShownFor?: string
   // Pages are optional but we need to ensure they are shown at least once
   assistancePageCompleted?: boolean
   equipmentPageCompleted?: boolean

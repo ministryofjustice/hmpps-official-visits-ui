@@ -36,6 +36,11 @@ export default function setUpFlash(): Router {
       res.redirect(redirectUrl || req.get('Referrer') || '/')
     }
 
+    res.alertWarning = (key: string, payload: unknown, redirectUrl?: string): void => {
+      req.flash(key, JSON.stringify(payload))
+      res.redirect(redirectUrl || req.get('Referrer') || '/')
+    }
+
     res.addSuccessMessage = (heading: string, message?: string) => {
       req.flash('successMessage', JSON.stringify({ heading, message }))
     }

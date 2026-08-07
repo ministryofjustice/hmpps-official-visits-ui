@@ -300,4 +300,32 @@ describe('OfficialVisitsService', () => {
       'Cannot retrieve sent emails without a prison code',
     )
   })
+
+  it('should call the non-association check on the official visits API client and return its result', async () => {
+    const expected = [
+      {
+        prisonCode: 'MDI',
+        officialVisitId: 23232323,
+        visitDate: '2026-04-03',
+        startTime: '10:00',
+        endTime: '11:00',
+        prisonerNumber: 'A1232DD',
+        dpsLocationId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        locationDescription: 'Legal visits room 8',
+        firstName: 'Steve',
+        lastName: 'Smith',
+      },
+    ]
+    officialVisitsApiClient.checkForNonAssociationVisits.mockResolvedValue(expected)
+
+    const result = await officialVisitsService.checkForNonAssociationVisits('MDI', 'A1234AA', '2026-04-03', user)
+
+    expect(officialVisitsApiClient.checkForNonAssociationVisits).toHaveBeenCalledWith(
+      'MDI',
+      'A1234AA',
+      '2026-04-03',
+      user,
+    )
+    expect(result).toEqual(expected)
+  })
 })

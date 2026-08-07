@@ -10,6 +10,7 @@
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "partials/capacityCheckMessages.njk" import capacityCheckMessages %}
+{% from "partials/nonAssociationWarning.njk" import nonAssociationWarning %}
 {% from "components/calendar/macro.njk" import calendar %}
 
 {% set pageTitle = "Select date and time of official visit" %}
@@ -17,6 +18,7 @@
 {% block content %}
 
   {{ capacityCheckMessages(checks, visitId)}}
+  {{ nonAssociationWarning(nonAssociationVisits, prisoner) }}
   {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
 
   <div class="govuk-grid-row govuk-body">
@@ -121,7 +123,7 @@
           {% set items = (items.push(
             {
               value: slot.visitSlotId,
-              html: '<b>' + (slot.startTime | timeStringTo24HourPretty) + ' to ' + (slot.endTime | timeStringTo24HourPretty) + '</b><br />' + slotDescription,
+              html: '<b>' + (slot.startTime | timeStringToHoursAndMinutes) + ' to ' + (slot.endTime | timeStringToHoursAndMinutes) + '</b><br />' + slotDescription,
               checked: selectedTimeSlot == slot.visitSlotId
             }
           ), items) %}

@@ -56,7 +56,7 @@
           {% endset %}
 
           {% set dateAndTimeHtml %}
-            {{ email.visitStartTime | timeStringTo24HourPretty }} to {{ email.visitEndTime | timeStringTo24HourPretty }}<br>{{ email.visitDate | formatDate('d MMMM yyyy') }}
+            {{ email.visitStartTime | timeStringToHoursAndMinutes }} to {{ email.visitEndTime | timeStringToHoursAndMinutes }}<br>{{ email.visitDate | formatDate('d MMMM yyyy') }}
           {% endset %}
 
           {% set emailSentHtml %}
