@@ -49,6 +49,7 @@ describe('TimeSlotsHandler', () => {
     expect(res.text).toContain(
       'href="/admin/time-slot/1/edit?day=MON">Edit<span class="govuk-visually-hidden"> time slot for Monday 09:00 to 10:00</span></a>',
     )
+    expect(res.text).toContain('Add a new time<span class="govuk-visually-hidden"> for Monday</span>')
   })
 
   it('should render the days page with no slots message when no slots exist', async () => {
