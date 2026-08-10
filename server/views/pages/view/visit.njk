@@ -132,12 +132,14 @@
     {% set visitActions = [
       {
         href: "/view/visit/" + visit.officialVisitId + "/cancel" + paramBackTo,
-        html: "Cancel visit",
+        text: "Cancel visit",
+        visuallyHiddenText: "on " + (visit.visitDate | formatDate("iiii, d MMMM yyyy")) + " at " + (visit.startTime | toHHmm),
         classes: 'govuk-link--no-visited-state'
       },
       {
         href: "/view/visit/" + visit.officialVisitId + "/complete" + paramBackTo,
-        html: "Complete visit",
+        text: "Complete visit",
+        visuallyHiddenText: "on " + (visit.visitDate | formatDate("iiii, d MMMM yyyy")) + " at " + (visit.startTime | toHHmm),
         classes: 'govuk-link--no-visited-state'
       }
     ] %}

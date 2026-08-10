@@ -103,7 +103,7 @@
 
   <div class="govuk-button-group">
     {{ govukButton({
-      text: "Add a new time",
+      html: 'Add a new time<span class="govuk-visually-hidden"> for ' + dayLabel + '</span>',
       preventDoubleClick: true,
       classes: "govuk-button",
       href: "/admin/time-slot/new?day=" ~ dayCode

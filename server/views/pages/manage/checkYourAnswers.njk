@@ -95,7 +95,7 @@
                 {
                   href: "search",
                   text: "Change",
-                  visuallyHiddenText: "the selected prisoner",
+                  visuallyHiddenText: "prisoner",
                   classes: "govuk-link--no-visited-state"
                 }
               ]
@@ -109,7 +109,7 @@
                 {
                   href: "visit-type",
                   text: "Change",
-                  visuallyHiddenText: "the type of visit",
+                  visuallyHiddenText: "visit type",
                   classes: "govuk-link--no-visited-state"
                 }
               ]
@@ -123,7 +123,7 @@
                 {
                   href: "time-slot",
                   text: "Change",
-                  visuallyHiddenText: "the date of the visit",
+                  visuallyHiddenText: "date",
                   classes: "govuk-link--no-visited-state"
                 }
               ]
@@ -139,7 +139,7 @@
                 {
                   href: "time-slot",
                   text: "Change",
-                  visuallyHiddenText: "the time of the visit",
+                  visuallyHiddenText: "time",
                   classes: "govuk-link--no-visited-state"
                 }
               ]
@@ -153,7 +153,7 @@
                 {
                   href: "time-slot",
                   text: "Change",
-                  visuallyHiddenText: "the location of the visit",
+                  visuallyHiddenText: "location",
                   classes: "govuk-link--no-visited-state"
                 }
               ]
@@ -204,7 +204,7 @@
                 <h3>{{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }} ({{ contact.relationshipToPrisonerDescription }})</h3>
               </div>
               <div class="govuk-summary-list govuk-summary-list__actions govuk-!-font-weight-bold">
-                <a class="govuk-link govuk-link--no-visited-state" href="select-official-visitors">Change<span class="govuk-visually-hidden"> visitors, {{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }}</span></a>
+                <a class="govuk-link govuk-link--no-visited-state" href="select-official-visitors">Change<span class="govuk-visually-hidden"> visitor, {{ (contact.firstName + " " + contact.lastName) | convertToTitleCase }}</span></a>
               </div>
             </div>
           </div>
