@@ -67,11 +67,23 @@
     {{ mojBadge({ text: badgeText, classes: "moj-badge--red govuk-!-margin-bottom-4" }) }}
   {% endif %}
 
-  {% if updateVerb %}
+     {% if updateVerb %}
       {% set updateVerbTitle = "Visit marked as " + updateVerb %}
+      {% set updatAlertHtml = "You have " + updateVerb + " this visit. <a href='" + (amendedBackUrl or backUrl or '/view/list') + "'>Return to search list</a>" %}
       {% if updateVerb == 'updated' %}
           {% set updateVerbTitle = "Visit updated" %}
-          {% elif updateVerb == 'cancelled' %}
+          {% if user | hasPermission(PERMISSION.MANAGE) and emailNotificationsEnabled and visit.visitStatus in ['CANCELLED', 'SCHEDULED'] %}
+              {% set updatAlertHtml = "<p class='govuk-body'>You have " + updateVerb + " this visit. You can:</p>
+              <ul class='govuk-list govuk-list--bullet'>
+                <li class='govuk-!-margin-bottom-2'>
+                  <a href='/notification/enter-email-address/" + visit.officialVisitId + "/edit'>send updated email confirmation</a>
+                </li>
+                <li class='govuk-!-margin-bottom-2'>
+                  <a href='" + (amendedBackUrl or backUrl or '/view/list') + "'>return to search list</a>
+                </li>
+              </ul>" %}
+          {% endif %}
+      {% elif updateVerb == 'cancelled' %}
           {% set updateVerbTitle = "Visit cancelled" %}
       {% endif %}
     {{ mojAlert({
@@ -79,7 +91,7 @@
       title: updateVerbTitle,
       showTitleAsHeading: true,
       dismissible: false,
-      html: "You have " + updateVerb + " this visit. <a href='" + (amendedBackUrl or backUrl or '/view/list') + "'>Return to search list</a>"
+      html: updatAlertHtml
     }) }}
 
   {% endif %}
