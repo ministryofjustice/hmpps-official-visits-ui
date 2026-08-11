@@ -35,27 +35,24 @@ const auditedEvents: AuditedEvent[] = [
   {
     auditedEventId: 1,
     officialVisitId: 1,
+    eventSource: 'DPS',
     eventSummary: 'Visit updated',
     eventType: 'UPDATE',
     eventChanges: [
       {
-        field: 'visitor_removed',
-        newValue: 'Jack Malicious',
+        field: 'start_time',
+        oldValue: '08:00',
+        newValue: '09:00',
       },
       {
-        field: 'visitor_updated',
-        oldValue: 'Peter Malicious',
-        newValue: 'John Smith',
-      },
-      {
-        field: 'visitor_removed',
-        newValue: 'Jack Smith',
+        field: 'end_time',
+        oldValue: '17:00',
+        newValue: '10:00',
       },
     ],
     eventDateTime: '2026-10-25T14:30:00.000000',
     eventUsername: 'AUSER',
     eventUserFullName: 'A User',
-    eventSource: 'DPS',
     eventDetail: 'Visit Updated',
     eventVersion: 2,
     significantChange: true,
@@ -347,7 +344,8 @@ test.describe('View official visits', () => {
       'http://localhost:9091/prisoner/G4793VF/contacts/manage/20085647/relationship/7332364',
     )
 
-    await page.getByRole('button', { name: 'View all changes made for' }).click()
+    // View timeline page
+    await page.getByRole('button', { name: 'View all changes made for visit' }).click()
 
     expect(page.url()).toBe('http://localhost:3007/view/visit/1/history')
     await expect(page.locator('.govuk-hint')).toHaveText('Manage official visits')
@@ -373,8 +371,7 @@ test.describe('View official visits', () => {
     await expect(page.getByText('Email address: visitor@example.com\nReason: Not provided\nStatus: Sent')).toBeVisible()
     await expect(page.getByText('Email address: visitor@example.com Reason: Not provided Status: Failed')).toBeVisible()
     await expect(page.getByText('Visit updated by A User')).toBeVisible()
-    await expect(page.getByText('Visitor removed set to Jack Malicious')).toBeVisible()
-    await expect(page.getByText('Visitor updated changed from Peter Malicious to John Smith')).toBeVisible()
-    await expect(page.getByText('Visitor removed set to Jack Smith')).toBeVisible()
+    await expect(page.getByText('Start time changed from 08:00 to 09:00')).toBeVisible()
+    await expect(page.getByText('End time changed from 17:00 to 10:00')).toBeVisible()
   })
 })
