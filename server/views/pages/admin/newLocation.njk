@@ -6,12 +6,12 @@
 
 {% set paramBackTo = ("?backTo=" + b64BackTo) if b64BackTo %}
 
-{% set pageTitle = "Add a new room and visitor limits" %}
+{% set pageTitle = "Add a new location and visitor limits" %}
 
 {% block content %}
     <div>
-        <span class="govuk-hint">Manage time slots</span>
-        <h1 class="govuk-heading-l">Add a new room and visitor limits
+        <span class="govuk-hint">Official visiting schedule</span>
+        <h1 class="govuk-heading-l">Add a new location and visitor limits
             for {{ timeSlot.dayCode | translateDay }} {{ timeSlot.startTime }} to {{ timeSlot.endTime }}</h1>
 
         <form method="POST">
