@@ -158,6 +158,12 @@ describe('View an official visit', () => {
 
           expect($('.govuk-link:contains("Cancel visit")').attr('href')).toEqual('/view/visit/1/cancel')
           expect($('.govuk-link:contains("Complete visit")').attr('href')).toEqual('/view/visit/1/complete')
+          expect($('.govuk-link:contains("Cancel visit")').text().replace(/\s+/g, ' ').trim()).toEqual(
+            'Cancel visit on Friday, 25 December 2099 at 10:00 (Visit details)',
+          )
+          expect($('.govuk-link:contains("Complete visit")').text().replace(/\s+/g, ' ').trim()).toEqual(
+            'Complete visit on Friday, 25 December 2099 at 10:00 (Visit details)',
+          )
 
           expect($('.govuk-button[href="/view/visit/1/movement-slip"]').length).toBe(1)
           expect($('.govuk-button[href="/manage/amend/1"]').length).toBe(1)
