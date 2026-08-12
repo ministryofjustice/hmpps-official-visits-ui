@@ -76,7 +76,7 @@
           {% set updateVerbTitle = "Visit cancelled" %}
       {% endif %}
       {% if updateVerb in ['updated', 'cancelled'] and user | hasPermission(PERMISSION.MANAGE) and emailNotificationsEnabled and visit.visitStatus in ['CANCELLED', 'SCHEDULED'] %}
-          {% set updateAlertHtml = "<p class='govuk-body'>You have " + updateVerb + " this visit. You can:</p>
+          {% set updateAlertHtml = "<p class='govuk-body govuk-!-margin-bottom-1'>You have " + updateVerb + " this visit. You can:</p>
           <ul class='govuk-list govuk-list--bullet'>
             <li class='govuk-!-margin-bottom-2'>
               <a href='/notification/enter-email-address/" + visit.officialVisitId + ("/cancel" if visit.visitStatus == 'CANCELLED' else "/edit") + "'>send updated email confirmation</a>
