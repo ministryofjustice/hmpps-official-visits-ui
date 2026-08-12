@@ -86,8 +86,8 @@ export default {
     simplePostApiMock(`/official-visits-api/official-visit/prison/LEI`, response),
   stubCompleteVisit: (response: RecursivePartial<CompleteVisitRequest>) =>
     simplePostApiMock(`/official-visits-api/official-visit/prison/LEI/id/\\d+/complete`, response),
-  stubCancelVisit: (response: RecursivePartial<CancelTypeRequest>) =>
-    simplePostApiMock(`/official-visits-api/official-visit/prison/LEI/id/\\d+/cancel`, response),
+  stubCancelVisit: (response: RecursivePartial<CancelTypeRequest>, prisonCode = 'LEI') =>
+    simplePostApiMock(`/official-visits-api/official-visit/prison/${prisonCode}/id/\\d+/cancel`, response),
   stubUpdateVisitors: (prisonCode: string, visitId: string) =>
     stubFor({
       request: {
