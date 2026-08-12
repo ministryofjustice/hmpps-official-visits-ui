@@ -255,6 +255,49 @@ describe('View an official visit', () => {
       expect(alert.find('a[href="/view/list"]').text()).toContain('Return to search list')
     })
 
+    it('should render cancelled success alert with bullet point actions when updateVerb is cancelled and feature is enabled', async () => {
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'CANCELLED',
+        visitStatusDescription: 'Cancelled',
+      })
+      appSetup([AuthorisedRoles.MANAGE])
+      flashProvider.mockImplementation((key: string) => (key === 'updateVerb' ? ['cancelled'] : []))
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+      const alert = $('.moj-alert')
+
+      expect(alert.text()).toContain('Visit cancelled')
+      expect(alert.text()).toContain('You have cancelled this visit. You can:')
+      expect(alert.find('ul.govuk-list.govuk-list--bullet').length).toBe(1)
+      expect(alert.find('ul.govuk-list.govuk-list--bullet li').length).toBe(2)
+      expect(alert.find('a[href="/notification/enter-email-address/1/cancel"]').text()).toContain(
+        'send updated email confirmation',
+      )
+      expect(alert.find('a[href="/view/list"]').text()).toContain('return to search list')
+    })
+
+    it('should not render cancelled success alert with bullet point actions when updateVerb is cancelled and feature is disabled', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'CANCELLED',
+        visitStatusDescription: 'Cancelled',
+      })
+      flashProvider.mockImplementation((key: string) => (key === 'updateVerb' ? ['cancelled'] : []))
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+      const alert = $('.moj-alert')
+
+      expect(alert.text()).toContain('Visit cancelled')
+      expect(alert.find('ul.govuk-list.govuk-list--bullet').length).toBe(0)
+      expect(alert.find('a[href="/notification/enter-email-address/1/cancel"]').length).toBe(0)
+      expect(alert.find('a[href="/view/list"]').text()).toContain('Return to search list')
+    })
+
     it('should not render send email alert when email notifications are enabled but hasChanged is false', async () => {
       config.featureToggles.emailNotificationsPrisons = 'HEI'
       officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
