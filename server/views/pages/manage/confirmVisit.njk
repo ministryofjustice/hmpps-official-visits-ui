@@ -33,6 +33,15 @@
         ])
       }) }}
 
+      {% if user | hasPermission(PERMISSION.MANAGE) and emailNotificationsEnabled %}
+        {{ govukButton({
+          id: "send-email-button",
+          text: "Send email confirmation",
+          href: "/notification/enter-email-address/" + officialVisitId + "/create",
+          classes: 'govuk-button govuk-button--secondary'
+        }) }}
+      {% endif %}
+
       <h2 class='govuk-heading-m'>What you can do next</h2>
 
       <ul class="govuk-list govuk-list--spaced">
@@ -45,11 +54,6 @@
         <li>
           <a href="/view/visit/{{ officialVisitId }}/movement-slip" target="_blank" class="govuk-link govuk-link--no-visited-state">Print a movement slip</a>
         </li>
-          {% if user | hasPermission(PERMISSION.MANAGE) and emailNotificationsEnabled %}
-            <li>
-              <a href="/notification/enter-email-address/{{ officialVisitId }}/create" class="govuk-link govuk-link--no-visited-state">Send email confirmation</a>
-            </li>
-          {% endif %}
       </ul>
     </div>
   </div>
