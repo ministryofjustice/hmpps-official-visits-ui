@@ -2,7 +2,7 @@ const restrictionTagColour = (restrictionType: string): string => {
   let tagClass: string
   switch (restrictionType) {
     case 'ACC': {
-      tagClass = 'govuk-tag--turquoise'
+      tagClass = 'govuk-tag--teal'
       break
     }
     case 'BAN': {
@@ -34,7 +34,7 @@ const restrictionTagColour = (restrictionType: string): string => {
       break
     }
     case 'RESTRICTED': {
-      tagClass = 'govuk-tag--pink'
+      tagClass = 'govuk-tag--magenta'
       break
     }
     default: {
