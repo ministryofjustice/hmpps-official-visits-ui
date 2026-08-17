@@ -211,23 +211,22 @@ describe('notification email handler', () => {
         })
     })
 
-    it('should accept a valid email and persist it to session then redirect to check', async () => {
+    it('should accept a valid email and persist it to session then redirect to add video link', async () => {
       const agent = request.agent(app)
 
       await agent
         .post(URL)
         .send({ emailAddress: 'example@example.com' })
         .expect(302)
-        .expect('location', '/notification/check-email/1/create')
+        .expect('location', '/notification/add-video-link/1/create')
 
       // Follow redirect with same agent to ensure session cookie is preserved
       await agent
-        .get('/notification/check-email/1/create')
+        .get('/notification/add-video-link/1/create')
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          // Email is shown in the summary list value
-          expect($('.govuk-summary-list__value').first().text()).toContain('example@example.com')
+          expect(getPageHeader($)).toEqual('Add video link')
         })
     })
   })
