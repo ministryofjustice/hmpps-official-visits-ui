@@ -1,0 +1,40 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageTitle = "Add video link" %}
+
+{% block content %}
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <span class="govuk-hint">Send email confirmation</span>
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <form method="POST">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+
+        {{ govukInput({
+          id: "videoLinkUrl",
+          name: "videoLinkUrl",
+          label: {
+            text: "Enter the video link in full",
+            classes: "govuk-!-font-weight-bold"
+          },
+          classes: "govuk-!-width-full",
+          type: "text",
+          spellcheck: false,
+          errorMessage: validationErrors | findError('videoLinkUrl'),
+          value: formResponses.videoLinkUrl
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({ text: 'Continue', preventDoubleClick: true }) }}
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ back }}">Cancel and return to homepage</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

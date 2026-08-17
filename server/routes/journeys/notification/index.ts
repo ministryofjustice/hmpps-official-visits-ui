@@ -4,6 +4,7 @@ import { PageHandler } from '../../interfaces/pageHandler'
 import validationMiddleware from '../../../middleware/validationMiddleware'
 import logPageViewMiddleware from '../../../middleware/logPageViewMiddleware'
 import EmailHandler from './handlers/emailHandler'
+import VideoLinkHandler from './handlers/videoLinkHandler'
 import CheckHandler from './handlers/checkHandler'
 import SentHandler from './handlers/sentHandler'
 
@@ -17,6 +18,9 @@ export default function Index({ auditService, officialVisitsService }: Services)
 
   // Enter email address
   route('/enter-email-address/:ovId/:action', new EmailHandler(officialVisitsService))
+
+  // Add video link
+  route('/add-video-link/:ovId/:action', new VideoLinkHandler())
 
   // Check and send
   route('/check-email/:ovId/:action', new CheckHandler(officialVisitsService))

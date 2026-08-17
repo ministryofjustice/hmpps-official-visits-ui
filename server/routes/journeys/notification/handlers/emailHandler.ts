@@ -27,7 +27,7 @@ export default class EmailHandler implements PageHandler {
 
     return res.render('pages/notification/email', {
       formResponses: { emailAddress },
-      back: '/',
+      backUrl: '/',
       ovId,
       action,
     })
@@ -39,12 +39,15 @@ export default class EmailHandler implements PageHandler {
 
     const session = req.session as SessionData
     if (!session.notifications) session.notifications = {}
+    const existingNotification = session.notifications[ovId as string] || {}
+
     session.notifications[ovId as string] = {
+      ...existingNotification,
       emailAddress,
-      entity: { action },
-      createdAt: Date.now(),
+      entity: existingNotification.entity || { action },
+      createdAt: existingNotification.createdAt || Date.now(),
     }
 
-    return res.redirect(`/notification/check-email/${ovId}/${action}`)
+    return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
   }
 }

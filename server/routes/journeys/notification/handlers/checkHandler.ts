@@ -26,16 +26,21 @@ export default class CheckHandler implements PageHandler {
     const { ovId, action } = req.params
     const { user } = res.locals
 
-    // document two user scenarios for the logic below:
-    // 1. User enters email and clicks continue - email is in form responses but not session yet
-    // 2. User goes back to check page from sent confirmation - email is in session but not form responses
+    // Support both values when coming from validation redirects (formResponses)
+    // and when returning to check from later in the journey (session data).
     const formResponsesEmail = res.locals['formResponses']?.emailAddress
     const sessionEmail = req.session?.notifications?.[ovId as string]?.emailAddress
+    const formResponsesVideoLinkUrl = res.locals['formResponses']?.videoLinkUrl
+    const sessionVideoLinkUrl = req.session?.notifications?.[ovId as string]?.videoLinkUrl
     const emailAddress = formResponsesEmail || sessionEmail
+    const videoLinkUrl = formResponsesVideoLinkUrl || sessionVideoLinkUrl
 
-    // Redirect to enter-email page when no valid email is available yet.
     if (!emailAddress) {
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
+    }
+
+    if (!videoLinkUrl) {
+      return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
     }
 
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
@@ -43,10 +48,13 @@ export default class CheckHandler implements PageHandler {
 
     return res.render('pages/notification/check', {
       emailAddress,
+      videoLinkUrl,
       visit,
       contacts,
+      backUrl: `/notification/add-video-link/${ovId}/${action}`,
       back: '/',
-      change: `/notification/enter-email-address/${ovId}/${action}`,
+      changeEmailAddress: `/notification/enter-email-address/${ovId}/${action}`,
+      changeVideoLink: `/notification/add-video-link/${ovId}/${action}`,
       ovId,
       action,
     })
@@ -55,15 +63,20 @@ export default class CheckHandler implements PageHandler {
   POST = async (req: Request, res: Response) => {
     const { ovId, action } = req.params
     const emailAddress = req.session.notifications?.[ovId as string]?.emailAddress
+    const videoLinkUrl = req.session.notifications?.[ovId as string]?.videoLinkUrl
 
     if (!emailAddress) {
-      // No email in session - redirect back to enter email
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
+    }
+
+    if (!videoLinkUrl) {
+      return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
     }
 
     const body = {
       notificationType: mapActionToNotificationType(action as string),
       emailAddresses: [emailAddress],
+      videoLinkUrl,
     } as NotificationRequest
 
     await this.officialVisitsService.sendNotification(ovId as string, body, res.locals.user)

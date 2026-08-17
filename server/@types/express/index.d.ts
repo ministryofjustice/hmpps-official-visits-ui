@@ -25,6 +25,7 @@ export declare module 'express-session' {
       string,
       {
         emailAddress?: string
+        videoLinkUrl?: string
         entity?: Record<string, unknown>
         createdAt?: number
       }
