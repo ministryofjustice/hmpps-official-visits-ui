@@ -19,6 +19,7 @@ const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<Off
 let app: Express
 
 const OV_ID = '1'
+const VIDEO_LINK_URL = 'https://video.example.com/room-1'
 
 const sampleVisit = {
   prisonerVisited: { firstName: 'Tim', lastName: 'Harrison' },
@@ -56,7 +57,7 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
           next()
         },
       ],
@@ -76,6 +77,7 @@ describe('notification check handler', () => {
     // Time formatted and duration
     expect(res.text).toContain('10:00 to 11:00 (1 hour)')
     expect(res.text).toContain('First Location')
+    expect(res.text).toContain(VIDEO_LINK_URL)
     // Visitor name and relationship should be shown
     expect(res.text).toContain('Peter Malicious')
     expect(res.text).toContain('Solicitor')
@@ -93,7 +95,7 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
           next()
         },
       ],
@@ -116,7 +118,7 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
           next()
         },
       ],
@@ -143,7 +145,7 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
           next()
         },
       ],
@@ -166,7 +168,7 @@ describe('notification check handler', () => {
       middlewares: [
         (req, res, next) => {
           res.locals.formResponses = {}
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
           next()
         },
       ],
@@ -195,6 +197,8 @@ describe('notification check handler', () => {
       .send({ emailAddress: 'example@example.com' })
       .expect(302)
 
+    await agent.post(`/notification/add-video-link/${OV_ID}/create`).send({ videoLinkUrl: VIDEO_LINK_URL }).expect(302)
+
     officialVisitsService.sendNotification.mockResolvedValue({} as NotificationResponse)
 
     await agent
@@ -204,7 +208,11 @@ describe('notification check handler', () => {
 
     expect(officialVisitsService.sendNotification).toHaveBeenCalledWith(
       OV_ID,
-      expect.objectContaining({ notificationType: 'CREATE', emailAddresses: ['example@example.com'] }),
+      expect.objectContaining({
+        notificationType: 'CREATE',
+        emailAddresses: ['example@example.com'],
+        videoLinkUrl: VIDEO_LINK_URL,
+      }),
       user,
     )
   })
@@ -216,7 +224,7 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
           next()
         },
       ],
@@ -231,7 +239,11 @@ describe('notification check handler', () => {
 
     expect(officialVisitsService.sendNotification).toHaveBeenCalledWith(
       OV_ID,
-      expect.objectContaining({ notificationType: 'AMEND', emailAddresses: ['example@example.com'] }),
+      expect.objectContaining({
+        notificationType: 'AMEND',
+        emailAddresses: ['example@example.com'],
+        videoLinkUrl: VIDEO_LINK_URL,
+      }),
       user,
     )
   })
@@ -243,7 +255,7 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
           next()
         },
       ],
@@ -258,9 +270,54 @@ describe('notification check handler', () => {
 
     expect(officialVisitsService.sendNotification).toHaveBeenCalledWith(
       OV_ID,
-      expect.objectContaining({ notificationType: 'CANCEL', emailAddresses: ['example@example.com'] }),
+      expect.objectContaining({
+        notificationType: 'CANCEL',
+        emailAddresses: ['example@example.com'],
+        videoLinkUrl: VIDEO_LINK_URL,
+      }),
       user,
     )
+  })
+
+  it('GET should redirect to add video link page when video link is not in form responses or session', async () => {
+    app = appWithAllRoutes({
+      services: { auditService, officialVisitsService },
+      userSupplier: () => user,
+      journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
+      middlewares: [
+        (req, _res, next) => {
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          next()
+        },
+      ],
+    })
+
+    await request(app)
+      .get(`/notification/check-email/${OV_ID}/create`)
+      .redirects(0)
+      .expect(302)
+      .expect('location', `/notification/add-video-link/${OV_ID}/create`)
+
+    expect(officialVisitsService.getOfficialVisitById).not.toHaveBeenCalled()
+  })
+
+  it('POST without video link in session should redirect back to add video link', async () => {
+    app = appWithAllRoutes({
+      services: { auditService, officialVisitsService },
+      userSupplier: () => user,
+      journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
+      middlewares: [
+        (req, _res, next) => {
+          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          next()
+        },
+      ],
+    })
+
+    await request(app)
+      .post(`/notification/check-email/${OV_ID}/create`)
+      .expect(302)
+      .expect('location', `/notification/add-video-link/${OV_ID}/create`)
   })
 
   it('POST without email in session should redirect back to enter email', async () => {
