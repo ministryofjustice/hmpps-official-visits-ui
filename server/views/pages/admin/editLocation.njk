@@ -4,12 +4,12 @@
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
-{% set pageTitle = "Edit room and visitor limits" %}
+{% set pageTitle = "Edit location and visitor limits" %}
 
 {% block content %}
     <div>
-        <span class="govuk-hint">Manage time slots</span>
-        <h1 class="govuk-heading-l">Edit room and visitor limits
+        <span class="govuk-hint">Official visiting schedule</span>
+        <h1 class="govuk-heading-l">Edit location and visitor limits
             for {{ timeSlot.dayCode | translateDay }} {{ timeSlot.startTime }} to {{ timeSlot.endTime }}</h1>
 
         <form method="POST">

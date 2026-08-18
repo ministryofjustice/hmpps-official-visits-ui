@@ -100,7 +100,7 @@ describe('confirmation handler', () => {
         })
     })
 
-    it('should render send email confirmation link when email notifications are enabled and user has manage role', () => {
+    it('should render send email confirmation button when email notifications are enabled and user has manage role', () => {
       config.featureToggles.emailNotificationsPrisons = 'HEI'
       appSetup()
 
@@ -110,13 +110,16 @@ describe('confirmation handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          const $sendEmail = $('a[href="/notification/enter-email-address/1/create"]')
-          expect($sendEmail.text()).toEqual('Send email confirmation')
-          expect($sendEmail.attr('target')).toBeUndefined()
+          const $sendEmail = $('#send-email-button')
+          expect($sendEmail.text().trim()).toEqual('Send email confirmation')
+          expect($sendEmail.attr('href')).toEqual('/notification/enter-email-address/1/create')
+          expect($sendEmail.hasClass('govuk-button--secondary')).toEqual(true)
+
+          expect($('ul a[href="/notification/enter-email-address/1/create"]').length).toEqual(0)
         })
     })
 
-    it('should not render send email confirmation link when email notifications are enabled and user does not have manage role', () => {
+    it('should not render send email confirmation button when email notifications are enabled and user does not have manage role', () => {
       config.featureToggles.emailNotificationsPrisons = 'HEI'
       appSetup([AuthorisedRoles.VIEW])
 
@@ -126,9 +129,8 @@ describe('confirmation handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect($('a[href="/notification/enter-email-address/1/create"]').text()).not.toContain(
-            'Send email confirmation',
-          )
+          expect($('#send-email-button').length).toEqual(0)
+          expect($('a[href="/notification/enter-email-address/1/create"]').length).toEqual(0)
         })
     })
   })

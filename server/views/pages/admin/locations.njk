@@ -9,13 +9,13 @@
 
 {% block content %}
   <div>
-    <span class="govuk-hint">The locations and capacity for official visits</span>
-    <h1 class="govuk-heading-l">Locations for {{ timeSlot.dayCode | translateDay }} {{ timeSlot.startTime }} - {{ timeSlot.endTime }}</h1>
+    <span class="govuk-hint">Official visiting schedule</span>
+    <h1 class="govuk-heading-l">Locations for {{ timeSlot.dayCode | translateDay }} {{ timeSlot.startTime }} to {{ timeSlot.endTime }}</h1>
 
       {% set rows = [] %}
       {% if visitSlots.length > 0 %}
           {% for slot in visitSlots %}
-              {% set actionHtml = '<a class="govuk-link--no-visited-state" href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/edit">Edit<span class="govuk-visually-hidden"> location ' + slot.locationDescription + '</span></a>' %}
+              {% set actionHtml = '<a class="govuk-link--no-visited-state" href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/edit">Edit<span class="govuk-visually-hidden"> ' + slot.locationDescription + '</span></a>' %}
                 {# Disabled delete functionality temporarily #}
                 {# {% if slot.hasVisit == false %}
                   {% set actionHtml = actionHtml + ' <a class="govuk-link govuk-link--no-visited-state govuk-!-margin-left-4" href="/admin/time-slot/' + timeSlot.prisonTimeSlotId + '/location/' + slot.visitSlotId + '/delete">Delete</a>' %}
@@ -31,9 +31,9 @@
           {{ govukTable({
             head: [
                 { text: 'Location' },
-                { text: 'Maximum Adults' },
-                { text: 'Maximum Groups' },
-                { text: 'Maximum Video Visits' },
+                { text: 'Maximum visitors' },
+                { text: 'Maximum groups' },
+                { text: 'Maximum video visits' },
                 { text: 'Actions' }
             ],
             rows: rows

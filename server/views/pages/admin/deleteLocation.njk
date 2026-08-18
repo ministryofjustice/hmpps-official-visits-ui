@@ -7,7 +7,7 @@
 
 {% block content %}
   <div>
-    <span class="govuk-hint">Admin</span>
+    <span class="govuk-hint">Official visiting schedule</span>
     <h1 class="govuk-heading-l">Are you sure you want to delete this location from your prison's visiting schedule?</h1>
 
     <div class="govuk-grid-row govuk-body">
@@ -23,9 +23,9 @@
         {{ govukTable({
             head: [
                 { text: 'Location' },
-                { text: 'Maximum Adults' },
-                { text: 'Maximum Groups' },
-                { text: 'Maximum Video Visits' }
+                { text: 'Maximum visitors' },
+                { text: 'Maximum groups' },
+                { text: 'Maximum video visits' }
             ],
             rows: rows
         }) }}

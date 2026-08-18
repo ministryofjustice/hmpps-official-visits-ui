@@ -7,6 +7,7 @@ import officialVisitsApi from '../mockApis/officialVisitsApi'
 import { login, resetStubs } from '../testUtils'
 import { mockVisitByIdVisit } from '../../server/testutils/mocks'
 import NotificationEmailPage from '../pages/notificationEmailPage'
+import NotificationVideoLinkPage from '../pages/notificationVideoLinkPage'
 import NotificationCheckPage from '../pages/notificationCheckPage'
 import NotificationSentPage from '../pages/notificationSentPage'
 import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
@@ -84,6 +85,11 @@ test.describe('Send a notification', () => {
       await emailPage.fillEmail('visitor@example.com')
       await emailPage.continueButton.click()
 
+      // --- Video link page ---
+      const videoLinkPage = await NotificationVideoLinkPage.verifyOnPage(page)
+      await videoLinkPage.fillVideoLink('https://video.example.com/create-room')
+      await videoLinkPage.continueButton.click()
+
       // --- Check page ---
       const checkPage = await NotificationCheckPage.verifyOnPage(page)
       await expect(checkPage.header).toHaveText('Check and send official visit confirmation')
@@ -93,8 +99,9 @@ test.describe('Send a notification', () => {
       await expect(checkPage.page.locator('.govuk-summary-list__value').first()).toContainText('visitor@example.com')
       // Visit details from mockVisitByIdVisit
       await expect(checkPage.page.getByText('Tim Harrison')).toBeVisible()
-      await expect(checkPage.page.getByText('Video')).toBeVisible()
+      await expect(checkPage.page.getByText('Video', { exact: true })).toBeVisible()
       await expect(checkPage.page.getByText('Friday, 25 December 2099')).toBeVisible()
+      await expect(checkPage.page.getByText('https://video.example.com/create-room')).toBeVisible()
       // Send button label for create
       await expect(checkPage.sendButton).toHaveText('Send official visit confirmation')
 
@@ -139,7 +146,7 @@ test.describe('Send a notification', () => {
       expect(validationMessage).not.toHaveLength(0)
     })
 
-    test('Change link on check page navigates back to email page', async ({ page }) => {
+    test('Change email link on check page navigates back to email page', async ({ page }) => {
       await login(page)
       await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
 
@@ -147,11 +154,66 @@ test.describe('Send a notification', () => {
       await emailPage.fillEmail('visitor@example.com')
       await emailPage.continueButton.click()
 
+      const videoLinkPage = await NotificationVideoLinkPage.verifyOnPage(page)
+      await videoLinkPage.fillVideoLink('https://video.example.com/change-link')
+      await videoLinkPage.continueButton.click()
+
       const checkPage = await NotificationCheckPage.verifyOnPage(page)
-      await checkPage.page.getByRole('link', { name: 'Change' }).click()
+      await checkPage.changeLinkFor('Email address').click()
 
       await NotificationEmailPage.verifyOnPage(page)
       expect(page.url()).toContain(`/notification/enter-email-address/${OV_ID}/create`)
+    })
+
+    test('Change video link on check page navigates back to video link page', async ({ page }) => {
+      await login(page)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
+
+      const emailPage = await NotificationEmailPage.verifyOnPage(page)
+      await emailPage.fillEmail('visitor@example.com')
+      await emailPage.continueButton.click()
+
+      const videoLinkPage = await NotificationVideoLinkPage.verifyOnPage(page)
+      await videoLinkPage.fillVideoLink('https://video.example.com/change-link')
+      await videoLinkPage.continueButton.click()
+
+      const checkPage = await NotificationCheckPage.verifyOnPage(page)
+      await checkPage.changeLinkFor('Video link').click()
+
+      await NotificationVideoLinkPage.verifyOnPage(page)
+    })
+
+    test('Validation: shows error for empty video link on create', async ({ page }) => {
+      await login(page)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
+
+      const emailPage = await NotificationEmailPage.verifyOnPage(page)
+      await emailPage.fillEmail('visitor@example.com')
+      await emailPage.continueButton.click()
+
+      const videoLinkPage = await NotificationVideoLinkPage.verifyOnPage(page)
+      await videoLinkPage.continueButton.click()
+
+      await NotificationVideoLinkPage.verifyOnPage(page)
+      await expect(videoLinkPage.page.locator('.govuk-error-message')).toContainText('Enter the video link in full')
+    })
+
+    test('Validation: shows error for invalid https video link on create', async ({ page }) => {
+      await login(page)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
+
+      const emailPage = await NotificationEmailPage.verifyOnPage(page)
+      await emailPage.fillEmail('visitor@example.com')
+      await emailPage.continueButton.click()
+
+      const videoLinkPage = await NotificationVideoLinkPage.verifyOnPage(page)
+      await videoLinkPage.fillVideoLink('http://video.example.com/not-secure')
+      await videoLinkPage.continueButton.click()
+
+      await NotificationVideoLinkPage.verifyOnPage(page)
+      await expect(videoLinkPage.page.locator('.govuk-error-message')).toContainText(
+        'Enter a valid video link that starts with https://',
+      )
     })
   })
 
@@ -179,6 +241,11 @@ test.describe('Send a notification', () => {
 
       await emailPage.fillEmail('amend@example.com')
       await emailPage.continueButton.click()
+
+      // --- Video link page ---
+      const videoLinkPage = await NotificationVideoLinkPage.verifyOnPage(page)
+      await videoLinkPage.fillVideoLink('https://video.example.com/amend-room')
+      await videoLinkPage.continueButton.click()
 
       // --- Check page ---
       const checkPage = await NotificationCheckPage.verifyOnPage(page)
@@ -226,6 +293,11 @@ test.describe('Send a notification', () => {
 
       await emailPage.fillEmail('cancel@example.com')
       await emailPage.continueButton.click()
+
+      // --- Video link page ---
+      const videoLinkPage = await NotificationVideoLinkPage.verifyOnPage(page)
+      await videoLinkPage.fillVideoLink('https://video.example.com/cancel-room')
+      await videoLinkPage.continueButton.click()
 
       // --- Check page ---
       const checkPage = await NotificationCheckPage.verifyOnPage(page)

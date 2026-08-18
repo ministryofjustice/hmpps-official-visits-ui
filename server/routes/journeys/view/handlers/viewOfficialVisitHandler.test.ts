@@ -3,7 +3,7 @@ import request from 'supertest'
 import * as cheerio from 'cheerio'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import PrisonerService from '../../../../services/prisonerService'
-import { appWithAllRoutes, user } from '../../../testutils/appSetup'
+import { appWithAllRoutes, flashProvider, user } from '../../../testutils/appSetup'
 import { mockPrisoner, mockVisitByIdVisit, mockPrisonerRestrictions, mockUser } from '../../../../testutils/mocks'
 import AuditService, { Page } from '../../../../services/auditService'
 import { getByDataQa, getPageHeader, getValueByKey } from '../../../testutils/cheerio'
@@ -158,6 +158,12 @@ describe('View an official visit', () => {
 
           expect($('.govuk-link:contains("Cancel visit")').attr('href')).toEqual('/view/visit/1/cancel')
           expect($('.govuk-link:contains("Complete visit")').attr('href')).toEqual('/view/visit/1/complete')
+          expect($('.govuk-link:contains("Cancel visit")').text().replace(/\s+/g, ' ').trim()).toEqual(
+            'Cancel visit on Friday, 25 December 2099 at 10:00 (Visit details)',
+          )
+          expect($('.govuk-link:contains("Complete visit")').text().replace(/\s+/g, ' ').trim()).toEqual(
+            'Complete visit on Friday, 25 December 2099 at 10:00 (Visit details)',
+          )
 
           expect($('.govuk-button[href="/view/visit/1/movement-slip"]').length).toBe(1)
           expect($('.govuk-button[href="/manage/amend/1"]').length).toBe(1)
@@ -212,6 +218,84 @@ describe('View an official visit', () => {
       expect($('#send-email-button').attr('target')).toBeUndefined()
       expect(res.text).toContain('Information about this visit has changed since a confirmation email was last sent')
       expect($('.moj-alert a.govuk-link').attr('href')).toEqual('/notification/enter-email-address/1/edit')
+    })
+
+    it('should render updated success alert with bullet point actions when updateVerb is updated and feature is enabled', async () => {
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
+      appSetup([AuthorisedRoles.MANAGE])
+      flashProvider.mockImplementation((key: string) => (key === 'updateVerb' ? ['updated'] : []))
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+      const alert = $('.moj-alert')
+
+      expect(alert.text()).toContain('Visit updated')
+      expect(alert.find('ul.govuk-list.govuk-list--bullet').length).toBe(1)
+      expect(alert.find('ul.govuk-list.govuk-list--bullet li').length).toBe(2)
+      expect(alert.find('a[href="/notification/enter-email-address/1/edit"]').text()).toContain(
+        'send updated email confirmation',
+      )
+      expect(alert.find('a[href="/view/list"]').text()).toContain('return to search list')
+    })
+
+    it('should not render updated success alert with bullet point actions when updateVerb is updated and feature is disabled', async () => {
+      flashProvider.mockImplementation((key: string) => (key === 'updateVerb' ? ['updated'] : []))
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+      const alert = $('.moj-alert')
+
+      expect(alert.text()).toContain('Visit updated')
+      expect(alert.find('ul.govuk-list.govuk-list--bullet').length).toBe(0)
+      expect(alert.find('ul.govuk-list.govuk-list--bullet li').length).toBe(0)
+      expect(alert.find('a[href="/notification/enter-email-address/1/edit"]').text()).not.toContain(
+        'send updated email confirmation',
+      )
+      expect(alert.find('a[href="/view/list"]').text()).toContain('Return to search list')
+    })
+
+    it('should render cancelled success alert with bullet point actions when updateVerb is cancelled and feature is enabled', async () => {
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: false })
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'CANCELLED',
+        visitStatusDescription: 'Cancelled',
+      })
+      appSetup([AuthorisedRoles.MANAGE])
+      flashProvider.mockImplementation((key: string) => (key === 'updateVerb' ? ['cancelled'] : []))
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+      const alert = $('.moj-alert')
+
+      expect(alert.text()).toContain('Visit cancelled')
+      expect(alert.text()).toContain('You have cancelled this visit. You can:')
+      expect(alert.find('ul.govuk-list.govuk-list--bullet').length).toBe(1)
+      expect(alert.find('ul.govuk-list.govuk-list--bullet li').length).toBe(2)
+      expect(alert.find('a[href="/notification/enter-email-address/1/cancel"]').text()).toContain(
+        'send updated email confirmation',
+      )
+      expect(alert.find('a[href="/view/list"]').text()).toContain('return to search list')
+    })
+
+    it('should not render cancelled success alert with bullet point actions when updateVerb is cancelled and feature is disabled', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'CANCELLED',
+        visitStatusDescription: 'Cancelled',
+      })
+      flashProvider.mockImplementation((key: string) => (key === 'updateVerb' ? ['cancelled'] : []))
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+      const alert = $('.moj-alert')
+
+      expect(alert.text()).toContain('Visit cancelled')
+      expect(alert.find('ul.govuk-list.govuk-list--bullet').length).toBe(0)
+      expect(alert.find('a[href="/notification/enter-email-address/1/cancel"]').length).toBe(0)
+      expect(alert.find('a[href="/view/list"]').text()).toContain('Return to search list')
     })
 
     it('should not render send email alert when email notifications are enabled but hasChanged is false', async () => {

@@ -12,6 +12,13 @@ export default class NotificationCheckPage extends AbstractPage {
     this.sendButton = page.getByRole('button', { name: /Send official visit/ })
   }
 
+  changeLinkFor(fieldName: string): Locator {
+    return this.page
+      .locator('.govuk-summary-list__row')
+      .filter({ has: this.page.locator('.govuk-summary-list__key', { hasText: fieldName }) })
+      .getByRole('link', { name: /change/i })
+  }
+
   static async verifyOnPage(page: Page): Promise<NotificationCheckPage> {
     const checkPage = new NotificationCheckPage(page)
     await expect(checkPage.header).toBeVisible()

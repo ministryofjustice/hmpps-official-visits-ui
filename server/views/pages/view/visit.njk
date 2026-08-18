@@ -69,17 +69,29 @@
 
   {% if updateVerb %}
       {% set updateVerbTitle = "Visit marked as " + updateVerb %}
+      {% set updateAlertHtml = "You have " + updateVerb + " this visit. <a href='" + (amendedBackUrl or backUrl or '/view/list') + "'>Return to search list</a>" %}
       {% if updateVerb == 'updated' %}
           {% set updateVerbTitle = "Visit updated" %}
-          {% elif updateVerb == 'cancelled' %}
+      {% elif updateVerb == 'cancelled' %}
           {% set updateVerbTitle = "Visit cancelled" %}
+      {% endif %}
+      {% if updateVerb in ['updated', 'cancelled'] and user | hasPermission(PERMISSION.MANAGE) and emailNotificationsEnabled and visit.visitStatus in ['CANCELLED', 'SCHEDULED'] %}
+          {% set updateAlertHtml = "<p class='govuk-body govuk-!-margin-bottom-1'>You have " + updateVerb + " this visit. You can:</p>
+          <ul class='govuk-list govuk-list--bullet'>
+            <li class='govuk-!-margin-bottom-2'>
+              <a href='/notification/enter-email-address/" + visit.officialVisitId + ("/cancel" if visit.visitStatus == 'CANCELLED' else "/edit") + "'>send updated email confirmation</a>
+            </li>
+            <li class='govuk-!-margin-bottom-2'>
+              <a href='" + (amendedBackUrl or backUrl or '/view/list') + "'>return to search list</a>
+            </li>
+          </ul>" %}
       {% endif %}
     {{ mojAlert({
       variant: "success",
       title: updateVerbTitle,
       showTitleAsHeading: true,
       dismissible: false,
-      html: "You have " + updateVerb + " this visit. <a href='" + (amendedBackUrl or backUrl or '/view/list') + "'>Return to search list</a>"
+      html: updateAlertHtml
     }) }}
 
   {% endif %}
@@ -132,12 +144,14 @@
     {% set visitActions = [
       {
         href: "/view/visit/" + visit.officialVisitId + "/cancel" + paramBackTo,
-        html: "Cancel visit",
+        text: "Cancel visit",
+        visuallyHiddenText: "on " + (visit.visitDate | formatDate("iiii, d MMMM yyyy")) + " at " + (visit.startTime | toHHmm),
         classes: 'govuk-link--no-visited-state'
       },
       {
         href: "/view/visit/" + visit.officialVisitId + "/complete" + paramBackTo,
-        html: "Complete visit",
+        text: "Complete visit",
+        visuallyHiddenText: "on " + (visit.visitDate | formatDate("iiii, d MMMM yyyy")) + " at " + (visit.startTime | toHHmm),
         classes: 'govuk-link--no-visited-state'
       }
     ] %}

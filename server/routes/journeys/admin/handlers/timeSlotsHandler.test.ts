@@ -28,9 +28,7 @@ describe('TimeSlotsHandler', () => {
     expect(officialVisitsService.getVisitSlotsAtPrison).toHaveBeenCalledWith('HEI', adminUser)
     expect(res.status).toBe(200)
     expect(res.text).toContain('Time slots for official visits')
-    expect(res.text).toContain(
-      'Setting an end date for all visit times will not effect existing visits scheduled for the time and locations.',
-    )
+    expect(res.text).toContain('Setting a valid until date will not affect existing visits.')
     expect(res.text).toContain('Monday')
     expect(res.text).toContain('Tuesday')
     expect(res.text).toContain('09:00')
@@ -49,6 +47,7 @@ describe('TimeSlotsHandler', () => {
     expect(res.text).toContain(
       'href="/admin/time-slot/1/edit?day=MON">Edit<span class="govuk-visually-hidden"> time slot for Monday 09:00 to 10:00</span></a>',
     )
+    expect(res.text).toContain('Add a new time<span class="govuk-visually-hidden"> for Monday</span>')
   })
 
   it('should render the days page with no slots message when no slots exist', async () => {
