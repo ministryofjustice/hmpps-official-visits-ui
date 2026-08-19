@@ -140,9 +140,9 @@ test.describe('Send a notification', () => {
       // Browser blocks invalid type=email before submit, so assert native validation is shown.
       await NotificationEmailPage.verifyOnPage(page)
       await expect(page).toHaveURL(`/notification/enter-email-address/${OV_ID}/create`)
-      const validationMessage = await emailPage.emailInput.evaluate(
-        (input: HTMLInputElement) => input.validationMessage,
-      )
+      const validationMessage = await emailPage
+        .emailInput()
+        .evaluate((input: HTMLInputElement) => input.validationMessage)
       expect(validationMessage).not.toHaveLength(0)
     })
 
@@ -214,6 +214,95 @@ test.describe('Send a notification', () => {
       await expect(videoLinkPage.page.locator('.govuk-error-message')).toContainText(
         'Enter a valid video link that starts with https://',
       )
+    })
+  })
+
+  test.describe('Multiple email addresses', () => {
+    test('Happy path: add a second address and send to both', async ({ page }) => {
+      await login(page)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
+
+      const emailPage = await NotificationEmailPage.verifyOnPage(page)
+      await expect(emailPage.items).toHaveCount(1)
+      // A lone item has nothing to remove down to, so no remove button is offered
+      await expect(emailPage.removeButton(0)).toBeHidden()
+
+      await emailPage.fillEmail('first@example.com')
+      await emailPage.addAnother()
+
+      await expect(emailPage.items).toHaveCount(2)
+      await emailPage.fillEmail('second@example.com', 1)
+      // The first address must survive the clone
+      await expect(emailPage.emailInput(0)).toHaveValue('first@example.com')
+      await emailPage.verifyNoAccessViolationsOnPage()
+
+      await emailPage.continueButton.click()
+
+      const videoLinkPage = await NotificationVideoLinkPage.verifyOnPage(page)
+      await videoLinkPage.fillVideoLink('https://video.example.com/multi-room')
+      await videoLinkPage.continueButton.click()
+
+      const checkPage = await NotificationCheckPage.verifyOnPage(page)
+      const emailRow = checkPage.page.locator('.govuk-summary-list__value').first()
+      await expect(emailRow).toContainText('first@example.com')
+      await expect(emailRow).toContainText('second@example.com')
+
+      await checkPage.sendButton.click()
+
+      const sentPage = await NotificationSentPage.verifyOnPage(page)
+      await expect(sentPage.panel).toContainText('first@example.com')
+      await expect(sentPage.panel).toContainText('second@example.com')
+    })
+
+    test('Removing an item renumbers the remaining ones', async ({ page }) => {
+      await login(page)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
+
+      const emailPage = await NotificationEmailPage.verifyOnPage(page)
+      await emailPage.fillEmail('first@example.com')
+      await emailPage.addAnother()
+      await emailPage.fillEmail('second@example.com', 1)
+      await emailPage.addAnother()
+      await emailPage.fillEmail('third@example.com', 2)
+
+      await expect(emailPage.items).toHaveCount(3)
+
+      // Drop the middle address; the third should slide down into its place
+      await emailPage.removeButton(1).click()
+
+      await expect(emailPage.items).toHaveCount(2)
+      await expect(emailPage.emailInput(0)).toHaveValue('first@example.com')
+      await expect(emailPage.emailInput(1)).toHaveValue('third@example.com')
+      await emailPage.verifyNoAccessViolationsOnPage()
+
+      await emailPage.continueButton.click()
+
+      const videoLinkPage = await NotificationVideoLinkPage.verifyOnPage(page)
+      await videoLinkPage.fillVideoLink('https://video.example.com/renumber-room')
+      await videoLinkPage.continueButton.click()
+
+      const checkPage = await NotificationCheckPage.verifyOnPage(page)
+      const emailRow = checkPage.page.locator('.govuk-summary-list__value').first()
+      await expect(emailRow).toContainText('first@example.com')
+      await expect(emailRow).toContainText('third@example.com')
+      await expect(emailRow).not.toContainText('second@example.com')
+    })
+
+    test('Validation: reports the item that was left empty', async ({ page }) => {
+      await login(page)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
+
+      const emailPage = await NotificationEmailPage.verifyOnPage(page)
+      await emailPage.fillEmail('first@example.com')
+      await emailPage.addAnother()
+      await emailPage.continueButton.click()
+
+      await NotificationEmailPage.verifyOnPage(page)
+      await expect(page.locator('.govuk-error-message')).toContainText('Enter an email address')
+      // The error summary must link to the item that is actually at fault
+      await expect(page.locator('.govuk-error-summary a')).toHaveAttribute('href', '#emailAddresses[1]')
+      // and the address already entered should not be lost
+      await expect(emailPage.emailInput(0)).toHaveValue('first@example.com')
     })
   })
 

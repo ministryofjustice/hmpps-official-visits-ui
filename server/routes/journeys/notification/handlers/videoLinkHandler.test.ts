@@ -30,7 +30,7 @@ beforeEach(() => {
   config.featureToggles.emailNotificationsPrisons = 'HEI'
   appSetup([
     (req, _res, next) => {
-      req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+      req.session.notifications = { [OV_ID]: { emailAddresses: ['example@example.com'] } }
       next()
     },
   ])
@@ -69,7 +69,7 @@ describe('notification video link handler', () => {
       appSetup([
         (req, _res, next) => {
           req.session.notifications = {
-            [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: 'https://video.example.com/room-1' },
+            [OV_ID]: { emailAddresses: ['example@example.com'], videoLinkUrl: 'https://video.example.com/room-1' },
           }
           next()
         },

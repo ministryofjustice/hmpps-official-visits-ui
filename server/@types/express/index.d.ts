@@ -24,7 +24,7 @@ export declare module 'express-session' {
     notifications?: Record<
       string,
       {
-        emailAddress?: string
+        emailAddresses?: string[]
         videoLinkUrl?: string
         entity?: Record<string, unknown>
         createdAt?: number

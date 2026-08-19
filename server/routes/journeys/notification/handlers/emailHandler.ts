@@ -5,6 +5,25 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import { schemaFactory, SchemaType } from './emailSchema'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 
+/*
+ * The MOJ "add another" component renders one item per entry and clones the first
+ * item to build new ones, so an empty form still needs a single blank input.
+ */
+const atLeastOneItem = (addresses: string[]) => (addresses.length > 0 ? addresses : [''])
+
+const distinct = (addresses: string[]) => [...new Set(addresses)]
+
+/*
+ * Blank inputs are trimmed to undefined before validation, so a rejected submission
+ * comes back through flash with nulls in place of the empty boxes. Keep those items
+ * so the user gets their form back as they submitted it.
+ */
+const normaliseItems = (value: unknown): string[] => {
+  if (Array.isArray(value)) return value.map(address => (typeof address === 'string' ? address : ''))
+  if (typeof value === 'string') return [value]
+  return []
+}
+
 export default class EmailHandler implements PageHandler {
   public PAGE_NAME = Page.NOTIFICATION_ENTER_EMAIL_PAGE
 
@@ -17,16 +36,21 @@ export default class EmailHandler implements PageHandler {
     const { user } = res.locals
 
     const session = req.session as SessionData
-    let emailAddress =
-      res.locals['formResponses']?.emailAddress || session.notifications?.[ovId as string]?.emailAddress
+    const formResponses = res.locals['formResponses'] as Record<string, unknown> | undefined
 
-    if (!emailAddress) {
+    let emailAddresses = normaliseItems(formResponses?.['emailAddresses'])
+
+    if (!emailAddresses.length) {
+      emailAddresses = session.notifications?.[ovId as string]?.emailAddresses ?? []
+    }
+
+    if (!emailAddresses.length) {
       const notifications = await this.officialVisitsService.getNotificationsByOfficialVisitId(Number(ovId), user)
-      emailAddress = notifications?.[0]?.emailAddress
+      emailAddresses = distinct((notifications ?? []).map(notification => notification.emailAddress).filter(Boolean))
     }
 
     return res.render('pages/notification/email', {
-      formResponses: { emailAddress },
+      formResponses: { emailAddresses: atLeastOneItem(emailAddresses) },
       backUrl: '/',
       ovId,
       action,
@@ -35,7 +59,7 @@ export default class EmailHandler implements PageHandler {
 
   POST = async (req: Request, res: Response) => {
     const { ovId, action } = req.params
-    const { emailAddress } = req.body as SchemaType
+    const { emailAddresses } = req.body as SchemaType
 
     const session = req.session as SessionData
     if (!session.notifications) session.notifications = {}
@@ -43,7 +67,7 @@ export default class EmailHandler implements PageHandler {
 
     session.notifications[ovId as string] = {
       ...existingNotification,
-      emailAddress,
+      emailAddresses: distinct(emailAddresses),
       entity: existingNotification.entity || { action },
       createdAt: existingNotification.createdAt || Date.now(),
     }

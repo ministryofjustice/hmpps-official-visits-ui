@@ -4,12 +4,15 @@ import AbstractPage from './abstractPage'
 export default class NotificationEmailPage extends AbstractPage {
   readonly header: Locator
 
-  readonly emailInput: Locator
+  readonly addAnotherButton: Locator
+
+  readonly items: Locator
 
   private constructor(page: Page) {
     super(page)
     this.header = page.locator('h1', { hasText: 'Enter an email address' })
-    this.emailInput = page.locator('#emailAddress')
+    this.addAnotherButton = page.getByRole('button', { name: 'Add another email address' })
+    this.items = page.locator('.moj-add-another__item')
   }
 
   static async verifyOnPage(page: Page): Promise<NotificationEmailPage> {
@@ -19,7 +22,20 @@ export default class NotificationEmailPage extends AbstractPage {
     return emailPage
   }
 
-  async fillEmail(email: string) {
-    await this.emailInput.fill(email)
+  /** The add another component gives each item a bracketed id, which is not a valid CSS id selector. */
+  emailInput(index: number = 0): Locator {
+    return this.page.locator(`[id="emailAddresses[${index}]"]`)
+  }
+
+  removeButton(index: number = 0): Locator {
+    return this.items.nth(index).getByRole('button', { name: /^Remove/ })
+  }
+
+  async fillEmail(email: string, index: number = 0) {
+    await this.emailInput(index).fill(email)
+  }
+
+  async addAnother() {
+    await this.addAnotherButton.click()
   }
 }
