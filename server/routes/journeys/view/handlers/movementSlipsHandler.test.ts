@@ -4,7 +4,6 @@ import * as cheerio from 'cheerio'
 
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import AuditService from '../../../../services/auditService'
-import config from '../../../../config'
 import { appWithAllRoutes, user } from '../../../testutils/appSetup'
 import { mockFindByCriteriaVisit, mockTimeslots } from '../../../../testutils/mocks'
 import { FindByCriteriaResults, ReferenceDataItem } from '../../../../@types/officialVisitsApi/types'
@@ -27,7 +26,6 @@ const appSetup = () => {
 
 beforeEach(() => {
   appSetup()
-  config.featureToggles.bulkMovementSlipsPrisons = 'HEI'
   officialVisitsService.getVisits.mockResolvedValue({
     content: [mockFindByCriteriaVisit, { ...mockFindByCriteriaVisit, officialVisitId: 2 }],
     page: { totalElements: 2, totalPages: 1, number: 0, size: 1000 },
@@ -52,7 +50,6 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetAllMocks()
-  config.featureToggles.bulkMovementSlipsPrisons = ''
 })
 
 const URL = `/view/movement-slips`
@@ -128,18 +125,6 @@ describe('Movement slips', () => {
           const $ = cheerio.load(res.text)
           expect($('.dotted-border').length).toBe(0)
           expect($('.govuk-body').text()).toContain('No visits found')
-        })
-    })
-
-    it('should redirect to the visit list when the prison is not enabled', () => {
-      config.featureToggles.bulkMovementSlipsPrisons = ''
-
-      return request(app)
-        .get(`${URL}?startDate=2025-03-01&endDate=2027-03-25`)
-        .expect(302)
-        .expect('Location', '/view/list')
-        .expect(() => {
-          expect(officialVisitsService.getVisits).not.toHaveBeenCalled()
         })
     })
 

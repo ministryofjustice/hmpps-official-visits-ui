@@ -185,16 +185,14 @@
       <div class="moj-filter-layout__content" id="table-column">
         <div class="moj-action-bar moj-action-bar-indent">
           <div class="moj-action-bar__filter"></div>
-          {% if showMovementSlips %}
-            {{ govukButton({
-              text: "Print movement slips",
-              href: movementSlipsLink,
-              attributes: {
-                "target": "_blank"
-              },
-              classes: 'govuk-button--secondary govuk-!-margin-bottom-0 float-right'
-            }) }}
-          {% endif %}
+          {{ govukButton({
+            text: "Print movement slips",
+            href: movementSlipsLink,
+            attributes: {
+              "target": "_blank"
+            },
+            classes: 'govuk-button--secondary govuk-!-margin-bottom-0 float-right'
+          }) }}
         </div>
         {% if pagination.totalElements > 0 %}
 
