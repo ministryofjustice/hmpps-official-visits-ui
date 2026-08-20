@@ -5,19 +5,10 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import { schemaFactory, SchemaType } from './emailSchema'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 
-/*
- * The MOJ "add another" component renders one item per entry and clones the first
- * item to build new ones, so an empty form still needs a single blank input.
- */
 const atLeastOneItem = (addresses: string[]) => (addresses.length > 0 ? addresses : [''])
 
 const distinct = (addresses: string[]) => [...new Set(addresses)]
 
-/*
- * Blank inputs are trimmed to undefined before validation, so a rejected submission
- * comes back through flash with nulls in place of the empty boxes. Keep those items
- * so the user gets their form back as they submitted it.
- */
 const normaliseItems = (value: unknown): string[] => {
   if (Array.isArray(value)) return value.map(address => (typeof address === 'string' ? address : ''))
   if (typeof value === 'string') return [value]

@@ -25,11 +25,6 @@
       <form method="POST">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
 
-        {#
-          One item per address. The %index% placeholders in the data- attributes are how
-          the add another component renumbers name/id when items are added or removed,
-          so they must stay literal while name/id carry the resolved index.
-        #}
         {% set items = [] %}
         {% for address in formResponses.emailAddresses %}
           {% set fieldName = "emailAddresses[" + loop.index0 + "]" %}
@@ -38,7 +33,7 @@
               id: fieldName,
               name: fieldName,
               label: {
-                html: 'Email address <span class="govuk-visually-hidden moj-add-another__label-suffix">for email address ' + loop.index + '</span>'
+                html: 'Enter an email address <span class="govuk-visually-hidden moj-add-another__label-suffix">for email address ' + loop.index + '</span>'
               },
               classes: "govuk-input--width-20",
               type: "email",
@@ -48,7 +43,7 @@
               attributes: {
                 "data-name": "emailAddresses[%index%]",
                 "data-id": "emailAddresses[%index%]",
-                "data-label": "Email address"
+                "data-label": "Enter an email address"
               }
             }) }}
           {% endset %}

@@ -42,12 +42,8 @@ afterEach(() => {
 const OV_ID = '1'
 const URL = `/notification/enter-email-address/${OV_ID}/create`
 
-// The add another component gives each item a bracketed id, which is not a valid
-// CSS id selector, so match on the attribute instead.
 const emailInput = ($: cheerio.CheerioAPI, index: number) => $(`[id="emailAddresses[${index}]"]`)
 
-// Replaces the default flash provider with one that actually stores values, so a
-// failed POST can be followed by the GET that renders the errors.
 const useStoringFlashProvider = () => {
   const flashStore: Record<string, string[]> = {}
 
@@ -119,10 +115,9 @@ describe('notification email handler', () => {
 
           expect($('[data-module="moj-add-another"]')).toHaveLength(1)
           expect($('.moj-add-another__add-button').text()).toContain('Add another email address')
-          // The %index% placeholders must survive to the browser for renumbering to work
           expect(emailInput($, 0).attr('data-name')).toEqual('emailAddresses[%index%]')
           expect(emailInput($, 0).attr('data-id')).toEqual('emailAddresses[%index%]')
-          expect(emailInput($, 0).attr('data-label')).toEqual('Email address')
+          expect(emailInput($, 0).attr('data-label')).toEqual('Enter an email address')
         })
     })
 
@@ -352,7 +347,6 @@ describe('notification email handler', () => {
           expect(getPageHeader($)).toEqual('Add video link')
         })
 
-      // Both addresses should have survived into the journey
       await agent
         .get(URL)
         .expect('Content-Type', /html/)

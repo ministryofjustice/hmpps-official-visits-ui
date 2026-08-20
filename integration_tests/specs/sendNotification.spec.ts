@@ -224,7 +224,6 @@ test.describe('Send a notification', () => {
 
       const emailPage = await NotificationEmailPage.verifyOnPage(page)
       await expect(emailPage.items).toHaveCount(1)
-      // A lone item has nothing to remove down to, so no remove button is offered
       await expect(emailPage.removeButton(0)).toBeHidden()
 
       await emailPage.fillEmail('first@example.com')
@@ -232,7 +231,6 @@ test.describe('Send a notification', () => {
 
       await expect(emailPage.items).toHaveCount(2)
       await emailPage.fillEmail('second@example.com', 1)
-      // The first address must survive the clone
       await expect(emailPage.emailInput(0)).toHaveValue('first@example.com')
       await emailPage.verifyNoAccessViolationsOnPage()
 
@@ -267,7 +265,6 @@ test.describe('Send a notification', () => {
 
       await expect(emailPage.items).toHaveCount(3)
 
-      // Drop the middle address; the third should slide down into its place
       await emailPage.removeButton(1).click()
 
       await expect(emailPage.items).toHaveCount(2)
@@ -299,9 +296,7 @@ test.describe('Send a notification', () => {
 
       await NotificationEmailPage.verifyOnPage(page)
       await expect(page.locator('.govuk-error-message')).toContainText('Enter an email address')
-      // The error summary must link to the item that is actually at fault
       await expect(page.locator('.govuk-error-summary a')).toHaveAttribute('href', '#emailAddresses[1]')
-      // and the address already entered should not be lost
       await expect(emailPage.emailInput(0)).toHaveValue('first@example.com')
     })
   })

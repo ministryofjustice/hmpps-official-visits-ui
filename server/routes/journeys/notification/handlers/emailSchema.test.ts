@@ -67,8 +67,6 @@ describe('notification emailSchema', () => {
   it('rejects an item left empty after the user has added another one', async () => {
     const schema = await getSchema()
 
-    // The user has to either fill the extra item in or remove it, rather than
-    // having it silently dropped from under them.
     const result = await schema.safeParseAsync({
       emailAddresses: ['first@example.com', undefined],
     })

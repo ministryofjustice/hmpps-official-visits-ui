@@ -22,7 +22,6 @@ export default class NotificationEmailPage extends AbstractPage {
     return emailPage
   }
 
-  /** The add another component gives each item a bracketed id, which is not a valid CSS id selector. */
   emailInput(index: number = 0): Locator {
     return this.page.locator(`[id="emailAddresses[${index}]"]`)
   }
