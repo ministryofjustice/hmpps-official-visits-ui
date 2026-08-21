@@ -5,16 +5,6 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import { schemaFactory, SchemaType } from './emailSchema'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 
-const atLeastOneItem = (addresses: string[]) => (addresses.length > 0 ? addresses : [''])
-
-const distinct = (addresses: string[]) => [...new Set(addresses)]
-
-const normaliseItems = (value: unknown): string[] => {
-  if (Array.isArray(value)) return value.map(address => (typeof address === 'string' ? address : ''))
-  if (typeof value === 'string') return [value]
-  return []
-}
-
 export default class EmailHandler implements PageHandler {
   public PAGE_NAME = Page.NOTIFICATION_ENTER_EMAIL_PAGE
 
@@ -27,24 +17,26 @@ export default class EmailHandler implements PageHandler {
     const { user } = res.locals
 
     const session = req.session as SessionData
+    const notification = session.notifications?.[ovId as string]
     const formResponses = res.locals['formResponses'] as Record<string, unknown> | undefined
+    const submitted = formResponses?.['emailAddresses']
 
-    let emailAddresses = normaliseItems(formResponses?.['emailAddresses'])
+    let emailAddresses = Array.isArray(submitted)
+      ? submitted.map(address => (typeof address === 'string' ? address : ''))
+      : []
 
     if (!emailAddresses.length) {
-      emailAddresses = session.notifications?.[ovId as string]?.emailAddresses ?? []
+      emailAddresses = notification?.emailAddresses ?? []
     }
 
     if (!emailAddresses.length) {
       const notifications = await this.officialVisitsService.getNotificationsByOfficialVisitId(Number(ovId), user)
-      emailAddresses = distinct((notifications ?? []).map(notification => notification.emailAddress).filter(Boolean))
+      emailAddresses = [...new Set((notifications ?? []).map(sent => sent.emailAddress).filter(Boolean))]
     }
 
-    const checkAnswersUrl = `/notification/check-email/${ovId}/${action}`
-
     return res.render('pages/notification/email', {
-      formResponses: { emailAddresses: atLeastOneItem(emailAddresses) },
-      backUrl: session.notifications?.[ovId as string]?.reachedCheckAnswers ? checkAnswersUrl : '/',
+      formResponses: { emailAddresses: emailAddresses.length ? emailAddresses : [''] },
+      backUrl: notification?.reachedCheckAnswers ? `/notification/check-email/${ovId}/${action}` : '/',
       back: '/',
       ovId,
       action,
@@ -61,7 +53,7 @@ export default class EmailHandler implements PageHandler {
 
     session.notifications[ovId as string] = {
       ...existingNotification,
-      emailAddresses: distinct(emailAddresses),
+      emailAddresses: [...new Set(emailAddresses)],
       entity: existingNotification.entity || { action },
       createdAt: existingNotification.createdAt || Date.now(),
     }
