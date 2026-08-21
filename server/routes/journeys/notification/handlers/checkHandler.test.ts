@@ -57,7 +57,9 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
+          req.session.notifications = {
+            [OV_ID]: { emailAddresses: ['example@example.com'], videoLinkUrl: VIDEO_LINK_URL },
+          }
           next()
         },
       ],
@@ -95,7 +97,9 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
+          req.session.notifications = {
+            [OV_ID]: { emailAddresses: ['example@example.com'], videoLinkUrl: VIDEO_LINK_URL },
+          }
           next()
         },
       ],
@@ -110,7 +114,7 @@ describe('notification check handler', () => {
     expect(res.text).toContain('Send official visit cancellation')
   })
 
-  it('GET should prefer formResponses (flash) email over session notifications', async () => {
+  it('GET should prefer formResponses (flash) emails over session notifications', async () => {
     // Configure app with session notification in session and a flashed formResponses value
     app = appWithAllRoutes({
       services: { auditService, officialVisitsService },
@@ -118,7 +122,9 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
+          req.session.notifications = {
+            [OV_ID]: { emailAddresses: ['example@example.com'], videoLinkUrl: VIDEO_LINK_URL },
+          }
           next()
         },
       ],
@@ -126,7 +132,7 @@ describe('notification check handler', () => {
 
     // Simulate flash containing formResponses (app uses req.flash via flashProvider)
     flashProvider.mockImplementation((name: string) => {
-      if (name === 'formResponses') return [JSON.stringify({ emailAddress: 'flash@example.com' })]
+      if (name === 'formResponses') return [JSON.stringify({ emailAddresses: ['flash@example.com'] })]
       return []
     })
 
@@ -145,7 +151,9 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
+          req.session.notifications = {
+            [OV_ID]: { emailAddresses: ['example@example.com'], videoLinkUrl: VIDEO_LINK_URL },
+          }
           next()
         },
       ],
@@ -168,7 +176,9 @@ describe('notification check handler', () => {
       middlewares: [
         (req, res, next) => {
           res.locals.formResponses = {}
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
+          req.session.notifications = {
+            [OV_ID]: { emailAddresses: ['example@example.com'], videoLinkUrl: VIDEO_LINK_URL },
+          }
           next()
         },
       ],
@@ -194,7 +204,7 @@ describe('notification check handler', () => {
     // We'll create a quick request to the email handler to set the notifications then POST to check
     await agent
       .post(`/notification/enter-email-address/${OV_ID}/create`)
-      .send({ emailAddress: 'example@example.com' })
+      .send({ emailAddresses: ['example@example.com'] })
       .expect(302)
 
     await agent.post(`/notification/add-video-link/${OV_ID}/create`).send({ videoLinkUrl: VIDEO_LINK_URL }).expect(302)
@@ -224,7 +234,9 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
+          req.session.notifications = {
+            [OV_ID]: { emailAddresses: ['example@example.com'], videoLinkUrl: VIDEO_LINK_URL },
+          }
           next()
         },
       ],
@@ -255,7 +267,9 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com', videoLinkUrl: VIDEO_LINK_URL } }
+          req.session.notifications = {
+            [OV_ID]: { emailAddresses: ['example@example.com'], videoLinkUrl: VIDEO_LINK_URL },
+          }
           next()
         },
       ],
@@ -286,7 +300,7 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          req.session.notifications = { [OV_ID]: { emailAddresses: ['example@example.com'] } }
           next()
         },
       ],
@@ -308,7 +322,7 @@ describe('notification check handler', () => {
       journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
       middlewares: [
         (req, _res, next) => {
-          req.session.notifications = { [OV_ID]: { emailAddress: 'example@example.com' } }
+          req.session.notifications = { [OV_ID]: { emailAddresses: ['example@example.com'] } }
           next()
         },
       ],

@@ -42,6 +42,24 @@ afterEach(() => {
 const OV_ID = '1'
 const URL = `/notification/enter-email-address/${OV_ID}/create`
 
+const emailInput = ($: cheerio.CheerioAPI, index: number) => $(`[id="emailAddresses[${index}]"]`)
+
+const useStoringFlashProvider = () => {
+  const flashStore: Record<string, string[]> = {}
+
+  flashProvider.mockImplementation((name: string, value?: string) => {
+    if (typeof value !== 'undefined') {
+      flashStore[name] = flashStore[name] || []
+      flashStore[name].push(value)
+      return []
+    }
+
+    const values = flashStore[name] || []
+    flashStore[name] = []
+    return values
+  })
+}
+
 describe('notification email handler', () => {
   describe('GET', () => {
     it('should render the not-authorised page if user does not have MANAGE permission', () => {
@@ -70,21 +88,36 @@ describe('notification email handler', () => {
         })
     })
 
-    it('should render the enter email page when no session email present', () => {
+    it('should render a single empty add another item when no session email present', () => {
       return request(app)
         .get(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          const heading = getPageHeader($)
 
-          expect(heading).toEqual('Enter an email address')
-          expect($('#emailAddress').val()).toBeUndefined()
+          expect(getPageHeader($)).toEqual('Enter an email address')
+          expect($('.moj-add-another__item')).toHaveLength(1)
+          expect(emailInput($, 0).attr('value')).toEqual('')
           expect($('.govuk-button').text()).toContain('Continue')
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.NOTIFICATION_ENTER_EMAIL_PAGE, {
             who: user.username,
             correlationId: expect.any(String),
           })
+        })
+    })
+
+    it('should render the add another component so the client script can clone items', () => {
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('[data-module="moj-add-another"]')).toHaveLength(1)
+          expect($('.moj-add-another__add-button').text()).toContain('Add another email address')
+          expect(emailInput($, 0).attr('data-name')).toEqual('emailAddresses[%index%]')
+          expect(emailInput($, 0).attr('data-id')).toEqual('emailAddresses[%index%]')
+          expect(emailInput($, 0).attr('data-label')).toEqual('Enter an email address')
         })
     })
 
@@ -118,13 +151,11 @@ describe('notification email handler', () => {
         })
     })
 
-    it('should populate the input when session contains an email', () => {
-      // Add middleware to set session value prior to handler
+    it('should populate an item per address when the session contains emails', () => {
       const mw: RequestHandler = (req, _res, next) => {
-        // populate both legacy and new notifications map for OV_ID
-        const session = req.session as unknown as { notifications?: Record<string, { emailAddress?: string }> }
+        const session = req.session as unknown as { notifications?: Record<string, { emailAddresses?: string[] }> }
         session.notifications = session.notifications || {}
-        session.notifications[OV_ID] = { emailAddress: 'example@example.com' }
+        session.notifications[OV_ID] = { emailAddresses: ['example@example.com', 'second@example.com'] }
         next()
       }
 
@@ -135,67 +166,146 @@ describe('notification email handler', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
-          expect($('#emailAddress').attr('value')).toEqual('example@example.com')
+
+          expect($('.moj-add-another__item')).toHaveLength(2)
+          expect(emailInput($, 0).attr('value')).toEqual('example@example.com')
+          expect(emailInput($, 1).attr('value')).toEqual('second@example.com')
+          expect(emailInput($, 1).attr('name')).toEqual('emailAddresses[1]')
         })
     })
 
-    it('should pre propulate with previous email when there is previous notification', () => {
-      const previousNotification = { emailAddress: 'test@example.com' }
-
+    it('should pre populate with previous emails when there are previous notifications', () => {
       officialVisitsService.getNotificationsByOfficialVisitId.mockResolvedValue([
-        previousNotification,
+        { emailAddress: 'test@example.com' },
+        { emailAddress: 'other@example.com' },
       ] as OfficialVisitNotifications)
 
       return request(app)
-        .get(`/notification/enter-email-address/${OV_ID}/create`)
+        .get(URL)
         .expect('Content-Type', /html/)
         .expect(res => {
           const $ = cheerio.load(res.text)
+
           expect(res.text).toContain('An email will be sent confirming the details of this official visit.')
-          expect(res.text).not.toContain('the cancellation of this official visit')
-          expect($('#emailAddress').attr('value')).toEqual(previousNotification.emailAddress)
+          expect(emailInput($, 0).attr('value')).toEqual('test@example.com')
+          expect(emailInput($, 1).attr('value')).toEqual('other@example.com')
+        })
+    })
+
+    it('should point the back link at check answers once the check page has been reached', () => {
+      const mw: RequestHandler = (req, _res, next) => {
+        const session = req.session as unknown as {
+          notifications?: Record<string, { emailAddresses?: string[]; reachedCheckAnswers?: boolean }>
+        }
+        session.notifications = session.notifications || {}
+        session.notifications[OV_ID] = { emailAddresses: ['example@example.com'], reachedCheckAnswers: true }
+        next()
+      }
+
+      appSetup([mw])
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('.govuk-back-link').attr('href')).toEqual(`/notification/check-email/${OV_ID}/create`)
+          expect($('a', '.govuk-button-group').attr('href')).toEqual('/')
+        })
+    })
+
+    it('should point the back link at the homepage before the check page has been reached', () => {
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('.govuk-back-link').attr('href')).toEqual('/')
+          expect($('a', '.govuk-button-group').attr('href')).toEqual('/')
+        })
+    })
+
+    it('should not repeat an address that appears in several previous notifications', () => {
+      officialVisitsService.getNotificationsByOfficialVisitId.mockResolvedValue([
+        { emailAddress: 'test@example.com' },
+        { emailAddress: 'test@example.com' },
+      ] as OfficialVisitNotifications)
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('.moj-add-another__item')).toHaveLength(1)
+          expect(emailInput($, 0).attr('value')).toEqual('test@example.com')
         })
     })
   })
 
   describe('POST', () => {
-    it('should validate and show an error for empty email', () => {
+    it('should validate and show an error against the first item for an empty email', () => {
       return request(app)
         .post(URL)
-        .send({ emailAddress: '' })
+        .send({ emailAddresses: [''] })
         .expect(() =>
           expectErrorMessages([
             {
-              fieldId: 'emailAddress',
-              href: '#emailAddress',
+              fieldId: 'emailAddresses[0]',
+              href: '#emailAddresses[0]',
               text: 'Enter an email address',
             },
           ]),
         )
     })
 
-    it('should reject malformed email and prepopulate the field without modifying it', async () => {
+    it('should only ask for the first address when every item is left empty', () => {
+      return request(app)
+        .post(URL)
+        .send({ emailAddresses: ['', '', ''] })
+        .expect(() =>
+          expectErrorMessages([
+            {
+              fieldId: 'emailAddresses[0]',
+              href: '#emailAddresses[0]',
+              text: 'Enter an email address',
+            },
+          ]),
+        )
+    })
+
+    it('should report an error against each item that is invalid or left behind', () => {
+      return request(app)
+        .post(URL)
+        .send({ emailAddresses: ['valid@example.com', '', 'not-an-email'] })
+        .expect(() =>
+          expectErrorMessages([
+            {
+              fieldId: 'emailAddresses[1]',
+              href: '#emailAddresses[1]',
+              text: 'Enter an email address',
+            },
+            {
+              fieldId: 'emailAddresses[2]',
+              href: '#emailAddresses[2]',
+              text: 'Enter an email address in the correct format',
+            },
+          ]),
+        )
+    })
+
+    it('should reject a malformed email and prepopulate the field without modifying it', async () => {
       const malformedEmail = 'prabash.balasuriya@justice.gov.uk45E£'
-      const flashStore: Record<string, string[]> = {}
-
-      flashProvider.mockImplementation((name: string, value?: string) => {
-        if (typeof value !== 'undefined') {
-          flashStore[name] = flashStore[name] || []
-          flashStore[name].push(value)
-          return []
-        }
-
-        const values = flashStore[name] || []
-        flashStore[name] = []
-        return values
-      })
+      useStoringFlashProvider()
 
       const agent = request.agent(app)
 
       await agent
         .post(URL)
         .set('Referrer', URL)
-        .send({ emailAddress: malformedEmail })
+        .send({ emailAddresses: [malformedEmail] })
         .expect(302)
         .expect('location', URL)
 
@@ -207,16 +317,59 @@ describe('notification email handler', () => {
 
           expect(getPageHeader($)).toEqual('Enter an email address')
           expect(res.text).toContain('Enter an email address in the correct format')
-          expect($('#emailAddress').attr('value')).toEqual(malformedEmail)
+          expect(emailInput($, 0).attr('value')).toEqual(malformedEmail)
         })
     })
 
-    it('should accept a valid email and persist it to session then redirect to add video link', async () => {
+    it('should keep every item, including the empty ones, when validation fails', async () => {
+      useStoringFlashProvider()
+
       const agent = request.agent(app)
 
       await agent
         .post(URL)
-        .send({ emailAddress: 'example@example.com' })
+        .set('Referrer', URL)
+        .send({ emailAddresses: ['first@example.com', '', 'third@example.com'] })
+        .expect(302)
+
+      await agent
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('.moj-add-another__item')).toHaveLength(3)
+          expect(emailInput($, 0).attr('value')).toEqual('first@example.com')
+          expect(emailInput($, 1).attr('value')).toEqual('')
+          expect(emailInput($, 2).attr('value')).toEqual('third@example.com')
+        })
+    })
+
+    it('should accept the bracketed form encoding a browser actually submits', async () => {
+      const agent = request.agent(app)
+
+      await agent
+        .post(URL)
+        .type('form')
+        .send('emailAddresses[0]=first%40example.com&emailAddresses[1]=second%40example.com')
+        .expect(302)
+        .expect('location', '/notification/add-video-link/1/create')
+
+      await agent
+        .get('/notification/add-video-link/1/create')
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect(getPageHeader($)).toEqual('Add video link')
+        })
+    })
+
+    it('should accept valid emails and persist them to session then redirect to add video link', async () => {
+      const agent = request.agent(app)
+
+      await agent
+        .post(URL)
+        .send({ emailAddresses: ['example@example.com', 'another@example.com'] })
         .expect(302)
         .expect('location', '/notification/add-video-link/1/create')
 
@@ -227,6 +380,69 @@ describe('notification email handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
           expect(getPageHeader($)).toEqual('Add video link')
+        })
+
+      await agent
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect(emailInput($, 0).attr('value')).toEqual('example@example.com')
+          expect(emailInput($, 1).attr('value')).toEqual('another@example.com')
+        })
+    })
+
+    it('should return to check answers on continue once the check page has been reached', async () => {
+      const mw: RequestHandler = (req, _res, next) => {
+        const session = req.session as unknown as {
+          notifications?: Record<string, { emailAddresses?: string[]; reachedCheckAnswers?: boolean }>
+        }
+        session.notifications = session.notifications || {}
+        session.notifications[OV_ID] = { emailAddresses: ['example@example.com'], reachedCheckAnswers: true }
+        next()
+      }
+
+      appSetup([mw])
+
+      await request(app)
+        .post(URL)
+        .send({ emailAddresses: ['changed@example.com'] })
+        .expect(302)
+        .expect('location', `/notification/check-email/${OV_ID}/create`)
+    })
+
+    it('should still go to the video link page when the check page has not been reached', async () => {
+      const mw: RequestHandler = (req, _res, next) => {
+        const session = req.session as unknown as { notifications?: Record<string, { emailAddresses?: string[] }> }
+        session.notifications = session.notifications || {}
+        session.notifications[OV_ID] = { emailAddresses: ['example@example.com'] }
+        next()
+      }
+
+      appSetup([mw])
+
+      await request(app)
+        .post(URL)
+        .send({ emailAddresses: ['changed@example.com'] })
+        .expect(302)
+        .expect('location', `/notification/add-video-link/${OV_ID}/create`)
+    })
+
+    it('should discard a duplicated address before storing it', async () => {
+      const agent = request.agent(app)
+
+      await agent
+        .post(URL)
+        .send({ emailAddresses: ['example@example.com', 'example@example.com'] })
+        .expect(302)
+
+      await agent
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+          expect($('.moj-add-another__item')).toHaveLength(1)
+          expect(emailInput($, 0).attr('value')).toEqual('example@example.com')
         })
     })
   })

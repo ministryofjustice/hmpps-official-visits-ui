@@ -28,14 +28,15 @@ export default class CheckHandler implements PageHandler {
 
     // Support both values when coming from validation redirects (formResponses)
     // and when returning to check from later in the journey (session data).
-    const formResponsesEmail = res.locals['formResponses']?.emailAddress
-    const sessionEmail = req.session?.notifications?.[ovId as string]?.emailAddress
+    const formResponses = res.locals['formResponses'] as Record<string, unknown> | undefined
+    const formResponsesEmails = formResponses?.['emailAddresses']
+    const sessionEmails = req.session?.notifications?.[ovId as string]?.emailAddresses
     const formResponsesVideoLinkUrl = res.locals['formResponses']?.videoLinkUrl
     const sessionVideoLinkUrl = req.session?.notifications?.[ovId as string]?.videoLinkUrl
-    const emailAddress = formResponsesEmail || sessionEmail
+    const emailAddresses = (Array.isArray(formResponsesEmails) ? formResponsesEmails : sessionEmails) ?? []
     const videoLinkUrl = formResponsesVideoLinkUrl || sessionVideoLinkUrl
 
-    if (!emailAddress) {
+    if (!emailAddresses.length) {
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
@@ -43,11 +44,14 @@ export default class CheckHandler implements PageHandler {
       return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
     }
 
+    const notification = req.session.notifications?.[ovId as string]
+    if (notification) notification.reachedCheckAnswers = true
+
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
     const contacts = visit?.officialVisitors || []
 
     return res.render('pages/notification/check', {
-      emailAddress,
+      emailAddresses,
       videoLinkUrl,
       visit,
       contacts,
@@ -62,10 +66,10 @@ export default class CheckHandler implements PageHandler {
 
   POST = async (req: Request, res: Response) => {
     const { ovId, action } = req.params
-    const emailAddress = req.session.notifications?.[ovId as string]?.emailAddress
+    const emailAddresses = req.session.notifications?.[ovId as string]?.emailAddresses
     const videoLinkUrl = req.session.notifications?.[ovId as string]?.videoLinkUrl
 
-    if (!emailAddress) {
+    if (!emailAddresses?.length) {
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
@@ -75,7 +79,7 @@ export default class CheckHandler implements PageHandler {
 
     const body = {
       notificationType: mapActionToNotificationType(action as string),
-      emailAddresses: [emailAddress],
+      emailAddresses,
       videoLinkUrl,
     } as NotificationRequest
 

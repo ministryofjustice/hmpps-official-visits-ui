@@ -42,7 +42,7 @@ describe('notification sent handler', () => {
   })
 
   it('GET should render sent confirmation with email and links', async () => {
-    let capturedSession: { notifications?: Record<string, { emailAddress?: string }> } | null = null
+    let capturedSession: { notifications?: Record<string, { emailAddresses?: string[] }> } | null = null
 
     app = appWithAllRoutes({
       services: { auditService },
@@ -50,9 +50,9 @@ describe('notification sent handler', () => {
       journeySessionSupplier: () => ({}),
       middlewares: [
         ((req, _res, next) => {
-          const session = req.session as unknown as { notifications?: Record<string, { emailAddress?: string }> }
+          const session = req.session as unknown as { notifications?: Record<string, { emailAddresses?: string[] }> }
           session.notifications = session.notifications || {}
-          session.notifications[OV_ID] = { emailAddress: 'example@example.com' }
+          session.notifications[OV_ID] = { emailAddresses: ['example@example.com'] }
           capturedSession = session
           next()
         }) as RequestHandler,
@@ -85,9 +85,9 @@ describe('notification sent handler', () => {
       journeySessionSupplier: () => ({}),
       middlewares: [
         ((req, _res, next) => {
-          const session = req.session as unknown as { notifications?: Record<string, { emailAddress?: string }> }
+          const session = req.session as unknown as { notifications?: Record<string, { emailAddresses?: string[] }> }
           session.notifications = session.notifications || {}
-          session.notifications[OV_ID] = { emailAddress: 'example@example.com' }
+          session.notifications[OV_ID] = { emailAddresses: ['example@example.com'] }
           next()
         }) as RequestHandler,
       ],
