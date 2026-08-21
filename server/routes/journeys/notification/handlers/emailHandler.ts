@@ -40,9 +40,12 @@ export default class EmailHandler implements PageHandler {
       emailAddresses = distinct((notifications ?? []).map(notification => notification.emailAddress).filter(Boolean))
     }
 
+    const checkAnswersUrl = `/notification/check-email/${ovId}/${action}`
+
     return res.render('pages/notification/email', {
       formResponses: { emailAddresses: atLeastOneItem(emailAddresses) },
-      backUrl: '/',
+      backUrl: session.notifications?.[ovId as string]?.reachedCheckAnswers ? checkAnswersUrl : '/',
+      back: '/',
       ovId,
       action,
     })
@@ -63,6 +66,10 @@ export default class EmailHandler implements PageHandler {
       createdAt: existingNotification.createdAt || Date.now(),
     }
 
-    return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
+    return res.redirect(
+      existingNotification.reachedCheckAnswers
+        ? `/notification/check-email/${ovId}/${action}`
+        : `/notification/add-video-link/${ovId}/${action}`,
+    )
   }
 }

@@ -26,6 +26,7 @@ export declare module 'express-session' {
       {
         emailAddresses?: string[]
         videoLinkUrl?: string
+        reachedCheckAnswers?: boolean
         entity?: Record<string, unknown>
         createdAt?: number
       }

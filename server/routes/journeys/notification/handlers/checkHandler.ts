@@ -44,6 +44,9 @@ export default class CheckHandler implements PageHandler {
       return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
     }
 
+    const notification = req.session.notifications?.[ovId as string]
+    if (notification) notification.reachedCheckAnswers = true
+
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
     const contacts = visit?.officialVisitors || []
 

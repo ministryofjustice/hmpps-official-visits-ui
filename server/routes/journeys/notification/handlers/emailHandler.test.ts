@@ -192,6 +192,41 @@ describe('notification email handler', () => {
         })
     })
 
+    it('should point the back link at check answers once the check page has been reached', () => {
+      const mw: RequestHandler = (req, _res, next) => {
+        const session = req.session as unknown as {
+          notifications?: Record<string, { emailAddresses?: string[]; reachedCheckAnswers?: boolean }>
+        }
+        session.notifications = session.notifications || {}
+        session.notifications[OV_ID] = { emailAddresses: ['example@example.com'], reachedCheckAnswers: true }
+        next()
+      }
+
+      appSetup([mw])
+
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('.govuk-back-link').attr('href')).toEqual(`/notification/check-email/${OV_ID}/create`)
+          expect($('a', '.govuk-button-group').attr('href')).toEqual('/')
+        })
+    })
+
+    it('should point the back link at the homepage before the check page has been reached', () => {
+      return request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('.govuk-back-link').attr('href')).toEqual('/')
+          expect($('a', '.govuk-button-group').attr('href')).toEqual('/')
+        })
+    })
+
     it('should not repeat an address that appears in several previous notifications', () => {
       officialVisitsService.getNotificationsByOfficialVisitId.mockResolvedValue([
         { emailAddress: 'test@example.com' },
@@ -355,6 +390,42 @@ describe('notification email handler', () => {
           expect(emailInput($, 0).attr('value')).toEqual('example@example.com')
           expect(emailInput($, 1).attr('value')).toEqual('another@example.com')
         })
+    })
+
+    it('should return to check answers on continue once the check page has been reached', async () => {
+      const mw: RequestHandler = (req, _res, next) => {
+        const session = req.session as unknown as {
+          notifications?: Record<string, { emailAddresses?: string[]; reachedCheckAnswers?: boolean }>
+        }
+        session.notifications = session.notifications || {}
+        session.notifications[OV_ID] = { emailAddresses: ['example@example.com'], reachedCheckAnswers: true }
+        next()
+      }
+
+      appSetup([mw])
+
+      await request(app)
+        .post(URL)
+        .send({ emailAddresses: ['changed@example.com'] })
+        .expect(302)
+        .expect('location', `/notification/check-email/${OV_ID}/create`)
+    })
+
+    it('should still go to the video link page when the check page has not been reached', async () => {
+      const mw: RequestHandler = (req, _res, next) => {
+        const session = req.session as unknown as { notifications?: Record<string, { emailAddresses?: string[] }> }
+        session.notifications = session.notifications || {}
+        session.notifications[OV_ID] = { emailAddresses: ['example@example.com'] }
+        next()
+      }
+
+      appSetup([mw])
+
+      await request(app)
+        .post(URL)
+        .send({ emailAddresses: ['changed@example.com'] })
+        .expect(302)
+        .expect('location', `/notification/add-video-link/${OV_ID}/create`)
     })
 
     it('should discard a duplicated address before storing it', async () => {
