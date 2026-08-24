@@ -6,9 +6,16 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
+        {% set panelHtml %}
+          <strong>{{ "Email:" if emailAddresses.length === 1 else "Emails:" }}</strong>
+          {% for emailAddress in emailAddresses %}
+            {{ emailAddress }}{% if not loop.last %}<br/>{% endif %}
+          {% endfor %}
+        {% endset %}
+
         {{ govukPanel({
             titleText: "An email will be sent confirming " + ("this official visit has been cancelled." if action === "cancel" else "details of this official visit."),
-            html: "<strong>Email:</strong> " ~ (emailAddress | e)
+            html: panelHtml
         }) }}
 
         {% if action === 'cancel' %}

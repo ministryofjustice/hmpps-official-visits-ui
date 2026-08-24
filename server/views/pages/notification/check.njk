@@ -15,11 +15,19 @@
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
 
+      {% set emailListHtml %}
+        <ul class="govuk-list govuk-!-margin-bottom-0">
+          {% for emailAddress in emailAddresses %}
+            <li>{{ emailAddress }}</li>
+          {% endfor %}
+        </ul>
+      {% endset %}
+
       {{ govukSummaryList({
         rows: [
           {
-            key: { text: 'Email address' },
-            value: { text: emailAddress },
+            key: { text: 'Email address' if emailAddresses.length === 1 else 'Email addresses' },
+            value: { html: emailListHtml },
             actions: {
               items: [
                 { href: changeEmailAddress, text: 'Change', classes: 'govuk-link--no-visited-state' }

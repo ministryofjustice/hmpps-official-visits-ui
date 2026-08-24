@@ -13,8 +13,8 @@ export default class VideoLinkHandler implements PageHandler {
     const { ovId, action } = req.params
     const session = req.session as SessionData
 
-    const emailAddress = session.notifications?.[ovId as string]?.emailAddress
-    if (!emailAddress) {
+    const emailAddresses = session.notifications?.[ovId as string]?.emailAddresses
+    if (!emailAddresses?.length) {
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
@@ -34,7 +34,7 @@ export default class VideoLinkHandler implements PageHandler {
     const { videoLinkUrl } = req.body as SchemaType
 
     const session = req.session as SessionData
-    if (!session.notifications?.[ovId as string]?.emailAddress) {
+    if (!session.notifications?.[ovId as string]?.emailAddresses?.length) {
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 

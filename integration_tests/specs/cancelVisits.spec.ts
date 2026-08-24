@@ -138,7 +138,7 @@ test.describe('Cancel an official visit', () => {
     await emailLink.click()
     const emailPage = await NotificationEmailPage.verifyOnPage(page)
     await expect(page).toHaveURL('/notification/enter-email-address/1/cancel')
-    await expect(emailPage.emailInput).toHaveValue('visitor@example.com')
+    await expect(emailPage.emailInput()).toHaveValue('visitor@example.com')
   })
 
   test('Success banner shows plain return link when email notifications are disabled for the prison', async ({

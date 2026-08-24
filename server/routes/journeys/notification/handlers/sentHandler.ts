@@ -8,16 +8,15 @@ export default class SentHandler implements PageHandler {
 
   GET = async (req: Request, res: Response) => {
     const { ovId, action } = req.params
-    const emailAddress =
-      res.locals['formResponses']?.emailAddress || req.session?.notifications?.[ovId as string]?.emailAddress
+    const emailAddresses = req.session?.notifications?.[ovId as string]?.emailAddresses ?? []
 
-    if (!emailAddress) {
+    if (!emailAddresses.length) {
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
     // clear the session data set using the below code in the check handler
     const session = req.session as SessionData
     session.notifications[ovId as string] = {}
-    return res.render('pages/notification/sent', { emailAddress, action, ovId, back: '/' })
+    return res.render('pages/notification/sent', { emailAddresses, action, ovId, back: '/' })
   }
 }
