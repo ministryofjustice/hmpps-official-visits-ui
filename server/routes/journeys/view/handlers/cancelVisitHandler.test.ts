@@ -73,10 +73,14 @@ describe('cancelVisitHandler', () => {
           const cancelLink = $('a.govuk-link.govuk-link--no-visited-state')
           expect(cancelLink.text().trim()).toBe('Cancel and return to visit summary')
           expect(cancelLink.attr('href')).toBe(`/view/visit/${ovId}`)
+
+          const backLink = $('a.govuk-back-link')
+          expect(backLink.text().trim()).toBe('Back')
+          expect(backLink.attr('href')).toBe(`/view/visit/${ovId}`)
         })
     })
 
-    it('should append backTo param onto the cancel link when provided', async () => {
+    it('should append backTo param onto the back and cancel links when provided', async () => {
       const b64 = encodeURIComponent(btoa('/view/list?page=1&startDate=2026-01-28&endDate=2026-03-29'))
 
       await request(app)
@@ -87,6 +91,8 @@ describe('cancelVisitHandler', () => {
 
           const cancelLink = $('a.govuk-link.govuk-link--no-visited-state')
           expect(cancelLink.attr('href')).toBe(`/view/visit/${ovId}?backTo=${b64}`)
+
+          expect($('a.govuk-back-link').attr('href')).toBe(`/view/visit/${ovId}?backTo=${b64}`)
         })
     })
   })

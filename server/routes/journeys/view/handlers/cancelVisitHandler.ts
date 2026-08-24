@@ -25,7 +25,7 @@ export default class CancelOfficialVisitHandler implements PageHandler {
       completionCodes: completionCodes.filter(o => o.code.endsWith('_CANCELLED')),
       reason: res.locals.formResponses?.['reason'],
       comments: res.locals.formResponses?.['comments'],
-      back: `/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`,
+      backUrl: `/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`,
     })
   }
 

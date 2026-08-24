@@ -44,7 +44,7 @@ export default class CompleteOfficialVisitHandler implements PageHandler {
       contacts: visit.officialVisitors,
       searchTypes,
       comments: res.locals.formResponses?.['comments'],
-      back: `/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`,
+      backUrl: `/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`,
     })
   }
 
