@@ -6,7 +6,7 @@ export default {
     stubFor({
       request: {
         method: 'GET',
-        url: '/components/components?component=header&component=footer',
+        urlPath: '/components/components',
       },
       response: {
         status: 500,
@@ -17,7 +17,7 @@ export default {
     stubFor({
       request: {
         method: 'GET',
-        url: '/components/components?component=header&component=footer',
+        urlPath: '/components/components',
       },
       response: {
         status: 200,
