@@ -4,6 +4,31 @@
  */
 
 export interface paths {
+  '/visit-review/prison/{prisonCode}/id/{visitReviewId}/acknowledge': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Acknowledge a visit review
+     * @description Acknowledges all currently unacknowledged and unexpired visit review details for the given visit review. Username is taken from the client token.
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__RW
+     *     * ROLE_OFFICIAL_VISITS_RW
+     */
+    put: operations['acknowledgeVisitReview']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/sync/visit-slot/{prisonVisitSlotId}': {
     parameters: {
       query?: never
@@ -775,6 +800,56 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/visit-review/prison/{prisonCode}/list': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get visits for review at a prison
+     * @description Returns scheduled, future or current, unacknowledged and unexpired visits for review with their current issues.
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS_RW
+     */
+    get: operations['getVisitsForReview']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/visit-review/prison/{prisonCode}/count': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Get the count of visits for review at a prison
+     * @description Returns the number of scheduled, future or current, unacknowledged and unexpired visits for review.
+     *
+     *     Requires one of the following roles:
+     *     * ROLE_OFFICIAL_VISITS_ADMIN
+     *     * ROLE_OFFICIAL_VISITS__R
+     *     * ROLE_OFFICIAL_VISITS_RW
+     */
+    get: operations['countVisitsForReview']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/sync/official-visit/id/{officialVisitId}': {
     parameters: {
       query?: never
@@ -1324,6 +1399,14 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    ErrorResponse: {
+      /** Format: int32 */
+      status: number
+      errorCode?: string | null
+      userMessage?: string | null
+      developerMessage?: string | null
+      moreInfo?: string | null
+    }
     /** @description Request to Update a new prison visit slot for official visits */
     SyncUpdateVisitSlotRequest: {
       /**
@@ -1586,7 +1669,15 @@ export interface components {
        * @example true
        */
       currentTerm: boolean
+      /**
+       * @description The prisoner search type code. Maps to the same reference code values in both NOMIS and DPS.
+       * @example RUB_A
+       */
       searchTypeCode?: components['schemas']['SearchLevelType'] | null
+      /**
+       * @description The DPS visit completion code. Default is null/not set if not provided.
+       * @example NORMAL
+       */
       visitCompletionCode?: components['schemas']['VisitCompletionType'] | null
       /**
        * @description Visit concern text from NOMIS
@@ -1684,6 +1775,10 @@ export interface components {
        * @example SCHEDULED
        */
       statusCode: components['schemas']['VisitStatusType']
+      /**
+       * @description The visit completion code
+       * @example NORMAL
+       */
       completionCode?: components['schemas']['VisitCompletionType'] | null
       /**
        * Format: int64
@@ -1702,7 +1797,15 @@ export interface components {
        * @example IN_PERSON
        */
       visitType: components['schemas']['VisitType']
+      /**
+       * @description Whether the prisoner attended or not
+       * @example ATTENDED
+       */
       prisonerAttendance?: components['schemas']['AttendanceType'] | null
+      /**
+       * @description The prisoner search type
+       * @example FULL
+       */
       searchType?: components['schemas']['SearchLevelType'] | null
       /**
        * @description Comments provided for the prisoner
@@ -1768,12 +1871,20 @@ export interface components {
        * @example Smith
        */
       lastName?: string | null
+      /**
+       * @description The relationship type for this visitor (OFFICIAL or SOCIAL)
+       * @example OFFICIAL
+       */
       relationshipType?: components['schemas']['RelationshipType'] | null
       /**
        * @description The visitor relationship code
        * @example POM
        */
       relationshipCode?: string | null
+      /**
+       * @description The visitor attendance code, either ABSENT, ATTENDED or null if not recorded.
+       * @example ABSENT
+       */
       attendanceCode?: components['schemas']['AttendanceType'] | null
       /**
        * @description Set to true if this is the lead visitor
@@ -1815,14 +1926,6 @@ export interface components {
     }
     /** @enum {string} */
     VisitType: 'IN_PERSON' | 'TELEPHONE' | 'VIDEO' | 'UNKNOWN'
-    ErrorResponse: {
-      /** Format: int32 */
-      status: number
-      errorCode?: string | null
-      userMessage?: string | null
-      developerMessage?: string | null
-      moreInfo?: string | null
-    }
     SyncUpdateOfficialVisitorRequest: {
       /**
        * Format: int64
@@ -1846,6 +1949,10 @@ export interface components {
        * @example Harris
        */
       lastName?: string | null
+      /**
+       * @description The relationship type OFFICIAL or SOCIAL. Default is null if not known.
+       * @example OFFICIAL
+       */
       relationshipTypeCode?: components['schemas']['RelationshipType'] | null
       /**
        * @description The relationship code between visitor and prisoner, from NOMIS reference data. A null value will indicate no relationship.
@@ -1867,6 +1974,10 @@ export interface components {
        * @example Some comments
        */
       commentText?: string | null
+      /**
+       * @description The visitor attendance code (ATTENDED or ABSENT). A null indicates no attendance was added.
+       * @example ATTENDED
+       */
       attendanceCode?: components['schemas']['AttendanceType'] | null
       /**
        * Format: date-time
@@ -1898,6 +2009,10 @@ export interface components {
        * @description Official Visitor ID - only required for updates and should be 0 when creating official visitors
        */
       officialVisitorId: number
+      /**
+       * @description The visitor type code (CONTACT, OPV, PRISONER)
+       * @example CONTACT
+       */
       visitorTypeCode: components['schemas']['VisitorType'] | null
       /**
        * Format: int64
@@ -1931,6 +2046,7 @@ export interface components {
        * @example Wheelchair access required
        */
       assistedNotes?: string | null
+      /** @description Details of any equipment the visitor will bring to the visit. */
       visitorEquipment?: components['schemas']['VisitorEquipment'] | null
     }
     VisitorEquipment: {
@@ -2321,13 +2437,25 @@ export interface components {
        * @example SCHEDULED
        */
       visitStatusCode: components['schemas']['VisitStatusType']
+      /**
+       * @description The DPS visit type code. For sync'd NOMIS visits this will default to type UNKNOWN. Other values are IN_PERSON, VIDEO, or TELEPHONE.
+       * @example UNKNOWN
+       */
       visitTypeCode?: components['schemas']['VisitType'] | null
       /**
        * @description The visit comment text
        * @example This is a comment
        */
       commentText?: string | null
+      /**
+       * @description The prisoner search type code. Maps to the same reference code values in both NOMIS and DPS.
+       * @example RUB_A
+       */
       searchTypeCode?: components['schemas']['SearchLevelType'] | null
+      /**
+       * @description The DPS visit completion code. Default is null/not set if not provided.
+       * @example NORMAL
+       */
       visitCompletionCode?: components['schemas']['VisitCompletionType'] | null
       /**
        * @description Visit concern text from NOMIS
@@ -2387,6 +2515,10 @@ export interface components {
        * @example Harris
        */
       lastName?: string | null
+      /**
+       * @description The relationship type OFFICIAL or SOCIAL. Default is null if not known.
+       * @example OFFICIAL
+       */
       relationshipTypeCode?: components['schemas']['RelationshipType'] | null
       /**
        * @description The relationship code between visitor and prisoner, from NOMIS reference data. A null value will indicate no relationship.
@@ -2408,6 +2540,10 @@ export interface components {
        * @example Some comments
        */
       commentText?: string | null
+      /**
+       * @description The visitor attendance code (ATTENDED or ABSENT). A null indicates no attendance was added.
+       * @example ATTENDED
+       */
       attendanceCode?: components['schemas']['AttendanceType'] | null
       /**
        * Format: date-time
@@ -2482,13 +2618,25 @@ export interface components {
        * @example SCHEDULED
        */
       visitStatusCode: components['schemas']['VisitStatusType']
+      /**
+       * @description The DPS visit type code. For migrated NOMIS visits this will default to type UNKNOWN. Other values are IN_PERSON, VIDEO, or TELEPHONE.
+       * @example UNKNOWN
+       */
       visitTypeCode?: components['schemas']['VisitType'] | null
       /**
        * @description The visit comment text
        * @example This is a comment
        */
       commentText?: string | null
+      /**
+       * @description The prisoner search type code. Maps to the same reference code values in both NOMIS and DPS.
+       * @example RUB_A
+       */
       searchTypeCode?: components['schemas']['SearchLevelType'] | null
+      /**
+       * @description The DPS visit completion code. Default is NORMAL if not supplied.
+       * @example NORMAL
+       */
       visitCompletionCode?: components['schemas']['VisitCompletionType'] | null
       /**
        * @description Visit concern text from NOMIS
@@ -2554,6 +2702,10 @@ export interface components {
        * @example Harris
        */
       lastName?: string | null
+      /**
+       * @description The relationship type OFFICIAL or SOCIAL. Default is null if not known.
+       * @example OFFICIAL
+       */
       relationshipTypeCode?: components['schemas']['RelationshipType'] | null
       /**
        * @description The relationship code between visitor and prisoner, from NOMIS reference data. A null value will indicate no relationship.
@@ -2575,6 +2727,10 @@ export interface components {
        * @example Some comments
        */
       commentText?: string | null
+      /**
+       * @description The visitor attendance code (ATTENDED or ABSENT). A null indicates no attendance was added.
+       * @example ATTENDED
+       */
       attendanceCode?: components['schemas']['AttendanceType'] | null
       /**
        * Format: date-time
@@ -2688,6 +2844,10 @@ export interface components {
        * @example Prisoner notes
        */
       prisonerNotes?: string | null
+      /**
+       * @description Search type code relates to the search that will be done on the prisoner after the visit
+       * @example FULL
+       */
       searchTypeCode?: components['schemas']['SearchLevelType'] | null
       officialVisitors: components['schemas']['OfficialVisitor'][]
     }
@@ -2929,6 +3089,10 @@ export interface components {
        * @example 2
        */
       numberOfVisitors: number
+      /**
+       * @description The official visit completion type
+       * @example VISITOR_CANCELLED
+       */
       completionCode?: components['schemas']['VisitCompletionType'] | null
       /** @description The official visit completion description */
       completionDescription?: string | null
@@ -3501,6 +3665,213 @@ export interface components {
       /** Format: uuid */
       dpsLocationId: string
     }
+    OfficialVisitDetails: {
+      /**
+       * Format: int64
+       * @description The official visit id
+       * @example 1
+       */
+      officialVisitId: number
+      /**
+       * @description The prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * @description The official visit prison description
+       * @example Moorland (HMP & YOI)
+       */
+      prisonDescription?: string | null
+      /** @description The Official visit status type */
+      visitStatus: components['schemas']['VisitStatusType']
+      /**
+       * @description The Official visit status description
+       * @example Visit Status
+       */
+      visitStatusDescription?: string | null
+      /**
+       * @description The Official visit visit type
+       * @example AP
+       */
+      visitTypeCode: components['schemas']['VisitType']
+      /** @description The Official visit type description */
+      visitTypeDescription: string
+      /**
+       * Format: date
+       * @description The Official visit date
+       */
+      visitDate: string
+      /** @description The Official visit start time */
+      startTime: string
+      /** @description The Official visit end time */
+      endTime: string
+      /**
+       * Format: uuid
+       * @description The Official visit Location Id
+       */
+      dpsLocationId: string
+      /** @description The Official visit location description */
+      locationDescription?: string | null
+      /**
+       * Format: int64
+       * @description The Official visit - visitor slot slot identifier for the official visit takes place
+       */
+      visitSlotId?: number | null
+      /** @description The Official visit - staff notes */
+      staffNotes?: string | null
+      /** @description The Official visit - prisoner notes */
+      prisonerNotes?: string | null
+      /** @description The Official visit - visitor concern notes */
+      visitorConcernNotes?: string | null
+      /** @description The Official visit completion type */
+      completionCode?: components['schemas']['VisitCompletionType'] | null
+      /** @description Optional notes captured when a visit is either cancelled or completed */
+      completionNotes?: string | null
+      /** @description The Official visit creation description */
+      completionDescription?: string | null
+      /** @description The Official visit Search Level type */
+      searchTypeCode?: components['schemas']['SearchLevelType'] | null
+      /** @description The Official visit search type */
+      searchTypeDescription?: string | null
+      /**
+       * Format: date-time
+       * @description The Official visit creation time
+       */
+      createdTime: string
+      /** @description The Official visit created by User */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The Official visit updated date time
+       */
+      updatedTime?: string | null
+      /** @description The Official visit updated by user */
+      updatedBy?: string | null
+      /** @description The Official visit updated by user */
+      officialVisitors?: components['schemas']['OfficialVisitorDetails'][] | null
+      /** @description The Prisoner Information */
+      prisonerVisited?: components['schemas']['PrisonerVisitedDetails'] | null
+    }
+    OfficialVisitorDetails: {
+      /**
+       * Format: int64
+       * @description The official visitor id
+       * @example 1
+       */
+      officialVisitorId: number
+      /** @description The Official visitor Visit Type code */
+      visitorTypeCode: components['schemas']['VisitorType']
+      /** @description The Official visitor TypeDescription */
+      visitorTypeDescription?: string | null
+      /** @description The Official visitor first name */
+      firstName?: string | null
+      /** @description The Official visitor last name */
+      lastName?: string | null
+      /**
+       * Format: int64
+       * @description The Official visitor contact id
+       */
+      contactId?: number | null
+      /**
+       * Format: int64
+       * @description The prisoner contact id
+       */
+      prisonerContactId?: number | null
+      /** @description The Official visitor relationship type code */
+      relationshipTypeCode?: components['schemas']['RelationshipType'] | null
+      /** @description The Official visitor relationship Type Description */
+      relationshipTypeDescription?: string | null
+      /** @description The Official visitor relationship code */
+      relationshipCode?: string | null
+      /** @description The Official visitor relationship description */
+      relationshipDescription?: string | null
+      /** @description The Official visitor - is lead visitor */
+      leadVisitor: boolean
+      /** @description The Official visitor - is assisted visit */
+      assistedVisit: boolean
+      /** @description The Official visitor visitor notes */
+      visitorNotes?: string | null
+      /** @description The Official visitor attendance type */
+      attendanceCode?: components['schemas']['AttendanceType'] | null
+      /** @description The Official visitor attendance description */
+      attendanceDescription?: string | null
+      /** @description The Official visitor created by user */
+      createdBy: string
+      /**
+       * Format: date-time
+       * @description The Official visitor created date time
+       */
+      createdTime: string
+      /** @description The Official visitor updated by user */
+      updatedBy?: string | null
+      /**
+       * Format: date-time
+       * @description The Official visitor updated date time
+       */
+      updatedTime?: string | null
+      /**
+       * Format: int64
+       * @description The Official visitor offender visit visitor id
+       */
+      offenderVisitVisitorId?: number | null
+      /** @description Equipment the visitor may bring */
+      visitorEquipment?: components['schemas']['VisitorEquipment'] | null
+      /**
+       * @description Notes on whether the visitor requires any assistance
+       * @example Wheelchair access required
+       */
+      assistanceNotes?: string | null
+      /** @description The visitors phone number if present */
+      phoneNumber?: string | null
+      /** @description The visitors email address if present */
+      emailAddress?: string | null
+    }
+    VisitForReviewIssue: {
+      /**
+       * Format: int64
+       * @description The visit review detail id
+       * @example 123
+       */
+      visitReviewDetailId: number
+      /**
+       * @description The issue type
+       * @enum {string}
+       */
+      issueType:
+        | 'PRISONER_NEW_ALERT'
+        | 'PRISONER_NEW_RESTRICTION'
+        | 'PRISONER_RELEASED'
+        | 'PRISONER_TRANSFERRED'
+        | 'VISITOR_NO_RELATIONSHIP'
+        | 'VISITOR_NOT_APPROVED'
+        | 'VISITOR_NOT_OFFICIAL'
+      /** @description The optional issue detail */
+      issueDetail?: string | null
+      /**
+       * Format: date-time
+       * @description The time this issue was raised
+       */
+      raisedTime: string
+    }
+    VisitsForReviewResponse: {
+      /** @description The visit details */
+      visit: components['schemas']['OfficialVisitDetails']
+      /** @description The issues requiring review for this visit */
+      issues: components['schemas']['VisitForReviewIssue'][]
+    }
+    VisitsForReviewCountResponse: {
+      /**
+       * @description The prison code
+       * @example MDI
+       */
+      prisonCode: string
+      /**
+       * Format: int64
+       * @description The number of visits for review
+       * @example 5
+       */
+      visitsForReviewCount: number
+    }
     Attachment: {
       /**
        * Format: int32
@@ -3822,161 +4193,6 @@ export interface components {
       /** @description The extension number of the latest phone number */
       extNumber?: string | null
     }
-    OfficialVisitDetails: {
-      /**
-       * Format: int64
-       * @description The official visit id
-       * @example 1
-       */
-      officialVisitId: number
-      /**
-       * @description The prison code
-       * @example MDI
-       */
-      prisonCode: string
-      /**
-       * @description The official visit prison description
-       * @example Moorland (HMP & YOI)
-       */
-      prisonDescription?: string | null
-      /** @description The Official visit status type */
-      visitStatus: components['schemas']['VisitStatusType']
-      /**
-       * @description The Official visit status description
-       * @example Visit Status
-       */
-      visitStatusDescription?: string | null
-      /**
-       * @description The Official visit visit type
-       * @example AP
-       */
-      visitTypeCode: components['schemas']['VisitType']
-      /** @description The Official visit type description */
-      visitTypeDescription: string
-      /**
-       * Format: date
-       * @description The Official visit date
-       */
-      visitDate: string
-      /** @description The Official visit start time */
-      startTime: string
-      /** @description The Official visit end time */
-      endTime: string
-      /**
-       * Format: uuid
-       * @description The Official visit Location Id
-       */
-      dpsLocationId: string
-      /** @description The Official visit location description */
-      locationDescription?: string | null
-      /**
-       * Format: int64
-       * @description The Official visit - visitor slot slot identifier for the official visit takes place
-       */
-      visitSlotId?: number | null
-      /** @description The Official visit - staff notes */
-      staffNotes?: string | null
-      /** @description The Official visit - prisoner notes */
-      prisonerNotes?: string | null
-      /** @description The Official visit - visitor concern notes */
-      visitorConcernNotes?: string | null
-      completionCode?: components['schemas']['VisitCompletionType'] | null
-      /** @description Optional notes captured when a visit is either cancelled or completed */
-      completionNotes?: string | null
-      /** @description The Official visit creation description */
-      completionDescription?: string | null
-      searchTypeCode?: components['schemas']['SearchLevelType'] | null
-      /** @description The Official visit search type */
-      searchTypeDescription?: string | null
-      /**
-       * Format: date-time
-       * @description The Official visit creation time
-       */
-      createdTime: string
-      /** @description The Official visit created by User */
-      createdBy: string
-      /**
-       * Format: date-time
-       * @description The Official visit updated date time
-       */
-      updatedTime?: string | null
-      /** @description The Official visit updated by user */
-      updatedBy?: string | null
-      /** @description The Official visit updated by user */
-      officialVisitors?: components['schemas']['OfficialVisitorDetails'][] | null
-      prisonerVisited?: components['schemas']['PrisonerVisitedDetails'] | null
-    }
-    OfficialVisitorDetails: {
-      /**
-       * Format: int64
-       * @description The official visitor id
-       * @example 1
-       */
-      officialVisitorId: number
-      /** @description The Official visitor Visit Type code */
-      visitorTypeCode: components['schemas']['VisitorType']
-      /** @description The Official visitor TypeDescription */
-      visitorTypeDescription?: string | null
-      /** @description The Official visitor first name */
-      firstName?: string | null
-      /** @description The Official visitor last name */
-      lastName?: string | null
-      /**
-       * Format: int64
-       * @description The Official visitor contact id
-       */
-      contactId?: number | null
-      /**
-       * Format: int64
-       * @description The prisoner contact id
-       */
-      prisonerContactId?: number | null
-      relationshipTypeCode?: components['schemas']['RelationshipType'] | null
-      /** @description The Official visitor relationship Type Description */
-      relationshipTypeDescription?: string | null
-      /** @description The Official visitor relationship code */
-      relationshipCode?: string | null
-      /** @description The Official visitor relationship description */
-      relationshipDescription?: string | null
-      /** @description The Official visitor - is lead visitor */
-      leadVisitor: boolean
-      /** @description The Official visitor - is assisted visit */
-      assistedVisit: boolean
-      /** @description The Official visitor visitor notes */
-      visitorNotes?: string | null
-      attendanceCode?: components['schemas']['AttendanceType'] | null
-      /** @description The Official visitor attendance description */
-      attendanceDescription?: string | null
-      /** @description The Official visitor created by user */
-      createdBy: string
-      /**
-       * Format: date-time
-       * @description The Official visitor created date time
-       */
-      createdTime: string
-      /** @description The Official visitor updated by user */
-      updatedBy?: string | null
-      /**
-       * Format: date-time
-       * @description The Official visitor updated date time
-       */
-      updatedTime?: string | null
-      /**
-       * Format: int64
-       * @description The Official visitor offender visit visitor id
-       */
-      offenderVisitVisitorId?: number | null
-      visitorEquipment?: components['schemas']['VisitorEquipment'] | null
-      /**
-       * @description Notes on whether the visitor requires any assistance
-       * @example Wheelchair access required
-       */
-      assistanceNotes?: string | null
-      /** @description The visitors phone number if present */
-      phoneNumber?: string | null
-      /** @description The visitors email address if present */
-      emailAddress?: string | null
-    }
     OfficialVisitNotification: {
       /**
        * Format: int64
@@ -4246,6 +4462,62 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  acknowledgeVisitReview: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+        /**
+         * @description The visit review ID
+         * @example 123
+         */
+        visitReviewId: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description User does not have access to caseload */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
   syncGetVisitSlotById: {
     parameters: {
       query?: never
@@ -6098,6 +6370,119 @@ export interface operations {
       }
       /** @description Forbidden, requires an appropriate role */
       403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  getVisitsForReview: {
+    parameters: {
+      query?: {
+        /** @description Zero-based page index (0..N) */
+        page?: number
+        /** @description The size of the page to be returned */
+        size?: number
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        sort?: string[]
+      }
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Visits for review */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VisitsForReviewResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description User does not have access to caseload */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+    }
+  }
+  countVisitsForReview: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /**
+         * @description The prison code
+         * @example MDI
+         */
+        prisonCode: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Visits for review count */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VisitsForReviewCountResponse']
+        }
+      }
+      /** @description Unauthorised, requires a valid Oauth2 token */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description Forbidden, requires an appropriate role */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ErrorResponse']
+        }
+      }
+      /** @description User does not have access to caseload */
+      404: {
         headers: {
           [name: string]: unknown
         }
