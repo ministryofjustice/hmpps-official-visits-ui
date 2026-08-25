@@ -56,6 +56,9 @@ describe('notification video link handler', () => {
           const $ = cheerio.load(res.text)
           expect($('.govuk-back-link').attr('href')).toEqual('/notification/enter-email-address/1/create')
           expect(getPageHeader($)).toEqual('Add video link')
+          expect($('label[for="videoLinkUrl"]').text().trim()).toEqual(
+            'Enter the video link in full. The link must start with https://',
+          )
           expect($('#videoLinkUrl').val()).toBeUndefined()
           expect($('.govuk-button').text()).toContain('Continue')
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.NOTIFICATION_VIDEO_LINK_PAGE, {
