@@ -20,7 +20,7 @@ export interface paths {
      *
      *            Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role
      */
-    post: operations['findByCriteria']
+    post: operations['findRestrictedPatientsByCriteria']
     delete?: never
     options?: never
     head?: never
@@ -90,7 +90,6 @@ export interface paths {
      *            This will also search aliases for possible matches.
      *            Use when there is manual input, e.g. a user can select the correct match from search results.
      *            Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.
-     *
      */
     post: operations['findPossibleMatchesBySearchCriteria']
     delete?: never
@@ -113,7 +112,7 @@ export interface paths {
      * @deprecated
      * @description Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role
      */
-    post: operations['findByCriteria_1']
+    post: operations['deprecatedFindByCriteria']
     delete?: never
     options?: never
     head?: never
@@ -134,9 +133,8 @@ export interface paths {
      * @description Search by prisoner identifier or name and returning results for the criteria matched first.
      *             Typically used when the matching data is of high quality where the first match is expected to be a near perfect match.
      *             Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.
-     *
      */
-    post: operations['findByCriteria_2']
+    post: operations['findByCriteria']
     delete?: never
     options?: never
     head?: never
@@ -179,7 +177,6 @@ export interface paths {
      *           The '*' symbol will match any number of characters e.g. firstName='J*' will match 'John', 'Jane', and 'James'.
      *           The '?' symbol will match any letter substituted at that position. e.g. firstName='t?ny' will match 'Tony' and 'Tiny'
      *           Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.
-     *
      */
     post: operations['prisonerDetailSearch']
     delete?: never
@@ -208,9 +205,8 @@ export interface paths {
      *           Results are ordered so that prisoners that match the most criteria are returned first, then secondary order is by
      *           prisoner number.
      *           Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.
-     *
      */
-    post: operations['prisonerDetailSearch_1']
+    post: operations['physicalDetailSearch']
     delete?: never
     options?: never
     head?: never
@@ -232,7 +228,6 @@ export interface paths {
      *            It will return the best group of matching prisoners based on the request
      *            Specify the request criteria to match against.
      *            Role required is ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH.
-     *
      */
     post: operations['matchPrisoners']
     delete?: never
@@ -255,7 +250,6 @@ export interface paths {
      * @description Words and identifiers can be provided in either or mixed case and will be matched against all indexed text and keyword fields.
      *           Identifiers within the [and, or, not, exact] terms are detected and converted to the appropriate case.
      *           Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.
-     *
      */
     post: operations['keywordSearch']
     delete?: never
@@ -304,33 +298,33 @@ export interface paths {
     /**
      * Search for prisoners by attributes
      * @description <p>This endpoint allows you to create queries over all attributes from the <em>Prisoner</em> record. Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.</p>
-     *           <p>The request contains a list of queries to search on one or more attributes using a list of matchers. For example attribute 'lastName''
-     *           requires a <em>StringMatcher</em> so we can query on <strong>'lastName IS Smith'</strong>. Other type matchers include <em>IntMatcher</em>, <em>BooleanMatcher</em>,
+     *           <p>The request contains a list of queries to search on one or more attributes using a list of matchers. For example attribute "lastName""
+     *           requires a <em>StringMatcher</em> so we can query on <strong>"lastName IS Smith"</strong>. Other type matchers include <em>IntMatcher</em>, <em>BooleanMatcher</em>,
      *           <em>DateMatcher</em> and <em>DateTimeMatcher</em>.
      *           </p>
      *           <p>Each query can also contain a list of sub-queries. Each sub-query can be considered as a separate query in brackets.
      *           Combining multiple sub-queries gives us the ability to create complex searches using any combination of a prisoner's
-     *           attributes. For example we can model nested queries such as <strong>'lastName IS Smith AND (prisonId IS MDI OR (prisonId IS OUT AND lastPrisonId IS MDI))'</strong>.
+     *           attributes. For example we can model nested queries such as <strong>"lastName IS Smith AND (prisonId IS MDI OR (prisonId IS OUT AND lastPrisonId IS MDI))"</strong>.
      *           </p>
-     *           <p>To find all attributes that can be searched for please refer to the <em>Prisoner</em> record or get them from endpoint <a target='_blank' href='/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Attribute search/getAttributes'><strong>GET /attribute-search/attributes</strong></a>. Attributes from lists can be
-     *           searched for with dot notation, e.g. <strong>'attribute=aliases.firstName'</strong> or <strong>'attribute=tattoos.bodyPart'</strong>.
-     *           Attributes from complex objects can also be searched for with dot notation, e.g. <strong>'attribute=currentIncentive.level.code'</strong>.
+     *           <p>To find all attributes that can be searched for please refer to the <em>Prisoner</em> record or get them from endpoint <a target="_blank" href="/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Attribute search/getAttributes"><strong>GET /attribute-search/attributes</strong></a>. Attributes from lists can be
+     *           searched for with dot notation, e.g. <strong>"attribute=aliases.firstName"</strong> or <strong>"attribute=tattoos.bodyPart"</strong>.
+     *           Attributes from complex objects can also be searched for with dot notation, e.g. <strong>"attribute=currentIncentive.level.code"</strong>.
      *           </p>
      *           <p>Note that when searching lists of complex objects (e.g. aliases, alerts, tattoos) if you want to search for multiple attributes within the same object then you need
-     *           to include them in the same query. For example, to search for alias 'John Smith' you should search for <strong>aliases.firstName IS 'John'</strong> and <strong>aliases.lastName IS 'Smith'</strong> using string matchers in the same query.
+     *           to include them in the same query. For example, to search for alias "John Smith" you should search for <strong>aliases.firstName IS "John"</strong> and <strong>aliases.lastName IS "Smith"</strong> using string matchers in the same query.
      *           If you search for them in different queries you will receive anyone with firstName John and also anyone with lastName Smith.
      *           </p>
-     *           <p>Many attributes contain reference data restricted to a fixed list of values. For example, attribute 'inOutStatus' only contains values 'IN', 'OUT' and 'TRN'.
-     *           To find which attributes use reference data and to fetch the possible attribute values see the endpoint <a target='_blank' href='/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Reference data/referenceData'><strong>GET /reference-data/{attribute}</strong></a>.
+     *           <p>Many attributes contain reference data restricted to a fixed list of values. For example, attribute "inOutStatus" only contains values "IN", "OUT" and "TRN".
+     *           To find which attributes use reference data and to fetch the possible attribute values see the endpoint <a target="_blank" href="/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Reference data/referenceData"><strong>GET /reference-data/{attribute}</strong></a>.
      *           </p>
-     *           <p>String attributes support advanced search techniques such as <a href='https://opensearch.org/docs/latest/query-dsl/term/fuzzy/'>fuzzy search</a> matching and <a href='https://opensearch.org/docs/latest/query-dsl/term/wildcard/'>wildcard search</a>. All String searches are case-insensitive (except for IS with fuzzy matching which is not supported by OpenSearch).
+     *           <p>String attributes support advanced search techniques such as <a href="https://opensearch.org/docs/latest/query-dsl/term/fuzzy/">fuzzy search</a> matching and <a href="https://opensearch.org/docs/latest/query-dsl/term/wildcard/">wildcard search</a>. All String searches are case-insensitive (except for IS with fuzzy matching which is not supported by OpenSearch).
      *           <ul>
-     *             <li>IS and IS_NOT require an exact match (wildcards ? and * will not work). E.g. If religion is 'Christian' then <strong>'religion IS Christian'</strong> will match but <strong>'religion IS Christ*'</strong> will not.</li>
-     *             <li>For IS and CONTAINS some attributes support fuzzy matching e.g. they allow spelling mistakes. Call endpoint <strong>GET /attribute-search/attributes</strong> to see which attributes support fuzzy matching. E.g. If firstName is 'Jonathan' then <strong>'firstName IS Johnathon'</strong> or <strong>'firstName CONTAINS Johnathon'</strong> will match. Note that fuzzy matches for IS are case sensitive but for CONTAINS they are case insensitive.</li>
-     *             <li>CONTAINS without wildcards (? and *) for a non-fuzzy attribute looks for the exact search term anywhere in the attribute value. E.g. If religion is 'Christian' then <strong>'religion CONTAINS ist'</strong> will match.</li>
-     *             <li>CONTAINS with wildcards ? (single character) and/or * (zero to many characters) perform a wildcard search which must match the entire attribute value. E.g. If firstName is 'Jonathan' then <strong>'firstName CONTAINS Jon*'</strong> will match but <strong>'firstName CONTAINS nath*'</strong> will not.</li>
-     *             <li>STARTSWITH checks only the prefix of the attribute value and does not support fuzzy matching or wildcards. E.g.If firstName is 'Jonathan' then <strong>'firstName STARTSWITH Jon'</strong> will match but <strong>'firstName STARTSWITH Jon*'</strong> will not.</li>
-     *             <li>IN checks that the attribute value is any of the list of Strings provided in the search term. The search term should be a comma separated list of Strings to search, E.g. 'searchValue1,searchValue2,searchValue3'. This only matches exactly - no fuzzy search, wildcards or case-insensitive search is supported by OpenSearch. E.g.If firstName is 'Jonathan' then <strong>'firstName IN 'Jonathan,Bob,Chris''</strong> will match but <strong>'firstName IN 'Adrian,Bob,Chris''</strong> will not.</li>
+     *             <li>IS and IS_NOT require an exact match (wildcards ? and * will not work). E.g. If religion is "Christian" then <strong>"religion IS Christian"</strong> will match but <strong>"religion IS Christ*"</strong> will not.</li>
+     *             <li>For IS and CONTAINS some attributes support fuzzy matching e.g. they allow spelling mistakes. Call endpoint <strong>GET /attribute-search/attributes</strong> to see which attributes support fuzzy matching. E.g. If firstName is "Jonathan" then <strong>"firstName IS Johnathon"</strong> or <strong>"firstName CONTAINS Johnathon"</strong> will match. Note that fuzzy matches for IS are case sensitive but for CONTAINS they are case insensitive.</li>
+     *             <li>CONTAINS without wildcards (? and *) for a non-fuzzy attribute looks for the exact search term anywhere in the attribute value. E.g. If religion is "Christian" then <strong>"religion CONTAINS ist"</strong> will match.</li>
+     *             <li>CONTAINS with wildcards ? (single character) and/or * (zero to many characters) perform a wildcard search which must match the entire attribute value. E.g. If firstName is "Jonathan" then <strong>"firstName CONTAINS Jon*"</strong> will match but <strong>"firstName CONTAINS nath*"</strong> will not.</li>
+     *             <li>STARTSWITH checks only the prefix of the attribute value and does not support fuzzy matching or wildcards. E.g.If firstName is "Jonathan" then <strong>"firstName STARTSWITH Jon"</strong> will match but <strong>"firstName STARTSWITH Jon*"</strong> will not.</li>
+     *             <li>IN checks that the attribute value is any of the list of Strings provided in the search term. The search term should be a comma separated list of Strings to search, E.g. "searchValue1,searchValue2,searchValue3". This only matches exactly - no fuzzy search, wildcards or case-insensitive search is supported by OpenSearch. E.g.If firstName is "Jonathan" then <strong>"firstName IN 'Jonathan,Bob,Chris'"</strong> will match but <strong>"firstName IN 'Adrian,Bob,Chris'"</strong> will not.</li>
      *           </ul>
      *           </p>
      *           <p>To assist with debugging queries we publish events in App Insights. To search in App Insights Log Analytics run query:
@@ -340,31 +334,31 @@ export interface paths {
      *           </pre>
      *           </p>
      *           <h3>Example Requests</h3>
-     *           <p>Note that the default 'joinType' is 'AND' so it could be omitted from the examples below (but is included for clarity).</p>
+     *           <p>Note that the default "joinType" is "AND" so it could be omitted from the examples below (but is included for clarity).</p>
      *           <h4>Search for all prisoners in Moorland with a height between 150 and 180cm</h4>
      *           <br/>
-     *           Query: <strong>'prisonId = 'MDI' AND (heightCentimetres >= 150 AND heightCentimetres <= 180)'</strong>
+     *           Query: <strong>"prisonId = "MDI" AND (heightCentimetres >= 150 AND heightCentimetres <= 180)"</strong>
      *           <br/>
      *           JSON request:
      *           <br/>
      *           <pre>
      *             {
-     *               'joinType': 'AND',
-     *               'queries': [
+     *               "joinType": "AND",
+     *               "queries": [
      *                 {
-     *                   'joinType': 'AND',
-     *                   'matchers': [
+     *                   "joinType": "AND",
+     *                   "matchers": [
      *                     {
-     *                       'type': 'String',
-     *                       'attribute': 'prisonId',
-     *                       'condition': 'IS',
-     *                       'searchTerm': 'MDI'
+     *                       "type": "String",
+     *                       "attribute": "prisonId",
+     *                       "condition": "IS",
+     *                       "searchTerm": "MDI"
      *                     },
      *                     {
-     *                       'type': 'Int',
-     *                       'attribute': 'heightCentimetres',
-     *                       'minValue': 150,
-     *                       'maxValue': 180
+     *                       "type": "Int",
+     *                       "attribute": "heightCentimetres",
+     *                       "minValue": 150,
+     *                       "maxValue": 180
      *                     }
      *                   ]
      *                 }
@@ -373,28 +367,28 @@ export interface paths {
      *           </pre>
      *           <br/>
      *           <h4>Search for all prisoners in a list of cells in Moorland</h4>
-     *           Query: <strong>'prisonId = 'MDI' AND cellLocation IN (1-2-001, 1-3-014, 3-1-020)</strong>
+     *           Query: <strong>"prisonId = "MDI" AND cellLocation IN (1-2-001, 1-3-014, 3-1-020)</strong>
      *           <br/>
      *           JSON request:
      *           <br/>
      *           <pre>
      *             {
-     *               'joinType': 'AND',
-     *               'queries': [
+     *               "joinType": "AND",
+     *               "queries": [
      *                 {
-     *                   'joinType': 'AND',
-     *                   'matchers': [
+     *                   "joinType": "AND",
+     *                   "matchers": [
      *                     {
-     *                       'type': 'String',
-     *                       'attribute': 'prisonId',
-     *                       'condition': 'IS',
-     *                       'searchTerm': 'MDI'
+     *                       "type": "String",
+     *                       "attribute": "prisonId",
+     *                       "condition": "IS",
+     *                       "searchTerm": "MDI"
      *                     },
      *                     {
-     *                       'type': 'String',
-     *                       'attribute': 'cellLocation',
-     *                       'condition': 'IN',
-     *                       'searchTerm': '1-2-001,1-3-014,3-1-020'
+     *                       "type": "String",
+     *                       "attribute": "cellLocation",
+     *                       "condition": "IN",
+     *                       "searchTerm": "1-2-001,1-3-014,3-1-020"
      *                     }
      *                   ]
      *                 }
@@ -404,57 +398,57 @@ export interface paths {
      *           <br/>
      *           <h4>Search for all prisoners received since 1st Jan 2024 with a dragon tattoo on either their arm or shoulder</h4>
      *           <br/>
-     *           Query: <strong>'(receptionDate >= 2024-01-01) AND ((tattoos.bodyPart = 'arm' AND tattoos.comment CONTAINS 'dragon' ) OR (tattoos.bodyPart = 'shoulder' AND tattoos.comment CONTAINS 'dragon'))'</strong>
+     *           Query: <strong>"(receptionDate >= 2024-01-01) AND ((tattoos.bodyPart = "arm" AND tattoos.comment CONTAINS "dragon" ) OR (tattoos.bodyPart = "shoulder" AND tattoos.comment CONTAINS "dragon"))"</strong>
      *           <br/>
      *           JSON request:
      *           <br/>
      *           <pre>
      *             {
-     *               'joinType': 'AND',
-     *               'queries': [
+     *               "joinType": "AND",
+     *               "queries": [
      *                 {
-     *                   'matchers': [
+     *                   "matchers": [
      *                     {
-     *                       'type': 'Date',
-     *                       'attribute': 'receptionDate',
-     *                       'minValue': '2024-01-01'
+     *                       "type": "Date",
+     *                       "attribute": "receptionDate",
+     *                       "minValue": "2024-01-01"
      *                     }
      *                   ]
      *                 },
      *                 {
-     *                   'joinType': 'OR',
-     *                   'subQueries': [
+     *                   "joinType": "OR",
+     *                   "subQueries": [
      *                     {
-     *                       'joinType': 'AND',
-     *                       'matchers': [
+     *                       "joinType": "AND",
+     *                       "matchers": [
      *                         {
-     *                           'type': 'String',
-     *                           'attribute': 'tattoos.bodyPart',
-     *                           'condition': 'IS',
-     *                           'searchTerm': 'arm'
+     *                           "type": "String",
+     *                           "attribute": "tattoos.bodyPart",
+     *                           "condition": "IS",
+     *                           "searchTerm": "arm"
      *                         },
      *                         {
-     *                           'type': 'String',
-     *                           'attribute': 'tattoos.comment',
-     *                           'condition': 'CONTAINS',
-     *                           'searchTerm': 'dragon'
+     *                           "type": "String",
+     *                           "attribute": "tattoos.comment",
+     *                           "condition": "CONTAINS",
+     *                           "searchTerm": "dragon"
      *                         }
      *                       ]
      *                     },
      *                     {
-     *                       'joinType': 'AND',
-     *                       'matchers': [
+     *                       "joinType": "AND",
+     *                       "matchers": [
      *                         {
-     *                           'type': 'String',
-     *                           'attribute': 'tattoos.bodyPart',
-     *                           'condition': 'IS',
-     *                           'searchTerm': 'shoulder'
+     *                           "type": "String",
+     *                           "attribute": "tattoos.bodyPart",
+     *                           "condition": "IS",
+     *                           "searchTerm": "shoulder"
      *                         },
      *                         {
-     *                           'type': 'String',
-     *                           'attribute': 'tattoos.comment',
-     *                           'condition': 'CONTAINS',
-     *                           'searchTerm': 'dragon'
+     *                           "type": "String",
+     *                           "attribute": "tattoos.comment",
+     *                           "condition": "CONTAINS",
+     *                           "searchTerm": "dragon"
      *                         }
      *                       ]
      *                     }
@@ -469,7 +463,6 @@ export interface paths {
      *           <p>It is thus recommended not to use paging and instead request a large page size, together with setting the
      *           responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).
      *           </p>
-     *
      */
     post: operations['attributeSearch']
     delete?: never
@@ -511,7 +504,6 @@ export interface paths {
      *           rather than all the possible values.  Only to be used for searching existing data purposes.
      *           This method will also cache all reference data results for an hour and any new data will only appear after an hour.
      *           Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.
-     *
      */
     get: operations['referenceData']
     put?: never
@@ -535,7 +527,6 @@ export interface paths {
      *           rather than all the possible values.  Only to be used for searching existing data purposes.
      *           This method will also cache all reference data results for an hour and any new data will only appear after an hour.
      *           Requires ROLE_GLOBAL_SEARCH or ROLE_PRISONER_SEARCH role.
-     *
      */
     get: operations['alertsReferenceData']
     put?: never
@@ -660,37 +651,37 @@ export interface paths {
      *
      *           Requires ROLE_PRISONER_IN_PRISON_SEARCH or ROLE_PRISONER_SEARCH role.
      *
-     *           Sort fields supported are: firstName, lastName, prisonerNumber, dateOfBirth, cellLocation e.g 'sort=firstName,lastName,desc'
+     *           Sort fields supported are: firstName, lastName, prisonerNumber, dateOfBirth, cellLocation e.g "sort=firstName,lastName,desc"
      *
      *           Examples:
      *
-     *           '/prison/BXI/prisoners?term=John&sort=firstName,lastName,desc&page=2&size=20'
+     *           "/prison/BXI/prisoners?term=John&sort=firstName,lastName,desc&page=2&size=20"
      *           This will return all people in HMP Brixton whose first or last names begins with JOHN.
      *           Results will be ordered by firstName, lastName descending.
      *           Page 3 will be returned with a maximum of 20 results per page.
      *
-     *           '/prison/WWI/prisoners?sort=cellLocation'
+     *           "/prison/WWI/prisoners?sort=cellLocation"
      *           This will return all people in HMP Wandsworth.
      *           Results will be ordered by cell location ascending.
      *           Page 1 will be returned with a maximum of 10 results per page.
      *
-     *           '/prison/WWI/prisoners?cellLocationPrefix=WWI-2&term=smith'
-     *           '/prison/WWI/prisoners?cellLocationPrefix=2&term=smith'
+     *           "/prison/WWI/prisoners?cellLocationPrefix=WWI-2&term=smith"
+     *           "/prison/WWI/prisoners?cellLocationPrefix=2&term=smith"
      *           This will return all people in HMP Wandsworth block 2 whose name starts with SMITH.
      *
-     *           '/prison/WWI/prisoners?cellLocationPrefix=2-A-3-001'
+     *           "/prison/WWI/prisoners?cellLocationPrefix=2-A-3-001"
      *           This will return all people in HMP Wandsworth cell WWI-2-A-3-001
      *
-     *           '/prison/WWI/prisoners?term=A1234KJ'
-     *           '/prison/WWI/prisoners?term=A1234KJ bananas'
+     *           "/prison/WWI/prisoners?term=A1234KJ"
+     *           "/prison/WWI/prisoners?term=A1234KJ bananas"
      *           This will return the single prisoner with prisoner number A1234KJ in HMP Wandsworth.
      *           An empty page will be returned if not found.
      *
-     *           '/prison/WWI/prisoners?term=A J&fromDob=1956-01-01&toDob=2000-01-02'
+     *           "/prison/WWI/prisoners?term=A J&fromDob=1956-01-01&toDob=2000-01-02"
      *           This will return all people in HMP Wandsworth. Born on or after 1956-01-01 and on or before 2000-01-02,
      *           whose name begins with A J, e.g Alan Jones born on 1956-01-01.
      *
-     *           '/prison/WWI/prisoners?alerts=TACT&alerts=PEEP'
+     *           "/prison/WWI/prisoners?alerts=TACT&alerts=PEEP"
      *           This will return all people in HMP Wandsworth. With the alerts TACT or PEEP.
      *
      *           There have been issues raised with OpenSearch sorting in that it sometimes doesn't produce stable sorting results,
@@ -698,7 +689,6 @@ export interface paths {
      *
      *           It is thus recommended not to use paging and instead request a large page size, together with setting the
      *           responseFields to limit the returned response byte size (otherwise you risk hitting memory / webclient limits).
-     *
      */
     get: operations['search']
     put?: never
@@ -730,9 +720,7 @@ export interface paths {
     trace?: never
   }
 }
-
 export type webhooks = Record<string, never>
-
 export interface components {
   schemas: {
     /** @description Search Criteria for Prisoner Search */
@@ -755,7 +743,7 @@ export interface components {
       /**
        * @description List of supporting Prison Ids to restrict the search by. Unrestricted if not supplied or null
        * @example [
-       *       'MDI'
+       *       "MDI"
        *     ]
        */
       supportingPrisonIds?: string[]
@@ -763,7 +751,7 @@ export interface components {
     Address: {
       /**
        * @description The full address on a single line.  No fixed address records will have the fullAddress set to 'No fixed address'. Will never be null.
-       * @example 1
+       * @example 1 Main Street, Crookes, Sheffield, South Yorkshire, S10 1BP, England
        */
       fullAddress?: string
       /**
@@ -956,13 +944,13 @@ export interface components {
       totalElements?: number
       /** Format: int32 */
       totalPages?: number
-      first?: boolean
-      last?: boolean
       /** Format: int32 */
       size?: number
       content?: components['schemas']['Prisoner'][]
       /** Format: int32 */
       number?: number
+      first?: boolean
+      last?: boolean
       sort?: components['schemas']['SortObject']
       /** Format: int32 */
       numberOfElements?: number
@@ -1052,8 +1040,8 @@ export interface components {
        */
       croNumber?: string
       /**
-       * @description Booking No.
-       * @example 0001200924
+       * @description Booking Id
+       * @example 2900924
        */
       bookingId?: string
       /**
@@ -1070,7 +1058,7 @@ export interface components {
        * @description First Name
        * @example Robert
        */
-      firstName: string
+      firstName?: string
       /**
        * @description Middle Names
        * @example John James
@@ -1080,48 +1068,48 @@ export interface components {
        * @description Last name
        * @example Larsen
        */
-      lastName: string
+      lastName?: string
       /**
        * Format: date
        * @description Date of Birth
        * @example 1975-04-02
        */
-      dateOfBirth: string
+      dateOfBirth?: string
       /**
        * @description Gender
        * @example Female
        */
-      gender: string
+      gender?: string
       /**
        * @description Ethnicity
        * @example White: Eng./Welsh/Scot./N.Irish/British
        */
-      ethnicity: string
+      ethnicity?: string
       /**
        * @description Ethnicity code
        * @example W1
        */
-      raceCode: string
+      raceCode?: string
       /**
        * @description Youth Offender?
        * @example true
        */
-      youthOffender: boolean
+      youthOffender?: boolean
       /**
        * @description Marital Status
        * @example Widowed
        */
-      maritalStatus: string
+      maritalStatus?: string
       /**
        * @description Religion
        * @example Church of England (Anglican)
        */
-      religion: string
+      religion?: string
       /**
        * @description Nationality
        * @example Egyptian
        */
-      nationality: string
+      nationality?: string
       /**
        * @description Smoker (V=vapes)
        * @enum {string}
@@ -1143,7 +1131,7 @@ export interface components {
        * @description Status of the prisoner
        * @example ACTIVE IN
        */
-      status: string
+      status?: string
       /**
        * @description Last Movement Type Code of prisoner
        * @example CRT
@@ -1155,16 +1143,27 @@ export interface components {
        */
       lastMovementReasonCode?: string
       /**
+       * Format: date
+       * @description Date of the last movement of the prisoner
+       * @example 2023-05-01
+       */
+      lastMovementDate?: string
+      /**
        * @description In/Out Status
        * @example IN
        * @enum {string}
        */
       inOutStatus?: 'IN' | 'OUT' | 'TRN'
       /**
-       * @description Prison ID
+       * @description Current Prison ID (or OUT)
        * @example MDI
        */
       prisonId?: string
+      /**
+       * @description Current Prison Name
+       * @example HMP Leeds
+       */
+      prisonName?: string
       /**
        * @description The last i.e. final prison for the prisoner (which is the same as the prisonId if they are still inside prison)
        * @example MDI
@@ -1178,14 +1177,9 @@ export interface components {
       /**
        * Format: date
        * @description The date they left the previous prison
-       * @example MDI
+       * @example 2025-09-15
        */
       previousPrisonLeavingDate?: string
-      /**
-       * @description Prison Name
-       * @example HMP Leeds
-       */
-      prisonName?: string
       /**
        * @description In prison cell location
        * @example A-1-002
@@ -1246,7 +1240,7 @@ export interface components {
        * @description Most serious offence for this sentence
        * @example Robbery
        */
-      mostSeriousOffence: string
+      mostSeriousOffence?: string
       /**
        * @description Indicates that the prisoner has been recalled
        * @example false
@@ -1373,6 +1367,12 @@ export interface components {
       conditionalReleaseDate?: string
       /**
        * Format: date
+       * @description Non-parole date. If nonParoleOverrideDate date is available then it will be set as nonParoleDate
+       * @example 2023-05-01
+       */
+      nonParoleDate?: string
+      /**
+       * Format: date
        * @description Actual Parole Date
        * @example 2023-05-01
        */
@@ -1398,7 +1398,7 @@ export interface components {
        * @description Indicates a restricted patient. Will never be null.
        * @example true
        */
-      restrictedPatient: boolean
+      restrictedPatient?: boolean
       /**
        * @description Supporting prison ID for POM
        * @example LEI
@@ -1619,7 +1619,7 @@ export interface components {
       /**
        * @description List of Prison Ids (can include OUT and TRN) to restrict the search by. Unrestricted if not supplied or null
        * @example [
-       *       'MDI'
+       *       "MDI"
        *     ]
        */
       prisonIds?: string[]
@@ -1628,7 +1628,7 @@ export interface components {
       /**
        * @description List of prisoner numbers to search by
        * @example [
-       *       'A1234AA'
+       *       "A1234AA"
        *     ]
        */
       prisonerNumbers: string[]
@@ -1711,7 +1711,7 @@ export interface components {
       /**
        * @description List of Prison Ids (can include OUT and TRN) to restrict the search by. Unrestricted if not supplied or null
        * @example [
-       *       'MDI'
+       *       "MDI"
        *     ]
        */
       prisonIds?: string[]
@@ -1803,13 +1803,13 @@ export interface components {
       totalElements?: number
       /** Format: int32 */
       totalPages?: number
-      first?: boolean
-      last?: boolean
       /** Format: int32 */
       size?: number
       content?: components['schemas']['Prisoner'][]
       /** Format: int32 */
       number?: number
+      first?: boolean
+      last?: boolean
       sort?: components['schemas']['SortObject']
       /** Format: int32 */
       numberOfElements?: number
@@ -2034,8 +2034,7 @@ export interface components {
       /** @description List of body parts that have scars */
       scars?: components['schemas']['BodyPart'][]
       /**
-       * @description
-       *             Whether all terms are required to match. If set to true then only matches on all fields will return a result.
+       * @description Whether all terms are required to match. If set to true then only matches on all fields will return a result.
        *             If set to false then matches will return a higher score than non matches, but all will be returned.
        *             Prison and cell location will always be required to match.
        * @example false
@@ -2049,13 +2048,13 @@ export interface components {
       totalElements?: number
       /** Format: int32 */
       totalPages?: number
-      first?: boolean
-      last?: boolean
       /** Format: int32 */
       size?: number
       content?: components['schemas']['Prisoner'][]
       /** Format: int32 */
       number?: number
+      first?: boolean
+      last?: boolean
       sort?: components['schemas']['SortObject']
       /** Format: int32 */
       numberOfElements?: number
@@ -2143,13 +2142,13 @@ export interface components {
        */
       fuzzyMatch?: boolean
       /**
-       * @description List of prison codes to filter results
+       * @description List of prison codes to filter results, null means all
        * @example [
-       *       'LEI',
-       *       'MDI'
+       *       "LEI",
+       *       "MDI"
        *     ]
        */
-      prisonIds: string[]
+      prisonIds?: string[]
       /** @description Pagination options. Will default to the first page if omitted. */
       pagination: components['schemas']['PaginationRequest']
       /**
@@ -2157,19 +2156,36 @@ export interface components {
        * @enum {string}
        */
       type: 'DEFAULT' | 'ESTABLISHMENT'
+      /**
+       * @description Gender, F - Female, M - Male, NK - Not Known / Not Recorded or NS - Not Specified (Indeterminate)
+       * @example M
+       * @enum {string}
+       */
+      gender?: 'M' | 'F' | 'NK' | 'NS' | 'ALL'
+      /**
+       * @description Location, Inside or Outside
+       * @example IN
+       */
+      location?: string
+      /**
+       * Format: date
+       * @description Date of birth
+       * @example 1970-02-28
+       */
+      dateOfBirth?: string
     }
     KeywordResponse: {
       /** Format: int64 */
       totalElements?: number
       /** Format: int32 */
       totalPages?: number
-      first?: boolean
-      last?: boolean
       /** Format: int32 */
       size?: number
       content?: components['schemas']['Prisoner'][]
       /** Format: int32 */
       number?: number
+      first?: boolean
+      last?: boolean
       sort?: components['schemas']['SortObject']
       /** Format: int32 */
       numberOfElements?: number
@@ -2230,10 +2246,11 @@ export interface components {
       queries: components['schemas']['Query'][]
       pagination: components['schemas']['PaginationRequest']
     }
-    /** @description A matcher for a boolean attribute from the Prisoner.
+    /**
+     * @description A matcher for a boolean attribute from the Prisoner.
      *
      *       The type must be set to Boolean for this matcher.
-     *      */
+     */
     BooleanMatcher: Omit<components['schemas']['Matcher'], 'type'> & {
       /**
        * @description The attribute to match
@@ -2252,7 +2269,8 @@ export interface components {
        */
       type: 'Boolean'
     }
-    /** @description A matcher for a date attribute from the Prisoner record.
+    /**
+     * @description A matcher for a date attribute from the Prisoner record.
      *
      *       For a between clause use both min value and max value. By default the range is inclusive, but can be adjusted with minInclusive and maxInclusive.
      *
@@ -2263,7 +2281,7 @@ export interface components {
      *       For equals enter the same date in both the min value and max value and leave min/max inclusive as true.
      *
      *       The type must be set to Date for this matcher.
-     *        */
+     */
     DateMatcher: Omit<components['schemas']['Matcher'], 'type'> & {
       /**
        * @description The attribute to match
@@ -2299,7 +2317,8 @@ export interface components {
        */
       type: 'Date'
     }
-    /** @description A matcher for a date time attribute from the Prisoner record.
+    /**
+     * @description A matcher for a date time attribute from the Prisoner record.
      *
      *       For a between clause use both the min and max values.
      *
@@ -2308,7 +2327,7 @@ export interface components {
      *       For > enter only the min value.
      *
      *       The type must be set to DateTime for this matcher.
-     *      */
+     */
     DateTimeMatcher: Omit<components['schemas']['Matcher'], 'type'> & {
       /**
        * @description The attribute to search on
@@ -2334,7 +2353,8 @@ export interface components {
        */
       type: 'DateTime'
     }
-    /** @description A matcher for an integer attribute from the Prisoner record.
+    /**
+     * @description A matcher for an integer attribute from the Prisoner record.
      *
      *       For a between clause use both min value and max value. By default the range is inclusive, but can be adjusted with minInclusive and maxInclusive.
      *
@@ -2345,7 +2365,7 @@ export interface components {
      *       For equals enter the same integer in both the min value and max value and leave min/max inclusive as true..
      *
      *       The type must be set to Int for this matcher.
-     *        */
+     */
     IntMatcher: Omit<components['schemas']['Matcher'], 'type'> & {
       /**
        * @description The attribute to match on
@@ -2385,14 +2405,15 @@ export interface components {
     Matcher: {
       type: string
     }
-    /** @description A matcher for PNC numbers.
+    /**
+     * @description A matcher for PNC numbers.
      *
      *         This is required because PNC numbers come in various formats with 2/4 long years and with/without leading zeroes.
      *
      *         This matcher will find the matching PNC regardless of which format is used.
      *
      *       The type must be set to PNC for this matcher.
-     *        */
+     */
     PncMatcher: Omit<components['schemas']['Matcher'], 'type'> & {
       /**
        * @description The PNC number match
@@ -2425,12 +2446,13 @@ export interface components {
         | components['schemas']['StringMatcher']
       )[]
       /** @description A list of sub-queries of type Query that will be combined with the matchers in this query */
-      subQueries?: unknown[]
+      subQueries?: components['schemas']['Query'][]
     }
-    /** @description A matcher for a string attribute from the prisoner record.
+    /**
+     * @description A matcher for a string attribute from the prisoner record.
      *
      *       The type must be set to String for this matcher.
-     *      */
+     */
     StringMatcher: Omit<components['schemas']['Matcher'], 'type'> & {
       /**
        * @description The attribute to match on
@@ -2525,11 +2547,9 @@ export interface components {
   headers: never
   pathItems: never
 }
-
 export type $defs = Record<string, never>
-
 export interface operations {
-  findByCriteria: {
+  findRestrictedPatientsByCriteria: {
     parameters: {
       query?: {
         /**
@@ -2540,7 +2560,6 @@ export interface operations {
         /**
          * @description The name of a default list of response fields. The list can be defined for a client and
          *             then referenced here. This saves passing a big list of fields to prisoner search on each request.
-         *
          * @example restricted-patients
          */
         responseFieldsClient?: string
@@ -2582,6 +2601,11 @@ export interface operations {
         page?: number
         /** @description The size of the page to be returned. Will default to 10 if not supplied or invalid. */
         size?: number
+        /**
+         * @description Whether to include results from supporting prisons
+         * @example false
+         */
+        includeSupportedByPrisons?: boolean
       }
       header?: never
       path?: never
@@ -2664,7 +2688,7 @@ export interface operations {
       }
     }
   }
-  findByCriteria_1: {
+  deprecatedFindByCriteria: {
     parameters: {
       query?: never
       header?: never
@@ -2688,7 +2712,7 @@ export interface operations {
       }
     }
   }
-  findByCriteria_2: {
+  findByCriteria: {
     parameters: {
       query?: {
         /**
@@ -2699,7 +2723,6 @@ export interface operations {
         /**
          * @description The name of a default list of response fields. The list can be defined for a client and
          *             then referenced here. This saves passing a big list of fields to prisoner search on each request.
-         *
          * @example restricted-patients
          */
         responseFieldsClient?: string
@@ -2812,7 +2835,7 @@ export interface operations {
       }
     }
   }
-  prisonerDetailSearch_1: {
+  physicalDetailSearch: {
     parameters: {
       query?: {
         /**
