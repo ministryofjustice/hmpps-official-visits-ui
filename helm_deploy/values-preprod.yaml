@@ -22,6 +22,7 @@ generic-service:
     CONTACTS_HOME_PAGE_URL: 'https://contacts-preprod.hmpps.service.justice.gov.uk'
     ACTIVITIES_API_URL: 'https://activities-api-preprod.prison.service.justice.gov.uk'
     MANAGE_USERS_API_URL: 'https://manage-users-api-preprod.hmpps.service.justice.gov.uk'
+    BOOK_A_VIDEO_LINK_API_URL: 'https://book-a-video-link-api-preprod.prison.service.justice.gov.uk'
     ENVIRONMENT_NAME: PRE-PRODUCTION
     AUDIT_ENABLED: "false"
 

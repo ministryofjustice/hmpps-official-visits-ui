@@ -10,6 +10,7 @@ import {
 import { PrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
 import { PrisonerScheduledEvents, ScheduledEvent } from '../@types/activitiesApi/types'
 import { User } from '../@types/manageUsersApi/types'
+import { Prison } from '../@types/bookAVideoLinkApi/types'
 
 export const mockPrisoner = {
   firstName: 'John',
@@ -512,4 +513,11 @@ export const allSlots: TimeSlotSummary = {
       visitSlots: [],
     },
   ],
+}
+
+export const mockMoorlandBvlsPrison: Prison = {
+  prisonId: 1,
+  code: 'MDI',
+  name: 'Moorland (HMP & YOI)',
+  enabled: true,
 }
