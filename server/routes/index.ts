@@ -13,7 +13,7 @@ import PrisonerImageRoutes from './prisonerImage/prisonerImageRoutes'
 import { populateUserPermissions } from '../middleware/populateUserPermissions'
 import { requirePermissions } from '../middleware/requirePermissions'
 import { Permission } from '../interfaces/hmppsUser'
-import { visitHistoryTimelineEnabled, emailNotificationsEnabled } from '../utils/utils'
+import { visitHistoryTimelineEnabled, emailNotificationsEnabled, visitsNeedReviewEnabled } from '../utils/utils'
 
 export default function routes(_services: Services): Router {
   const router = Router()
@@ -22,6 +22,7 @@ export default function routes(_services: Services): Router {
   router.use((req, res, next) => {
     res.locals.emailNotificationsEnabled = emailNotificationsEnabled(res.locals.user?.activeCaseLoadId)
     res.locals.visitHistoryTimelineEnabled = visitHistoryTimelineEnabled(res.locals.user?.activeCaseLoadId)
+    res.locals.visitsNeedReviewEnabled = visitsNeedReviewEnabled(res.locals.user?.activeCaseLoadId)
     next()
   })
   // Demonstrate using requirePermissions middleware - lock all routes off of / to DEFAULT permission
@@ -30,7 +31,16 @@ export default function routes(_services: Services): Router {
   router.use(redirectCheckAnswersMiddleware([/check-your-answers$/]))
   router.use('/manage', manageVisits(_services))
   router.use('/view', viewVisits(_services))
-  router.use('/review', reviewVisits(_services))
+  router.use(
+    '/review',
+    (req, res, next) => {
+      if (!res.locals.visitsNeedReviewEnabled) {
+        return res.redirect('/')
+      }
+      return next()
+    },
+    reviewVisits(_services),
+  )
   router.use(
     '/notification',
     requirePermissions('OV', Permission.MANAGE),

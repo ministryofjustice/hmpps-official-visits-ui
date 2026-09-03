@@ -29,8 +29,8 @@ export default class HomeHandler implements PageHandler {
   }
 
   private async getVisitsNeedReviewCount(res: Response): Promise<number> {
-    const { user } = res.locals
-    if (!hasPerm(user.permissions.OV, Permission.VIEW)) return 0
+    const { user, visitsNeedReviewEnabled } = res.locals
+    if (!visitsNeedReviewEnabled || !hasPerm(user.permissions.OV, Permission.VIEW)) return 0
 
     try {
       return await this.officialVisitsService.countVisitsForReview(user.activeCaseLoadId, user)

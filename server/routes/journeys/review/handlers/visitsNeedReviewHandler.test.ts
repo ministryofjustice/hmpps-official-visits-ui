@@ -8,6 +8,7 @@ import { VisitForReview, VisitForReviewIssueType } from '../../../../@types/offi
 import { getByDataQa, getGovukTableCell, getPageHeader } from '../../../testutils/cheerio'
 import { AuthorisedRoles } from '../../../../middleware/populateUserPermissions'
 import { Permission } from '../../../../interfaces/hmppsUser'
+import config from '../../../../config'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/officialVisitsService')
@@ -67,11 +68,15 @@ const appSetup = (userSupplier = () => user) => {
   app = appWithAllRoutes({ services: { auditService, officialVisitsService }, userSupplier })
 }
 
+const enabledPrisons = config.featureToggles.visitsNeedReviewPrisons
+
 beforeEach(() => {
+  config.featureToggles.visitsNeedReviewPrisons = 'HEI'
   appSetup()
 })
 
 afterEach(() => {
+  config.featureToggles.visitsNeedReviewPrisons = enabledPrisons
   jest.resetAllMocks()
 })
 
@@ -273,6 +278,15 @@ describe('GET /review/list', () => {
     expect(actions).toContain('View')
     expect(actions).not.toContain('Cancel visit')
     expect(actions).not.toContain('Acknowledge')
+  })
+
+  it('should redirect home when the prison is not enabled for visits needing review', async () => {
+    config.featureToggles.visitsNeedReviewPrisons = 'MDI'
+    appSetup()
+
+    await request(app).get(URL).expect(302).expect('Location', '/')
+
+    expect(officialVisitsService.getVisitsForReview).not.toHaveBeenCalled()
   })
 
   it('should not be available to a user without any official visits role', async () => {

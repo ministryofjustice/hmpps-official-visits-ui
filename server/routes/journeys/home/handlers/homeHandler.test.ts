@@ -42,6 +42,7 @@ beforeEach(() => {
   config.maintenanceMode = false
   config.featureToggles.nomisSwitchOffPrisons = ''
   config.featureToggles.emailNotificationsPrisons = ''
+  config.featureToggles.visitsNeedReviewPrisons = 'MDI'
 })
 
 afterEach(() => {
@@ -207,6 +208,21 @@ describe('GET /home - visits that need review card', () => {
         } else {
           expect(card.find('.card__link').text()).toBe('')
         }
+      })
+  })
+
+  it('should not show the card when the prison is not enabled for visits needing review', () => {
+    config.featureToggles.visitsNeedReviewPrisons = ''
+    officialVisitsService.countVisitsForReview.mockResolvedValue(3)
+    app = appForRole(AuthorisedRoles.MANAGE)
+
+    return request(app)
+      .get('/')
+      .expect(200)
+      .expect(res => {
+        const $ = cheerio.load(res.text)
+        expect(getByDataQa($, 'visits-need-review-card').find('.card__link').text()).toBe('')
+        expect(officialVisitsService.countVisitsForReview).not.toHaveBeenCalled()
       })
   })
 

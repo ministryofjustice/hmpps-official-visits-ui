@@ -76,7 +76,7 @@
                 </div>
               {% endif %}
 
-              {% if user | hasPermission(PERMISSION.VIEW) %}
+              {% if visitsNeedReviewEnabled and user | hasPermission(PERMISSION.VIEW) %}
                 {% set reviewHeading %}Official visits that need review{% if visitsNeedReviewCount %}<span class="review-count" data-qa="visits-need-review-count">{{ visitsNeedReviewCount }}<span class="govuk-visually-hidden"> visits need review</span></span>{% endif %}{% endset %}
                 <div class="govuk-grid-column-one-third card-group__item">
                   {{ card({

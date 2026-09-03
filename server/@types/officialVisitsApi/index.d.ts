@@ -6246,7 +6246,7 @@ export interface operations {
       query?: never
       header?: never
       path: {
-        jobName: 'IDENTIFY_CANDIDATE_VISITS_TO_CHECK' | 'PROCESS_CANDIDATE_VISITS_TO_CHECK'
+        jobName: 'IDENTIFY_CANDIDATE_VISITS_TO_CHECK' | 'PROCESS_CANDIDATE_VISITS_TO_CHECK' | 'EXPIRE_VISITS_FOR_REVIEW'
       }
       cookie?: never
     }
