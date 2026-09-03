@@ -28,6 +28,7 @@ import {
   statuses,
   visitTypes,
 } from '../mockData/data'
+import { encodeBackTo } from '../../server/utils/backTo'
 
 test.describe('Complete official visits', () => {
   test.beforeEach(async () => {
@@ -102,7 +103,7 @@ test.describe('Complete official visits', () => {
     expect(await page.getByText('total results').first().innerText()).toBe('8 total results')
 
     await visitListPage.page.getByRole('link', { name: 'Select' }).first().click()
-    const b64 = encodeURIComponent(btoa(`/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02`))
+    const b64 = encodeBackTo(`/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02`)
     expect(page.url()).toBe(`http://localhost:3007/view/visit/1?backTo=${b64}`)
 
     ViewVisitPage.verifyOnPage(page)
@@ -179,7 +180,7 @@ test.describe('Complete official visits', () => {
     await expect(cancelLink).toHaveText('Cancel and return to visit summary')
     await expect(cancelLink).toHaveAttribute(
       'href',
-      `/view/visit/1?backTo=L3ZpZXcvbGlzdD9wYWdlPTEmcHJpc29uZXI9Sm9obiZzdGFydERhdGU9MjAyNi0wMS0wMSZlbmREYXRlPTIwMjYtMDEtMDI=`,
+      `/view/visit/1?backTo=${encodeBackTo('/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02')}`,
     )
 
     // Attempt to continue without selecting a completion reason and assert the error shows against the control

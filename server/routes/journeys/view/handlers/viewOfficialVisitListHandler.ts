@@ -6,6 +6,7 @@ import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { schema } from './viewOfficialVisitListSchema'
 import { ReferenceDataItem, VisitStatusType, VisitType } from '../../../../@types/officialVisitsApi/types'
 import { toDateString } from '../../../../utils/utils'
+import { encodeBackTo } from '../../../../utils/backTo'
 
 export default class ViewOfficialVisitListHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_LIST_PAGE
@@ -79,7 +80,7 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
 
     const queryParams = new URLSearchParams({ ...filterParams, page: '{page}' })
     const backToParams = new URLSearchParams({ ...filterParams, page: filterParams.page.toString() }).toString()
-    const backTo = encodeURIComponent(btoa(`/view/list?${backToParams}`))
+    const backTo = encodeBackTo(`/view/list?${backToParams}`)
 
     return res.render('pages/view/visitList', {
       visits: visits.content,

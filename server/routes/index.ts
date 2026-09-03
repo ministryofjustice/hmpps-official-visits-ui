@@ -4,6 +4,7 @@ import home from './journeys/home'
 import admin from './journeys/admin'
 import manageVisits from './journeys/manage/visit'
 import viewVisits from './journeys/view'
+import reviewVisits from './journeys/review'
 import notification from './journeys/notification'
 import config from '../config'
 import preventNavigationToExpiredJourneys from '../middleware/journey/preventNavigationToExpiredJourneys'
@@ -29,6 +30,7 @@ export default function routes(_services: Services): Router {
   router.use(redirectCheckAnswersMiddleware([/check-your-answers$/]))
   router.use('/manage', manageVisits(_services))
   router.use('/view', viewVisits(_services))
+  router.use('/review', reviewVisits(_services))
   router.use(
     '/notification',
     requirePermissions('OV', Permission.MANAGE),

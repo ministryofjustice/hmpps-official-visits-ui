@@ -23,6 +23,7 @@ import { completionCodes, locations, mockPrisoner, searchLevels, statuses, visit
 import { NotAuthorisedPage } from '../pages/notAuthorisedPage'
 import activitiesApi from '../mockApis/activitiesApi'
 import { OfficialVisit } from '../../server/@types/officialVisitsApi/types'
+import { encodeBackTo } from '../../server/utils/backTo'
 
 const getMockVisit = () => ({
   ...mockVisitByIdVisit,
@@ -761,7 +762,7 @@ test.describe('Amend official visits', () => {
 
   test('should cancel and return to visit details', async ({ page }) => {
     await login(page)
-    await page.goto(`/manage/amend/1/${journeyId}/?backTo=${btoa('/view/visit/1')}`)
+    await page.goto(`/manage/amend/1/${journeyId}/?backTo=${encodeBackTo('/view/visit/1')}`)
 
     const amendVisitPage = await AmendVisitPage.verifyOnPage(page)
     await amendVisitPage.getCancelButton().click()

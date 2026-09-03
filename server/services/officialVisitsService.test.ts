@@ -328,4 +328,58 @@ describe('OfficialVisitsService', () => {
     )
     expect(result).toEqual(expected)
   })
+
+  describe('visits for review', () => {
+    const reviewItem = { visit: { officialVisitId: 1 }, issues: [] as [] }
+
+    it.each([
+      ['a bare array', [reviewItem]],
+      ['a paged wrapper', { content: [reviewItem], page: { totalElements: 1 } }],
+      ['a single object', reviewItem],
+    ])('should read the review list from %s', async (_label, response) => {
+      officialVisitsApiClient.getVisitsForReview.mockResolvedValue(response)
+
+      const result = await officialVisitsService.getVisitsForReview('MDI', user)
+
+      expect(result).toEqual([reviewItem])
+      expect(officialVisitsApiClient.getVisitsForReview).toHaveBeenCalledWith(
+        'MDI',
+        0,
+        500,
+        ['visitDate,asc', 'startTime,asc'],
+        user,
+      )
+    })
+
+    it.each([
+      ['an empty array', []],
+      ['an empty page', { content: [] }],
+      ['null', null],
+      ['undefined', undefined],
+    ])('should return no visits for %s', async (_label, response) => {
+      officialVisitsApiClient.getVisitsForReview.mockResolvedValue(response)
+
+      expect(await officialVisitsService.getVisitsForReview('MDI', user)).toEqual([])
+    })
+
+    it('should return the review count', async () => {
+      officialVisitsApiClient.countVisitsForReview.mockResolvedValue({ prisonCode: 'MDI', visitsForReviewCount: 5 })
+
+      expect(await officialVisitsService.countVisitsForReview('MDI', user)).toBe(5)
+    })
+
+    it('should default the review count to zero when the API returns nothing', async () => {
+      officialVisitsApiClient.countVisitsForReview.mockResolvedValue(undefined)
+
+      expect(await officialVisitsService.countVisitsForReview('MDI', user)).toBe(0)
+    })
+
+    it('should acknowledge a visit review', async () => {
+      officialVisitsApiClient.acknowledgeVisitReview.mockResolvedValue(undefined)
+
+      await officialVisitsService.acknowledgeVisitReview('MDI', 42, user)
+
+      expect(officialVisitsApiClient.acknowledgeVisitReview).toHaveBeenCalledWith('MDI', 42, user)
+    })
+  })
 })

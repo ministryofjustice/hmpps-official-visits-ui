@@ -6,10 +6,13 @@ import { getByDataQa, getPageHeader } from '../../../testutils/cheerio'
 import AuditService, { Page } from '../../../../services/auditService'
 import config from '../../../../config'
 import { AuthorisedRoles } from '../../../../middleware/populateUserPermissions'
+import OfficialVisitsService from '../../../../services/officialVisitsService'
 
 jest.mock('../../../../services/auditService')
+jest.mock('../../../../services/officialVisitsService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
+const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
 
 let app: Express
 
@@ -166,5 +169,94 @@ describe('GET /home', () => {
 
         expect(heading).toContain('Sorry, scheduled maintenance affects this service')
       })
+  })
+})
+
+describe('GET /home - visits that need review card', () => {
+  const appForRole = (role: AuthorisedRoles) =>
+    appWithAllRoutes({
+      services: { auditService, officialVisitsService },
+      userSupplier: () => ({
+        ...createUserWithCaseLoad({
+          activeCaseLoadId: 'MDI',
+          activeCaseLoadDescription: 'Moorland (HMP & YOI)',
+        }),
+        userRoles: [role],
+      }),
+    })
+
+  it.each([
+    [AuthorisedRoles.MANAGE, true],
+    [AuthorisedRoles.VIEW, true],
+    [AuthorisedRoles.ADMIN, false],
+    [AuthorisedRoles.DEFAULT, false],
+  ])('should show the card for %s: %s', (role, visible) => {
+    officialVisitsService.countVisitsForReview.mockResolvedValue(3)
+    app = appForRole(role)
+
+    return request(app)
+      .get('/')
+      .expect(200)
+      .expect(res => {
+        const $ = cheerio.load(res.text)
+        const card = getByDataQa($, 'visits-need-review-card')
+
+        if (visible) {
+          expect(card.find('.card__link').text()).toContain('Official visits that need review')
+          expect(card.find('.card__link').attr('href')).toBe('/review/list')
+        } else {
+          expect(card.find('.card__link').text()).toBe('')
+        }
+      })
+  })
+
+  it('should show the count of visits needing review', () => {
+    officialVisitsService.countVisitsForReview.mockResolvedValue(7)
+    app = appForRole(AuthorisedRoles.MANAGE)
+
+    return request(app)
+      .get('/')
+      .expect(200)
+      .expect(res => {
+        const $ = cheerio.load(res.text)
+        expect(getByDataQa($, 'visits-need-review-count').text()).toContain('7')
+      })
+  })
+
+  it('should not show a count when there is nothing to review', () => {
+    officialVisitsService.countVisitsForReview.mockResolvedValue(0)
+    app = appForRole(AuthorisedRoles.MANAGE)
+
+    return request(app)
+      .get('/')
+      .expect(200)
+      .expect(res => {
+        const $ = cheerio.load(res.text)
+        expect(getByDataQa($, 'visits-need-review-count')).toHaveLength(0)
+      })
+  })
+
+  it('should still render the home page when the count cannot be retrieved', () => {
+    officialVisitsService.countVisitsForReview.mockRejectedValue(new Error('API unavailable'))
+    app = appForRole(AuthorisedRoles.MANAGE)
+
+    return request(app)
+      .get('/')
+      .expect(200)
+      .expect(res => {
+        const $ = cheerio.load(res.text)
+        expect(getByDataQa($, 'visits-need-review-card').find('.card__link').text()).toContain(
+          'Official visits that need review',
+        )
+        expect(getByDataQa($, 'visits-need-review-count')).toHaveLength(0)
+      })
+  })
+
+  it('should not call the API for a user without permission to see the card', async () => {
+    app = appForRole(AuthorisedRoles.ADMIN)
+
+    await request(app).get('/').expect(200)
+
+    expect(officialVisitsService.countVisitsForReview).not.toHaveBeenCalled()
   })
 })

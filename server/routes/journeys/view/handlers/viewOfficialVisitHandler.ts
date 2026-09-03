@@ -10,6 +10,7 @@ import TelemetryService from '../../../../services/telemetryService'
 import { OfficialVisit, RestrictionSummary } from '../../../../@types/officialVisitsApi/types'
 import { isVisitDateAndStartTimeInThePast, prisonAllowsSocialVisitors } from '../../../../utils/utils'
 import config from '../../../../config'
+import { decodeBackTo } from '../../../../utils/backTo'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.VIEW_OFFICIAL_VISIT_PAGE
@@ -91,19 +92,11 @@ export default class ViewOfficialVisitHandler implements PageHandler {
         ? createdUser
         : await this.manageUsersService.getUserByUsername(visit.updatedBy, user)
 
-    const tryDecodeB64 = (b64: string) => {
-      try {
-        return b64 ? decodeURIComponent(atob(b64)) : null
-      } catch {
-        return null
-      }
-    }
-
     if (shouldShowInterruptPage(hasIssueVisitors, req, visit)) {
       return res.render('pages/view/interrupt', {
         visitId: visit.officialVisitId,
         b64BackTo,
-        backUrl: tryDecodeB64(b64BackTo) || '/view/list',
+        backUrl: decodeBackTo(b64BackTo) || '/view/list',
         prisoner: {
           ...prisoner,
           restrictions: restrictions?.content || [],
@@ -127,7 +120,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       },
       updateVerb,
       b64BackTo: b64BackTo || '',
-      backUrl: tryDecodeB64(b64BackTo) || '/view/list',
+      backUrl: decodeBackTo(b64BackTo) || '/view/list',
       prisoner: {
         ...prisoner,
         restrictions: restrictions?.content || [],

@@ -53,3 +53,7 @@ export type VisitChangeStatusResponse = components['schemas']['VisitChangeStatus
 export type OfficialVisitNotifications = components['schemas']['OfficialVisitNotification'][]
 export type AuditedEvent = components['schemas']['AuditedEventResponse']
 export type NonAssociationVisitResponse = components['schemas']['NonAssociationVisitResponse']
+export type VisitForReview = components['schemas']['VisitsForReviewResponse']
+export type VisitForReviewIssue = components['schemas']['VisitForReviewIssue']
+export type VisitForReviewIssueType = VisitForReviewIssue['issueType']
+export type VisitsForReviewCount = components['schemas']['VisitsForReviewCountResponse']

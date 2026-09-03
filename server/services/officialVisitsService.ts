@@ -25,6 +25,7 @@ import {
   PagedModelSentNotification,
   OfficialVisitNotifications,
   AuditedEvent,
+  VisitForReview,
 } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
@@ -300,4 +301,51 @@ export default class OfficialVisitsService {
     )
     return this.officialVisitsApiClient.checkForNonAssociationVisits(prisonCode, prisonerNumber, visitDate, user)
   }
+
+  /**
+   * Returns every visit awaiting review at a prison.
+   *
+   * The API has no search parameters, so the whole list is retrieved and paging is applied in the
+   * handler. Review lists are expected to be small (tens of visits).
+   *
+   * The sort is requested of the API for consistency, but the handler sorts again so the ordering
+   * holds even if the API ignores it.
+   */
+  public async getVisitsForReview(prisonCode: string, user: HmppsUser): Promise<VisitForReview[]> {
+    logger.info(`Get visits for review for prison ${prisonCode}`)
+    const response = await this.officialVisitsApiClient.getVisitsForReview(
+      prisonCode,
+      0,
+      REVIEW_LIST_FETCH_SIZE,
+      ['visitDate,asc', 'startTime,asc'],
+      user,
+    )
+    return normaliseVisitsForReview(response)
+  }
+
+  public async countVisitsForReview(prisonCode: string, user: HmppsUser): Promise<number> {
+    const response = await this.officialVisitsApiClient.countVisitsForReview(prisonCode, user)
+    return response?.visitsForReviewCount ?? 0
+  }
+
+  public async acknowledgeVisitReview(prisonCode: string, officialVisitId: number, user: HmppsUser) {
+    logger.info(`Acknowledge visit review ${officialVisitId} for prison ${prisonCode}`)
+    return this.officialVisitsApiClient.acknowledgeVisitReview(prisonCode, officialVisitId, user)
+  }
+}
+
+/** Upper bound on visits pulled back in one call — well above any realistic review list. */
+const REVIEW_LIST_FETCH_SIZE = 500
+
+/**
+ * The API spec declares the review list response as a bare object even though the endpoint pages,
+ * so accept a plain array, a Spring page wrapper or a single object and always return an array.
+ */
+function normaliseVisitsForReview(response: unknown): VisitForReview[] {
+  if (Array.isArray(response)) return response as VisitForReview[]
+
+  const content = (response as { content?: unknown })?.content
+  if (Array.isArray(content)) return content as VisitForReview[]
+
+  return (response as VisitForReview)?.visit ? [response as VisitForReview] : []
 }

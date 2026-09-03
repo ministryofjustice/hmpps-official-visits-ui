@@ -95,6 +95,51 @@ describe('cancelVisitHandler', () => {
           expect($('a.govuk-back-link').attr('href')).toBe(`/view/visit/${ovId}?backTo=${b64}`)
         })
     })
+
+    it('should send both links back to the linking page when from is provided', async () => {
+      const b64 = btoa('/review/list?page=2')
+
+      await request(app)
+        .get(`${URL}?backTo=${encodeURIComponent(b64)}&from=${encodeURIComponent(b64)}`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('a.govuk-back-link').attr('href')).toBe('/review/list?page=2')
+
+          const cancelLink = $('a.govuk-link.govuk-link--no-visited-state')
+          expect(cancelLink.attr('href')).toBe('/review/list?page=2')
+          expect(cancelLink.text().trim()).toBe('Cancel and return to visits in review')
+        })
+    })
+
+    it('should keep the visit summary wording when there is no from', async () => {
+      await request(app)
+        .get(URL)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('a.govuk-link.govuk-link--no-visited-state').text().trim()).toBe(
+            'Cancel and return to visit summary',
+          )
+        })
+    })
+
+    it.each([
+      ['an offsite url', btoa('https://evil.example.com')],
+      ['a protocol relative url', btoa('//evil.example.com')],
+      ['rubbish', 'not-base64!!'],
+    ])('should ignore %s in from and fall back to the visit summary', async (_label, from) => {
+      await request(app)
+        .get(`${URL}?from=${encodeURIComponent(from)}`)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          const $ = cheerio.load(res.text)
+
+          expect($('a.govuk-back-link').attr('href')).toBe(`/view/visit/${ovId}`)
+        })
+    })
   })
 
   describe('POST', () => {
@@ -113,6 +158,19 @@ describe('cancelVisitHandler', () => {
         { cancellationReason: 'SOMETHING_CANCELLED', cancellationNotes: 'some comments' },
         user,
       )
+    })
+
+    it('should redirect to the linking page after cancelling when from is provided', async () => {
+      const b64 = btoa('/review/list?page=2')
+
+      await request(app)
+        .post(`${URL}?backTo=${encodeURIComponent(b64)}&from=${encodeURIComponent(b64)}`)
+        .type('form')
+        .send({ reason: 'SOMETHING_CANCELLED', comments: 'some comments' })
+        .expect(302)
+        .expect('Location', '/review/list?page=2')
+
+      expect(officialVisitsService.cancelVisit).toHaveBeenCalled()
     })
 
     it('should disallow POST if the notes is larger than 240 characters', async () => {

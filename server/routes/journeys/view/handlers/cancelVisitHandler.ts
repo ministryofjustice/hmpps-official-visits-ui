@@ -4,6 +4,7 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { schema } from './cancelVisitHandlerSchema'
 import { CancelTypeRequest, VisitCompletionType } from '../../../../@types/officialVisitsApi/types'
+import { decodeBackTo } from '../../../../utils/backTo'
 
 export default class CancelOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.CANCEL_OFFICIAL_VISIT_PAGE
@@ -18,14 +19,18 @@ export default class CancelOfficialVisitHandler implements PageHandler {
   ) => {
     const { ovId } = req.params
     const b64BackTo = req.query.backTo as string
+    const b64From = req.query.from as string
 
     const completionCodes = await this.officialVisitsService.getReferenceData(res, 'VIS_COMPLETION')
+
+    const returnUrl = decodeBackTo(b64From)
 
     return res.render('pages/view/cancel', {
       completionCodes: completionCodes.filter(o => o.code.endsWith('_CANCELLED')),
       reason: res.locals.formResponses?.['reason'],
       comments: res.locals.formResponses?.['comments'],
-      backUrl: `/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`,
+      backUrl: returnUrl ?? visitSummaryUrl(ovId, b64BackTo),
+      abandonText: returnUrl ? 'Cancel and return to visits in review' : 'Cancel and return to visit summary',
     })
   }
 
@@ -33,6 +38,7 @@ export default class CancelOfficialVisitHandler implements PageHandler {
 
   POST = async (req: Request, res: Response) => {
     const b64BackTo = req.query.backTo as string
+    const b64From = req.query.from as string
     const prisonCode = req.session.activeCaseLoadId
     const ovId = req.params.ovId as string
 
@@ -42,7 +48,15 @@ export default class CancelOfficialVisitHandler implements PageHandler {
     }
 
     await this.officialVisitsService.cancelVisit(prisonCode, ovId, body, res.locals.user)
+
+    const returnUrl = decodeBackTo(b64From)
+    if (returnUrl) return res.redirect(returnUrl)
+
+    // only the visit summary renders this banner
     req.flash('updateVerb', 'cancelled')
-    return res.redirect(`/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`)
+    return res.redirect(visitSummaryUrl(ovId, b64BackTo))
   }
 }
+
+const visitSummaryUrl = (ovId: string, b64BackTo: string) =>
+  `/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`
