@@ -52,9 +52,11 @@
           {% endset %}
 
           {% set reasonHtml %}
-            {% for reason in row.reasons %}
-              <div class="govuk-!-margin-bottom-1">{{ govukTag({ text: reason.text, classes: reason.classes }) }}</div>
-            {% endfor %}
+            <div class="review-reasons">
+              {% for reason in row.reasons %}
+                <div>{{ govukTag({ text: reason.text, classes: reason.classes }) }}</div>
+              {% endfor %}
+            </div>
           {% endset %}
 
           {% set actionHtml %}
@@ -89,7 +91,7 @@
 
         {{ govukTable({
           firstCellIsHeader: false,
-          classes: "govuk-!-margin-top-6",
+          classes: "govuk-!-margin-top-6 review-table",
           head: [
             { text: "Prisoner" },
             { text: "Visit time and date" },

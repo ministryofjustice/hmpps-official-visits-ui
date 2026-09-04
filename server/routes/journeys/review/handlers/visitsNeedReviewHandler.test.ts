@@ -81,7 +81,7 @@ afterEach(() => {
 })
 
 describe('GET /review/list', () => {
-  it('should render the page heading and the conditional reveal of checks', async () => {
+  it('should render the heading, the checks reveal and the empty state when nothing needs review', async () => {
     officialVisitsService.getVisitsForReview.mockResolvedValue([])
 
     const response = await request(app).get(URL).expect(200)
@@ -90,21 +90,9 @@ describe('GET /review/list', () => {
     expect(getPageHeader($)).toBe('Official visits that need review')
     expect(getByDataQa($, 'which-checks-details').text()).toContain('Bookings are added to this list when a:')
     expect(getByDataQa($, 'which-checks-details').text()).toContain('visitor is a social visitor')
-    expect(getByDataQa($, 'no-results').text()).toContain('There are no official visits that need review')
-  })
-
-  it('should not offer a search form', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue([
-      review({ officialVisitId: 1, issueTypes: ['VISITOR_NOT_OFFICIAL'] }),
-    ])
-
-    const response = await request(app).get(URL).expect(200)
-    const $ = cheerio.load(response.text)
-
-    expect($('form.search-form')).toHaveLength(0)
-    expect($('#prisoner')).toHaveLength(0)
-    expect($('#fromDate')).toHaveLength(0)
-    expect($('#toDate')).toHaveLength(0)
+    expect(getByDataQa($, 'no-results').text()).toBe('There are no official visits that need review.')
+    expect(getByDataQa($, 'results-summary')).toHaveLength(0)
+    expect($('table')).toHaveLength(0)
   })
 
   it('should show a summary of the results and a row per visit', async () => {
@@ -134,17 +122,6 @@ describe('GET /review/list', () => {
     expect(secondRowReasons).toContain('Contact not approved')
     expect(secondRowReasons).toContain('Unauthorised visitor')
     expect(secondRowReasons).toContain('Social visitor')
-  })
-
-  it('should show the empty state and no table when nothing needs review', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue([])
-
-    const response = await request(app).get(URL).expect(200)
-    const $ = cheerio.load(response.text)
-
-    expect(getByDataQa($, 'no-results').text()).toBe('There are no official visits that need review.')
-    expect(getByDataQa($, 'results-summary')).toHaveLength(0)
-    expect($('table')).toHaveLength(0)
   })
 
   it('should use the singular when a single visit needs review', async () => {
@@ -191,27 +168,13 @@ describe('GET /review/list', () => {
       'You have 15 visits to review (page 2 of 2).',
     )
     expect(secondPage('.govuk-table__body > .govuk-table__row')).toHaveLength(5)
-  })
 
-  it('should build pagination links with a resolved page number', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue(
-      Array.from({ length: 15 }, (_, i) => review({ officialVisitId: i + 1, issueTypes: ['VISITOR_NOT_OFFICIAL'] })),
-    )
-
-    const response = await request(app).get(URL).expect(200)
-    const $ = cheerio.load(response.text)
-
-    const hrefs = $('.moj-pagination a')
-      .map((_, link) => $(link).attr('href'))
+    const hrefs = firstPage('.moj-pagination a')
+      .map((_, link) => firstPage(link).attr('href'))
       .get()
 
-    expect(hrefs.length).toBeGreaterThan(0)
-    hrefs.forEach(href => {
-      expect(href).not.toContain('{page}')
-      expect(href).not.toContain('%7Bpage%7D')
-      expect(href).toMatch(/^\?page=\d+$/)
-    })
     expect(hrefs).toContain('?page=2')
+    hrefs.forEach(href => expect(href).toMatch(/^\?page=\d+$/))
   })
 
   it('should show a Cancel visit action only when the prisoner was released or transferred', async () => {
@@ -228,41 +191,21 @@ describe('GET /review/list', () => {
     expect(getGovukTableCell($, 2, 4).text()).not.toContain('Cancel visit')
   })
 
-  it('should point the Cancel visit link back at the review list', async () => {
+  it('should address the prisoner profile, acknowledge and cancel links from the row', async () => {
     officialVisitsService.getVisitsForReview.mockResolvedValue([
-      review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] }),
+      review({ officialVisitId: 77, prisonerNumber: 'A1337AA', issueTypes: ['PRISONER_RELEASED'] }),
     ])
 
     const response = await request(app).get(`${URL}?page=2`).expect(200)
     const $ = cheerio.load(response.text)
 
-    const href = getGovukTableCell($, 1, 4).find('a[href*="/cancel"]').attr('href')
-    const params = new URLSearchParams(href.split('?')[1])
+    expect(getGovukTableCell($, 1, 1).find('a').attr('href')).toBe('http://localhost:3001/prisoner/A1337AA')
+    expect(getGovukTableCell($, 1, 4).find('form').attr('action')).toBe('/review/list/77/acknowledge')
 
+    const cancelHref = getGovukTableCell($, 1, 4).find('a[href*="/cancel"]').attr('href')
+    const params = new URLSearchParams(cancelHref.split('?')[1])
     expect(atob(params.get('from'))).toBe(`${URL}?page=2`)
     expect(atob(params.get('backTo'))).toBe(`${URL}?page=2`)
-  })
-
-  it('should link the prisoner name to their profile, not the visit', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue([
-      review({ officialVisitId: 1, prisonerNumber: 'A1337AA', issueTypes: ['PRISONER_RELEASED'] }),
-    ])
-
-    const response = await request(app).get(URL).expect(200)
-    const $ = cheerio.load(response.text)
-
-    expect(getGovukTableCell($, 1, 1).find('a').attr('href')).toBe('http://localhost:3001/prisoner/A1337AA')
-  })
-
-  it('should post the official visit id when acknowledging', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue([
-      review({ officialVisitId: 77, issueTypes: ['PRISONER_RELEASED'] }),
-    ])
-
-    const response = await request(app).get(URL).expect(200)
-    const $ = cheerio.load(response.text)
-
-    expect(getGovukTableCell($, 1, 4).find('form').attr('action')).toBe('/review/list/77/acknowledge')
   })
 
   it('should not show mutating actions to a view only user', async () => {

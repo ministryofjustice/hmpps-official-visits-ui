@@ -15,6 +15,44 @@
   vertical-align: middle;
 }
 
+.review-table {
+  // Prisoner
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 24%;
+  }
+
+
+  // Visit date and time
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 23%;
+  }
+
+  // Review reasons
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 34%;
+  }
+
+  //Actions
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 20%;
+  }
+}
+
+.review-reasons {
+  .govuk-tag {
+    max-width: none;
+    white-space: nowrap;
+  }
+
+  div + div {
+    margin-top: govuk-spacing(2);
+  }
+}
+
 .review-actions {
   li {
     margin-bottom: govuk-spacing(1);

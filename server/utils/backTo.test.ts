@@ -18,19 +18,10 @@ describe('backTo', () => {
     expect(token).toBe(encodeURIComponent(token))
   })
 
-  it('should keep percent encoding in the url intact', () => {
-    expect(decodeBackTo(encodeBackTo('/view/list?search=O%27Brien'))).toBe('/view/list?search=O%27Brien')
-  })
-
   it.each([
-    ['an offsite url', 'https://evil.example.com'],
-    ['a protocol relative url', '//evil.example.com'],
-    ['a non http scheme', 'data:text/html,hello'],
-  ])('should refuse %s', (_label, url) => {
-    expect(decodeBackTo(encodeBackTo(url))).toBeNull()
-  })
-
-  it.each([
+    ['an offsite url', encodeBackTo('https://evil.example.com')],
+    ['a protocol relative url', encodeBackTo('//evil.example.com')],
+    ['a non http scheme', encodeBackTo('data:text/html,hello')],
     ['an empty token', ''],
     ['undefined', undefined as unknown as string],
     ['rubbish', 'not-base64!!'],

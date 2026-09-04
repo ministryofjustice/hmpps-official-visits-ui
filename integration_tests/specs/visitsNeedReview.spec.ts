@@ -73,18 +73,33 @@ test.describe('Official visits that need review', () => {
     await prisonApi.stubGetPrisonerImage()
   })
 
-  test('should list visits needing review with their reasons', async ({ page }) => {
+  test('should list visits with their reasons, actions and the checks reveal', async ({ page }) => {
+    const singles: [VisitForReviewIssueType, string][] = [
+      ['PRISONER_RELEASED', 'Prisoner released'],
+      ['PRISONER_TRANSFERRED', 'Prisoner transferred'],
+      ['VISITOR_NOT_APPROVED', 'Contact not approved'],
+      ['VISITOR_NO_RELATIONSHIP', 'Unauthorised visitor'],
+      ['VISITOR_NOT_OFFICIAL', 'Social visitor'],
+      ['PRISONER_NEW_ALERT', 'New alert'],
+      ['PRISONER_NEW_RESTRICTION', 'New restriction'],
+    ]
+
     await officialVisitsApi.stubVisitsForReview([
-      review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] }),
+      ...singles.map(([issueType], index) =>
+        review({
+          officialVisitId: index + 1,
+          lastName: `Prisoner${String(index + 1).padStart(2, '0')}`,
+          firstName: 'Test',
+          prisonerNumber: `A000${index + 1}AA`,
+          issueTypes: [issueType],
+        }),
+      ),
       review({
-        officialVisitId: 2,
+        officialVisitId: 99,
         firstName: 'Jane',
         lastName: 'Doe',
         prisonerNumber: 'A1111AA',
-        visitDate: '2026-09-03',
-        startTime: '14:00',
-        endTime: '15:00',
-        issueTypes: ['VISITOR_NO_RELATIONSHIP', 'VISITOR_NOT_OFFICIAL'],
+        issueTypes: ['PRISONER_NEW_ALERT', 'PRISONER_NEW_RESTRICTION', 'VISITOR_NOT_OFFICIAL'],
       }),
     ])
 
@@ -92,27 +107,34 @@ test.describe('Official visits that need review', () => {
     await page.goto(URL)
     const reviewPage = await VisitsNeedReviewPage.verifyOnPage(page)
 
-    await expect(reviewPage.resultsSummary).toContainText('You have 2 visits to review')
-    await expect(reviewPage.getRows()).toHaveCount(2)
+    await expect(reviewPage.resultsSummary).toContainText('You have 8 visits to review')
+    await expect(reviewPage.getRows()).toHaveCount(8)
 
-    const firstRow = reviewPage.getRowFor('Smith, John')
-    await expect(firstRow).toContainText('A1337AA')
+    const firstRow = reviewPage.getRowFor('Prisoner01, Test')
+    await expect(firstRow).toContainText('A0001AA')
     await expect(firstRow).toContainText('09:00 to 09:30')
     await expect(firstRow).toContainText('2 Sep 2026')
-    await expect(reviewPage.getReasonTagsFor('Smith, John')).toHaveText(['Prisoner released'])
+    await expect(firstRow.getByRole('link').first()).toHaveAttribute('href', /\/prisoner\/A0001AA$/)
 
-    await expect(reviewPage.getReasonTagsFor('Doe, Jane')).toHaveText(['Unauthorised visitor', 'Social visitor'])
-  })
+    for (let index = 0; index < singles.length; index += 1) {
+      const [, label] = singles[index]
+      // eslint-disable-next-line no-await-in-loop
+      await expect(reviewPage.getReasonTagsFor(`Prisoner${String(index + 1).padStart(2, '0')}, Test`)).toHaveText([
+        label,
+      ])
+    }
 
-  test('should explain which checks build the list', async ({ page }) => {
-    await officialVisitsApi.stubVisitsForReview([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })])
+    await expect(reviewPage.getReasonTagsFor('Doe, Jane')).toHaveText([
+      'Social visitor',
+      'New alert',
+      'New restriction',
+    ])
 
-    await login(page)
-    await page.goto(URL)
-    const reviewPage = await VisitsNeedReviewPage.verifyOnPage(page)
+    await expect(reviewPage.getActionsFor('Prisoner01, Test')).toContainText('Cancel visit')
+    await expect(reviewPage.getActionsFor('Prisoner02, Test')).toContainText('Cancel visit')
+    await expect(reviewPage.getActionsFor('Prisoner03, Test')).not.toContainText('Cancel visit')
 
     await page.getByRole('group').getByText('Which checks are done to create this list?').click()
-
     await expect(reviewPage.whichChecksDetails).toContainText('prisoner is released')
     await expect(reviewPage.whichChecksDetails).toContainText('visitor is a social visitor')
     await expect(reviewPage.whichChecksDetails).not.toContainText('date is no longer available')
@@ -129,46 +151,7 @@ test.describe('Official visits that need review', () => {
     await expect(reviewPage.getRows()).toHaveCount(0)
   })
 
-  test('should offer Cancel visit only when the prisoner was released or transferred', async ({ page }) => {
-    await officialVisitsApi.stubVisitsForReview([
-      review({ officialVisitId: 1, issueTypes: ['PRISONER_TRANSFERRED'] }),
-      review({
-        officialVisitId: 2,
-        firstName: 'Jane',
-        lastName: 'Doe',
-        prisonerNumber: 'A1111AA',
-        issueTypes: ['VISITOR_NOT_APPROVED'],
-      }),
-    ])
-
-    await login(page)
-    await page.goto(URL)
-    const reviewPage = await VisitsNeedReviewPage.verifyOnPage(page)
-
-    await expect(reviewPage.getActionsFor('Smith, John')).toContainText('Cancel visit')
-    await expect(reviewPage.getActionsFor('Doe, Jane')).not.toContainText('Cancel visit')
-  })
-
-  test('should return to the review list from Cancel visit, not to the visit summary', async ({ page }) => {
-    await officialVisitsApi.stubVisitsForReview([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })])
-    await officialVisitsApi.stubRefData('VIS_COMPLETION', completionCodes)
-
-    await login(page)
-    await page.goto(URL)
-    const reviewPage = await VisitsNeedReviewPage.verifyOnPage(page)
-
-    await reviewPage.getActionsFor('Smith, John').getByRole('link', { name: 'Cancel visit' }).click()
-    await CancelVisitPage.verifyOnPage(page)
-
-    await expect(page.getByRole('link', { name: 'Cancel and return to visits in review' })).toBeVisible()
-
-    await page.locator('a.govuk-back-link').click()
-
-    await VisitsNeedReviewPage.verifyOnPage(page)
-    expect(new globalThis.URL(page.url()).pathname).toBe(URL)
-  })
-
-  test('should return to the review list after cancelling, not to the visit summary', async ({ page }) => {
+  test('should return to the review list from Cancel visit, both on back and after cancelling', async ({ page }) => {
     await officialVisitsApi.stubVisitsForReview([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })])
     await officialVisitsApi.stubRefData('VIS_COMPLETION', completionCodes)
     await officialVisitsApi.stubCancelVisit({}, 'LEI')
@@ -179,7 +162,14 @@ test.describe('Official visits that need review', () => {
 
     await reviewPage.getActionsFor('Smith, John').getByRole('link', { name: 'Cancel visit' }).click()
     await CancelVisitPage.verifyOnPage(page)
+    await expect(page.getByRole('link', { name: 'Cancel and return to visits in review' })).toBeVisible()
 
+    await page.locator('a.govuk-back-link').click()
+    await VisitsNeedReviewPage.verifyOnPage(page)
+    expect(new globalThis.URL(page.url()).pathname).toBe(URL)
+
+    await reviewPage.getActionsFor('Smith, John').getByRole('link', { name: 'Cancel visit' }).click()
+    await CancelVisitPage.verifyOnPage(page)
     await page.getByRole('radio').first().click()
     await page.getByRole('button', { name: 'Continue' }).click()
 
@@ -187,8 +177,9 @@ test.describe('Official visits that need review', () => {
     expect(new globalThis.URL(page.url()).pathname).toBe(URL)
   })
 
-  test('should not offer mutating actions to a view only user', async ({ page }) => {
+  test('should hide mutating actions from a view only user and refuse the cancel url', async ({ page }) => {
     await officialVisitsApi.stubVisitsForReview([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })])
+    await officialVisitsApi.stubRefData('VIS_COMPLETION', completionCodes)
 
     await loginAsViewOnly(page)
     await page.goto(URL)
@@ -198,15 +189,8 @@ test.describe('Official visits that need review', () => {
     await expect(actions).toContainText('View')
     await expect(actions).not.toContainText('Acknowledge')
     await expect(actions).not.toContainText('Cancel visit')
-  })
 
-  test('should refuse a view only user who goes straight to the cancel url', async ({ page }) => {
-    await officialVisitsApi.stubVisitsForReview([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })])
-    await officialVisitsApi.stubRefData('VIS_COMPLETION', completionCodes)
-
-    await loginAsViewOnly(page)
     await page.goto('/view/visit/1/cancel')
-
     await NotAuthorisedPage.verifyOnPage(page)
   })
 
