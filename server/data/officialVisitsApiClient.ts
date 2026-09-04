@@ -16,6 +16,7 @@ import {
   FindByCriteriaResults,
   NonAssociationVisitResponse,
   VisitsForReviewCount,
+  PagedModelVisitForReview,
   NotificationRequest,
   NotificationResponse,
   OfficialVisit,
@@ -402,12 +403,8 @@ export default class OfficialVisitsApiClient extends RestClient {
     )
   }
 
-  /**
-   * The API declares this response as a bare VisitsForReviewResponse but accepts page/size/sort,
-   * so the shape is normalised by the caller rather than trusted from the generated types.
-   */
   async getVisitsForReview(prisonCode: string, page: number, size: number, sort: string[], user: HmppsUser) {
-    return this.get<unknown>(
+    return this.get<PagedModelVisitForReview>(
       { path: `/visit-review/prison/${prisonCode}/list`, query: { page, size, sort } },
       asSystem(user.username),
     )

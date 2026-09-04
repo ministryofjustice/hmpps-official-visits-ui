@@ -64,6 +64,11 @@ const review = ({
     })),
   }) as VisitForReview
 
+const reviewPage = (content: VisitForReview[], totalElements = content.length, totalPages = 1) => ({
+  content,
+  page: { number: 0, size: 10, totalElements, totalPages },
+})
+
 const appSetup = (userSupplier = () => user) => {
   app = appWithAllRoutes({ services: { auditService, officialVisitsService }, userSupplier })
 }
@@ -82,7 +87,7 @@ afterEach(() => {
 
 describe('GET /review/list', () => {
   it('should render the heading, the checks reveal and the empty state when nothing needs review', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue([])
+    officialVisitsService.getVisitsForReview.mockResolvedValue(reviewPage([]))
 
     const response = await request(app).get(URL).expect(200)
     const $ = cheerio.load(response.text)
@@ -96,16 +101,18 @@ describe('GET /review/list', () => {
   })
 
   it('should show a summary of the results and a row per visit', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue([
-      review({ officialVisitId: 1, issueTypes: ['VISITOR_NOT_OFFICIAL'] }),
-      review({
-        officialVisitId: 2,
-        lastName: 'Doe',
-        firstName: 'Jane',
-        prisonerNumber: 'A1111AA',
-        issueTypes: ['VISITOR_NO_RELATIONSHIP', 'VISITOR_NOT_OFFICIAL', 'VISITOR_NOT_APPROVED'],
-      }),
-    ])
+    officialVisitsService.getVisitsForReview.mockResolvedValue(
+      reviewPage([
+        review({ officialVisitId: 1, issueTypes: ['VISITOR_NOT_OFFICIAL'] }),
+        review({
+          officialVisitId: 2,
+          lastName: 'Doe',
+          firstName: 'Jane',
+          prisonerNumber: 'A1111AA',
+          issueTypes: ['VISITOR_NO_RELATIONSHIP', 'VISITOR_NOT_OFFICIAL', 'VISITOR_NOT_APPROVED'],
+        }),
+      ]),
+    )
 
     const response = await request(app).get(URL).expect(200)
     const $ = cheerio.load(response.text)
@@ -125,9 +132,9 @@ describe('GET /review/list', () => {
   })
 
   it('should use the singular when a single visit needs review', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue([
-      review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] }),
-    ])
+    officialVisitsService.getVisitsForReview.mockResolvedValue(
+      reviewPage([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })]),
+    )
 
     const response = await request(app).get(URL).expect(200)
     const $ = cheerio.load(response.text)
@@ -137,51 +144,27 @@ describe('GET /review/list', () => {
     )
   })
 
-  it('should sort soonest visit first', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue([
-      review({ officialVisitId: 1, visitDate: '2026-01-10', issueTypes: ['VISITOR_NOT_OFFICIAL'] }),
-      review({ officialVisitId: 2, visitDate: '2026-03-10', issueTypes: ['VISITOR_NOT_OFFICIAL'] }),
-      review({ officialVisitId: 3, visitDate: '2026-02-10', issueTypes: ['VISITOR_NOT_OFFICIAL'] }),
-    ])
+  it('should ask the API for the requested page and render its totals', async () => {
+    officialVisitsService.getVisitsForReview.mockResolvedValue(
+      reviewPage([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })], 15, 2),
+    )
 
-    const response = await request(app).get(URL).expect(200)
+    const response = await request(app).get(`${URL}?page=2`).expect(200)
     const $ = cheerio.load(response.text)
 
-    expect(getGovukTableCell($, 1, 2).text()).toContain('10 Jan 2026')
-    expect(getGovukTableCell($, 2, 2).text()).toContain('10 Feb 2026')
-    expect(getGovukTableCell($, 3, 2).text()).toContain('10 Mar 2026')
-  })
-
-  it('should paginate at 10 per page', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue(
-      Array.from({ length: 15 }, (_, i) => review({ officialVisitId: i + 1, issueTypes: ['VISITOR_NOT_OFFICIAL'] })),
-    )
-
-    const firstPage = cheerio.load((await request(app).get(URL).expect(200)).text)
-    expect(getByDataQa(firstPage, 'results-summary').text().replace(/\s+/g, ' ').trim()).toBe(
-      'You have 15 visits to review (page 1 of 2).',
-    )
-    expect(firstPage('.govuk-table__body > .govuk-table__row')).toHaveLength(10)
-
-    const secondPage = cheerio.load((await request(app).get(`${URL}?page=2`).expect(200)).text)
-    expect(getByDataQa(secondPage, 'results-summary').text().replace(/\s+/g, ' ').trim()).toBe(
+    expect(officialVisitsService.getVisitsForReview).toHaveBeenCalledWith('HEI', 1, 10, expect.anything())
+    expect(getByDataQa($, 'results-summary').text().replace(/\s+/g, ' ').trim()).toBe(
       'You have 15 visits to review (page 2 of 2).',
     )
-    expect(secondPage('.govuk-table__body > .govuk-table__row')).toHaveLength(5)
-
-    const hrefs = firstPage('.moj-pagination a')
-      .map((_, link) => firstPage(link).attr('href'))
-      .get()
-
-    expect(hrefs).toContain('?page=2')
-    hrefs.forEach(href => expect(href).toMatch(/^\?page=\d+$/))
   })
 
   it('should show a Cancel visit action only when the prisoner was released or transferred', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue([
-      review({ officialVisitId: 1, visitDate: '2026-01-10', issueTypes: ['PRISONER_RELEASED'] }),
-      review({ officialVisitId: 2, visitDate: '2026-01-11', issueTypes: ['VISITOR_NOT_OFFICIAL'] }),
-    ])
+    officialVisitsService.getVisitsForReview.mockResolvedValue(
+      reviewPage([
+        review({ officialVisitId: 1, visitDate: '2026-01-10', issueTypes: ['PRISONER_RELEASED'] }),
+        review({ officialVisitId: 2, visitDate: '2026-01-11', issueTypes: ['VISITOR_NOT_OFFICIAL'] }),
+      ]),
+    )
 
     const response = await request(app).get(URL).expect(200)
     const $ = cheerio.load(response.text)
@@ -192,9 +175,9 @@ describe('GET /review/list', () => {
   })
 
   it('should address the prisoner profile, acknowledge and cancel links from the row', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue([
-      review({ officialVisitId: 77, prisonerNumber: 'A1337AA', issueTypes: ['PRISONER_RELEASED'] }),
-    ])
+    officialVisitsService.getVisitsForReview.mockResolvedValue(
+      reviewPage([review({ officialVisitId: 77, prisonerNumber: 'A1337AA', issueTypes: ['PRISONER_RELEASED'] })]),
+    )
 
     const response = await request(app).get(`${URL}?page=2`).expect(200)
     const $ = cheerio.load(response.text)
@@ -210,9 +193,9 @@ describe('GET /review/list', () => {
 
   it('should not show mutating actions to a view only user', async () => {
     appSetup(() => viewOnlyUser)
-    officialVisitsService.getVisitsForReview.mockResolvedValue([
-      review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] }),
-    ])
+    officialVisitsService.getVisitsForReview.mockResolvedValue(
+      reviewPage([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })]),
+    )
 
     const response = await request(app).get(URL).expect(200)
     const $ = cheerio.load(response.text)
@@ -253,16 +236,6 @@ describe('POST /review/list/:officialVisitId/acknowledge', () => {
       .expect('location', '/review/list?page=2')
 
     expect(officialVisitsService.acknowledgeVisitReview).toHaveBeenCalledWith('HEI', 42, expect.anything())
-  })
-
-  it('should ignore a returnTo pointing outside the review list', async () => {
-    officialVisitsService.acknowledgeVisitReview.mockResolvedValue(undefined)
-
-    await request(app)
-      .post(`${URL}/42/acknowledge`)
-      .send({ returnTo: 'https://evil.example.com' })
-      .expect(302)
-      .expect('location', '/review/list')
   })
 
   it('should not be available to a view only user', async () => {

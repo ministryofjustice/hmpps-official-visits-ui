@@ -30,33 +30,32 @@ export default class VisitsNeedReviewHandler implements PageHandler {
 
   GET = async (req: Request, res: Response) => {
     const { user } = res.locals
-    const prisonCode = res.locals.user.activeCaseLoadId
+    const prisonCode = user.activeCaseLoadId
 
     const parsedPage = Number(req.query.page)
-    const requestedPage = parsedPage && parsedPage > 0 ? parsedPage : 1
+    const page = parsedPage && parsedPage > 0 ? parsedPage : 1
 
-    const reviews = await this.officialVisitsService.getVisitsForReview(prisonCode, user)
-    const allRows = sortBySoonestFirst(toRows(reviews))
-
-    const totalPages = Math.max(1, Math.ceil(allRows.length / PAGE_SIZE))
-    const page = Math.min(requestedPage, totalPages)
-    const rows = allRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    const { content = [], page: pageMetadata } = await this.officialVisitsService.getVisitsForReview(
+      prisonCode,
+      page - 1,
+      PAGE_SIZE,
+      user,
+    )
 
     this.telemetryService.trackEvent('OFFICIAL_VISIT_VIEW_VISITS_NEED_REVIEW_PAGE', user, {
-      totalVisits: allRows.length,
+      totalVisits: pageMetadata?.totalElements ?? 0,
     })
 
     return res.render('pages/review/visitsNeedReview', {
       backUrl: '/',
-      rows,
+      rows: toRows(content),
       backTo: encodeBackTo(req.originalUrl),
       returnTo: req.originalUrl,
       pagination: {
         page,
         size: PAGE_SIZE,
-        totalElements: allRows.length,
-        totalPages,
-        // simplePagination substitutes the URL-encoded placeholder, not a literal {page}
+        totalElements: pageMetadata?.totalElements ?? 0,
+        totalPages: pageMetadata?.totalPages ?? 0,
         hrefTemplate: '?page=%7Bpage%7D',
       },
     })
@@ -80,12 +79,3 @@ const toRows = (reviews: VisitForReview[]): ReviewRow[] =>
       cancellable: isCancellable(review),
     }
   })
-
-/**
- * Soonest visit first, so the most urgent review is at the top.
- *
- * Applied here rather than relying on the API's sort parameter because paging is done in this
- * layer — the whole list has to be in a known order before it is sliced into pages.
- */
-const sortBySoonestFirst = (rows: ReviewRow[]): ReviewRow[] =>
-  [...rows].sort((a, b) => `${a.visitDate}${a.startTime}`.localeCompare(`${b.visitDate}${b.startTime}`))

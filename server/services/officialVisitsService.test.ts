@@ -10,6 +10,7 @@ import {
   OfficialVisitUpdateVisitorsRequest,
   PagedModelSentNotification,
   TimeSlotSummary,
+  VisitForReview,
 } from '../@types/officialVisitsApi/types'
 import { mockFindByCriteriaResults } from '../testutils/mocks'
 
@@ -330,36 +331,20 @@ describe('OfficialVisitsService', () => {
   })
 
   describe('visits for review', () => {
-    const reviewItem = { visit: { officialVisitId: 1 }, issues: [] as [] }
+    const reviewItem = { visit: { officialVisitId: 1 }, issues: [] } as unknown as VisitForReview
 
-    it.each([
-      ['a bare array', [reviewItem]],
-      ['a paged wrapper', { content: [reviewItem], page: { totalElements: 1 } }],
-      ['a single object', reviewItem],
-    ])('should read the review list from %s', async (_label, response) => {
-      officialVisitsApiClient.getVisitsForReview.mockResolvedValue(response)
+    it('should get the requested page, sorted soonest first', async () => {
+      const paged = { content: [reviewItem], page: { number: 1, size: 10, totalElements: 15, totalPages: 2 } }
+      officialVisitsApiClient.getVisitsForReview.mockResolvedValue(paged)
 
-      const result = await officialVisitsService.getVisitsForReview('MDI', user)
-
-      expect(result).toEqual([reviewItem])
+      expect(await officialVisitsService.getVisitsForReview('MDI', 1, 10, user)).toEqual(paged)
       expect(officialVisitsApiClient.getVisitsForReview).toHaveBeenCalledWith(
         'MDI',
-        0,
-        500,
+        1,
+        10,
         ['visitDate,asc', 'startTime,asc'],
         user,
       )
-    })
-
-    it.each([
-      ['an empty array', []],
-      ['an empty page', { content: [] }],
-      ['null', null],
-      ['undefined', undefined],
-    ])('should return no visits for %s', async (_label, response) => {
-      officialVisitsApiClient.getVisitsForReview.mockResolvedValue(response)
-
-      expect(await officialVisitsService.getVisitsForReview('MDI', user)).toEqual([])
     })
 
     it('should return the review count', async () => {

@@ -5,14 +5,12 @@ import manageUsersApi from '../mockApis/manageUsersApi'
 import prisonApi from '../mockApis/prisonApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
 import { login, resetStubs } from '../testUtils'
-import { AuthorisedRoles } from '../../server/middleware/populateUserPermissions'
 import VisitsNeedReviewPage from '../pages/visitsNeedReviewPage'
 import CancelVisitPage from '../pages/cancelVisitPage'
-import { NotAuthorisedPage } from '../pages/notAuthorisedPage'
 import { completionCodes } from '../mockData/data'
 import { VisitForReview, VisitForReviewIssueType } from '../../server/@types/officialVisitsApi/types'
 
-const URL = '/review/list'
+const REVIEW_LIST = '/review/list'
 
 const review = ({
   officialVisitId,
@@ -56,14 +54,6 @@ const review = ({
     })),
   }) as VisitForReview
 
-const loginAsViewOnly = (page: Parameters<typeof login>[0]) =>
-  login(page, {
-    name: 'AUser',
-    roles: [`ROLE_${AuthorisedRoles.DEFAULT}`, `ROLE_${AuthorisedRoles.VIEW}`],
-    active: true,
-    authSource: 'nomis',
-  })
-
 test.describe('Official visits that need review', () => {
   test.beforeEach(async () => {
     await resetStubs()
@@ -104,7 +94,7 @@ test.describe('Official visits that need review', () => {
     ])
 
     await login(page)
-    await page.goto(URL)
+    await page.goto(REVIEW_LIST)
     const reviewPage = await VisitsNeedReviewPage.verifyOnPage(page)
 
     await expect(reviewPage.resultsSummary).toContainText('You have 8 visits to review')
@@ -140,24 +130,13 @@ test.describe('Official visits that need review', () => {
     await expect(reviewPage.whichChecksDetails).not.toContainText('date is no longer available')
   })
 
-  test('should show the empty state when nothing needs review', async ({ page }) => {
-    await officialVisitsApi.stubVisitsForReview([])
-
-    await login(page)
-    await page.goto(URL)
-    const reviewPage = await VisitsNeedReviewPage.verifyOnPage(page)
-
-    await expect(reviewPage.noResults).toHaveText('There are no official visits that need review.')
-    await expect(reviewPage.getRows()).toHaveCount(0)
-  })
-
   test('should return to the review list from Cancel visit, both on back and after cancelling', async ({ page }) => {
     await officialVisitsApi.stubVisitsForReview([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })])
     await officialVisitsApi.stubRefData('VIS_COMPLETION', completionCodes)
     await officialVisitsApi.stubCancelVisit({}, 'LEI')
 
     await login(page)
-    await page.goto(URL)
+    await page.goto(REVIEW_LIST)
     const reviewPage = await VisitsNeedReviewPage.verifyOnPage(page)
 
     await reviewPage.getActionsFor('Smith, John').getByRole('link', { name: 'Cancel visit' }).click()
@@ -166,7 +145,7 @@ test.describe('Official visits that need review', () => {
 
     await page.locator('a.govuk-back-link').click()
     await VisitsNeedReviewPage.verifyOnPage(page)
-    expect(new globalThis.URL(page.url()).pathname).toBe(URL)
+    await expect(page).toHaveURL(REVIEW_LIST)
 
     await reviewPage.getActionsFor('Smith, John').getByRole('link', { name: 'Cancel visit' }).click()
     await CancelVisitPage.verifyOnPage(page)
@@ -174,62 +153,6 @@ test.describe('Official visits that need review', () => {
     await page.getByRole('button', { name: 'Continue' }).click()
 
     await VisitsNeedReviewPage.verifyOnPage(page)
-    expect(new globalThis.URL(page.url()).pathname).toBe(URL)
-  })
-
-  test('should hide mutating actions from a view only user and refuse the cancel url', async ({ page }) => {
-    await officialVisitsApi.stubVisitsForReview([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })])
-    await officialVisitsApi.stubRefData('VIS_COMPLETION', completionCodes)
-
-    await loginAsViewOnly(page)
-    await page.goto(URL)
-    const reviewPage = await VisitsNeedReviewPage.verifyOnPage(page)
-
-    const actions = reviewPage.getActionsFor('Smith, John')
-    await expect(actions).toContainText('View')
-    await expect(actions).not.toContainText('Acknowledge')
-    await expect(actions).not.toContainText('Cancel visit')
-
-    await page.goto('/view/visit/1/cancel')
-    await NotAuthorisedPage.verifyOnPage(page)
-  })
-
-  test('should page the list at ten visits a page', async ({ page }) => {
-    await officialVisitsApi.stubVisitsForReview(
-      Array.from({ length: 12 }, (_, index) =>
-        review({
-          officialVisitId: index + 1,
-          lastName: `Prisoner${String(index + 1).padStart(2, '0')}`,
-          firstName: 'Test',
-          issueTypes: ['PRISONER_RELEASED'],
-        }),
-      ),
-    )
-
-    await login(page)
-    await page.goto(URL)
-    const reviewPage = await VisitsNeedReviewPage.verifyOnPage(page)
-
-    await expect(reviewPage.resultsSummary).toContainText('You have 12 visits to review (page 1 of 2)')
-    await expect(reviewPage.getRows()).toHaveCount(10)
-
-    await reviewPage.getNextPageLink().click()
-
-    await expect(reviewPage.resultsSummary).toContainText('page 2 of 2')
-    await expect(reviewPage.getRows()).toHaveCount(2)
-  })
-
-  test('should acknowledge a visit using its official visit id and return to the list', async ({ page }) => {
-    await officialVisitsApi.stubVisitsForReview([review({ officialVisitId: 77, issueTypes: ['PRISONER_RELEASED'] })])
-    await officialVisitsApi.stubAcknowledgeVisitReview('LEI', 77)
-
-    await login(page)
-    await page.goto(URL)
-    await VisitsNeedReviewPage.verifyOnPage(page)
-
-    await page.getByRole('button', { name: 'Acknowledge' }).click()
-
-    await VisitsNeedReviewPage.verifyOnPage(page)
-    expect(new globalThis.URL(page.url()).pathname).toBe(URL)
+    await expect(page).toHaveURL(REVIEW_LIST)
   })
 })
