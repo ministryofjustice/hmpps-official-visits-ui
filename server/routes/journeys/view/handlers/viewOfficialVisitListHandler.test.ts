@@ -10,7 +10,6 @@ import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
 import AuditService, { Page } from '../../../../services/auditService'
 import { getByIdFor, getGovukTableCell, getPageHeader, getTextById } from '../../../testutils/cheerio'
 import { FindByCriteriaResults, ReferenceDataItem } from '../../../../@types/officialVisitsApi/types'
-import { encodeBackTo } from '../../../../utils/backTo'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/prisonerService')
@@ -109,8 +108,8 @@ describe('Search for an official visit', () => {
           expect(getGovukTableCell($, 1, 4).find('a').attr('href')).toEqual('http://localhost:3001/prisoner/A1337AA')
           expect(getGovukTableCell($, 1, 5).text()).toEqual('Completed')
           expect(getGovukTableCell($, 1, 6).text()).toEqual('Select')
-          // Including the base64url backTo token that preserves filters
-          const encB64Url = encodeBackTo(`/view/list?page=1&startDate=${startDate}&endDate=${endDate}`)
+          // Including encoded base64 backTo param to preserve filters
+          const encB64Url = encodeURIComponent(btoa(`/view/list?page=1&startDate=${startDate}&endDate=${endDate}`))
           expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual(`/view/visit/1?backTo=${encB64Url}`)
 
           // Filters
@@ -166,8 +165,8 @@ describe('Search for an official visit', () => {
           )
 
           // Filters are preserved in the backTo param
-          const encB64Url = encodeBackTo(
-            '/view/list?page=1&startDate=2022-12-23&endDate=2022-12-24&type=TYPE1&location=1',
+          const encB64Url = encodeURIComponent(
+            btoa('/view/list?page=1&startDate=2022-12-23&endDate=2022-12-24&type=TYPE1&location=1'),
           )
           expect(getGovukTableCell($, 1, 6).find('a').attr('href')).toEqual(`/view/visit/1?backTo=${encB64Url}`)
         })

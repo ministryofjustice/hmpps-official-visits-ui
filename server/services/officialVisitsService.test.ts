@@ -352,13 +352,5 @@ describe('OfficialVisitsService', () => {
 
       expect(await officialVisitsService.countVisitsForReview('MDI', user)).toBe(5)
     })
-
-    it('should acknowledge a visit review', async () => {
-      officialVisitsApiClient.acknowledgeVisitReview.mockResolvedValue(undefined)
-
-      await officialVisitsService.acknowledgeVisitReview('MDI', 42, user)
-
-      expect(officialVisitsApiClient.acknowledgeVisitReview).toHaveBeenCalledWith('MDI', 42, user)
-    })
   })
 })

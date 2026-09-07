@@ -4,7 +4,6 @@ import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { schema } from './cancelVisitHandlerSchema'
 import { CancelTypeRequest, VisitCompletionType } from '../../../../@types/officialVisitsApi/types'
-import { decodeBackTo } from '../../../../utils/backTo'
 
 export default class CancelOfficialVisitHandler implements PageHandler {
   public PAGE_NAME = Page.CANCEL_OFFICIAL_VISIT_PAGE
@@ -60,3 +59,12 @@ export default class CancelOfficialVisitHandler implements PageHandler {
 
 const visitSummaryUrl = (ovId: string, b64BackTo: string) =>
   `/view/visit/${ovId}${b64BackTo ? `?backTo=${b64BackTo}` : ''}`
+
+const decodeBackTo = (b64: string): string | null => {
+  try {
+    const decoded = b64 ? decodeURIComponent(atob(b64)) : null
+    return decoded?.startsWith('/') && !decoded.startsWith('//') ? decoded : null
+  } catch {
+    return null
+  }
+}

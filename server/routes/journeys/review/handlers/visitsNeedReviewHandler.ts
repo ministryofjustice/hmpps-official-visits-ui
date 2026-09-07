@@ -3,7 +3,6 @@ import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import TelemetryService from '../../../../services/telemetryService'
-import { encodeBackTo } from '../../../../utils/backTo'
 
 const PAGE_SIZE = 10
 
@@ -36,7 +35,7 @@ export default class VisitsNeedReviewHandler implements PageHandler {
     return res.render('pages/review/visitsNeedReview', {
       backUrl: '/',
       reviews: content,
-      backTo: encodeBackTo(req.originalUrl),
+      backTo: encodeURIComponent(btoa(req.originalUrl)),
       returnTo: req.originalUrl,
       pagination: {
         page,

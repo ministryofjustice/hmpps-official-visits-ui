@@ -30,7 +30,6 @@ import {
   visitTypes,
 } from '../mockData/data'
 import { AuditedEvent } from '../../server/@types/officialVisitsApi/types'
-import { encodeBackTo } from '../../server/utils/backTo'
 
 const auditedEvents: AuditedEvent[] = [
   {
@@ -302,7 +301,7 @@ test.describe('View official visits', () => {
     expect(await page.getByText('total results').first().innerText()).toBe('8 total results')
 
     await visitListPage.page.getByRole('link', { name: 'Select' }).first().click()
-    const b64 = encodeBackTo(`/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02`)
+    const b64 = encodeURIComponent(btoa(`/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02`))
     expect(page.url()).toBe(`http://localhost:3007/view/visit/1?backTo=${b64}`)
 
     ViewVisitPage.verifyOnPage(page)

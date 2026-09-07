@@ -16,29 +16,16 @@
 }
 
 .review-table {
-  // Prisoner
-  th:nth-child(1),
-  td:nth-child(1) {
-    width: 24%;
-  }
+  // Prisoner, visit date and time, review reasons, actions
+  $column-widths: 24%, 23%, 34%, 20%;
 
+  @each $width in $column-widths {
+    $i: index($column-widths, $width);
 
-  // Visit date and time
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 23%;
-  }
-
-  // Review reasons
-  th:nth-child(3),
-  td:nth-child(3) {
-    width: 34%;
-  }
-
-  //Actions
-  th:nth-child(4),
-  td:nth-child(4) {
-    width: 20%;
+    th:nth-child(#{$i}),
+    td:nth-child(#{$i}) {
+      width: $width;
+    }
   }
 }
 
@@ -67,7 +54,7 @@
   }
 }
 
-.govuk-button--as-link {
+.review-actions .govuk-button--as-link {
   @include govuk-font($size: 19);
 
   padding: 0;

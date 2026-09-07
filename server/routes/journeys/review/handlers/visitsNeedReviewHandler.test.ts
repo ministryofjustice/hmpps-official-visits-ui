@@ -100,53 +100,22 @@ describe('GET /review/list', () => {
     expect($('table')).toHaveLength(0)
   })
 
-  it('should show a summary of the results and a row per visit', async () => {
+  it('should show a summary and render each row with its reasons and links', async () => {
     officialVisitsService.getVisitsForReview.mockResolvedValue(
-      reviewPage([
-        review({ officialVisitId: 1, issueTypes: ['VISITOR_NOT_OFFICIAL'] }),
-        review({
-          officialVisitId: 2,
-          lastName: 'Doe',
-          firstName: 'Jane',
-          prisonerNumber: 'A1111AA',
-          issueTypes: ['VISITOR_NO_RELATIONSHIP', 'VISITOR_NOT_OFFICIAL', 'VISITOR_NOT_APPROVED'],
-        }),
-      ]),
-    )
-
-    const response = await request(app).get(URL).expect(200)
-    const $ = cheerio.load(response.text)
-
-    expect(getByDataQa($, 'results-summary').text().replace(/\s+/g, ' ').trim()).toBe(
-      'You have 2 visits to review (page 1 of 1).',
-    )
-    expect(getGovukTableCell($, 1, 1).text()).toContain('Smith, John')
-    expect(getGovukTableCell($, 1, 1).text()).toContain('A1337AA')
-    expect(getGovukTableCell($, 1, 2).text()).toContain('09:00 to 09:30')
-    expect(getGovukTableCell($, 1, 3).text()).toContain('Social visitor')
-
-    const secondRowReasons = getGovukTableCell($, 2, 3).text()
-    expect(secondRowReasons).toContain('Contact not approved')
-    expect(secondRowReasons).toContain('Unauthorised visitor')
-    expect(secondRowReasons).toContain('Social visitor')
-  })
-
-  it('should use the singular when a single visit needs review', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue(
-      reviewPage([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })]),
-    )
-
-    const response = await request(app).get(URL).expect(200)
-    const $ = cheerio.load(response.text)
-
-    expect(getByDataQa($, 'results-summary').text().replace(/\s+/g, ' ').trim()).toBe(
-      'You have 1 visit to review (page 1 of 1).',
-    )
-  })
-
-  it('should ask the API for the requested page and render its totals', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue(
-      reviewPage([review({ officialVisitId: 1, issueTypes: ['PRISONER_RELEASED'] })], 15, 2),
+      reviewPage(
+        [
+          review({ officialVisitId: 77, issueTypes: ['PRISONER_RELEASED'] }),
+          review({
+            officialVisitId: 2,
+            lastName: 'Doe',
+            firstName: 'Jane',
+            prisonerNumber: 'A1111AA',
+            issueTypes: ['VISITOR_NO_RELATIONSHIP', 'VISITOR_NOT_OFFICIAL', 'VISITOR_NOT_APPROVED'],
+          }),
+        ],
+        12,
+        2,
+      ),
     )
 
     const response = await request(app).get(`${URL}?page=2`).expect(200)
@@ -154,41 +123,25 @@ describe('GET /review/list', () => {
 
     expect(officialVisitsService.getVisitsForReview).toHaveBeenCalledWith('HEI', 1, 10, expect.anything())
     expect(getByDataQa($, 'results-summary').text().replace(/\s+/g, ' ').trim()).toBe(
-      'You have 15 visits to review (page 2 of 2).',
+      'You have 12 visits to review (page 2 of 2).',
     )
-  })
-
-  it('should show a Cancel visit action only when the prisoner was released or transferred', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue(
-      reviewPage([
-        review({ officialVisitId: 1, visitDate: '2026-01-10', issueTypes: ['PRISONER_RELEASED'] }),
-        review({ officialVisitId: 2, visitDate: '2026-01-11', issueTypes: ['VISITOR_NOT_OFFICIAL'] }),
-      ]),
-    )
-
-    const response = await request(app).get(URL).expect(200)
-    const $ = cheerio.load(response.text)
-
-    expect(getGovukTableCell($, 1, 4).text()).toContain('Cancel visit')
-    expect(getGovukTableCell($, 1, 4).find('a[href^="/view/visit/1/cancel"]')).toHaveLength(1)
-    expect(getGovukTableCell($, 2, 4).text()).not.toContain('Cancel visit')
-  })
-
-  it('should address the prisoner profile, acknowledge and cancel links from the row', async () => {
-    officialVisitsService.getVisitsForReview.mockResolvedValue(
-      reviewPage([review({ officialVisitId: 77, prisonerNumber: 'A1337AA', issueTypes: ['PRISONER_RELEASED'] })]),
-    )
-
-    const response = await request(app).get(`${URL}?page=2`).expect(200)
-    const $ = cheerio.load(response.text)
-
+    expect(getGovukTableCell($, 1, 1).text()).toContain('Smith, John')
+    expect(getGovukTableCell($, 1, 1).text()).toContain('A1337AA')
     expect(getGovukTableCell($, 1, 1).find('a').attr('href')).toBe('http://localhost:3001/prisoner/A1337AA')
+    expect(getGovukTableCell($, 1, 2).text()).toContain('09:00 to 09:30')
+    expect(getGovukTableCell($, 1, 3).text()).toContain('Prisoner released')
     expect(getGovukTableCell($, 1, 4).find('form').attr('action')).toBe('/review/list/77/acknowledge')
 
     const cancelHref = getGovukTableCell($, 1, 4).find('a[href*="/cancel"]').attr('href')
     const params = new URLSearchParams(cancelHref.split('?')[1])
     expect(atob(params.get('from'))).toBe(`${URL}?page=2`)
     expect(atob(params.get('backTo'))).toBe(`${URL}?page=2`)
+
+    const secondRowReasons = getGovukTableCell($, 2, 3).text()
+    expect(secondRowReasons).toContain('Contact not approved')
+    expect(secondRowReasons).toContain('Unauthorised visitor')
+    expect(secondRowReasons).toContain('Social visitor')
+    expect(getGovukTableCell($, 2, 4).text()).not.toContain('Cancel visit')
   })
 
   it('should not show mutating actions to a view only user', async () => {

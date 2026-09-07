@@ -10,7 +10,6 @@ import { JourneyVisitor } from '../journey'
 import { OfficialVisit, RestrictionSummary } from '../../../../../@types/officialVisitsApi/types'
 import { isVisitDateAndStartTimeInThePast, prisonAllowsSocialVisitors } from '../../../../../utils/utils'
 import config from '../../../../../config'
-import { decodeBackTo } from '../../../../../utils/backTo'
 
 export default class AmendVisitLandingHandler implements PageHandler {
   public PAGE_NAME = Page.AMEND_LANDING_PAGE
@@ -151,6 +150,14 @@ export default class AmendVisitLandingHandler implements PageHandler {
       backTo: b64BackTo,
     }
 
+    const tryDecodeB64 = (b64: string) => {
+      try {
+        return b64 ? decodeURIComponent(atob(b64)) : null
+      } catch {
+        return null
+      }
+    }
+
     const updateVerb = req.flash('updateVerb')[0]
     const journeyId = req.params.journeyId as string
     return res.render('pages/view/visit', {
@@ -163,7 +170,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
       updateVerb,
       b64BackTo: b64BackTo || '',
       journeyId,
-      amendedBackUrl: decodeBackTo(b64BackTo) || '/view/list',
+      amendedBackUrl: tryDecodeB64(b64BackTo) || '/view/list',
       backUrl: `/view/visit/${visit.officialVisitId}?backTo=${b64BackTo}`,
       prisoner: req.session.journey.officialVisit.prisoner,
       activeRestrictions: visitorActiveRestrictions + prisonerActiveRestrictions,

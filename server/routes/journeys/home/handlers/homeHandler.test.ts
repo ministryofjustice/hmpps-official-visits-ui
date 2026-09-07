@@ -239,21 +239,12 @@ describe('GET /home - visits that need review card', () => {
       })
   })
 
-  it('should not show a count when there is nothing to review', () => {
-    officialVisitsService.countVisitsForReview.mockResolvedValue(0)
-    app = appForRole(AuthorisedRoles.MANAGE)
-
-    return request(app)
-      .get('/')
-      .expect(200)
-      .expect(res => {
-        const $ = cheerio.load(res.text)
-        expect(getByDataQa($, 'visits-need-review-count')).toHaveLength(0)
-      })
-  })
-
-  it('should still render the home page when the count cannot be retrieved', () => {
-    officialVisitsService.countVisitsForReview.mockRejectedValue(new Error('API unavailable'))
+  it.each([
+    ['there is nothing to review', 0],
+    ['the count cannot be retrieved', new Error('API unavailable')],
+  ])('should show the card without a count when %s', (_label, outcome) => {
+    if (outcome instanceof Error) officialVisitsService.countVisitsForReview.mockRejectedValue(outcome)
+    else officialVisitsService.countVisitsForReview.mockResolvedValue(outcome)
     app = appForRole(AuthorisedRoles.MANAGE)
 
     return request(app)
