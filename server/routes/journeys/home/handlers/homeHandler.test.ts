@@ -6,12 +6,16 @@ import { getByDataQa, getPageHeader } from '../../../testutils/cheerio'
 import AuditService, { Page } from '../../../../services/auditService'
 import config from '../../../../config'
 import { AuthorisedRoles } from '../../../../middleware/populateUserPermissions'
+import BookAVideoLinkService from '../../../../services/bookAVideoLinkService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
+import { mockMoorlandBvlsPrison } from '../../../../testutils/mocks'
 
 jest.mock('../../../../services/auditService')
+jest.mock('../../../../services/bookAVideoLinkService')
 jest.mock('../../../../services/officialVisitsService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
+const bookAVideoLinkService = new BookAVideoLinkService(null) as jest.Mocked<BookAVideoLinkService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
 
 let app: Express
@@ -32,7 +36,7 @@ const createUserWithCaseLoad = ({
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    services: { auditService },
+    services: { auditService, bookAVideoLinkService },
     userSupplier: () =>
       createUserWithCaseLoad({
         activeCaseLoadId: 'MDI',
@@ -123,6 +127,7 @@ describe('GET /home', () => {
 
   it('should show NOMIS switch-off banner when prison is enabled in feature toggle', () => {
     config.featureToggles.nomisSwitchOffPrisons = 'MDI'
+    bookAVideoLinkService.getPrisons.mockResolvedValue([])
 
     return request(app)
       .get('/')
@@ -131,7 +136,27 @@ describe('GET /home', () => {
       .expect(res => {
         const $ = cheerio.load(res.text)
         expect(res.text).toContain(
-          'You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison',
+          'You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison. You can',
+        )
+        const bannerLink = $(
+          "a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']",
+        ).filter((_, link) => $(link).text().includes('SharePoint page'))
+        expect(bannerLink.length).toBe(1)
+      })
+  })
+
+  it('should show alternative NOMIS switch-off banner when prison is enabled in feature toggle and is a BVLS prison', () => {
+    config.featureToggles.nomisSwitchOffPrisons = 'MDI'
+    bookAVideoLinkService.getPrisons.mockResolvedValue([mockMoorlandBvlsPrison])
+
+    return request(app)
+      .get('/')
+      .expect('Content-Type', /html/)
+      .expect(200)
+      .expect(res => {
+        const $ = cheerio.load(res.text)
+        expect(res.text).toContain(
+          'You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison. For BVLS sites, ',
         )
         const bannerLink = $(
           "a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']",

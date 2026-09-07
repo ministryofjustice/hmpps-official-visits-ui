@@ -11,13 +11,23 @@
   </div>
 
   {% if showSwitchOffBanner %}
-    <div class="govuk-width-container">
-      {{ mojAlert({
-        variant: "information",
-        dismissible: true,
-        html: "You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison. You can <a class='govuk-link' href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx'>find further guidance on our SharePoint page</a>."
-      }) }}
-    </div>
+    {% if showBvlsBanner %}
+      <div class="govuk-width-container">
+        {{ mojAlert({
+          variant: "information",
+          dismissible: true,
+          html: "You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison. For BVLS sites, continue to use DPS Appointments to book video calls for Court Hearings and Official meetings in your VCC/PCVL area. You can <a class='govuk-link' href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx'>find further guidance on our SharePoint page</a>."
+        }) }}
+      </div>
+    {% else %}
+      <div class="govuk-width-container">
+        {{ mojAlert({
+          variant: "information",
+          dismissible: true,
+          html: "You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison. You can <a class='govuk-link' href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx'>find further guidance on our SharePoint page</a>."
+        }) }}
+      </div>
+    {% endif %}
   {% endif %}
 
   <main class="govuk-main-wrapper govuk-!-padding-top-0" id="main-content">
