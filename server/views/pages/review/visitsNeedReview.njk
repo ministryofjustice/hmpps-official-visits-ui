@@ -36,24 +36,27 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full-from-desktop">
-      {% if rows.length %}
+      {% if reviews.length %}
         <p class="govuk-body" data-qa="results-summary">
           You have {{ pagination.totalElements }} visit{{ "s" if pagination.totalElements != 1 }} to review (page {{ pagination.page }} of {{ pagination.totalPages }}).
         </p>
 
         {% set tableRows = [] %}
-        {% for row in rows %}
+        {% for review in reviews %}
+          {% set visit = review.visit %}
+          {% set prisonerName = visit.prisonerVisited | lastNameCommaFirstName %}
+
           {% set prisonerHtml %}
-            <a class="govuk-link govuk-link--no-visited-state" href="{{ prisonerProfileUrl }}/prisoner/{{ row.prisonerNumber }}">{{ row.prisonerName | convertToTitleCase }}</a><br>{{ row.prisonerNumber }}
+            <a class="govuk-link govuk-link--no-visited-state" href="{{ prisonerProfileUrl }}/prisoner/{{ visit.prisonerVisited.prisonerNumber }}">{{ prisonerName }}</a><br>{{ visit.prisonerVisited.prisonerNumber }}
           {% endset %}
 
           {% set dateAndTimeHtml %}
-            {{ row.startTime | toHHmm }} to {{ row.endTime | toHHmm }}<br>{{ row.visitDate | formatDate('d MMM yyyy') }}
+            {{ visit.startTime | toHHmm }} to {{ visit.endTime | toHHmm }}<br>{{ visit.visitDate | formatDate('d MMM yyyy') }}
           {% endset %}
 
           {% set reasonHtml %}
             <div class="review-reasons">
-              {% for reason in row.reasons %}
+              {% for reason in review | reviewReasons %}
                 <div>{{ govukTag({ text: reason.text, classes: reason.classes }) }}</div>
               {% endfor %}
             </div>
@@ -62,19 +65,19 @@
           {% set actionHtml %}
             <ul class="govuk-list govuk-!-margin-bottom-0 review-actions">
               <li>
-                <a class="govuk-link govuk-link--no-visited-state" href="/view/visit/{{ row.officialVisitId }}?backTo={{ backTo }}">View<span class="govuk-visually-hidden"> visit for {{ row.prisonerName | convertToTitleCase }}</span></a>
+                <a class="govuk-link govuk-link--no-visited-state" href="/view/visit/{{ visit.officialVisitId }}?backTo={{ backTo }}">View<span class="govuk-visually-hidden"> visit for {{ prisonerName }}</span></a>
               </li>
               {% if user | hasPermission(PERMISSION.MANAGE) %}
                 <li>
-                  <form method="POST" action="/review/list/{{ row.officialVisitId }}/acknowledge">
+                  <form method="POST" action="/review/list/{{ visit.officialVisitId }}/acknowledge">
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
                     <input type="hidden" name="returnTo" value="{{ returnTo }}" />
-                    <button class="govuk-button--as-link" type="submit">Acknowledge<span class="govuk-visually-hidden"> visit for {{ row.prisonerName | convertToTitleCase }}</span></button>
+                    <button class="govuk-button--as-link" type="submit">Acknowledge<span class="govuk-visually-hidden"> visit for {{ prisonerName }}</span></button>
                   </form>
                 </li>
-                {% if row.cancellable %}
+                {% if review | cancellable %}
                   <li>
-                    <a class="govuk-link govuk-link--no-visited-state" href="/view/visit/{{ row.officialVisitId }}/cancel?backTo={{ backTo }}&amp;from={{ backTo }}">Cancel visit<span class="govuk-visually-hidden"> for {{ row.prisonerName | convertToTitleCase }}</span></a>
+                    <a class="govuk-link govuk-link--no-visited-state" href="/view/visit/{{ visit.officialVisitId }}/cancel?backTo={{ backTo }}&amp;from={{ backTo }}">Cancel visit<span class="govuk-visually-hidden"> for {{ prisonerName }}</span></a>
                   </li>
                 {% endif %}
               {% endif %}

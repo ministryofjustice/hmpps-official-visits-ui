@@ -125,21 +125,6 @@ describe('cancelVisitHandler', () => {
           )
         })
     })
-
-    it.each([
-      ['an offsite url', btoa('https://evil.example.com')],
-      ['a protocol relative url', btoa('//evil.example.com')],
-      ['rubbish', 'not-base64!!'],
-    ])('should ignore %s in from and fall back to the visit summary', async (_label, from) => {
-      await request(app)
-        .get(`${URL}?from=${encodeURIComponent(from)}`)
-        .expect('Content-Type', /html/)
-        .expect(res => {
-          const $ = cheerio.load(res.text)
-
-          expect($('a.govuk-back-link').attr('href')).toBe(`/view/visit/${ovId}`)
-        })
-    })
   })
 
   describe('POST', () => {

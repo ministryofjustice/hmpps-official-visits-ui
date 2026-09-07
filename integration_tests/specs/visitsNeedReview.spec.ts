@@ -106,15 +106,8 @@ test.describe('Official visits that need review', () => {
     await expect(firstRow).toContainText('2 Sep 2026')
     await expect(firstRow.getByRole('link').first()).toHaveAttribute('href', /\/prisoner\/A0001AA$/)
 
-    for (let index = 0; index < singles.length; index += 1) {
-      const [, label] = singles[index]
-      // eslint-disable-next-line no-await-in-loop
-      await expect(reviewPage.getReasonTagsFor(`Prisoner${String(index + 1).padStart(2, '0')}, Test`)).toHaveText([
-        label,
-      ])
-    }
-
-    await expect(reviewPage.getReasonTagsFor('Doe, Jane')).toHaveText([
+    await expect(reviewPage.getAllReasonTags()).toHaveText([
+      ...singles.map(([, label]) => label),
       'Social visitor',
       'New alert',
       'New restriction',

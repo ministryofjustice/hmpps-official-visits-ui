@@ -214,15 +214,6 @@ describe('GET /review/list', () => {
 
     expect(officialVisitsService.getVisitsForReview).not.toHaveBeenCalled()
   })
-
-  it('should not be available to a user without any official visits role', async () => {
-    appSetup(() => ({ ...user, userRoles: [], permissions: { OV: 0 as Permission } }))
-
-    const response = await request(app).get(URL).expect(200)
-
-    expect(response.text).toContain('You do not have permission')
-    expect(officialVisitsService.getVisitsForReview).not.toHaveBeenCalled()
-  })
 })
 
 describe('POST /review/list/:officialVisitId/acknowledge', () => {

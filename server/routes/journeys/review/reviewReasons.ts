@@ -17,12 +17,12 @@ const REVIEW_REASONS: Record<VisitForReviewIssueType, ReviewReason> = {
 
 const CANCELLABLE_ISSUE_TYPES: VisitForReviewIssueType[] = ['PRISONER_RELEASED', 'PRISONER_TRANSFERRED']
 
-export const reasonsFor = (review: VisitForReview): ReviewReason[] => {
-  const issueTypes = new Set((review.issues ?? []).map(issue => issue.issueType))
+export const reasonsFor = ({ issues }: VisitForReview): ReviewReason[] => {
+  const issueTypes = new Set(issues?.map(issue => issue.issueType))
   return Object.entries(REVIEW_REASONS)
     .filter(([issueType]) => issueTypes.has(issueType as VisitForReviewIssueType))
     .map(([, reason]) => reason)
 }
 
-export const isCancellable = (review: VisitForReview): boolean =>
-  (review.issues ?? []).some(issue => CANCELLABLE_ISSUE_TYPES.includes(issue.issueType))
+export const isCancellable = ({ issues }: VisitForReview): boolean =>
+  !!issues?.some(issue => CANCELLABLE_ISSUE_TYPES.includes(issue.issueType))

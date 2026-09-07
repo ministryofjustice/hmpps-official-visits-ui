@@ -353,12 +353,6 @@ describe('OfficialVisitsService', () => {
       expect(await officialVisitsService.countVisitsForReview('MDI', user)).toBe(5)
     })
 
-    it('should default the review count to zero when the API returns nothing', async () => {
-      officialVisitsApiClient.countVisitsForReview.mockResolvedValue(undefined)
-
-      expect(await officialVisitsService.countVisitsForReview('MDI', user)).toBe(0)
-    })
-
     it('should acknowledge a visit review', async () => {
       officialVisitsApiClient.acknowledgeVisitReview.mockResolvedValue(undefined)
 

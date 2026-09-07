@@ -37,6 +37,10 @@ export default class VisitsNeedReviewPage extends AbstractPage {
     return this.getRowFor(prisonerName).locator('.govuk-tag')
   }
 
+  getAllReasonTags() {
+    return this.page.locator('tbody .review-reasons .govuk-tag')
+  }
+
   getActionsFor(prisonerName: string) {
     return this.getRowFor(prisonerName).locator('.review-actions')
   }

@@ -3,22 +3,9 @@ import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
 import TelemetryService from '../../../../services/telemetryService'
-import { VisitForReview } from '../../../../@types/officialVisitsApi/types'
-import { isCancellable, reasonsFor, ReviewReason } from '../reviewReasons'
 import { encodeBackTo } from '../../../../utils/backTo'
 
 const PAGE_SIZE = 10
-
-export type ReviewRow = {
-  officialVisitId: number
-  prisonerNumber: string
-  prisonerName: string
-  visitDate: string
-  startTime: string
-  endTime: string
-  reasons: ReviewReason[]
-  cancellable: boolean
-}
 
 export default class VisitsNeedReviewHandler implements PageHandler {
   public PAGE_NAME = Page.VISITS_NEED_REVIEW_PAGE
@@ -48,7 +35,7 @@ export default class VisitsNeedReviewHandler implements PageHandler {
 
     return res.render('pages/review/visitsNeedReview', {
       backUrl: '/',
-      rows: toRows(content),
+      reviews: content,
       backTo: encodeBackTo(req.originalUrl),
       returnTo: req.originalUrl,
       pagination: {
@@ -61,21 +48,3 @@ export default class VisitsNeedReviewHandler implements PageHandler {
     })
   }
 }
-
-const toRows = (reviews: VisitForReview[]): ReviewRow[] =>
-  reviews.map(review => {
-    const prisoner = review.visit.prisonerVisited
-    const lastName = prisoner?.lastName ?? ''
-    const firstName = prisoner?.firstName ?? ''
-
-    return {
-      officialVisitId: review.visit.officialVisitId,
-      prisonerNumber: prisoner?.prisonerNumber ?? '',
-      prisonerName: [lastName, firstName].filter(Boolean).join(', '),
-      visitDate: review.visit.visitDate,
-      startTime: review.visit.startTime,
-      endTime: review.visit.endTime,
-      reasons: reasonsFor(review),
-      cancellable: isCancellable(review),
-    }
-  })
