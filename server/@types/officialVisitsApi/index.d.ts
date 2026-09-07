@@ -3846,6 +3846,10 @@ export interface components {
       /** @description The visitors email address if present */
       emailAddress?: string | null
     }
+    PagedModelVisitsForReviewResponse: {
+      content?: components['schemas']['VisitsForReviewResponse'][]
+      page?: components['schemas']['PageMetadata']
+    }
     VisitForReviewIssue: {
       /**
        * Format: int64
@@ -6443,13 +6447,13 @@ export interface operations {
     }
     requestBody?: never
     responses: {
-      /** @description Visits for review */
+      /** @description Paginated list of visits for review */
       200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['VisitsForReviewResponse']
+          'application/json': components['schemas']['PagedModelVisitsForReviewResponse']
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */

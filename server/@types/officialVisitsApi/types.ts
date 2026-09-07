@@ -57,8 +57,4 @@ export type VisitForReview = components['schemas']['VisitsForReviewResponse']
 export type VisitForReviewIssue = components['schemas']['VisitForReviewIssue']
 export type VisitForReviewIssueType = VisitForReviewIssue['issueType']
 export type VisitsForReviewCount = components['schemas']['VisitsForReviewCountResponse']
-// TODO remove when API returns correct type
-export type PagedModelVisitForReview = {
-  content?: VisitForReview[]
-  page?: components['schemas']['PageMetadata']
-}
+export type PagedModelVisitForReview = components['schemas']['PagedModelVisitsForReviewResponse']
