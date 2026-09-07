@@ -18,9 +18,6 @@ const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const bookAVideoLinkService = new BookAVideoLinkService(null) as jest.Mocked<BookAVideoLinkService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
 
-const auditService = new AuditService(null) as jest.Mocked<AuditService>
-const bookAVideoLinkService = new BookAVideoLinkService(null) as jest.Mocked<BookAVideoLinkService>
-
 let app: Express
 
 const createUserWithCaseLoad = ({
