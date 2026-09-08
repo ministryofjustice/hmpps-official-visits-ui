@@ -25,6 +25,7 @@ import {
   PagedModelSentNotification,
   OfficialVisitNotifications,
   AuditedEvent,
+  PagedModelVisitForReview,
 } from '../@types/officialVisitsApi/types'
 import { OfficialVisitJourney } from '../routes/journeys/manage/visit/journey'
 import logger from '../../logger'
@@ -299,5 +300,31 @@ export default class OfficialVisitsService {
       `Check for non-association visits for prisoner ${prisonerNumber} on ${visitDate} called by ${user?.userId}`,
     )
     return this.officialVisitsApiClient.checkForNonAssociationVisits(prisonCode, prisonerNumber, visitDate, user)
+  }
+
+  public async getVisitsForReview(
+    prisonCode: string,
+    page: number,
+    size: number,
+    user: HmppsUser,
+  ): Promise<PagedModelVisitForReview> {
+    logger.info(`Get visits for review for prison ${prisonCode}`)
+    return this.officialVisitsApiClient.getVisitsForReview(
+      prisonCode,
+      page,
+      size,
+      ['visitDate,asc', 'startTime,asc'],
+      user,
+    )
+  }
+
+  public async countVisitsForReview(prisonCode: string, user: HmppsUser): Promise<number> {
+    const response = await this.officialVisitsApiClient.countVisitsForReview(prisonCode, user)
+    return response?.visitsForReviewCount ?? 0
+  }
+
+  public async acknowledgeVisitReview(prisonCode: string, officialVisitId: number, user: HmppsUser) {
+    logger.info(`Acknowledge visit review ${officialVisitId} for prison ${prisonCode}`)
+    return this.officialVisitsApiClient.acknowledgeVisitReview(prisonCode, officialVisitId, user)
   }
 }

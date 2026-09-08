@@ -5,7 +5,12 @@ import { PageHandler } from '../../interfaces/pageHandler'
 import logPageViewMiddleware from '../../../middleware/logPageViewMiddleware'
 import validationMiddleware from '../../../middleware/validationMiddleware'
 
-export default function Index({ auditService, bookAVideoLinkService, telemetryService }: Services): Router {
+export default function Index({
+  auditService,
+  bookAVideoLinkService,
+  telemetryService,
+  officialVisitsService,
+}: Services): Router {
   const router = Router({ mergeParams: true })
 
   const route = (path: string | string[], handler: PageHandler) =>
@@ -13,7 +18,7 @@ export default function Index({ auditService, bookAVideoLinkService, telemetrySe
     handler.POST &&
     router.post(path, validationMiddleware(handler.BODY), handler.POST)
 
-  route('/', new HomeHandler(bookAVideoLinkService, telemetryService))
+  route('/', new HomeHandler(bookAVideoLinkService, telemetryService, officialVisitsService))
 
   return router
 }

@@ -10,6 +10,7 @@ import {
   OfficialVisitUpdateVisitorsRequest,
   PagedModelSentNotification,
   TimeSlotSummary,
+  VisitForReview,
 } from '../@types/officialVisitsApi/types'
 import { mockFindByCriteriaResults } from '../testutils/mocks'
 
@@ -327,5 +328,29 @@ describe('OfficialVisitsService', () => {
       user,
     )
     expect(result).toEqual(expected)
+  })
+
+  describe('visits for review', () => {
+    const reviewItem = { visit: { officialVisitId: 1 }, issues: [] } as unknown as VisitForReview
+
+    it('should get the requested page, sorted soonest first', async () => {
+      const paged = { content: [reviewItem], page: { number: 1, size: 10, totalElements: 15, totalPages: 2 } }
+      officialVisitsApiClient.getVisitsForReview.mockResolvedValue(paged)
+
+      expect(await officialVisitsService.getVisitsForReview('MDI', 1, 10, user)).toEqual(paged)
+      expect(officialVisitsApiClient.getVisitsForReview).toHaveBeenCalledWith(
+        'MDI',
+        1,
+        10,
+        ['visitDate,asc', 'startTime,asc'],
+        user,
+      )
+    })
+
+    it('should return the review count', async () => {
+      officialVisitsApiClient.countVisitsForReview.mockResolvedValue({ prisonCode: 'MDI', visitsForReviewCount: 5 })
+
+      expect(await officialVisitsService.countVisitsForReview('MDI', user)).toBe(5)
+    })
   })
 })

@@ -35,6 +35,7 @@ import {
   timeRangesOverlap,
   buildCalendarMonths,
   emailNotificationsEnabled,
+  visitsNeedReviewEnabled,
   convertToSentenceCase,
 } from './utils'
 import config from '../config'
@@ -691,6 +692,33 @@ describe('buildCalendarMonths', () => {
 
     expect(result.nextMonthHref).toBe('?date=2026-02-01')
     expect(result.previousMonthHref).toBe('?date=2025-12-01')
+  })
+})
+
+describe('visitsNeedReviewEnabled', () => {
+  let originalValue: string
+
+  beforeEach(() => {
+    originalValue = config.featureToggles.visitsNeedReviewPrisons
+  })
+
+  afterEach(() => {
+    config.featureToggles.visitsNeedReviewPrisons = originalValue
+  })
+
+  it('should return true when the prison is in the enabled list', () => {
+    config.featureToggles.visitsNeedReviewPrisons = 'MDI,LEI'
+    expect(visitsNeedReviewEnabled('MDI')).toBe(true)
+  })
+
+  it('should return false when the prison is not in the enabled list', () => {
+    config.featureToggles.visitsNeedReviewPrisons = 'MDI,LEI'
+    expect(visitsNeedReviewEnabled('HEI')).toBe(false)
+  })
+
+  it('should return false when the enabled list is empty', () => {
+    config.featureToggles.visitsNeedReviewPrisons = ''
+    expect(visitsNeedReviewEnabled('MDI')).toBe(false)
   })
 })
 

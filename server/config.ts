@@ -175,5 +175,6 @@ export default {
     twoMonthCalendarEnabled: get('FEATURE_TWO_MONTH_CALENDAR_ENABLED', 'false') === 'true',
     emailNotificationsPrisons: get('FEATURE_EMAIL_NOTIFICATIONS_PRISONS', ''),
     visitHistoryTimelineEnabled: get('FEATURE_VISIT_HISTORY_TIMELINE_PRISONS', ''),
+    visitsNeedReviewPrisons: get('FEATURE_VISITS_NEED_REVIEW_PRISONS', ''),
   },
 }

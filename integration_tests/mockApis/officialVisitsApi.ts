@@ -14,6 +14,7 @@ import {
   ReferenceDataItem,
   TimeSlot,
   TimeSlotSummary,
+  VisitForReview,
   VisitLocation,
   VisitSlot,
 } from '../../server/@types/officialVisitsApi/types'
@@ -186,4 +187,23 @@ export default {
     prisonTimeSlotId: number,
     response: RecursivePartial<OfficialVisitNotifications>,
   ) => simpleApiMock(`/official-visits-api/official-visit/id/${prisonTimeSlotId}/notifications.*`, response),
+
+  stubVisitsForReview: (response: RecursivePartial<VisitForReview>[], totalElements = response.length) =>
+    simpleApiMock(`/official-visits-api/visit-review/prison/.*/list.*`, {
+      content: response,
+      page: { size: 500, number: 0, totalElements, totalPages: 1 },
+    }),
+  stubVisitsForReviewCount: (prisonCode: string, visitsForReviewCount: number) =>
+    simpleApiMock(`/official-visits-api/visit-review/prison/${prisonCode}/count`, {
+      prisonCode,
+      visitsForReviewCount,
+    }),
+  stubAcknowledgeVisitReview: (prisonCode: string, officialVisitId: number) =>
+    stubFor({
+      request: {
+        method: 'PUT',
+        urlPattern: `/official-visits-api/visit-review/prison/${prisonCode}/id/${officialVisitId}/acknowledge`,
+      },
+      response: { status: 200 },
+    }),
 }

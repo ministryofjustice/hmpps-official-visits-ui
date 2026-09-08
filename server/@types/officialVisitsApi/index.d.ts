@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-  '/visit-review/prison/{prisonCode}/id/{visitReviewId}/acknowledge': {
+  '/visit-review/prison/{prisonCode}/id/{officialVisitId}/acknowledge': {
     parameters: {
       query?: never
       header?: never
@@ -14,7 +14,7 @@ export interface paths {
     get?: never
     /**
      * Acknowledge a visit review
-     * @description Acknowledges all currently unacknowledged and unexpired visit review details for the given visit review. Username is taken from the client token.
+     * @description Acknowledges all currently unacknowledged details on the unexpired visit review for the given official visit. Username is taken from the client token.
      *
      *     Requires one of the following roles:
      *     * ROLE_OFFICIAL_VISITS_ADMIN
@@ -721,6 +721,26 @@ export interface paths {
      *     * OFFICIAL_VISITS_ADMIN
      */
     post: operations['migrateVisitConfiguration']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/job-admin/run/{jobName}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Endpoint to trigger a job, perhaps from a cron schedule.
+     * @description This endpoint can only be accessed from within the ingress. Requests from elsewhere will result in a 401 response code.
+     */
+    post: operations['runJob']
     delete?: never
     options?: never
     head?: never
@@ -3826,6 +3846,10 @@ export interface components {
       /** @description The visitors email address if present */
       emailAddress?: string | null
     }
+    PagedModelVisitsForReviewResponse: {
+      content?: components['schemas']['VisitsForReviewResponse'][]
+      page?: components['schemas']['PageMetadata']
+    }
     VisitForReviewIssue: {
       /**
        * Format: int64
@@ -4473,10 +4497,10 @@ export interface operations {
          */
         prisonCode: string
         /**
-         * @description The visit review ID
+         * @description The official visit ID
          * @example 123
          */
-        visitReviewId: number
+        officialVisitId: number
       }
       cookie?: never
     }
@@ -6221,6 +6245,28 @@ export interface operations {
       }
     }
   }
+  runJob: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        jobName: 'IDENTIFY_CANDIDATE_VISITS_TO_CHECK' | 'PROCESS_CANDIDATE_VISITS_TO_CHECK' | 'EXPIRE_VISITS_FOR_REVIEW'
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'text/plain': string
+        }
+      }
+    }
+  }
   createTimeSlot: {
     parameters: {
       query?: never
@@ -6401,13 +6447,13 @@ export interface operations {
     }
     requestBody?: never
     responses: {
-      /** @description Visits for review */
+      /** @description Paginated list of visits for review */
       200: {
         headers: {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['VisitsForReviewResponse']
+          'application/json': components['schemas']['PagedModelVisitsForReviewResponse']
         }
       }
       /** @description Unauthorised, requires a valid Oauth2 token */
