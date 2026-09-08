@@ -118,10 +118,10 @@ describe('Search for an official visit', () => {
           expect(getByIdFor($, 'status').text().trim()).toEqual('Visit status')
 
           // Mock sets three unique locations among 10 total, ensure only the unique ones are shown
-          expect($('#location > option').text()).toEqual('Location0Location1Location2')
+          expect($('#location > option').text()).toEqual('All locationsLocation0Location1Location2')
 
-          expect($('#type > option').text()).toEqual('Type1Type2')
-          expect($('#status > option').text()).toEqual('Status1Status2')
+          expect($('#type > option').text()).toEqual('All visit typesType1Type2')
+          expect($('#status > option').text()).toEqual('All visit statusesStatus1Status2')
 
           expect(auditService.logPageView).toHaveBeenCalledWith(Page.VIEW_OFFICIAL_VISIT_LIST_PAGE, {
             who: user.username,

@@ -15,7 +15,7 @@
   {% endfor %}
 {% endblock %}
 
-{% block pageTitle %}{% if validationErrors.length %}Error: {% endif %}{{[pageTitle, "Official visits", "DPS"] | select() | join(" - ")}}{% endblock %}
+{% block pageTitle %}{% if validationErrors.length %}Error: {% endif %}{{[pageTitleContext, pageTitle, "Official visits", "DPS"] | select() | join(" - ")}}{% endblock %}
 
 {% block header %}
   {{ feComponents.header | safe }}
@@ -25,6 +25,18 @@
   {% block pageHeader %}{% endblock %}
 
   {% include 'partials/beforeContent.njk' %}
+{% endblock %}
+
+{% block main %}
+  <main class="govuk-main-wrapper {%- if mainClasses %} {{ mainClasses }}{% endif %}" id="main-content" {%- if mainLang %} lang="{{ mainLang }}"{% endif %}>
+    {% if backUrl %}
+      {{ govukBackLink({
+        text: "Back",
+        href: backUrl
+      }) }}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
 {% endblock %}
 
 

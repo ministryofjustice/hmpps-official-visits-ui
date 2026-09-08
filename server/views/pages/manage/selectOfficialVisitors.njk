@@ -77,6 +77,7 @@
 
     <div class="govuk-grid-row govuk-body">
       <div class="govuk-grid-column-three-quarters">
+        {% set selectedError = validationErrors | findError('selected') %}
         {% set rows = [] %}
         {% for contact in contacts %}
 
@@ -97,8 +98,8 @@
           {% set rows = (rows.push([
             { html: govukCheckboxes({
               name: "selected[" + loop.index0 + "]",
-              id: "selected[" + loop.index0 + "]",
               classes: "govuk-checkboxes--small",
+              describedBy: "selected-error" if selectedError,
               fieldset: {
                 legend: {
                   text: "Select",
@@ -107,6 +108,7 @@
               },
               items: [
                 {
+                  id: "selected" if loop.index0 == 0 else "selected[" + loop.index0 + "]",
                   value: contact.contactId + "-" + contact.relationshipToPrisonerCode,
                   html: "<span class='govuk-visually-hidden'>" + (contact.firstName + " " + contact.lastName) | convertToTitleCase + "</span>",
                   checked: selectedContacts | includes(contact.contactId + "-" + contact.relationshipToPrisonerCode)
@@ -120,25 +122,32 @@
           ]), rows) %}
         {% endfor %}
 
-        <h2 class="govuk-heading-m" id="approved-contacts-heading" data-qa="contacts-title">Approved official contacts</h2>
-        {% if rows.length > 0 %}
-          <div data-qa="visitors-table">
-            {{ govukTable({
-              attributes: { "aria-labelledby": "approved-contacts-heading" },
-              firstCellIsHeader: true,
-              head: [
-                { text: "Add" },
-                { text: "Contact name and person ID" },
-                { text: "Relationship" },
-                { text: "Address" },
-                { text: "Active restrictions" }
-              ],
-              rows: rows
-            }) }}
-          </div>
-        {% else %}
-          <p class="govuk-body govuk-!-margin-top-3" data-qa="empty-contacts-message">No approved official contacts</p>
-        {% endif %}
+        <div class="govuk-form-group{{ ' govuk-form-group--error' if selectedError }}">
+          <h2 class="govuk-heading-m" id="approved-contacts-heading" data-qa="contacts-title">Approved official contacts</h2>
+          {% if selectedError %}
+            <p id="selected-error" class="govuk-error-message" data-qa="selected-error">
+              <span class="govuk-visually-hidden">Error:</span> {{ selectedError.text }}
+            </p>
+          {% endif %}
+          {% if rows.length > 0 %}
+            <div data-qa="visitors-table">
+              {{ govukTable({
+                attributes: { "aria-labelledby": "approved-contacts-heading" },
+                firstCellIsHeader: true,
+                head: [
+                  { text: "Add" },
+                  { text: "Contact name and person ID" },
+                  { text: "Relationship" },
+                  { text: "Address" },
+                  { text: "Active restrictions" }
+                ],
+                rows: rows
+              }) }}
+            </div>
+          {% else %}
+            <p class="govuk-body govuk-!-margin-top-3" data-qa="empty-contacts-message">No approved official contacts</p>
+          {% endif %}
+        </div>
       </div>
     </div>
 

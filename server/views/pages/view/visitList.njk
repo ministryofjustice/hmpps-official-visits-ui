@@ -14,6 +14,9 @@
 
 {% set pageTitle = "Search for an official visit" %}
 
+{% set resultsSummary = "No results found" if pagination.totalElements == 0 else (pagination.totalElements + (" result found" if pagination.totalElements == 1 else " results found")) %}
+{% set pageTitleContext = resultsSummary %}
+
 {% block content %}
   <div class="govuk-grid-row govuk-body">
     <div class="govuk-grid-column-three-quarters">
@@ -87,7 +90,7 @@
           text: "Location",
           classes: "govuk-fieldset__legend--s"
         },
-        items: locations | addSelectValue('', '', {"aria-label": "All locations"}) | sort(false, false, 'text') | setSelected(formResponses.location or filter.location or '')
+        items: locations | sort(false, false, 'text') | addSelectValue('', 'All locations') | setSelected(formResponses.location or filter.location or '')
       }) }}
 
     {{ govukSelect({
@@ -98,7 +101,7 @@
           text: "Visit type",
           classes: "govuk-fieldset__legend--s"
         },
-        items: types | addSelectValue('', '', {"aria-label": "All visit types"}) | sort(false, false, 'text') | setSelected(formResponses.type or filter.type or '')
+        items: types | sort(false, false, 'text') | addSelectValue('', 'All visit types') | setSelected(formResponses.type or filter.type or '')
       }) }}
 
     {{ govukSelect({
@@ -109,13 +112,13 @@
           text: "Visit status",
           classes: "govuk-fieldset__legend--s"
         },
-        items: statuses | addSelectValue('', '', {"aria-label": "All visit statuses"}) | sort(false, false, 'text') | setSelected(formResponses.status or filter.status or '')
+        items: statuses | sort(false, false, 'text') | addSelectValue('', 'All visit statuses') | setSelected(formResponses.status or filter.status or '')
       }) }}
 
     {% endset -%}
 
     <div class="moj-filter-layout govuk-body">
-      <div class="moj-filter-layout__filter" id="filters-column">
+      <div class="moj-filter-layout__filter" id="filters-column" role="region" aria-label="Filters">
         {{ mojFilter({
           heading: {
             text: "Filter"
@@ -182,7 +185,8 @@
         ] | filterNonFalsy), rows) %}
       {% endfor %}
 
-      <div class="moj-filter-layout__content" id="table-column">
+      <div class="moj-filter-layout__content" id="table-column" role="region" aria-labelledby="search-results-heading">
+        <h2 class="govuk-heading-m" id="search-results-heading">{{ resultsSummary }}</h2>
         <div class="moj-action-bar moj-action-bar-indent">
           <div class="moj-action-bar__filter"></div>
           {{ govukButton({
@@ -226,26 +230,49 @@
   <script nonce="{{ cspNonce }}">
     window.onload = function () {
       const filter = document.querySelector('[data-module="moj-filter"]')
-      filter && window.MojFrontend && new window
-        .MojFrontend
-        .FilterToggleButton(filter, {
-          bigModeMediaQuery: '(min-width: 48.063em)',
-          startHidden: {{ not showFilter }},
-          toggleButton: {
-            showText: 'Show filter',
-            hideText: 'Hide filter',
-            classes: 'govuk-button--secondary'
-          },
-          toggleButtonContainer: {
-            selector: '.moj-action-bar__filter'
-          },
-          closeButton: {
-            text: 'Close'
-          },
-          closeButtonContainer: {
-            selector: '.moj-filter__header-action'
-          }
-        })
+      if (!filter || !window.MojFrontend) return
+
+      const bigModeMediaQuery = '(min-width: 48.063em)'
+
+      const toggle = new window.MojFrontend.FilterToggleButton(filter, {
+        bigModeMediaQuery: bigModeMediaQuery,
+        startHidden: {{ not showFilter }},
+        toggleButton: {
+          showText: 'Show filter',
+          hideText: 'Hide filter',
+          classes: 'govuk-button--secondary'
+        },
+        toggleButtonContainer: {
+          selector: '.moj-action-bar__filter'
+        },
+        closeButton: {
+          text: 'Close'
+        },
+        closeButtonContainer: {
+          selector: '.moj-filter__header-action'
+        }
+      })
+
+      const inOverlayMode = () => !window.matchMedia(bigModeMediaQuery).matches
+      const isOpen = () => !filter.classList.contains('moj-js-hidden')
+      const menuButton = () => document.querySelector('.moj-action-bar__filter button')
+
+      filter.addEventListener('focusout', event => {
+        if (!inOverlayMode() || !isOpen()) return
+
+        const next = event.relatedTarget
+        if (!next || filter.contains(next) || next === menuButton()) return
+
+        toggle.hideMenu()
+      })
+
+      filter.addEventListener('keydown', event => {
+        if (event.key !== 'Escape' || !inOverlayMode() || !isOpen()) return
+
+        toggle.hideMenu()
+        const button = menuButton()
+        if (button) button.focus()
+      })
     }
   </script>
 {% endblock %}
