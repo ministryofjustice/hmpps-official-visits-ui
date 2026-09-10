@@ -158,9 +158,11 @@ describe('Time slot handler', () => {
 
           expect($('.hmpps-calendar__navigation a').hasClass('hmpps-calendar__navigation-next')).toBe(true)
 
-          expect($('.hmpps-calendar__day[aria-current="date"]').length).toEqual(1)
-          expect($('.hmpps-calendar__day[aria-current="date"]').hasClass('hmpps-calendar__day--selected')).toBe(true)
-          expect($('.hmpps-calendar__day[aria-current="date"]').text()).toContain('Thursday 25 December 2025')
+          expect($('.hmpps-calendar__day-item[aria-current="date"]').length).toEqual(1)
+          expect(
+            $('.hmpps-calendar__day-item[aria-current="date"]').parent().hasClass('hmpps-calendar__day--selected'),
+          ).toBe(true)
+          expect($('.hmpps-calendar__day-item[aria-current="date"]').text()).toContain('Thursday 25 December 2025')
 
           expect($('.govuk-fieldset__heading').text()).toEqual('Select a time slot for Thursday, 25 December 2025')
 
@@ -252,9 +254,11 @@ describe('Time slot handler', () => {
 
           expect($('.hmpps-calendar__navigation a').hasClass('hmpps-calendar__navigation-next')).toBe(true)
 
-          expect($('.hmpps-calendar__day[aria-current="date"]').length).toEqual(1)
-          expect($('.hmpps-calendar__day[aria-current="date"]').hasClass('hmpps-calendar__day--selected')).toBe(true)
-          expect($('.hmpps-calendar__day[aria-current="date"]').text()).toContain('Thursday 25 December 2025')
+          expect($('.hmpps-calendar__day-item[aria-current="date"]').length).toEqual(1)
+          expect(
+            $('.hmpps-calendar__day-item[aria-current="date"]').parent().hasClass('hmpps-calendar__day--selected'),
+          ).toBe(true)
+          expect($('.hmpps-calendar__day-item[aria-current="date"]').text()).toContain('Thursday 25 December 2025')
 
           expect($('.govuk-fieldset__heading').text()).toEqual('Select a time slot for Thursday, 25 December 2025')
 

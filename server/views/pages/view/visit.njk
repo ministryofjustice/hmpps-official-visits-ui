@@ -88,10 +88,15 @@
       {% endif %}
     {{ mojAlert({
       variant: "success",
+      role: "alert",
       title: updateVerbTitle,
       showTitleAsHeading: true,
       dismissible: false,
-      html: updateAlertHtml
+      html: updateAlertHtml,
+      attributes: {
+        'aria-live': 'polite',
+        'tabindex': '-1'
+      }
     }) }}
 
   {% endif %}

@@ -15,7 +15,7 @@
   {% endfor %}
 {% endblock %}
 
-{% block pageTitle %}{% if validationErrors.length %}Error: {% endif %}{{[pageTitle, "Official visits", "DPS"] | select() | join(" - ")}}{% endblock %}
+{% block pageTitle %}{% if validationErrors.length %}Error: {% endif %}{{[pageTitleContext, pageTitle, "Official visits", "DPS"] | select() | join(" - ")}}{% endblock %}
 
 {% block header %}
   {{ feComponents.header | safe }}
@@ -25,6 +25,25 @@
   {% block pageHeader %}{% endblock %}
 
   {% include 'partials/beforeContent.njk' %}
+{% endblock %}
+
+{% block main %}
+  {% set hasMainHeader = backUrl or validationErrors.length or successMessage %}
+  <main class="govuk-main-wrapper {%- if hasMainHeader %} ov-main-wrapper--header{% endif %} {%- if mainClasses %} {{ mainClasses }}{% endif %}" id="main-content" {%- if mainLang %} lang="{{ mainLang }}"{% endif %}>
+    {% if hasMainHeader %}
+      <div class="ov-main-header">
+        {% if backUrl %}
+          {{ govukBackLink({
+            text: "Back",
+            href: backUrl
+          }) }}
+        {% endif %}
+        {% include 'partials/formErrorSummary.njk' %}
+        {% include 'partials/successMessage.njk' %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
 {% endblock %}
 
 

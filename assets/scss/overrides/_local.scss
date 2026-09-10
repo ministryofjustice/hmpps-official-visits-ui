@@ -92,3 +92,15 @@
 .moj-timeline__description {
   white-space: pre-line;
 }
+
+.ov-main-wrapper--header {
+  padding-top: 0;
+}
+
+.ov-main-header {
+  margin-bottom: govuk-spacing(4);
+
+  @include govuk-media-query($from: tablet) {
+    margin-bottom: govuk-spacing(7);
+  }
+}
