@@ -86,6 +86,19 @@
                 </div>
               {% endif %}
 
+              {% if visitsNeedReviewEnabled and user | hasPermission(PERMISSION.VIEW) %}
+                {% set reviewHeading %}Official visits that need review{% if visitsNeedReviewCount %}<span class="review-count" data-qa="visits-need-review-count">{{ visitsNeedReviewCount }}<span class="govuk-visually-hidden"> visits need review</span></span>{% endif %}{% endset %}
+                <div class="govuk-grid-column-one-third card-group__item">
+                  {{ card({
+                    "href": "/review/list",
+                    "clickable": "true",
+                    "heading": reviewHeading,
+                    "description": "Review official visits that are flagged.",
+                    "data-qa": "visits-need-review-card"
+                  }) }}
+                </div>
+              {% endif %}
+
               {% if emailNotificationsEnabled and user | hasPermission(PERMISSION.MANAGE) %}
                 <div class="govuk-grid-column-one-third card-group__item">
                   {{ card({

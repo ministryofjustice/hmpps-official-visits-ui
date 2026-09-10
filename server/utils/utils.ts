@@ -253,6 +253,10 @@ export const visitHistoryTimelineEnabled = (caseLoadId: string) => {
   return config.featureToggles.visitHistoryTimelineEnabled.split(',').includes(caseLoadId)
 }
 
+export const visitsNeedReviewEnabled = (caseLoadId: string) => {
+  return config.featureToggles.visitsNeedReviewPrisons.split(',').includes(caseLoadId)
+}
+
 export const socialVisitorsPageEnabled = (req: Request) => {
   const hasSocialVisitors = req.session.journey.officialVisit.socialVisitors?.length > 0
   const isPrisonEnabled = prisonAllowsSocialVisitors(req)

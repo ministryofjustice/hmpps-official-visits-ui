@@ -3,12 +3,17 @@ import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import BookAVideoLinkService from '../../../../services/bookAVideoLinkService'
 import TelemetryService from '../../../../services/telemetryService'
+import OfficialVisitsService from '../../../../services/officialVisitsService'
 import { nomisSwitchOffEnabled } from '../../../../utils/utils'
+import { Permission } from '../../../../interfaces/hmppsUser'
+import { hasPerm } from '../../../../middleware/requirePermissions'
+import logger from '../../../../../logger'
 
 export default class HomeHandler implements PageHandler {
   constructor(
     private readonly bookAVideoLinkService: BookAVideoLinkService,
     private readonly telemetryService: TelemetryService,
+    private readonly officialVisitsService: OfficialVisitsService,
   ) {}
 
   public PAGE_NAME = Page.HOME_PAGE
@@ -34,6 +39,19 @@ export default class HomeHandler implements PageHandler {
       showBreadcrumbs: true,
       showSwitchOffBanner,
       showBvlsBanner,
+      visitsNeedReviewCount: await this.getVisitsNeedReviewCount(res),
     })
+  }
+
+  private async getVisitsNeedReviewCount(res: Response): Promise<number> {
+    const { user, visitsNeedReviewEnabled } = res.locals
+    if (!visitsNeedReviewEnabled || !hasPerm(user.permissions.OV, Permission.VIEW)) return 0
+
+    try {
+      return await this.officialVisitsService.countVisitsForReview(user.activeCaseLoadId, user)
+    } catch (error) {
+      logger.error(error, 'Failed to get the count of visits needing review')
+      return 0
+    }
   }
 }
