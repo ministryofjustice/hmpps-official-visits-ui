@@ -257,21 +257,26 @@
       const isOpen = () => !filter.classList.contains('moj-js-hidden')
       const menuButton = () => document.querySelector('.moj-action-bar__filter button')
 
-      filter.addEventListener('focusout', event => {
+      const closeFilter = returnFocus => {
+        toggle.hideMenu()
+        if (returnFocus) {
+          const button = menuButton()
+          if (button) button.focus()
+        }
+      }
+
+      document.addEventListener('focusin', event => {
         if (!inOverlayMode() || !isOpen()) return
 
-        const next = event.relatedTarget
-        if (!next || filter.contains(next) || next === menuButton()) return
+        if (filter.contains(event.target) || event.target === menuButton()) return
 
-        toggle.hideMenu()
+        closeFilter(false)
       })
 
-      filter.addEventListener('keydown', event => {
+      document.addEventListener('keydown', event => {
         if (event.key !== 'Escape' || !inOverlayMode() || !isOpen()) return
 
-        toggle.hideMenu()
-        const button = menuButton()
-        if (button) button.focus()
+        closeFilter(true)
       })
     }
   </script>
