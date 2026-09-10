@@ -296,7 +296,7 @@ test.describe('Amend official visits', () => {
 
     await page.getByRole('button', { name: 'Save' }).click()
     expect(page.url()).toBe(`http://localhost:3007/manage/amend/1/${journeyId}`)
-    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should navigate to visit type and visit slot pages when amending visit type', async ({ page }) => {
@@ -348,7 +348,7 @@ test.describe('Amend official visits', () => {
     await page.getByRole('radio', { name: '08:00 to 17:00 Second Location' }).check()
     await page.getByRole('button', { name: 'Save' }).click()
 
-    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should navigate to time slot amend page only when changing time slot', async ({ page }) => {
@@ -375,7 +375,7 @@ test.describe('Amend official visits', () => {
     await page.getByRole('radio', { name: '08:00 to 17:00 Second Location' }).check()
     await page.getByRole('button', { name: 'Save' }).click()
 
-    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should block the amendment and show an error if the visit moves into the past before it is submitted', async ({
@@ -402,7 +402,7 @@ test.describe('Amend official visits', () => {
     await expect(page.getByRole('heading', { name: 'You cannot update this visit' })).toBeVisible()
     await expect(page.getByText('This visit is in the past so you can no longer update it.')).toBeVisible()
 
-    await expect(page.getByRole('region', { name: 'success: Visit updated' })).not.toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit updated' })).not.toBeVisible()
   })
 
   test('should navigate to official visitors and show all related pages when "add or remove visitors" is clicked', async ({
@@ -534,7 +534,7 @@ test.describe('Amend official visits', () => {
     await expect(page.getByRole('checkbox', { name: 'Bertie Smith (Brother)' })).not.toBeChecked()
 
     await page.getByRole('button', { name: 'Save' }).click()
-    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should show unauthorised visitor warnings and errors when amending visitors', async ({ page }) => {
@@ -620,7 +620,7 @@ test.describe('Amend official visits', () => {
     await expect(page.locator('h1', { hasText: `Further visitor details (optional)` })).toBeVisible()
 
     await page.getByRole('button', { name: 'Save' }).click()
-    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should navigate to official visitors and show all related pages when "add or remove visitors" is clicked (no equipment)', async ({
@@ -704,7 +704,7 @@ test.describe('Amend official visits', () => {
     await expect(page.getByText('Test assistance notes (social)')).toBeVisible()
 
     await page.getByRole('button', { name: 'Save' }).click()
-    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should navigate to Further details page when "change assistance notes" is clicked', async ({ page }) => {
@@ -729,7 +729,7 @@ test.describe('Amend official visits', () => {
     await expect(page.getByText('Test assistance notes (social)')).toBeVisible()
 
     await page.getByRole('button', { name: 'Save' }).click()
-    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should navigate to equipment page when "change assistance notes" is clicked', async ({ page }) => {
@@ -756,7 +756,7 @@ test.describe('Amend official visits', () => {
     await expect(page.getByText('Test equipment (social)')).toBeVisible()
 
     await page.getByRole('button', { name: 'Save' }).click()
-    await expect(page.getByRole('region', { name: 'success: Visit updated' })).toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit updated' })).toBeVisible()
   })
 
   test('should cancel and return to visit details', async ({ page }) => {
