@@ -1,5 +1,6 @@
 import { PrisonerRestrictionDetails } from '../../../../@types/personalRelationshipsApi/types'
 import { ApprovedContact, AvailableSlot, VisitStatusType, VisitType } from '../../../../@types/officialVisitsApi/types'
+import { PrisonerAlert } from '../../../../@types/prisonerSearchApi/types'
 
 export type AmendVisitJourney = {
   backTo?: string
@@ -65,7 +66,7 @@ export type JourneyPrisoner = {
   croNumber?: string
   prisonCode?: string
   restrictions?: PrisonerRestrictionDetails[]
+  alerts?: PrisonerAlert[]
   prisonName?: string
   restrictionsCount?: number
-  alertsCount?: number
 }

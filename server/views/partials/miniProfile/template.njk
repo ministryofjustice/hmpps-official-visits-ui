@@ -1,5 +1,8 @@
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
 <div class="mini-profile" data-qa="mini-profile">
    {% set imageUrl =  "/prisoner-image/" ~ prisoner.prisonerNumber  %}
+   {% set relevantAlerts = prisoner.alerts | alertTags %}
     <div class="mini-profile-inner">
         <div class="mini-profile-left">
             <img class="mini-profile-person-img"
@@ -37,22 +40,39 @@
                     <dt class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Cell number</dt>
                     <dd class="govuk-body" data-qa="mini-profile-cell-location">{{ prisoner.cellLocation }}</dd>
                 </div>
-                <div class="mini-profile-info__item">
-                    <dt class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Restrictions and Alerts</dt>
-                    <dd class="govuk-body govuk-!-margin-bottom-1">
-                        <a id="prisoner-alerts-restrictions-link"
-                          class="govuk-link--no-visited-state"
-                          href="{{ CONTACTS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}/alerts-restrictions"
-                          data-qa="contact-{{ prisoner.prisonerNumber }}-alerts-restrictions" target="_blank">
-                          {{ prisoner.restrictionsCount }}
-                          {% if prisoner.restrictionsCount == 1 %}restriction{% else %}restrictions{% endif %}
-                              and
-                             {{ prisoner.alertsCount }}
-                             {% if prisoner.alertsCount == 1 %}alert{% else %}alerts{% endif %}
-                         </a>
-                      </dd>
-                </div>
             </dl>
+
+            {% set alertsHtml %}
+                {% if relevantAlerts | length or prisoner.restrictionsCount %}
+                    <ul class="alert-tag-list" data-qa="mini-profile-alert-tags">
+                        {% for alert in relevantAlerts %}
+                            <li>
+                                <span class="alert-tag {{ alert.classes }}"
+                                      data-qa="mini-profile-alert-{{ alert.alertCode }}">{{ alert.description }}</span>
+                            </li>
+                        {% endfor %}
+                        {% if prisoner.restrictionsCount %}
+                            <li>
+                                <a class="govuk-link govuk-link--no-visited-state"
+                                   href="{{ CONTACTS_HOME_PAGE_URL }}/prisoner/{{ prisoner.prisonerNumber }}/alerts-restrictions"
+                                   target="_blank"
+                                   data-qa="mini-profile-restrictions-link">+ {{ prisoner.restrictionsCount }}
+                                    {%- if prisoner.restrictionsCount == 1 %} active restriction{% else %} active restrictions{% endif %}</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% else %}
+                    <p class="govuk-body govuk-!-margin-bottom-0" data-qa="mini-profile-no-alerts">None</p>
+                {% endif %}
+            {% endset %}
+
+            <div class="mini-profile-alerts">
+                {{ govukDetails({
+                    summaryText: "Relevant alerts and restrictions",
+                    html: alertsHtml,
+                    attributes: { "data-qa": "mini-profile-alerts" }
+                }) }}
+            </div>
         </div>
     </div>
 </div>

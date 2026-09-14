@@ -43,6 +43,11 @@ const mockPrisoner = {
   croNumber: '123456/12A',
   prisonId: 'LEI',
   prisonName: 'Example Prison (EXP)',
+  alerts: [
+    { alertType: 'X', alertCode: 'XRF', active: true, expired: false },
+    { alertType: 'H', alertCode: 'HA', active: true, expired: false },
+    { alertType: 'M', alertCode: 'PEEP', active: false, expired: true },
+  ],
 }
 
 const mockVisit = {

@@ -63,6 +63,13 @@ export const getMiniProfile = ($: CheerioAPI) => {
   return getByDataQa($, 'mini-profile')
 }
 
+export const getMiniProfileAlertTags = ($: CheerioAPI) => {
+  return getByDataQa($, 'mini-profile-alert-tags')
+    .find('.alert-tag')
+    .map((_: number, tag) => $(tag).text().trim())
+    .get()
+}
+
 export const getProgressTrackerLabels = ($: CheerioAPI) => {
   return $('.moj-progress-bar > ol > li')
 }
