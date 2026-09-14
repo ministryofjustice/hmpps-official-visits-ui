@@ -14,7 +14,8 @@
   display: inline-block;
   box-sizing: border-box;
   padding: govuk-spacing(1) govuk-spacing(2);
-  border: 2px solid govuk-colour('black');
+  border: 3px solid govuk-colour('black');
+  border-radius: 5px;
   background-color: govuk-colour('white');
   color: govuk-colour('black');
 }
