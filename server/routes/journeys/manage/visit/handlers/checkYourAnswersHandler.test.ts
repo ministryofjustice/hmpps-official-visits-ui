@@ -51,7 +51,6 @@ const mockOfficialVisitJourney = {
         createdTime: '2024-10-02T11:58:01.285998',
       },
     ],
-    alertsCount: 10,
     restrictionsCount: 1,
   },
   visitType: 'IN_PERSON',

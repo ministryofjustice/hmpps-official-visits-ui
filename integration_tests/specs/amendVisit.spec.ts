@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import { format } from 'date-fns'
 import { v4 as uuidV4 } from 'uuid'
 import hmppsAuth from '../mockApis/hmppsAuth'
-import { login, resetStubs, summaryValue } from '../testUtils'
+import { expandMiniProfileAlerts, login, resetStubs, summaryValue } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import componentsApi from '../mockApis/componentsApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
@@ -205,9 +205,8 @@ test.describe('Amend official visits', () => {
     await expect(page.locator('[data-qa="mini-profile-dob"]')).toHaveText('27 June 1986')
     await expect(page.locator('[data-qa="mini-profile-cell-location"]')).toHaveText('2-1-007')
     await expect(page.locator('[data-qa="mini-profile-prison-name"]')).toHaveText('Example Prison (EXP)')
-    await expect(page.locator('[data-qa="contact-G4793VF-alerts-restrictions"]')).toHaveText(
-      /3\s*restrictions\s*and\s*0\s*alerts/,
-    )
+    await expect(await expandMiniProfileAlerts(page)).toHaveText(['Risk to Females'])
+    await expect(page.locator('[data-qa="mini-profile-restrictions-link"]')).toHaveText('+ 1 active restriction')
 
     await expect(summaryValue(page, 'Date')).toHaveText('Friday, 1 January 2038')
     await expect(summaryValue(page, 'Time')).toHaveText('10:00 to 11:00 (1 hour)')

@@ -58,7 +58,7 @@ export default class PrisonerSelectHandler implements PageHandler {
       prisonCode: prisoner.prisonId,
       prisonName: prisoner.prisonName,
       restrictions: activeRestrictions,
-      alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
+      alerts: prisoner?.alerts ?? [],
       restrictionsCount: activeRestrictions?.length ?? 0,
     })
 

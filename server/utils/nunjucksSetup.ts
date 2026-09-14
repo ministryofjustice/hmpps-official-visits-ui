@@ -24,6 +24,7 @@ import {
   translateDay,
 } from './utils'
 import restrictionTagColour from './restrictionTagColour'
+import alertTags from './alertTags'
 import { isCancellable, reasonsFor } from '../routes/journeys/review/reviewReasons'
 import { FieldValidationError } from '../middleware/setUpFlash'
 import config from '../config'
@@ -98,6 +99,7 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
   )
   njkEnv.addFilter('dateAtTime', dateAtTime)
   njkEnv.addFilter('restrictionTagColour', restrictionTagColour)
+  njkEnv.addFilter('alertTags', alertTags)
   njkEnv.addFilter('reviewReasons', reasonsFor)
   njkEnv.addFilter('cancellable', isCancellable)
   njkEnv.addFilter('selected', (items: any[], selected: string) =>

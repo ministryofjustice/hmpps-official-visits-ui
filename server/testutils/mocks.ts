@@ -20,6 +20,11 @@ export const mockPrisoner = {
   dateOfBirth: '1989-06-01',
   cellLocation: '1-1-001',
   prisonName: 'Example Prison (EXP)',
+  alerts: [
+    { alertType: 'X', alertCode: 'XRF', active: true, expired: false },
+    { alertType: 'H', alertCode: 'HA', active: true, expired: false },
+    { alertType: 'M', alertCode: 'PEEP', active: false, expired: true },
+  ],
 }
 
 export const mockTimeslots = [

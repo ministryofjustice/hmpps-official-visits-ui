@@ -107,8 +107,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
         prisoner: {
           ...prisoner,
           restrictions: restrictions?.content || [],
-          alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
-          restrictionsCount: restrictions?.content?.length ?? 0,
+          restrictionsCount: prisonerActiveRestrictions,
         },
       })
     }
@@ -131,8 +130,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       prisoner: {
         ...prisoner,
         restrictions: restrictions?.content || [],
-        alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
-        restrictionsCount: restrictions?.content?.length ?? 0,
+        restrictionsCount: prisonerActiveRestrictions,
       },
       activeRestrictions: visitorActiveRestrictions + prisonerActiveRestrictions,
       hasNoRelationshipVisitors,
