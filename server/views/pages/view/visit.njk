@@ -43,14 +43,23 @@
           }
         }) }}
       {% endif %}
-       {% if user | hasPermission(PERMISSION.MANAGE) and emailNotificationsEnabled and visit.visitStatus in ['CANCELLED', 'SCHEDULED'] %}
+        {% if user | hasPermission(PERMISSION.MANAGE) and emailNotificationsEnabled and visit.visitStatus in ['CANCELLED', 'SCHEDULED'] %}
            {{ govukButton({
                id: "send-email-button",
                text: "Send email confirmation",
                href: "/notification/enter-email-address/" + visit.officialVisitId + ("/cancel" if visit.visitStatus == 'CANCELLED' else "/edit"),
                classes: 'govuk-button govuk-button--secondary'
            }) }}
-    {% endif %}
+        {% endif %}
+        {% if visitHistoryTimelineEnabled %}
+          {{ govukButton({
+              text: "View all changes made for visit",
+              href: "/view/visit/" + visit.officialVisitId + "/history",
+              classes: 'govuk-button govuk-button--secondary'
+          }) }}
+        {% endif %}
+  {% endif %}
+  {% if mode != 'amend' %}
     {% if user | hasPermission(PERMISSION.MANAGE) and visit.visitStatus not in ['COMPLETED', 'CANCELLED'] and not isPastVisit %}
       {{ govukButton({
         text: "Update visit",
@@ -292,14 +301,6 @@
       } if visit.visitorConcernNotes
     ] | filterNonFalsy
   }) }}
-
-    {% if visitHistoryTimelineEnabled %}
-        {{ govukButton({
-            text: "View all changes made for visit",
-            href: "/view/visit/" + visit.officialVisitId + "/history",
-            classes: 'govuk-button govuk-button--secondary'
-        }) }}
-    {% endif %}
 
   {% if mode == 'amend' %}
     <a href="/manage/amend/{{visit.officialVisitId}}/{{journeyId}}/select-official-visitors?change=true" class="govuk-link govuk-body float-right govuk-link--no-visited-state">Add or remove visitors</a>
