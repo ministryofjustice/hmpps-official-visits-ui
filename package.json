@@ -24,9 +24,6 @@
     "int-test-init:ci": "npx playwright install",
     "clean": "rm -rf dist test_results",
     "rebuild": "npm run clean && npm i && npm run build",
-    "precommit:secrets": "gitleaks git --pre-commit --redact --staged --verbose --config .gitleaks/config.toml --gitleaks-ignore-path .gitleaks/.gitleaksignore",
-    "precommit:lint": "node_modules/.bin/lint-staged",
-    "precommit:verify": "npm run typecheck && npm test",
     "setup": "npm ci && hmpps-npm-script-run-allowlist"
   },
   "engines": {
@@ -64,7 +61,7 @@
     "nunjucks": "^3.2.4",
     "passport": "^0.7.0",
     "passport-oauth2": "^1.8.0",
-    "qs": "6.15.3",
+    "qs": "6.16.0",
     "redis": "^6.2.1",
     "superagent": "^10.3.0",
     "uuid": "14.0.1",
@@ -136,7 +133,7 @@
     },
     "openapi-typescript": {
       "typescript": "$typescript",
-      "js-yaml": "4.3.1"
+      "js-yaml": "4.3.2"
     },
     "brace-expansion": "5.0.9",
     "js-yaml": "5.2.3",
