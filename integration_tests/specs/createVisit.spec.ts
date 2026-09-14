@@ -2,7 +2,7 @@ import { v4 as uuidV4 } from 'uuid'
 import { expect, Page, test } from '@playwright/test'
 import { format } from 'date-fns'
 import hmppsAuth from '../mockApis/hmppsAuth'
-import { login, resetStubs } from '../testUtils'
+import { expandMiniProfileAlerts, login, resetStubs } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import PrisonerSearchPage from '../pages/prisonerSearchPage'
 import componentsApi from '../mockApis/componentsApi'
@@ -42,6 +42,11 @@ const mockPrisoner = {
   pncNumber: '429',
   croNumber: '123456/12A',
   prisonId: 'LEI',
+  alerts: [
+    { alertType: 'X', alertCode: 'XRF', active: true, expired: false },
+    { alertType: 'H', alertCode: 'HA', active: true, expired: false },
+    { alertType: 'M', alertCode: 'PEEP', active: false, expired: true },
+  ],
 }
 
 // All routes under Create are guarded, however we only need to test the journey initialiser page since that sets up data needed for the rest of the journey.
@@ -186,6 +191,11 @@ test.describe('Create an official visit', () => {
     expect(page.url()).toMatch(/\/manage\/create\/.*\/visit-type/)
 
     const visitTypePage = await VisitTypePage.verifyOnPage(page)
+
+    await expect(page.locator('[data-qa="mini-profile-prisoner-number"]')).toHaveText(mockPrisoner.prisonerNumber)
+    await expect(await expandMiniProfileAlerts(page)).toHaveText(['Risk to Females'])
+    await expect(page.locator('[data-qa="mini-profile-restrictions-link"]')).toHaveCount(0)
+
     await checkCancelPage(visitTypePage, VisitTypePage.verifyOnPage, 1)
     await visitTypePage.selectRadioButton('In person')
     await visitTypePage.continueButton.click()

@@ -56,3 +56,16 @@
     margin-right: 10px;
   }
 }
+
+.mini-profile-alerts {
+  margin-top: govuk-spacing(2);
+}
+
+.mini-profile-alerts .govuk-details {
+  margin-bottom: 0;
+}
+
+.mini-profile-alerts .govuk-details__text {
+  padding: govuk-spacing(2) 0 0 0;
+  border-left: 0;
+}

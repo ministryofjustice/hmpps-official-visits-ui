@@ -51,6 +51,11 @@ export const summaryValue = (page: Page, key: string | RegExp, value?: string) =
     })
     .locator('.govuk-summary-list__value', value ? { hasText: value } : undefined)
 
+export const expandMiniProfileAlerts = async (page: Page) => {
+  await page.locator('[data-qa="mini-profile-alerts"] .govuk-details__summary').click()
+  return page.locator('[data-qa="mini-profile-alert-tags"] .alert-tag')
+}
+
 export const setupFindByCriteriaStubs = async () => {
   const mockVisitData = generateMockData()
 
