@@ -231,10 +231,8 @@ export const getTimeDiff = (start: string, end: string): number => {
   return d2.getTime() - d1.getTime()
 }
 
-export const prisonAllowsSocialVisitors = (req: Request) => {
-  return config.featureToggles.allowSocialVisitorsPrisons
-    .split(',')
-    .includes(req.session.journey?.officialVisit?.prisonCode)
+export const prisonAllowsSocialVisitors = (prisonCode: string) => {
+  return config.featureToggles.allowSocialVisitorsPrisons.split(',').includes(prisonCode)
 }
 
 export const prisonEnabled = (caseLoadId: string) => {
@@ -259,7 +257,7 @@ export const visitsNeedReviewEnabled = (caseLoadId: string) => {
 
 export const socialVisitorsPageEnabled = (req: Request) => {
   const hasSocialVisitors = req.session.journey.officialVisit.socialVisitors?.length > 0
-  const isPrisonEnabled = prisonAllowsSocialVisitors(req)
+  const isPrisonEnabled = prisonAllowsSocialVisitors(req.session.journey.officialVisit.prisonCode)
 
   return hasSocialVisitors || isPrisonEnabled
 }

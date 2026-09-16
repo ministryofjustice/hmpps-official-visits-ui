@@ -39,7 +39,7 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
         issues: {
           notApproved: apiContacts.has(contactKey(c)) && !c.isApprovedVisitor,
           noRelationship: !apiContacts.has(contactKey(c)),
-          socialVisitor: !prisonAllowsSocialVisitors(req),
+          socialVisitor: !prisonAllowsSocialVisitors(req.session.journey.officialVisit?.prisonCode),
         },
         alreadyOnVisit: contactsOnVisit.some(jc => contactKey(jc) === contactKey(c)),
       }))
