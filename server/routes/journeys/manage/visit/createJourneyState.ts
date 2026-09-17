@@ -30,6 +30,7 @@ const progressTrackerPages: Record<string, number> = {
   [Page.PRISONER_SEARCH_PAGE]: 0,
   [Page.PRISONER_SELECT_PAGE]: 0,
   [Page.VISIT_TYPE_PAGE]: 1,
+  [Page.NO_VIDEO_CAPACITY_PAGE]: 1,
   [Page.TIME_SLOT_PAGE]: 1,
   [Page.SELECT_OFFICIAL_VISITORS_PAGE]: 2,
   [Page.SELECT_SOCIAL_VISITORS_PAGE]: 2,

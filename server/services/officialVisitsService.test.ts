@@ -187,6 +187,38 @@ describe('OfficialVisitsService', () => {
     expect(result).toEqual(body)
   })
 
+  describe('hasVideoVisitCapacity', () => {
+    const summary = (expiryDate: string | null, maxVideo: number | null) =>
+      ({
+        prisonCode: 'MDI',
+        prisonName: 'Moorland',
+        timeSlots: [{ timeSlot: { expiryDate }, visitSlots: [{ maxVideo: 0 }, { maxVideo }] }],
+      }) as TimeSlotSummary
+
+    it.each([
+      ['an active slot has video capacity', null, 1, true],
+      ['a slot expiring in the future has video capacity', '2999-01-01', 2, true],
+      ['the only slot with video capacity has expired', '2000-01-01', 1, false],
+      ['no slot has video capacity', null, 0, false],
+      ['video capacity is not set', null, null, false],
+    ])('returns correctly when %s', async (_, expiryDate, maxVideo, expected) => {
+      officialVisitsApiClient.getAllTimeSlotsAndVisitSlots.mockResolvedValue(summary(expiryDate, maxVideo))
+
+      expect(await officialVisitsService.hasVideoVisitCapacity('MDI', user)).toBe(expected)
+      expect(officialVisitsApiClient.getAllTimeSlotsAndVisitSlots).toHaveBeenCalledWith('MDI', user)
+    })
+
+    it('returns false when the prison has no time slots', async () => {
+      officialVisitsApiClient.getAllTimeSlotsAndVisitSlots.mockResolvedValue({
+        prisonCode: 'MDI',
+        prisonName: 'Moorland',
+        timeSlots: [],
+      })
+
+      expect(await officialVisitsService.hasVideoVisitCapacity('MDI', user)).toBe(false)
+    })
+  })
+
   it('should update visitors for a visit', async () => {
     const body: OfficialVisitUpdateVisitorsRequest = {
       officialVisitors: [
