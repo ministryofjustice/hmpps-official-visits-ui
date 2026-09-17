@@ -45,6 +45,7 @@ const appSetup = (
 
 beforeEach(() => {
   config.featureToggles.emailNotificationsPrisons = ''
+  config.featureToggles.allowSocialVisitorsPrisons = ''
   appSetup()
   officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
@@ -740,6 +741,21 @@ describe('View an official visit', () => {
       const res = await request(app).get(URL)
       expect(res.text).toContain('problem with this visit')
       expect(res.text).toContain('moj-interruption-card')
+    })
+
+    it('should not show interruption card or social visitor issues when prison allows social visitors', async () => {
+      config.featureToggles.allowSocialVisitorsPrisons = mockVisitByIdVisit.prisonCode
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...baseFutureVisit,
+        officialVisitors: [baseSocialVisitor],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([baseSocialContact])
+
+      const res = await request(app).get(URL)
+      expect(res.text).not.toContain('problem with this visit')
+      expect(res.text).not.toContain('moj-interruption-card')
+      expect(res.text).not.toContain('social visitors cannot join official visits')
+      expect(res.text).not.toContain('SOCIAL VISITOR')
     })
 
     it('should not show interruption card when continue=true query param is present', async () => {
