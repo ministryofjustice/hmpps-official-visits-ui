@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import type { Services } from '../services'
 import home from './journeys/home'
+import help from './journeys/help'
 import admin from './journeys/admin'
 import manageVisits from './journeys/manage/visit'
 import viewVisits from './journeys/view'
@@ -25,6 +26,7 @@ export default function routes(_services: Services): Router {
     res.locals.visitsNeedReviewEnabled = visitsNeedReviewEnabled(res.locals.user?.activeCaseLoadId)
     next()
   })
+  router.use('/help', help(_services))
   // Demonstrate using requirePermissions middleware - lock all routes off of / to DEFAULT permission
   router.use('/', requirePermissions('OV', Permission.DEFAULT), home(_services))
   router.use(preventNavigationToExpiredJourneys([/confirmation(\/[0-9a-zA-Z-]+)$/]))
