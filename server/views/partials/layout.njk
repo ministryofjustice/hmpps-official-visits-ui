@@ -32,7 +32,12 @@
   <main class="govuk-main-wrapper {%- if hasMainHeader %} ov-main-wrapper--header{% endif %} {%- if mainClasses %} {{ mainClasses }}{% endif %}" id="main-content" {%- if mainLang %} lang="{{ mainLang }}"{% endif %}>
     {% if hasMainHeader %}
       <div class="ov-main-header">
-        {% if backUrl %}
+        {% if backUrl == 'javascript-back' %}
+          {{ govukBackLink({
+            classes: 'js-back-link govuk-!-display-none',
+            text: "Back"
+          }) }}
+        {% elseif backUrl %}
           {{ govukBackLink({
             text: "Back",
             href: backUrl
@@ -56,6 +61,19 @@
 
 {% block bodyEnd %}
   <script type="module" src="{{ '/assets/js/index.js' | assetMap }}"></script>
+  <script nonce="{{ cspNonce }}">
+    window.addEventListener('load', function () {
+      const backLink = document.querySelector('.js-back-link')
+      if (backLink) {
+        backLink
+          .classList
+          .remove('govuk-!-display-none')
+        backLink.addEventListener('click', () => {
+          history.back()
+        })
+      }
+    })
+  </script>
 {% block pageScripts %}{% endblock %}
   <script type="text/javascript" nonce="{{ cspNonce }}">
     window.applicationInsightsConnectionString = "{{ applicationInsightsConnectionString }}"
