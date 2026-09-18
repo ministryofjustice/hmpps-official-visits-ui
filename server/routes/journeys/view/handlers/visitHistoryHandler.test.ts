@@ -10,7 +10,7 @@ import ManageUserService from '../../../../services/manageUsersService'
 import PrisonerService from '../../../../services/prisonerService'
 import PersonalRelationshipsService from '../../../../services/personalRelationshipsService'
 import { Prisoner } from '../../../../@types/prisonerSearchApi/types'
-import { getByDataQa, getPageHeader } from '../../../testutils/cheerio'
+import { getByDataQa, getMiniProfileAlertTags, getPageHeader } from '../../../testutils/cheerio'
 import { convertToTitleCase } from '../../../../utils/utils'
 
 jest.mock('../../../../services/officialVisitsService')
@@ -124,7 +124,7 @@ describe('OfficialVisitHistoryHandler', () => {
           const $ = cheerio.load(res.text)
 
           expect($('.govuk-hint').text()).toEqual('Manage official visits')
-          expect(getPageHeader($)).toEqual('Official visit')
+          expect(getPageHeader($)).toEqual('Official visit change history')
 
           expect(getByDataQa($, 'mini-profile-person-profile-link').text().trim()).toEqual(
             convertToTitleCase(`${mockPrisoner.lastName}, ${mockPrisoner.firstName}`),
@@ -133,9 +133,8 @@ describe('OfficialVisitHistoryHandler', () => {
           expect(getByDataQa($, 'mini-profile-dob').text().trim()).toEqual('1 June 1989')
           expect(getByDataQa($, 'mini-profile-cell-location').text().trim()).toEqual(mockPrisoner.cellLocation)
           expect(getByDataQa($, 'mini-profile-prison-name').text().trim()).toEqual(mockPrisoner.prisonName)
-          expect(getByDataQa($, 'contact-A1337AA-alerts-restrictions').text().replace(/\s+/g, '')).toEqual(
-            '3restrictionsand0alerts',
-          )
+          expect(getMiniProfileAlertTags($)).toEqual(['Risk to Females'])
+          expect(getByDataQa($, 'mini-profile-restrictions-link').text().trim()).toEqual('+ 1 active restriction')
           const title = '.moj-timeline__title'
           expect($(title).eq(0).text().trim()).toBe('Email notification sent')
           expect($(title).eq(1).text().trim()).toBe('Visit updated')

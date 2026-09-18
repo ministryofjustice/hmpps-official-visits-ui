@@ -8,6 +8,7 @@ import PersonalRelationshipsService from './personalRelationshipsService'
 import ActivitiesService from './activitiesService'
 import ManageUserService from './manageUsersService'
 import TelemetryService from './telemetryService'
+import BookAVideoLinkService from './bookAVideoLinkService'
 
 export const services = () => {
   const {
@@ -21,6 +22,7 @@ export const services = () => {
     activitiesApiClient,
     manageUsersApiClient,
     applicationInsightsClient,
+    bookAVideoLinkApiClient,
   } = dataAccess()
 
   return {
@@ -34,6 +36,7 @@ export const services = () => {
     personalRelationshipsService: new PersonalRelationshipsService(personalRelationshipsApiClient),
     activitiesService: new ActivitiesService(activitiesApiClient),
     manageUsersService: new ManageUserService(manageUsersApiClient),
+    bookAVideoLinkService: new BookAVideoLinkService(bookAVideoLinkApiClient),
   }
 }
 

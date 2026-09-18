@@ -1,0 +1,42 @@
+{% extends "partials/layout.njk" %}
+{% from "partials/createJourneyHeader.njk" import createJourneyHeader %}
+{% from "moj/components/interruption-card/macro.njk" import interruptionCard as mojInterruptionCard %}
+
+{% set pageTitle = "This prison does not have video visit capacity set up in its schedule" %}
+
+{% block content %}
+
+  {{ createJourneyHeader(prisoner, stepsChecked, mode)}}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if isAdmin %}
+        {% call mojInterruptionCard({
+          heading: pageTitle,
+          primaryAction: {
+            text: "Manage schedule",
+            href: "/admin/time-slots",
+            attributes: { target: "_blank", rel: "noopener noreferrer" }
+          },
+          secondaryAction: {
+            text: "Return to visit type",
+            href: "visit-type"
+          }
+        }) %}
+          <p class="govuk-body">To continue, select manage schedule button (opens in a new tab), update the prison schedule and add video visit capacity.</p>
+          <p class="govuk-body">Guidance on setting up video visit capacity is available on <a class="govuk-link govuk-link--inverse" href="https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits%20---%20How%20to%20use%20the%20service.aspx#administering-time-slots-for-official-visits" target="_blank" rel="noopener noreferrer">SharePoint (opens in a new tab)</a>.</p>
+        {% endcall %}
+      {% else %}
+        {% call mojInterruptionCard({
+          heading: pageTitle,
+          primaryAction: {
+            text: "Return to visit type",
+            href: "visit-type"
+          }
+        }) %}
+          <p class="govuk-body">To continue, ask a member of staff with the Official Visits Manage Time Slots role to add video visit capacity, or request the role from your LSA if you need to make these changes yourself.</p>
+        {% endcall %}
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

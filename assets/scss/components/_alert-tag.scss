@@ -1,0 +1,45 @@
+.alert-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: govuk-spacing(2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alert-tag {
+  @include govuk-font($size: 16);
+
+  display: inline-block;
+  box-sizing: border-box;
+  padding: govuk-spacing(1) govuk-spacing(2);
+  border: 3px solid govuk-colour('black');
+  border-radius: 5px;
+  background-color: govuk-colour('white');
+  color: govuk-colour('black');
+}
+
+.alert-tag--medical {
+  border-color: govuk-colour('green');
+}
+
+.alert-tag--other {
+  border-color: govuk-colour('magenta', $variant: 'primary');
+}
+
+.alert-tag--risk {
+  border-color: govuk-colour('red');
+}
+
+.alert-tag--sexual-offence {
+  border-color: govuk-colour('purple');
+}
+
+.alert-tag--vulnerability {
+  border-color: govuk-colour('blue', $variant: 'tint-25');
+}
+
+.alert-tag--security {
+  border-color: govuk-colour('blue', $variant: 'shade-50');
+}

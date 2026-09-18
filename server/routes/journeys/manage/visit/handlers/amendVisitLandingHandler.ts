@@ -83,7 +83,7 @@ export default class AmendVisitLandingHandler implements PageHandler {
           issues: {
             noRelationship: !contact,
             notApproved: contact ? !contact.isApprovedVisitor : false,
-            socialVisitor: !prisonAllowsSocialVisitors(req) && visitor.relationshipTypeCode === 'SOCIAL',
+            socialVisitor: !prisonAllowsSocialVisitors(visit.prisonCode) && visitor.relationshipTypeCode === 'SOCIAL',
           },
           restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
           relationshipUrl: validRelationship
@@ -121,8 +121,8 @@ export default class AmendVisitLandingHandler implements PageHandler {
         ...visit.prisonerVisited,
         prisonName: prisoner.prisonName,
         restrictions: restrictions?.content || [],
-        alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
-        restrictionsCount: restrictions?.content?.length ?? 0,
+        alerts: prisoner?.alerts ?? [],
+        restrictionsCount: prisonerActiveRestrictions,
       },
       prisonCode: visit.prisonCode,
       prisonerNotes: visit.prisonerNotes,

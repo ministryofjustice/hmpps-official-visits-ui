@@ -10,6 +10,7 @@ import {
   OfficialVisitUpdateVisitorsRequest,
   PagedModelSentNotification,
   TimeSlotSummary,
+  VisitForReview,
 } from '../@types/officialVisitsApi/types'
 import { mockFindByCriteriaResults } from '../testutils/mocks'
 
@@ -186,6 +187,38 @@ describe('OfficialVisitsService', () => {
     expect(result).toEqual(body)
   })
 
+  describe('hasVideoVisitCapacity', () => {
+    const summary = (expiryDate: string | null, maxVideo: number | null) =>
+      ({
+        prisonCode: 'MDI',
+        prisonName: 'Moorland',
+        timeSlots: [{ timeSlot: { expiryDate }, visitSlots: [{ maxVideo: 0 }, { maxVideo }] }],
+      }) as TimeSlotSummary
+
+    it.each([
+      ['an active slot has video capacity', null, 1, true],
+      ['a slot expiring in the future has video capacity', '2999-01-01', 2, true],
+      ['the only slot with video capacity has expired', '2000-01-01', 1, false],
+      ['no slot has video capacity', null, 0, false],
+      ['video capacity is not set', null, null, false],
+    ])('returns correctly when %s', async (_, expiryDate, maxVideo, expected) => {
+      officialVisitsApiClient.getAllTimeSlotsAndVisitSlots.mockResolvedValue(summary(expiryDate, maxVideo))
+
+      expect(await officialVisitsService.hasVideoVisitCapacity('MDI', user)).toBe(expected)
+      expect(officialVisitsApiClient.getAllTimeSlotsAndVisitSlots).toHaveBeenCalledWith('MDI', user)
+    })
+
+    it('returns false when the prison has no time slots', async () => {
+      officialVisitsApiClient.getAllTimeSlotsAndVisitSlots.mockResolvedValue({
+        prisonCode: 'MDI',
+        prisonName: 'Moorland',
+        timeSlots: [],
+      })
+
+      expect(await officialVisitsService.hasVideoVisitCapacity('MDI', user)).toBe(false)
+    })
+  })
+
   it('should update visitors for a visit', async () => {
     const body: OfficialVisitUpdateVisitorsRequest = {
       officialVisitors: [
@@ -327,5 +360,29 @@ describe('OfficialVisitsService', () => {
       user,
     )
     expect(result).toEqual(expected)
+  })
+
+  describe('visits for review', () => {
+    const reviewItem = { visit: { officialVisitId: 1 }, issues: [] } as unknown as VisitForReview
+
+    it('should get the requested page, sorted soonest first', async () => {
+      const paged = { content: [reviewItem], page: { number: 1, size: 10, totalElements: 15, totalPages: 2 } }
+      officialVisitsApiClient.getVisitsForReview.mockResolvedValue(paged)
+
+      expect(await officialVisitsService.getVisitsForReview('MDI', 1, 10, user)).toEqual(paged)
+      expect(officialVisitsApiClient.getVisitsForReview).toHaveBeenCalledWith(
+        'MDI',
+        1,
+        10,
+        ['visitDate,asc', 'startTime,asc'],
+        user,
+      )
+    })
+
+    it('should return the review count', async () => {
+      officialVisitsApiClient.countVisitsForReview.mockResolvedValue({ prisonCode: 'MDI', visitsForReviewCount: 5 })
+
+      expect(await officialVisitsService.countVisitsForReview('MDI', user)).toBe(5)
+    })
   })
 })

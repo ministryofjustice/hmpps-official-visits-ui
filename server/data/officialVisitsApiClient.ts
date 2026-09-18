@@ -15,6 +15,8 @@ import {
   FindByCriteria,
   FindByCriteriaResults,
   NonAssociationVisitResponse,
+  VisitsForReviewCount,
+  PagedModelVisitForReview,
   NotificationRequest,
   NotificationResponse,
   OfficialVisit,
@@ -397,6 +399,24 @@ export default class OfficialVisitsApiClient extends RestClient {
         query: { page, size },
         data: request,
       },
+      asSystem(user.username),
+    )
+  }
+
+  async getVisitsForReview(prisonCode: string, page: number, size: number, sort: string[], user: HmppsUser) {
+    return this.get<PagedModelVisitForReview>(
+      { path: `/visit-review/prison/${prisonCode}/list`, query: { page, size, sort } },
+      asSystem(user.username),
+    )
+  }
+
+  async countVisitsForReview(prisonCode: string, user: HmppsUser): Promise<VisitsForReviewCount> {
+    return this.get<VisitsForReviewCount>({ path: `/visit-review/prison/${prisonCode}/count` }, asSystem(user.username))
+  }
+
+  async acknowledgeVisitReview(prisonCode: string, officialVisitId: number, user: HmppsUser) {
+    return this.put<void>(
+      { path: `/visit-review/prison/${prisonCode}/id/${officialVisitId}/acknowledge` },
       asSystem(user.username),
     )
   }

@@ -35,26 +35,25 @@
   position: relative;
   width: 3rem;
 
-  a,
-  span {
+  > .hmpps-calendar__day-item {
     padding: govuk-spacing(1);
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
   }
 
-  a {
+  > a.hmpps-calendar__day-item {
     @include govuk-link-style-no-visited-state;
     font-weight: $govuk-font-weight-bold;
     min-width: 1.5rem;
   }
 }
 
-.hmpps-calendar__day--has-link a {
+.hmpps-calendar__day--has-link > a.hmpps-calendar__day-item {
   color: $govuk-link-colour;
 }
 
-.hmpps-calendar__day--selected span {
+.hmpps-calendar__day--selected > .hmpps-calendar__day-item {
   background-color: $govuk-link-colour;
   border-radius: 50%;
   color: govuk-colour("white");
@@ -64,6 +63,10 @@
   line-height: 2.5rem;
   text-align: center;
   width: 2.5rem;
+}
+
+.hmpps-calendar__day-item:focus {
+  @include govuk-focused-text;
 }
 
 // Column offset classes for first day of month

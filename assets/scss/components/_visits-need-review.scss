@@ -1,0 +1,75 @@
+.review-count {
+  @include govuk-font($size: 19, $weight: bold);
+
+  display: inline-block;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 govuk-spacing(1);
+  margin-left: govuk-spacing(2);
+
+  background-color: $govuk-error-colour;
+  border-radius: 14px;
+  color: govuk-colour("white");
+  line-height: 28px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.review-table {
+  // Prisoner, visit date and time, review reasons, actions
+  $column-widths: 24%, 23%, 34%, 20%;
+
+  @each $width in $column-widths {
+    $i: index($column-widths, $width);
+
+    th:nth-child(#{$i}),
+    td:nth-child(#{$i}) {
+      width: $width;
+    }
+  }
+}
+
+.review-reasons {
+  .govuk-tag {
+    max-width: none;
+    white-space: nowrap;
+  }
+
+  div + div {
+    margin-top: govuk-spacing(2);
+  }
+}
+
+.review-actions {
+  li {
+    margin-bottom: govuk-spacing(1);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  form {
+    display: inline;
+  }
+}
+
+.review-actions .govuk-button--as-link {
+  @include govuk-font($size: 19);
+
+  padding: 0;
+  border: 0;
+  background: none;
+  color: $govuk-link-colour;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: underline;
+
+  &:hover {
+    color: $govuk-link-hover-colour;
+  }
+
+  &:focus {
+    @include govuk-focused-text;
+  }
+}

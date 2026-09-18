@@ -10,6 +10,7 @@ import PrisonerSearchHandler from './handlers/prisonerSearchHandler'
 import PrisonerSearchResultsHandler from './handlers/prisonerSearchResultsHandler'
 import PrisonerSelectHandler from './handlers/prisonerSelectHandler'
 import VisitTypeHandler from './handlers/visitTypeHandler'
+import NoVideoCapacityHandler from './handlers/noVideoCapacityHandler'
 import SelectOfficialVisitorsHandler from './handlers/selectOfficialVisitorsHandler'
 import SelectSocialVisitorsHandler from './handlers/selectSocialVisitorsHandler'
 import AssistanceRequiredHandler from './handlers/assistanceRequiredHandler'
@@ -69,6 +70,7 @@ export default function CreateRoutes({
 
   // These are the subsequent steps in the journey to create an official visit
   route(`/visit-type`, new VisitTypeHandler(officialVisitsService))
+  route(`/no-video-capacity`, new NoVideoCapacityHandler())
   route(`/time-slot`, new TimeSlotHandler(officialVisitsService, activitiesService))
   route(
     `/select-official-visitors`,
@@ -93,6 +95,9 @@ const guard: JourneyStateGuard = {
     return req.session.journey.officialVisit?.searchTerm?.length > 1 ? undefined : '/search'
   },
   'visit-type': req => {
+    return req.session.journey.officialVisit?.prisoner ? undefined : '/results'
+  },
+  'no-video-capacity': req => {
     return req.session.journey.officialVisit?.prisoner ? undefined : '/results'
   },
   'time-slot': req => {

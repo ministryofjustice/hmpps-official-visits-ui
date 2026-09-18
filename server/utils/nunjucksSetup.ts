@@ -24,6 +24,8 @@ import {
   translateDay,
 } from './utils'
 import restrictionTagColour from './restrictionTagColour'
+import alertTags from './alertTags'
+import { isCancellable, reasonsFor } from '../routes/journeys/review/reviewReasons'
 import { FieldValidationError } from '../middleware/setUpFlash'
 import config from '../config'
 import logger from '../../logger'
@@ -97,6 +99,9 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
   )
   njkEnv.addFilter('dateAtTime', dateAtTime)
   njkEnv.addFilter('restrictionTagColour', restrictionTagColour)
+  njkEnv.addFilter('alertTags', alertTags)
+  njkEnv.addFilter('reviewReasons', reasonsFor)
+  njkEnv.addFilter('cancellable', isCancellable)
   njkEnv.addFilter('selected', (items: any[], selected: string) =>
     items.map(o => ({ ...o, checked: o.value === selected })),
   )
@@ -112,7 +117,7 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
     items.map(o => ({ ...o, selected: o.value === selected[0] })),
   )
   njkEnv.addFilter('addSelectValue', (items: any[], value: string, text: string, attributes?: Record<string, string>) =>
-    items.concat([{ value, text, attributes, selected: false }]),
+    [{ value, text, attributes, selected: false }].concat(items),
   )
   njkEnv.addFilter('mojDate', (date: string, type?: string) => {
     if (type === 'datetime') return formatDate(date, "d MMMM yyyy 'at' HH:mm")

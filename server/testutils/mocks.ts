@@ -10,6 +10,7 @@ import {
 import { PrisonerRestrictionDetails } from '../@types/personalRelationshipsApi/types'
 import { PrisonerScheduledEvents, ScheduledEvent } from '../@types/activitiesApi/types'
 import { User } from '../@types/manageUsersApi/types'
+import { Prison } from '../@types/bookAVideoLinkApi/types'
 
 export const mockPrisoner = {
   firstName: 'John',
@@ -19,6 +20,11 @@ export const mockPrisoner = {
   dateOfBirth: '1989-06-01',
   cellLocation: '1-1-001',
   prisonName: 'Example Prison (EXP)',
+  alerts: [
+    { alertType: 'X', alertCode: 'XRF', active: true, expired: false },
+    { alertType: 'H', alertCode: 'HA', active: true, expired: false },
+    { alertType: 'M', alertCode: 'PEEP', active: false, expired: true },
+  ],
 }
 
 export const mockTimeslots = [
@@ -512,4 +518,11 @@ export const allSlots: TimeSlotSummary = {
       visitSlots: [],
     },
   ],
+}
+
+export const mockMoorlandBvlsPrison: Prison = {
+  prisonId: 1,
+  code: 'MDI',
+  name: 'Moorland (HMP & YOI)',
+  enabled: true,
 }

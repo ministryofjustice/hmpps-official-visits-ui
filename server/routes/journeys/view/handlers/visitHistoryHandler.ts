@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { isFuture } from 'date-fns'
 import { Page } from '../../../../services/auditService'
 import { PageHandler } from '../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
@@ -338,8 +339,8 @@ export default class OfficialVisitHistoryHandler implements PageHandler {
       prisoner: {
         ...prisoner,
         restrictions: restrictions?.content || [],
-        alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
-        restrictionsCount: restrictions?.content?.length ?? 0,
+        restrictionsCount:
+          restrictions?.content?.filter(o => !o.expiryDate || isFuture(new Date(o.expiryDate))).length ?? 0,
       },
       history,
       backUrl: `/view/visit/${ovId}`,

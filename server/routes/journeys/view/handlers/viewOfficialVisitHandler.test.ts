@@ -6,7 +6,7 @@ import PrisonerService from '../../../../services/prisonerService'
 import { appWithAllRoutes, flashProvider, user } from '../../../testutils/appSetup'
 import { mockPrisoner, mockVisitByIdVisit, mockPrisonerRestrictions, mockUser } from '../../../../testutils/mocks'
 import AuditService, { Page } from '../../../../services/auditService'
-import { getByDataQa, getPageHeader, getValueByKey } from '../../../testutils/cheerio'
+import { getByDataQa, getMiniProfileAlertTags, getPageHeader, getValueByKey } from '../../../testutils/cheerio'
 import PersonalRelationshipsService from '../../../../services/personalRelationshipsService'
 import { Prisoner } from '../../../../@types/prisonerSearchApi/types'
 import { convertToTitleCase } from '../../../../utils/utils'
@@ -45,6 +45,7 @@ const appSetup = (
 
 beforeEach(() => {
   config.featureToggles.emailNotificationsPrisons = ''
+  config.featureToggles.allowSocialVisitorsPrisons = ''
   appSetup()
   officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
   personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: mockPrisonerRestrictions })
@@ -152,9 +153,8 @@ describe('View an official visit', () => {
           expect(getByDataQa($, 'mini-profile-dob').text().trim()).toEqual('1 June 1989')
           expect(getByDataQa($, 'mini-profile-cell-location').text().trim()).toEqual(mockPrisoner.cellLocation)
           expect(getByDataQa($, 'mini-profile-prison-name').text().trim()).toEqual(mockPrisoner.prisonName)
-          expect(getByDataQa($, 'contact-A1337AA-alerts-restrictions').text().replace(/\s+/g, '')).toEqual(
-            '3restrictionsand0alerts',
-          )
+          expect(getMiniProfileAlertTags($)).toEqual(['Risk to Females'])
+          expect(getByDataQa($, 'mini-profile-restrictions-link').text().trim()).toEqual('+ 1 active restriction')
 
           expect($('.govuk-link:contains("Cancel visit")').attr('href')).toEqual('/view/visit/1/cancel')
           expect($('.govuk-link:contains("Complete visit")').attr('href')).toEqual('/view/visit/1/complete')
@@ -204,6 +204,63 @@ describe('View an official visit', () => {
             correlationId: expect.any(String),
           })
         })
+    })
+
+    it('should show a tag for each relevant alert, coloured by the category of alert', async () => {
+      prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue({
+        ...mockPrisoner,
+        alerts: [
+          { alertType: 'M', alertCode: 'PEEP', active: true, expired: false },
+          { alertType: 'O', alertCode: 'OHCO', active: true, expired: false },
+          { alertType: 'R', alertCode: 'RCON', active: true, expired: false },
+          { alertType: 'S', alertCode: 'SOR', active: true, expired: false },
+          { alertType: 'V', alertCode: 'V45', active: true, expired: false },
+          { alertType: 'X', alertCode: 'XRF', active: true, expired: false },
+        ],
+      } as unknown as Prisoner)
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect(getMiniProfileAlertTags($)).toEqual([
+        'Personal Emergency Evacuation Plan',
+        'Harassment Offences/Court orders',
+        'Conflict with other prisoners',
+        'Registered sex offender',
+        'Rule 45 - GOOD',
+        'Risk to Females',
+      ])
+
+      expect(getByDataQa($, 'mini-profile-alert-PEEP').attr('class')).toContain('alert-tag--medical')
+      expect(getByDataQa($, 'mini-profile-alert-OHCO').attr('class')).toContain('alert-tag--other')
+      expect(getByDataQa($, 'mini-profile-alert-RCON').attr('class')).toContain('alert-tag--risk')
+      expect(getByDataQa($, 'mini-profile-alert-SOR').attr('class')).toContain('alert-tag--sexual-offence')
+      expect(getByDataQa($, 'mini-profile-alert-V45').attr('class')).toContain('alert-tag--vulnerability')
+      expect(getByDataQa($, 'mini-profile-alert-XRF').attr('class')).toContain('alert-tag--security')
+    })
+
+    it('should link to the alerts and restrictions page, counting only restrictions that have not expired', async () => {
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      const link = getByDataQa($, 'mini-profile-restrictions-link')
+      expect(link.text().trim()).toEqual('+ 1 active restriction')
+      expect(link.attr('href')).toEqual('http://localhost:3001/prisoner/A1337AA/alerts-restrictions')
+    })
+
+    it('should show None when the prisoner has no relevant alerts and no restrictions', async () => {
+      prisonerService.getPrisonerByPrisonerNumber.mockResolvedValue({
+        ...mockPrisoner,
+        alerts: [{ alertType: 'H', alertCode: 'HA', active: true, expired: false }],
+      } as unknown as Prisoner)
+      personalRelationshipsService.getPrisonerRestrictions.mockResolvedValue({ content: [] })
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect(getMiniProfileAlertTags($)).toEqual([])
+      expect(getByDataQa($, 'mini-profile-restrictions-link').length).toBe(0)
+      expect(getByDataQa($, 'mini-profile-no-alerts').text().trim()).toEqual('None')
     })
 
     it('should render send email alert and button with edit URL when email notifications are enabled and hasChanged is true', async () => {
@@ -684,6 +741,21 @@ describe('View an official visit', () => {
       const res = await request(app).get(URL)
       expect(res.text).toContain('problem with this visit')
       expect(res.text).toContain('moj-interruption-card')
+    })
+
+    it('should not show interruption card or social visitor issues when prison allows social visitors', async () => {
+      config.featureToggles.allowSocialVisitorsPrisons = mockVisitByIdVisit.prisonCode
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...baseFutureVisit,
+        officialVisitors: [baseSocialVisitor],
+      })
+      officialVisitsService.getAllContacts.mockResolvedValue([baseSocialContact])
+
+      const res = await request(app).get(URL)
+      expect(res.text).not.toContain('problem with this visit')
+      expect(res.text).not.toContain('moj-interruption-card')
+      expect(res.text).not.toContain('social visitors cannot join official visits')
+      expect(res.text).not.toContain('SOCIAL VISITOR')
     })
 
     it('should not show interruption card when continue=true query param is present', async () => {

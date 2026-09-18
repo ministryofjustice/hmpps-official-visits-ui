@@ -10,6 +10,7 @@ import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
 import prisonApi from '../mockApis/prisonApi'
 import activitiesApi from '../mockApis/activitiesApi'
 import manageUsersApi from '../mockApis/manageUsersApi'
+import bookAVideoLinkApi from '../mockApis/bookAVideoLinkApi'
 
 test.describe('Health', () => {
   test.afterEach(async () => {
@@ -28,6 +29,7 @@ test.describe('Health', () => {
         prisonerSearchApi.stubPing(),
         activitiesApi.stubPing(),
         manageUsersApi.stubPing(),
+        bookAVideoLinkApi.stubPing(),
       ])
     })
 
@@ -62,6 +64,7 @@ test.describe('Health', () => {
         prisonerSearchApi.stubPing(),
         activitiesApi.stubPing(),
         manageUsersApi.stubPing(),
+        bookAVideoLinkApi.stubPing(),
       ])
     })
 

@@ -101,7 +101,7 @@ test.describe('Cancel an official visit', () => {
 
     // Assert we've returned to the visit page and see the success region
     expect(page.url()).toContain('http://localhost:3007/view/visit/1?backTo=')
-    await expect(page.getByRole('region', { name: 'success: Visit cancelled' })).toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit cancelled' })).toBeVisible()
     await expect(page.getByText('You have cancelled this visit.')).toBeVisible()
     await expect(page.getByRole('link', { name: 'Return to search list' })).toBeVisible()
   })
@@ -128,7 +128,7 @@ test.describe('Cancel an official visit', () => {
     })
     await page.getByRole('button', { name: 'Continue' }).click()
 
-    const banner = page.getByRole('region', { name: 'success: Visit cancelled' })
+    const banner = page.getByRole('alert', { name: 'success: Visit cancelled' })
     await expect(banner).toBeVisible()
     await expect(banner.getByText('You have cancelled this visit. You can:')).toBeVisible()
     const emailLink = banner.getByRole('link', { name: 'send updated email confirmation' })
@@ -163,7 +163,7 @@ test.describe('Cancel an official visit', () => {
     })
     await page.getByRole('button', { name: 'Continue' }).click()
 
-    const banner = page.getByRole('region', { name: 'success: Visit cancelled' })
+    const banner = page.getByRole('alert', { name: 'success: Visit cancelled' })
     await expect(banner).toBeVisible()
     await expect(banner.getByRole('link', { name: 'send updated email confirmation' })).toHaveCount(0)
     await expect(banner.getByRole('link', { name: 'Return to search list', exact: true })).toBeVisible()

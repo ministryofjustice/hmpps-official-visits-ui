@@ -6,7 +6,13 @@ import PrisonerService from '../../../../../services/prisonerService'
 import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetup'
 import { mockPrisoner, mockVisitByIdVisit, mockPrisonerRestrictions, mockUser } from '../../../../../testutils/mocks'
 import AuditService, { Page } from '../../../../../services/auditService'
-import { getActionsByKey, getByDataQa, getPageHeader, getValueByKey } from '../../../../testutils/cheerio'
+import {
+  getActionsByKey,
+  getByDataQa,
+  getMiniProfileAlertTags,
+  getPageHeader,
+  getValueByKey,
+} from '../../../../testutils/cheerio'
 import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import { Prisoner } from '../../../../../@types/prisonerSearchApi/types'
 import { convertToTitleCase } from '../../../../../utils/utils'
@@ -118,9 +124,8 @@ describe('Search for an official visit', () => {
           expect(getByDataQa($, 'mini-profile-dob').text().trim()).toEqual('27 June 1986')
           expect(getByDataQa($, 'mini-profile-cell-location').text().trim()).toEqual('2-1-007')
           expect(getByDataQa($, 'mini-profile-prison-name').text().trim()).toEqual('Example Prison (EXP)')
-          expect(getByDataQa($, 'contact-G4793VF-alerts-restrictions').text().replace(/\s+/g, '')).toEqual(
-            '3restrictionsand0alerts',
-          )
+          expect(getMiniProfileAlertTags($)).toEqual(['Risk to Females'])
+          expect(getByDataQa($, 'mini-profile-restrictions-link').text().trim()).toEqual('+ 1 active restriction')
 
           // Amend, cancel and complete links for the visit should not be shown
           expect($('.a[href*="amend"]').text()).toBeFalsy()

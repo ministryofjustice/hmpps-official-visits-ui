@@ -1,6 +1,7 @@
 import * as govukFrontend from 'govuk-frontend'
 import * as mojFrontend from '@ministryofjustice/frontend'
 import Card from './card'
+import Calendar from './calendar'
 import { nodeListForEach } from './utils'
 import './application-insights-setup'
 
@@ -11,4 +12,9 @@ window.MojFrontend = mojFrontend
 var $cards = document.querySelectorAll('.card--clickable')
 nodeListForEach($cards, function ($card) {
   new Card($card)
+})
+
+var $calendars = document.querySelectorAll('[data-module="hmpps-calendar"]')
+nodeListForEach($calendars, function ($calendar) {
+  new Calendar($calendar)
 })

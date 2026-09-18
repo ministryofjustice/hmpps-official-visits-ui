@@ -1,5 +1,5 @@
 {% macro calendar(params) %}
-  <section class="hmpps-calendar" aria-label="{{ params.label | default('Select a visit date') }}">
+  <section class="hmpps-calendar" data-module="hmpps-calendar" aria-label="{{ params.label | default('Select a visit date') }}">
     {% if params.previousMonthHref or params.nextMonthHref %}
       <div class="hmpps-calendar__navigation">
         {% if params.previousMonthHref %}
@@ -26,13 +26,24 @@
 
       <ul class="govuk-list hmpps-calendar__month">
         {% for day in month.days %}
-          <li class="hmpps-calendar__day{%- if loop.first and month.firstDayStartColumn %} hmpps-calendar__day--start-col-{{ month.firstDayStartColumn }}{% endif -%}{{ ' hmpps-calendar__day--has-link' if day.href }}{{ ' hmpps-calendar__day--selected' if day.selected }}"{{ ' aria-current="date"' | safe if day.selected }}>
-            {% if day.href and not day.selected %}
-              <a href="{{ day.href }}">{{ day.dayNumber }}</a>
+          {%- set dayLabel = day.date | formatDate("EEEE d MMMM yyyy") -%}
+          <li class="hmpps-calendar__day{%- if loop.first and month.firstDayStartColumn %} hmpps-calendar__day--start-col-{{ month.firstDayStartColumn }}{% endif -%}{{ ' hmpps-calendar__day--has-link' if day.href }}{{ ' hmpps-calendar__day--selected' if day.selected }}">
+            {% if day.selected %}
+              <span class="hmpps-calendar__day-item" data-date="{{ day.date }}" aria-current="date">
+                <span aria-hidden="true">{{ day.dayNumber }}</span>
+                <span class="govuk-visually-hidden">{{ dayLabel }}</span>
+              </span>
+            {% elif day.href %}
+              <a href="{{ day.href }}" class="hmpps-calendar__day-item" data-date="{{ day.date }}">
+                <span aria-hidden="true">{{ day.dayNumber }}</span>
+                <span class="govuk-visually-hidden">{{ dayLabel }}</span>
+              </a>
             {% else %}
-              <span aria-hidden="true">{{ day.dayNumber }}</span>
+              <span class="hmpps-calendar__day-item" data-date="{{ day.date }}">
+                <span aria-hidden="true">{{ day.dayNumber }}</span>
+                <span class="govuk-visually-hidden">{{ dayLabel }}, no visit times available</span>
+              </span>
             {% endif %}
-            <span class="govuk-visually-hidden">{{ day.date | formatDate("EEEE d MMMM yyyy") }}</span>
           </li>
         {% endfor %}
       </ul>

@@ -1,0 +1,113 @@
+{% extends "partials/layout.njk" %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "partials/simplePagination.njk" import simplePagination %}
+
+{% set pageTitle = "Official visits that need review" %}
+
+{% block content %}
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-three-quarters">
+      <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+      {% set checksHtml %}
+        <p class="govuk-body">Bookings are added to this list when a:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>prisoner is released</li>
+          <li>prisoner has been transferred</li>
+          <li>prisoner has a new alert</li>
+          <li>prisoner has a new restriction</li>
+          <li>visitor has been removed from the approved visitor list</li>
+          <li>visitor is not authorised to visit the prisoner</li>
+          <li>visitor is a social visitor</li>
+        </ul>
+        <p class="govuk-body">All other checks need to be done manually.</p>
+        <p class="govuk-body govuk-!-margin-bottom-0">Visits that need review appear on this list a week before their visit dates.</p>
+      {% endset %}
+
+      {{ govukDetails({
+        summaryText: "Which checks are done to create this list?",
+        html: checksHtml,
+        attributes: { "data-qa": "which-checks-details" }
+      }) }}
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full-from-desktop">
+      {% if reviews.length %}
+        <p class="govuk-body" data-qa="results-summary">
+          You have {{ pagination.totalElements }} visit{{ "s" if pagination.totalElements != 1 }} to review (page {{ pagination.page }} of {{ pagination.totalPages }}).
+        </p>
+
+        {% set tableRows = [] %}
+        {% for review in reviews %}
+          {% set visit = review.visit %}
+          {% set prisonerName = visit.prisonerVisited | lastNameCommaFirstName %}
+
+          {% set prisonerHtml %}
+            <a class="govuk-link govuk-link--no-visited-state" href="{{ prisonerProfileUrl }}/prisoner/{{ visit.prisonerVisited.prisonerNumber }}">{{ prisonerName }}</a><br>{{ visit.prisonerVisited.prisonerNumber }}
+          {% endset %}
+
+          {% set dateAndTimeHtml %}
+            {{ visit.startTime | toHHmm }} to {{ visit.endTime | toHHmm }}<br>{{ visit.visitDate | formatDate('d MMM yyyy') }}
+          {% endset %}
+
+          {% set reasonHtml %}
+            <div class="review-reasons">
+              {% for reason in review | reviewReasons %}
+                <div>{{ govukTag({ text: reason.text, classes: reason.classes }) }}</div>
+              {% endfor %}
+            </div>
+          {% endset %}
+
+          {% set actionHtml %}
+            <ul class="govuk-list govuk-!-margin-bottom-0 review-actions">
+              <li>
+                <a class="govuk-link govuk-link--no-visited-state" href="/view/visit/{{ visit.officialVisitId }}?backTo={{ backTo }}">View<span class="govuk-visually-hidden"> visit for {{ prisonerName }}</span></a>
+              </li>
+              {% if user | hasPermission(PERMISSION.MANAGE) %}
+                <li>
+                  <form method="POST" action="/review/list/{{ visit.officialVisitId }}/acknowledge">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                    <input type="hidden" name="returnTo" value="{{ returnTo }}" />
+                    <button class="govuk-button--as-link" type="submit">Acknowledge<span class="govuk-visually-hidden"> visit for {{ prisonerName }}</span></button>
+                  </form>
+                </li>
+                {% if review | cancellable %}
+                  <li>
+                    <a class="govuk-link govuk-link--no-visited-state" href="/view/visit/{{ visit.officialVisitId }}/cancel?backTo={{ backTo }}&amp;from={{ backTo }}">Cancel visit<span class="govuk-visually-hidden"> for {{ prisonerName }}</span></a>
+                  </li>
+                {% endif %}
+              {% endif %}
+            </ul>
+          {% endset %}
+
+          {% set tableRows = (tableRows.push([
+            { html: prisonerHtml },
+            { html: dateAndTimeHtml },
+            { html: reasonHtml },
+            { html: actionHtml }
+          ]), tableRows) %}
+        {% endfor %}
+
+        {{ govukTable({
+          firstCellIsHeader: false,
+          classes: "govuk-!-margin-top-6 review-table",
+          head: [
+            { text: "Prisoner" },
+            { text: "Visit time and date" },
+            { text: "Review reason" },
+            { text: "Action" }
+          ],
+          rows: tableRows
+        }) }}
+
+        {{ simplePagination(pagination) }}
+      {% else %}
+        <p class="govuk-body" data-qa="no-results">There are no official visits that need review.</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

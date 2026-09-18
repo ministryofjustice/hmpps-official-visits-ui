@@ -64,7 +64,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
           issues: {
             noRelationship: !contact,
             notApproved: contact ? !contact.isApprovedVisitor : false,
-            socialVisitor: !prisonAllowsSocialVisitors(req) && visitor.relationshipTypeCode === 'SOCIAL',
+            socialVisitor: !prisonAllowsSocialVisitors(visit.prisonCode) && visitor.relationshipTypeCode === 'SOCIAL',
           },
           restrictionSummary: contact?.restrictionSummary || { active: [] as RestrictionSummary[] },
           relationshipUrl: validRelationship
@@ -107,8 +107,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
         prisoner: {
           ...prisoner,
           restrictions: restrictions?.content || [],
-          alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
-          restrictionsCount: restrictions?.content?.length ?? 0,
+          restrictionsCount: prisonerActiveRestrictions,
         },
       })
     }
@@ -131,8 +130,7 @@ export default class ViewOfficialVisitHandler implements PageHandler {
       prisoner: {
         ...prisoner,
         restrictions: restrictions?.content || [],
-        alertsCount: prisoner?.alerts?.filter(alert => alert.active)?.length ?? 0,
-        restrictionsCount: restrictions?.content?.length ?? 0,
+        restrictionsCount: prisonerActiveRestrictions,
       },
       activeRestrictions: visitorActiveRestrictions + prisonerActiveRestrictions,
       hasNoRelationshipVisitors,

@@ -224,4 +224,45 @@ describe('OfficialVisitsApiClient', () => {
       expect(response).toEqual([])
     })
   })
+
+  describe('visit review endpoints', () => {
+    it('should get the list of visits for review with paging and sort', async () => {
+      const expected = [{ visit: { officialVisitId: 1 }, issues: [] as [] }]
+
+      nock(config.apis.officialVisitsApi.url)
+        .get('/visit-review/prison/MDI/list')
+        .query({ page: 0, size: 500, sort: 'visitDate,desc' })
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, expected)
+
+      const response = await officialVisitsApiClient.getVisitsForReview('MDI', 0, 500, ['visitDate,desc'], user)
+
+      expect(response).toEqual(expected)
+      expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
+    })
+
+    it('should get the count of visits for review', async () => {
+      const expected = { prisonCode: 'MDI', visitsForReviewCount: 5 }
+
+      nock(config.apis.officialVisitsApi.url)
+        .get('/visit-review/prison/MDI/count')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, expected)
+
+      const response = await officialVisitsApiClient.countVisitsForReview('MDI', user)
+
+      expect(response).toEqual(expected)
+    })
+
+    it('should acknowledge a visit review', async () => {
+      nock(config.apis.officialVisitsApi.url)
+        .put('/visit-review/prison/MDI/id/123/acknowledge')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200)
+
+      await officialVisitsApiClient.acknowledgeVisitReview('MDI', 123, user)
+
+      expect(mockAuthenticationClient.getToken).toHaveBeenCalledTimes(1)
+    })
+  })
 })

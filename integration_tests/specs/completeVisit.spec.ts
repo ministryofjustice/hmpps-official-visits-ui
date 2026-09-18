@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { format } from 'date-fns'
 import hmppsAuth from '../mockApis/hmppsAuth'
-import { login, resetStubs, setupFindByCriteriaStubs, summaryValue } from '../testUtils'
+import { expandMiniProfileAlerts, login, resetStubs, setupFindByCriteriaStubs, summaryValue } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import componentsApi from '../mockApis/componentsApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
@@ -105,16 +105,15 @@ test.describe('Complete official visits', () => {
     const b64 = encodeURIComponent(btoa(`/view/list?page=1&prisoner=John&startDate=2026-01-01&endDate=2026-01-02`))
     expect(page.url()).toBe(`http://localhost:3007/view/visit/1?backTo=${b64}`)
 
-    ViewVisitPage.verifyOnPage(page)
+    await ViewVisitPage.verifyOnPage(page)
 
     await expect(page.locator('[data-qa="mini-profile-person-profile-link"]')).toHaveText('Doe, John')
     await expect(page.locator('[data-qa="mini-profile-prisoner-number"]')).toHaveText(mockPrisoner.prisonerNumber)
     await expect(page.locator('[data-qa="mini-profile-dob"]')).toHaveText('1 June 1989')
     await expect(page.locator('[data-qa="mini-profile-cell-location"]')).toHaveText(mockPrisoner.cellLocation)
     await expect(page.locator('[data-qa="mini-profile-prison-name"]')).toHaveText(mockPrisoner.prisonName)
-    await expect(page.locator('[data-qa="contact-A1111AA-alerts-restrictions"]')).toHaveText(
-      /3\s*restrictions\s*and\s*0\s*alerts/,
-    )
+    await expect(await expandMiniProfileAlerts(page)).toHaveText(['Risk to Females'])
+    await expect(page.locator('[data-qa="mini-profile-restrictions-link"]')).toHaveText('+ 1 active restriction')
 
     await expect(summaryValue(page, 'Date')).toHaveText('Friday, 25 December 2099')
     await expect(summaryValue(page, 'Time')).toHaveText('10:00 to 11:00 (1 hour)')
@@ -203,7 +202,7 @@ test.describe('Complete official visits', () => {
     await page.getByRole('button', { name: 'Continue' }).click()
 
     expect(page.url()).toContain('http://localhost:3007/view/visit/1?backTo=')
-    expect(page.getByRole('region', { name: 'success: Visit marked as' })).toBeVisible()
+    expect(page.getByRole('alert', { name: 'success: Visit marked as' })).toBeVisible()
 
     await page.getByRole('link', { name: 'Return to search list' }).click()
 
