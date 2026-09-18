@@ -501,6 +501,72 @@ test.describe('Create an official visit', () => {
   })
 })
 
+test.describe('Video capacity not set interruption card', () => {
+  test.beforeEach(async () => {
+    await hmppsAuth.stubSignInPage()
+    await componentsApi.stubComponents()
+    await prisonApi.stubGetPrisonerImage()
+    await prisonerSearchApi.stubGetByPrisonerNumber(mockPrisoner)
+    await prisonerSearchApi.stubSearchInCaseload({
+      content: [mockPrisoner],
+      first: true,
+      last: false,
+      number: 1,
+      totalPages: 1,
+    })
+    await personalRelationshipsApi.stubRestrictions()
+    await officialVisitsApi.stubAllContacts(mockOfficialVisitors)
+    await officialVisitsApi.stubRefData('VIS_TYPE', [
+      { code: 'IN_PERSON', description: 'In person' },
+      { code: 'VIDEO', description: 'Video' },
+    ])
+    await officialVisitsApi.stubGetAllTimeSlotsAndVisitSlots({ prisonCode: 'LEI', prisonName: 'Leeds', timeSlots: [] })
+  })
+
+  test.afterEach(async () => {
+    await resetStubs()
+  })
+
+  test('admin users can open the schedule or return to visit type', async ({ page }) => {
+    await goToVideoCapacityNotSet(page, [`ROLE_${AuthorisedRoles.MANAGE}`, `ROLE_${AuthorisedRoles.ADMIN}`])
+
+    const manageSchedule = page.getByRole('button', { name: 'Manage schedule' })
+    await expect(manageSchedule).toHaveAttribute('href', '/admin/time-slots')
+    await expect(manageSchedule).toHaveAttribute('target', '_blank')
+
+    await page.getByRole('link', { name: 'Return to visit type' }).click()
+    await VisitTypePage.verifyOnPage(page)
+  })
+
+  test('non-admin users are told to ask for the role', async ({ page }) => {
+    await goToVideoCapacityNotSet(page, [`ROLE_${AuthorisedRoles.MANAGE}`])
+
+    await expect(page.getByText('ask a member of staff with the Official Visits Manage Time Slots role')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Manage schedule' })).toHaveCount(0)
+
+    await page.getByRole('button', { name: 'Return to visit type' }).click()
+    await VisitTypePage.verifyOnPage(page)
+  })
+})
+
+async function goToVideoCapacityNotSet(page: Page, roles: string[]) {
+  await login(page, { name: 'AUser', roles: ['ROLE_PRISON', ...roles], active: true, authSource: 'nomis' })
+  await page.goto(`/manage/create/${uuidV4()}/search`)
+  const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)
+  await prisonerSearchPage.searchBox.fill('John')
+  await prisonerSearchPage.searchButton.click()
+  await (await PrisonerSearchResultsPage.verifyOnPage(page)).selectThisPrisoner()
+
+  const visitTypePage = await VisitTypePage.verifyOnPage(page)
+  await visitTypePage.selectRadioButton('Video')
+  await visitTypePage.continueButton.click()
+
+  expect(page.url()).toMatch(/\/manage\/create\/.*\/no-video-capacity/)
+  await expect(
+    page.locator('h1', { hasText: 'This prison does not have video visit capacity set up in its schedule' }),
+  ).toBeVisible()
+}
+
 async function navigateToSelectOfficialVisitors(page: Page, uuid: string): Promise<SelectOfficialContactPage> {
   await login(page)
   await page.goto(`/manage/create/${uuid}/search`)

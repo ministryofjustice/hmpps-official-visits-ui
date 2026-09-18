@@ -38,6 +38,16 @@ export default class VisitTypeHandler implements PageHandler {
       return res.redirect(`time-slot?date=${req.session.journey.officialVisit.visitDate}`)
     }
 
+    if (
+      visitType.code === 'VIDEO' &&
+      !(await this.officialVisitsService.hasVideoVisitCapacity(
+        req.session.journey.officialVisit.prisoner.prisonCode,
+        res.locals.user,
+      ))
+    ) {
+      return res.redirect('no-video-capacity')
+    }
+
     // TOOD: Revisit resetting journey data when changing data on CYA
     saveVisitType(req.session.journey, visitType)
     return res.redirect(`time-slot`)

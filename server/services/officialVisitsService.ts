@@ -1,4 +1,5 @@
 import { Response } from 'express'
+import { format } from 'date-fns'
 import OfficialVisitsApiClient from '../data/officialVisitsApiClient'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import {
@@ -146,6 +147,15 @@ export default class OfficialVisitsService {
   public async getVisitSlotsAtPrison(prisonId: string, user: HmppsUser) {
     logger.info(`Get visits slots called by ${user.userId} ${user.displayName}`)
     return this.officialVisitsApiClient.getAllTimeSlotsAndVisitSlots(prisonId, user)
+  }
+
+  public async hasVideoVisitCapacity(prisonId: string, user: HmppsUser) {
+    const today = format(new Date(), 'yyyy-MM-dd')
+    const { timeSlots } = await this.officialVisitsApiClient.getAllTimeSlotsAndVisitSlots(prisonId, user)
+    return timeSlots.some(
+      ({ timeSlot, visitSlots }) =>
+        (!timeSlot.expiryDate || timeSlot.expiryDate >= today) && visitSlots.some(slot => slot.maxVideo > 0),
+    )
   }
 
   public async getPrisonTimeSlotSummaryById(prisonTimeSlotId: number, user: HmppsUser) {

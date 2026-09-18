@@ -143,6 +143,32 @@ describe('Visit type handler', () => {
         )
     })
 
+    it('should redirect to time-slot for a video visit when the prison has video capacity', () => {
+      appSetup({ officialVisit: { prisoner: { prisonCode: 'MDI' } } })
+      officialVisitsService.getReferenceData.mockResolvedValue([{ code: 'VIDEO', description: 'Video' }])
+      officialVisitsService.hasVideoVisitCapacity.mockResolvedValue(true)
+
+      return request(app)
+        .post(URL)
+        .send({ visitType: 'VIDEO' })
+        .expect(302)
+        .expect('location', 'time-slot')
+        .expect(() => expect(officialVisitsService.hasVideoVisitCapacity).toHaveBeenCalledWith('MDI', user))
+    })
+
+    it('should redirect to no-video-capacity for a video visit when the prison has no video capacity', () => {
+      appSetup({ officialVisit: { prisoner: { prisonCode: 'MDI' } } })
+      officialVisitsService.getReferenceData.mockResolvedValue([{ code: 'VIDEO', description: 'Video' }])
+      officialVisitsService.hasVideoVisitCapacity.mockResolvedValue(false)
+
+      return request(app)
+        .post(URL)
+        .send({ visitType: 'VIDEO' })
+        .expect(302)
+        .expect('location', 'no-video-capacity')
+        .then(() => expectJourneySession(app, 'officialVisit', { prisoner: { prisonCode: 'MDI' } }))
+    })
+
     it('should redirect to time-slot with date query param when in amend mode', () => {
       appSetup({ officialVisit: { visitDate: '2025-12-25' } })
       return request(app)
