@@ -70,8 +70,8 @@ describe('notification sent handler', () => {
       'You should check to confirm this email has been sent successfully. If you update or cancel this visit, you should send another email.',
     )
     // find the link that points to the view visit URL
-    expect($('.govuk-link').eq(2).text()).toContain('View visit')
-    expect($('.govuk-link').eq(2).attr('href')).toContain(`/view/visit/${OV_ID}`)
+    const $viewVisit = $(`.govuk-link[href*="/view/visit/${OV_ID}"]`)
+    expect($viewVisit.text()).toContain('View visit')
     expect($('.govuk-link').last().text()).toContain('View the status of official visit emails')
     expect($('.govuk-link').last().attr('href')).toContain(`/view/sent-emails`)
     // assert session is reset
