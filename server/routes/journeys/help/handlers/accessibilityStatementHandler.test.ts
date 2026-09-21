@@ -23,10 +23,10 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('GET /help/accessibility-statement', () => {
+describe('GET /accessibility-statement', () => {
   it('should render the statement for a user with no official visits roles', () => {
     return request(app)
-      .get('/help/accessibility-statement')
+      .get('/accessibility-statement')
       .expect('Content-Type', /html/)
       .expect(200)
       .expect(res => {
