@@ -45,7 +45,11 @@ export default class EmailHandler implements PageHandler {
 
   POST = async (req: Request, res: Response) => {
     const { ovId, action } = req.params
+    const { user } = res.locals
     const { emailAddresses } = req.body as SchemaType
+
+    const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
+    const isVideoVisit = visit?.visitTypeCode === 'VIDEO'
 
     const session = req.session as SessionData
     if (!session.notifications) session.notifications = {}
@@ -58,10 +62,10 @@ export default class EmailHandler implements PageHandler {
       createdAt: existingNotification.createdAt || Date.now(),
     }
 
-    return res.redirect(
-      existingNotification.reachedCheckAnswers
-        ? `/notification/check-email/${ovId}/${action}`
-        : `/notification/add-video-link/${ovId}/${action}`,
-    )
+    if (existingNotification.reachedCheckAnswers || !isVideoVisit) {
+      return res.redirect(`/notification/check-email/${ovId}/${action}`)
+    }
+
+    return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
   }
 }

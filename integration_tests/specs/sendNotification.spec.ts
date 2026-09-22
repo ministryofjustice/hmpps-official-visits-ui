@@ -453,6 +453,55 @@ test.describe('Send a notification', () => {
     })
   })
 
+  test.describe('In person visit', () => {
+    test('enter email goes straight to check, with no video link asked for', async ({ page }) => {
+      await officialVisitsApi.stubGetOfficialVisitById({
+        ...mockVisitByIdVisit,
+        visitTypeCode: 'IN_PERSON',
+        visitTypeDescription: 'Attend in person',
+      })
+
+      await login(page)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
+
+      const emailPage = await NotificationEmailPage.verifyOnPage(page)
+      await emailPage.fillEmail('visitor@example.com')
+      await emailPage.continueButton.click()
+
+      const checkPage = await NotificationCheckPage.verifyOnPage(page)
+      expect(page.url()).toContain(`/notification/check-email/${OV_ID}/create`)
+      await expect(checkPage.page.getByText('Attend in person')).toBeVisible()
+      await expect(checkPage.page.locator('.govuk-summary-list__key', { hasText: 'Video link' })).toHaveCount(0)
+      await expect(checkPage.page.locator('.govuk-back-link')).toHaveAttribute(
+        'href',
+        `/notification/enter-email-address/${OV_ID}/create`,
+      )
+
+      await checkPage.sendButton.click()
+      await NotificationSentPage.verifyOnPage(page)
+    })
+
+    test('Video link page redirects to check when the visit is not a video visit', async ({ page }) => {
+      await officialVisitsApi.stubGetOfficialVisitById({
+        ...mockVisitByIdVisit,
+        visitTypeCode: 'IN_PERSON',
+        visitTypeDescription: 'Attend in person',
+      })
+
+      await login(page)
+      await page.goto(`/notification/enter-email-address/${OV_ID}/create`)
+
+      const emailPage = await NotificationEmailPage.verifyOnPage(page)
+      await emailPage.fillEmail('visitor@example.com')
+      await emailPage.continueButton.click()
+
+      await page.goto(`/notification/add-video-link/${OV_ID}/create`)
+
+      await NotificationCheckPage.verifyOnPage(page)
+      expect(page.url()).toContain(`/notification/check-email/${OV_ID}/create`)
+    })
+  })
+
   test.describe('Session guard: redirect when no email in session', () => {
     test('GET check page without email redirects to email entry', async ({ page }) => {
       await login(page)

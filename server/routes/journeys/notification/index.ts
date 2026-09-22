@@ -20,7 +20,7 @@ export default function Index({ auditService, officialVisitsService }: Services)
   route('/enter-email-address/:ovId/:action', new EmailHandler(officialVisitsService))
 
   // Add video link
-  route('/add-video-link/:ovId/:action', new VideoLinkHandler())
+  route('/add-video-link/:ovId/:action', new VideoLinkHandler(officialVisitsService))
 
   // Check and send
   route('/check-email/:ovId/:action', new CheckHandler(officialVisitsService))

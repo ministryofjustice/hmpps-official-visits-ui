@@ -9,7 +9,7 @@ import { getPageHeader } from '../../../testutils/cheerio'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
 import config from '../../../../config'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
-import { OfficialVisitNotifications } from '../../../../@types/officialVisitsApi/types'
+import { OfficialVisit, OfficialVisitNotifications } from '../../../../@types/officialVisitsApi/types'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/telemetryService')
@@ -33,6 +33,7 @@ beforeEach(() => {
   config.featureToggles.emailNotificationsPrisons = 'HEI'
   appSetup()
   officialVisitsService.getNotificationsByOfficialVisitId.mockResolvedValue([{}] as OfficialVisitNotifications)
+  officialVisitsService.getOfficialVisitById.mockResolvedValue({ visitTypeCode: 'VIDEO' } as OfficialVisit)
 })
 
 afterEach(() => {
@@ -426,6 +427,16 @@ describe('notification email handler', () => {
         .send({ emailAddresses: ['changed@example.com'] })
         .expect(302)
         .expect('location', `/notification/add-video-link/${OV_ID}/create`)
+    })
+
+    it('should skip the video link page for a visit that is not a video visit', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({ visitTypeCode: 'IN_PERSON' } as OfficialVisit)
+
+      await request(app)
+        .post(URL)
+        .send({ emailAddresses: ['example@example.com'] })
+        .expect(302)
+        .expect('location', `/notification/check-email/${OV_ID}/create`)
     })
 
     it('should discard a duplicated address before storing it', async () => {
