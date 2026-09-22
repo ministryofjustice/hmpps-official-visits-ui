@@ -40,22 +40,27 @@ export default class CheckHandler implements PageHandler {
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
-    if (!videoLinkUrl) {
+    const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
+    const isVideoVisit = visit?.visitTypeCode === 'VIDEO'
+
+    if (isVideoVisit && !videoLinkUrl) {
       return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
     }
 
     const notification = req.session.notifications?.[ovId as string]
     if (notification) notification.reachedCheckAnswers = true
 
-    const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
     const contacts = visit?.officialVisitors || []
 
     return res.render('pages/notification/check', {
       emailAddresses,
-      videoLinkUrl,
+      videoLinkUrl: isVideoVisit ? videoLinkUrl : undefined,
+      isVideoVisit,
       visit,
       contacts,
-      backUrl: `/notification/add-video-link/${ovId}/${action}`,
+      backUrl: isVideoVisit
+        ? `/notification/add-video-link/${ovId}/${action}`
+        : `/notification/enter-email-address/${ovId}/${action}`,
       back: '/',
       changeEmailAddress: `/notification/enter-email-address/${ovId}/${action}`,
       changeVideoLink: `/notification/add-video-link/${ovId}/${action}`,
@@ -73,14 +78,17 @@ export default class CheckHandler implements PageHandler {
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
-    if (!videoLinkUrl) {
+    const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), res.locals.user)
+    const isVideoVisit = visit?.visitTypeCode === 'VIDEO'
+
+    if (isVideoVisit && !videoLinkUrl) {
       return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
     }
 
     const body = {
       notificationType: mapActionToNotificationType(action as string),
       emailAddresses,
-      videoLinkUrl,
+      ...(isVideoVisit ? { videoLinkUrl } : {}),
     } as NotificationRequest
 
     await this.officialVisitsService.sendNotification(ovId as string, body, res.locals.user)

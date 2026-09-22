@@ -6,11 +6,17 @@ import AuditService, { Page } from '../../../../services/auditService'
 import { getPageHeader } from '../../../testutils/cheerio'
 import { expectErrorMessages } from '../../../testutils/expectErrorMessage'
 import config from '../../../../config'
+import OfficialVisitsService from '../../../../services/officialVisitsService'
+import { mockVisitByIdVisit } from '../../../../testutils/mocks'
 
 jest.mock('../../../../services/auditService')
 jest.mock('../../../../services/telemetryService')
+jest.mock('../../../../services/officialVisitsService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
+const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
+
+const anInPersonVisit = { ...mockVisitByIdVisit, visitTypeCode: 'IN_PERSON' as const }
 
 let app: Express
 
@@ -19,7 +25,7 @@ const URL = `/notification/add-video-link/${OV_ID}/create`
 
 const appSetup = (middlewares: RequestHandler[] = []) => {
   app = appWithAllRoutes({
-    services: { auditService },
+    services: { auditService, officialVisitsService },
     userSupplier: () => user,
     journeySessionSupplier: () => ({}),
     middlewares,
@@ -28,6 +34,7 @@ const appSetup = (middlewares: RequestHandler[] = []) => {
 
 beforeEach(() => {
   config.featureToggles.emailNotificationsPrisons = 'HEI'
+  officialVisitsService.getOfficialVisitById.mockResolvedValue(mockVisitByIdVisit)
   appSetup([
     (req, _res, next) => {
       req.session.notifications = { [OV_ID]: { emailAddresses: ['example@example.com'] } }
@@ -66,6 +73,12 @@ describe('notification video link handler', () => {
             correlationId: expect.any(String),
           })
         })
+    })
+
+    it('should redirect to the check page when the visit is not a video visit', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(anInPersonVisit)
+
+      await request(app).get(URL).expect(302).expect('location', `/notification/check-email/${OV_ID}/create`)
     })
 
     it('should populate the input when session contains a video link', async () => {
@@ -124,6 +137,16 @@ describe('notification video link handler', () => {
     })
 
     it('should accept a valid https video link and redirect to check page', async () => {
+      await request(app)
+        .post(URL)
+        .send({ videoLinkUrl: 'https://video.example.com/room-1' })
+        .expect(302)
+        .expect('location', `/notification/check-email/${OV_ID}/create`)
+    })
+
+    it('should redirect to the check page when the visit is not a video visit', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(anInPersonVisit)
+
       await request(app)
         .post(URL)
         .send({ videoLinkUrl: 'https://video.example.com/room-1' })
