@@ -172,9 +172,7 @@ export default {
     allowSocialVisitorsPrisons: get('FEATURE_ALLOW_SOCIAL_VISITORS_PRISONS', ''),
     dpsEnabledPrisons: get('FEATURE_DPS_ENABLED_PRISONS', ''),
     nomisSwitchOffPrisons: get('FEATURE_NOMIS_SWITCH_OFF_PRISONS', ''),
-    twoMonthCalendarEnabled: get('FEATURE_TWO_MONTH_CALENDAR_ENABLED', 'false') === 'true',
     emailNotificationsPrisons: get('FEATURE_EMAIL_NOTIFICATIONS_PRISONS', ''),
-    visitHistoryTimelineEnabled: get('FEATURE_VISIT_HISTORY_TIMELINE_PRISONS', ''),
     visitsNeedReviewPrisons: get('FEATURE_VISITS_NEED_REVIEW_PRISONS', ''),
   },
 }

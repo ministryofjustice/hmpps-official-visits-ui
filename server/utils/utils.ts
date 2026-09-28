@@ -6,10 +6,6 @@ import {
   parseISO,
   set,
   startOfToday,
-  previousMonday,
-  isMonday,
-  addWeeks,
-  subWeeks,
   addDays,
   isBefore,
   addMonths,
@@ -157,27 +153,6 @@ export const getParsedDateFromQueryString = (dateFromQueryString: string, defaul
   return format(parsedDate, 'yyyy-MM-dd')
 }
 
-export const getWeekOfDatesStartingMonday = (
-  date: string,
-): { weekOfDates: { date: string; isInFuture: boolean }[]; previousWeek: string; nextWeek: string } => {
-  const startingDate = new Date(date)
-  if (startingDate.toString() === 'Invalid Date') return { weekOfDates: [], previousWeek: '', nextWeek: '' }
-
-  const dateFormat = 'yyyy-MM-dd'
-  const weekStartDate = isMonday(startingDate) ? startingDate : previousMonday(startingDate)
-  const yesterday = new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString().substring(0, 10)
-
-  const weekOfDates = new Array(7).fill('').map((_day, index) => {
-    const dayDate = format(addDays(weekStartDate, index), dateFormat)
-    return { date: dayDate, isInFuture: isBefore(yesterday, dayDate) }
-  }, {})
-
-  const previousWeek = format(subWeeks(weekStartDate, 1), dateFormat)
-  const nextWeek = format(addWeeks(weekStartDate, 1), dateFormat)
-
-  return { weekOfDates, previousWeek, nextWeek }
-}
-
 export const prisonerTimePretty = (dateToFormat: string): string => {
   return dateToFormat ? format(parseISO(dateToFormat), 'h:mmaaa').replace(':00', '') : null
 }
@@ -245,10 +220,6 @@ export const emailNotificationsEnabled = (caseLoadId: string) => {
 
 export const nomisSwitchOffEnabled = (caseLoadId: string) => {
   return config.featureToggles.nomisSwitchOffPrisons.split(',').includes(caseLoadId)
-}
-
-export const visitHistoryTimelineEnabled = (caseLoadId: string) => {
-  return config.featureToggles.visitHistoryTimelineEnabled.split(',').includes(caseLoadId)
 }
 
 export const visitsNeedReviewEnabled = (caseLoadId: string) => {
