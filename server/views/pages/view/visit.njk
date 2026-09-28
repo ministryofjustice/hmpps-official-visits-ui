@@ -51,13 +51,11 @@
                classes: 'govuk-button govuk-button--secondary'
            }) }}
         {% endif %}
-        {% if visitHistoryTimelineEnabled %}
-          {{ govukButton({
-              text: "View all changes made for visit",
-              href: "/view/visit/" + visit.officialVisitId + "/history",
-              classes: 'govuk-button govuk-button--secondary'
-          }) }}
-        {% endif %}
+        {{ govukButton({
+            text: "View all changes made for visit",
+            href: "/view/visit/" + visit.officialVisitId + "/history",
+            classes: 'govuk-button govuk-button--secondary'
+        }) }}
   {% endif %}
   {% if mode != 'amend' %}
     {% if user | hasPermission(PERMISSION.MANAGE) and visit.visitStatus not in ['COMPLETED', 'CANCELLED'] and not isPastVisit %}

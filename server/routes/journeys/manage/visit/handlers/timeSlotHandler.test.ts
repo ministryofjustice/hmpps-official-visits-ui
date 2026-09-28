@@ -22,17 +22,6 @@ jest.mock('../../../../../services/auditService')
 jest.mock('../../../../../services/prisonerService')
 jest.mock('../../../../../services/officialVisitsService')
 jest.mock('../../../../../services/activitiesService')
-jest.mock('../../../../../config', () => {
-  const actual = jest.requireActual('../../../../../config')
-  return {
-    ...(actual.default || actual),
-    featureToggles: {
-      ...(actual.default || actual).featureToggles,
-      twoMonthCalendarEnabled: true,
-    },
-  }
-})
-
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerService = new PrisonerService(null) as jest.Mocked<PrisonerService>
 const officialVisitsService = new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>
