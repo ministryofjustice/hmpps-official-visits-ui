@@ -1,14 +1,3 @@
-{% if not hideBetaBanner %}
-  <div role="region" aria-label="Service feedback">
-    {{ govukPhaseBanner({
-      tag: {
-        text: "Beta"
-      },
-      html: 'This is a new service. Please complete our <a class="govuk-link" href="https://www.smartsurvey.co.uk/t/4MD6GT/" target="_blank" rel="noopener noreferrer">feedback survey<span class="govuk-visually-hidden"> (opens in new tab)</span></a> to help us improve it. You can find out more on <a class="govuk-link" href="https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx" target="_blank" rel="noopener noreferrer">SharePoint<span class="govuk-visually-hidden"> (opens in new tab)</span></a>.'
-    }) }}
-  </div>
-{% endif %}
-
 {% if showBreadcrumbs and breadcrumbs and (not backUrl) %}
   <div class="ov-breadcrumbs govuk-!-display-none-print">
     <div class="ov-breadcrumbs__breadcrumbs">
