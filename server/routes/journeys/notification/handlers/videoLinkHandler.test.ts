@@ -81,6 +81,19 @@ describe('notification video link handler', () => {
       await request(app).get(URL).expect(302).expect('location', `/notification/check-email/${OV_ID}/create`)
     })
 
+    it.each(['CANCELLED', 'COMPLETED', 'EXPIRED'])(
+      'should redirect to the check page when the video visit is not %s',
+      async visitStatus => {
+        officialVisitsService.getOfficialVisitById.mockResolvedValue({
+          ...mockVisitByIdVisit,
+          visitTypeCode: 'VIDEO',
+          visitStatus: visitStatus as 'CANCELLED' | 'COMPLETED' | 'EXPIRED',
+        })
+
+        await request(app).get(URL).expect(302).expect('location', `/notification/check-email/${OV_ID}/create`)
+      },
+    )
+
     it('should populate the input when session contains a video link', async () => {
       appSetup([
         (req, _res, next) => {
@@ -153,6 +166,23 @@ describe('notification video link handler', () => {
         .expect(302)
         .expect('location', `/notification/check-email/${OV_ID}/create`)
     })
+
+    it.each(['CANCELLED', 'COMPLETED', 'EXPIRED'])(
+      'should redirect to the check page when the video visit is %s',
+      async visitStatus => {
+        officialVisitsService.getOfficialVisitById.mockResolvedValue({
+          ...mockVisitByIdVisit,
+          visitTypeCode: 'VIDEO',
+          visitStatus: visitStatus as 'CANCELLED' | 'COMPLETED' | 'EXPIRED',
+        })
+
+        await request(app)
+          .post(URL)
+          .send({ videoLinkUrl: 'https://video.example.com/room-1' })
+          .expect(302)
+          .expect('location', `/notification/check-email/${OV_ID}/create`)
+      },
+    )
 
     it('should redirect to enter email if session email is missing', async () => {
       appSetup()

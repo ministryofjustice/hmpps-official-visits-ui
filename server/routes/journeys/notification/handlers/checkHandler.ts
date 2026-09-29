@@ -41,9 +41,9 @@ export default class CheckHandler implements PageHandler {
     }
 
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), user)
-    const isVideoVisit = visit?.visitTypeCode === 'VIDEO'
+    const isScheduledVideoVisit = visit?.visitTypeCode === 'VIDEO' && visit.visitStatus === 'SCHEDULED'
 
-    if (isVideoVisit && !videoLinkUrl) {
+    if (isScheduledVideoVisit && !videoLinkUrl) {
       return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
     }
 
@@ -54,11 +54,11 @@ export default class CheckHandler implements PageHandler {
 
     return res.render('pages/notification/check', {
       emailAddresses,
-      videoLinkUrl: isVideoVisit ? videoLinkUrl : undefined,
-      isVideoVisit,
+      videoLinkUrl: isScheduledVideoVisit ? videoLinkUrl : undefined,
+      isScheduledVideoVisit,
       visit,
       contacts,
-      backUrl: isVideoVisit
+      backUrl: isScheduledVideoVisit
         ? `/notification/add-video-link/${ovId}/${action}`
         : `/notification/enter-email-address/${ovId}/${action}`,
       back: '/',
@@ -79,16 +79,16 @@ export default class CheckHandler implements PageHandler {
     }
 
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), res.locals.user)
-    const isVideoVisit = visit?.visitTypeCode === 'VIDEO'
+    const isScheduledVideoVisit = visit?.visitTypeCode === 'VIDEO' && visit.visitStatus === 'SCHEDULED'
 
-    if (isVideoVisit && !videoLinkUrl) {
+    if (isScheduledVideoVisit && !videoLinkUrl) {
       return res.redirect(`/notification/add-video-link/${ovId}/${action}`)
     }
 
     const body = {
       notificationType: mapActionToNotificationType(action as string),
       emailAddresses,
-      ...(isVideoVisit ? { videoLinkUrl } : {}),
+      ...(isScheduledVideoVisit ? { videoLinkUrl } : {}),
     } as NotificationRequest
 
     await this.officialVisitsService.sendNotification(ovId as string, body, res.locals.user)

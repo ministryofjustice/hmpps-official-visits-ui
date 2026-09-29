@@ -359,6 +359,35 @@ describe('notification check handler', () => {
     expect($('.govuk-back-link').attr('href')).toEqual(`/notification/enter-email-address/${OV_ID}/create`)
   })
 
+  it.each(['CANCELLED', 'COMPLETED', 'EXPIRED'])(
+    'GET should not show or require a video link for a visit that is not a scheduled video visit - %s',
+    async visitStatus => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitTypeCode: 'VIDEO',
+        visitStatus: visitStatus as 'CANCELLED' | 'COMPLETED' | 'EXPIRED',
+      })
+
+      app = appWithAllRoutes({
+        services: { auditService, officialVisitsService },
+        userSupplier: () => user,
+        journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
+        middlewares: [
+          (req, _res, next) => {
+            req.session.notifications = { [OV_ID]: { emailAddresses: ['example@example.com'] } }
+            next()
+          },
+        ],
+      })
+
+      const res = await request(app).get(`/notification/check-email/${OV_ID}/create`).expect(200)
+      const $ = cheerio.load(res.text)
+
+      expect($('.govuk-summary-list__key').text()).not.toContain('Video link')
+      expect($('.govuk-back-link').attr('href')).toEqual(`/notification/enter-email-address/${OV_ID}/create`)
+    },
+  )
+
   it('POST should send the notification without a video link for a visit that is not a video visit', async () => {
     officialVisitsService.getOfficialVisitById.mockResolvedValue({
       ...mockVisitByIdVisit,
@@ -394,6 +423,45 @@ describe('notification check handler', () => {
       user,
     )
   })
+
+  it.each(['CANCELLED', 'COMPLETED', 'EXPIRED'])(
+    'POST should send the notification without a video link for a visit that is not a scheduled video visit',
+    async visitStatus => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitTypeCode: 'VIDEO',
+        visitStatus: visitStatus as 'CANCELLED' | 'COMPLETED' | 'EXPIRED',
+      })
+
+      app = appWithAllRoutes({
+        services: { auditService, officialVisitsService },
+        userSupplier: () => user,
+        journeySessionSupplier: () => ({ officialVisit: sampleVisit }),
+        middlewares: [
+          (req, _res, next) => {
+            // a video link entered earlier, before the visit was changed to in person
+            req.session.notifications = {
+              [OV_ID]: { emailAddresses: ['example@example.com'], videoLinkUrl: VIDEO_LINK_URL },
+            }
+            next()
+          },
+        ],
+      })
+
+      officialVisitsService.sendNotification.mockResolvedValue({} as NotificationResponse)
+
+      await request(app)
+        .post(`/notification/check-email/${OV_ID}/create`)
+        .expect(302)
+        .expect('location', `/notification/email-confirmation/${OV_ID}/create`)
+
+      expect(officialVisitsService.sendNotification).toHaveBeenCalledWith(
+        OV_ID,
+        { notificationType: 'CREATE', emailAddresses: ['example@example.com'] },
+        user,
+      )
+    },
+  )
 
   it('POST without email in session should redirect back to enter email', async () => {
     // Build app without populating notifications

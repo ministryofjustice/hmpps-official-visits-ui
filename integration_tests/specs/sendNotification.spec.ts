@@ -393,6 +393,12 @@ test.describe('Send a notification', () => {
     })
 
     test('Happy path: enter email → check → sent (cancel)', async ({ page }) => {
+      await officialVisitsApi.stubGetOfficialVisitById({
+        ...mockVisitByIdVisit,
+        visitStatus: 'CANCELLED',
+        visitStatusDescription: 'Cancelled',
+      })
+
       await login(page)
       await page.goto(`/notification/enter-email-address/${OV_ID}/cancel`)
 
@@ -408,11 +414,6 @@ test.describe('Send a notification', () => {
 
       await emailPage.fillEmail('cancel@example.com')
       await emailPage.continueButton.click()
-
-      // --- Video link page ---
-      const videoLinkPage = await NotificationVideoLinkPage.verifyOnPage(page)
-      await videoLinkPage.fillVideoLink('https://video.example.com/cancel-room')
-      await videoLinkPage.continueButton.click()
 
       // --- Check page ---
       const checkPage = await NotificationCheckPage.verifyOnPage(page)
