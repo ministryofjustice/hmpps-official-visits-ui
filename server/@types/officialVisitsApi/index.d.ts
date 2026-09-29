@@ -1525,11 +1525,13 @@ export interface components {
        */
       dayCode: components['schemas']['DayType']
       /**
+       * Format: time-local
        * @description Start time
        * @example 09:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description End time
        * @example 11:00
        */
@@ -1577,11 +1579,13 @@ export interface components {
        */
       dayCode: components['schemas']['DayType']
       /**
+       * Format: time-local
        * @description Start time
        * @example 09:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description End time
        * @example 11:00
        */
@@ -1659,11 +1663,13 @@ export interface components {
        */
       visitDate: string
       /**
+       * Format: time-local
        * @description The start time for this official visit
        * @example 09:15
        */
       startTime: string
       /**
+       * Format: time-local
        * @description The end time for this official visit
        * @example 10:15
        */
@@ -1759,11 +1765,13 @@ export interface components {
        */
       visitDate: string
       /**
+       * Format: time-local
        * @description The start time
        * @example 09:15
        */
       startTime: string
       /**
+       * Format: time-local
        * @description The end time
        * @example 10:15
        */
@@ -2089,11 +2097,13 @@ export interface components {
        */
       visitDate: string
       /**
+       * Format: time-local
        * @description The start time of the official visit
        * @example 10:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description The end time of the official visit
        * @example 11:00
        */
@@ -2230,11 +2240,13 @@ export interface components {
        */
       dayCode: components['schemas']['DayType']
       /**
+       * Format: time-local
        * @description Start time
        * @example 09:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description End time
        * @example 11:00
        */
@@ -2271,11 +2283,13 @@ export interface components {
        */
       dayCode: components['schemas']['DayType']
       /**
+       * Format: time-local
        * @description Start time
        * @example 09:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description End time
        * @example 11:00
        */
@@ -2363,11 +2377,13 @@ export interface components {
        */
       dayCode: components['schemas']['DayType']
       /**
+       * Format: time-local
        * @description Start time
        * @example 09:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description End time
        * @example 11:00
        */
@@ -2437,11 +2453,13 @@ export interface components {
        */
       visitDate: string
       /**
+       * Format: time-local
        * @description The start time for this official visit
        * @example 09:15
        */
       startTime: string
       /**
+       * Format: time-local
        * @description The end time for this official visit
        * @example 10:15
        */
@@ -2618,11 +2636,13 @@ export interface components {
        */
       visitDate: string
       /**
+       * Format: time-local
        * @description The start time for this official visit
        * @example 09:15
        */
       startTime: string
       /**
+       * Format: time-local
        * @description The end time for this official visit
        * @example 10:15
        */
@@ -2833,11 +2853,13 @@ export interface components {
        */
       visitDate: string
       /**
+       * Format: time-local
        * @description The start time of the official visit
        * @example 10:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description The end time of the official visit
        * @example 11:00
        */
@@ -2908,11 +2930,13 @@ export interface components {
        */
       visitDate: string
       /**
+       * Format: time-local
        * @description The start time on which to check for overlapping
        * @example 10:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description The end time on which to check for overlapping
        * @example 11:00
        */
@@ -3066,11 +3090,13 @@ export interface components {
        */
       visitDate: string
       /**
+       * Format: time-local
        * @description The start time of the official visit
        * @example 10:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description The end time of the official visit
        * @example 11:00
        */
@@ -3210,11 +3236,13 @@ export interface components {
        */
       visitDate: string
       /**
+       * Format: time-local
        * @description The start time of the visit being checked. Optional, but must be supplied with the end time. When the times are supplied only visits overlapping them are returned
        * @example 10:00
        */
       startTime?: string | null
       /**
+       * Format: time-local
        * @description The end time of the visit being checked. Optional, but must be supplied with the start time. When the times are supplied only visits overlapping them are returned
        * @example 11:00
        */
@@ -3239,11 +3267,13 @@ export interface components {
        */
       visitDate: string
       /**
+       * Format: time-local
        * @description The start time of the non-associate's official visit
        * @example 10:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description The end time of the non-associate's official visit
        * @example 11:00
        */
@@ -3461,11 +3491,13 @@ export interface components {
        */
       timeSlotSeq: number
       /**
+       * Format: time-local
        * @description The start time for this visit time slot
        * @example 13:30
        */
       startTime: string
       /**
+       * Format: time-local
        * @description The end time for this visit time slot
        * @example 14:30
        */
@@ -3612,11 +3644,13 @@ export interface components {
        */
       dayCode: components['schemas']['DayType']
       /**
+       * Format: time-local
        * @description Start time
        * @example 09:00
        */
       startTime: string
       /**
+       * Format: time-local
        * @description End time
        * @example 11:00
        */
@@ -3670,7 +3704,9 @@ export interface components {
       prisonTimeSlotId: number
       /** Format: date */
       visitDate: string
+      /** Format: time-local */
       startTime: string
+      /** Format: time-local */
       endTime: string
       visitStatusCode?: string | null
       visitTypeCode: string
@@ -3721,9 +3757,15 @@ export interface components {
        * @description The Official visit date
        */
       visitDate: string
-      /** @description The Official visit start time */
+      /**
+       * Format: time-local
+       * @description The Official visit start time
+       */
       startTime: string
-      /** @description The Official visit end time */
+      /**
+       * Format: time-local
+       * @description The Official visit end time
+       */
       endTime: string
       /**
        * Format: uuid
@@ -4411,9 +4453,15 @@ export interface components {
        * @description The date for the official visit slot
        */
       visitDate: string
-      /** @description The start time for the official visit slot */
+      /**
+       * Format: time-local
+       * @description The start time for the official visit slot
+       */
       startTime: string
-      /** @description The end time for the official visit slot */
+      /**
+       * Format: time-local
+       * @description The end time for the official visit slot
+       */
       endTime: string
       /**
        * Format: uuid
@@ -6250,14 +6298,18 @@ export interface operations {
       query?: never
       header?: never
       path: {
-        jobName: 'IDENTIFY_CANDIDATE_VISITS_TO_CHECK' | 'PROCESS_CANDIDATE_VISITS_TO_CHECK' | 'EXPIRE_VISITS_FOR_REVIEW'
+        jobName:
+          | 'IDENTIFY_CANDIDATE_VISITS_TO_CHECK'
+          | 'IDENTIFY_CANDIDATE_VISITS_TO_RECHECK'
+          | 'PROCESS_CANDIDATE_VISITS_TO_CHECK'
+          | 'EXPIRE_VISITS_FOR_REVIEW'
       }
       cookie?: never
     }
     requestBody?: never
     responses: {
-      /** @description OK */
-      200: {
+      /** @description Accepted */
+      202: {
         headers: {
           [name: string]: unknown
         }
