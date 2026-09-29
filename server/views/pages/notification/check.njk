@@ -53,7 +53,7 @@
           { key: { text: 'Time' }, value: { text: (visit.startTime | toHHmm) + ' to ' + (visit.endTime | toHHmm) + ' (' + (visit.startTime | durationText(visit.endTime)) + ')' } },
           { key: { text: 'Location' }, value: { text: visit.locationDescription } }
         ] %}
-        {% if isVideoVisit %}
+        {% if isScheduledVideoVisit %}
           {% set visitRows = (visitRows.push({ key: { text: 'Video link' }, value: { text: videoLinkUrl }, actions: { items: [{ href: changeVideoLink, text: 'Change', classes: 'govuk-link--no-visited-state' }]} }), visitRows) %}
         {% endif %}
         {{ govukSummaryList({ rows: visitRows }) }}

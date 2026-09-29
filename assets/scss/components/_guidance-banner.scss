@@ -1,0 +1,19 @@
+.ov-guidance-banner {
+  background-color: govuk-colour('purple');
+  color: govuk-colour('white');
+
+  &__container {
+    @include govuk-width-container;
+    padding: govuk-spacing(2) 0;
+  }
+
+  &__message {
+    @include govuk-font($size: 19);
+    margin: 0;
+    color: govuk-colour('white');
+  }
+
+  &__title {
+    margin-right: govuk-spacing(4);
+  }
+}
