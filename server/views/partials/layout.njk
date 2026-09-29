@@ -1,7 +1,6 @@
 {% extends "govuk/template.njk" %}
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 
 {% block head %}
   <link href="{{ '/assets/css/index.css' | assetMap }}" rel="stylesheet"/>
@@ -19,6 +18,7 @@
 
 {% block header %}
   {{ feComponents.header | safe }}
+  {% include 'partials/guidanceBanner.njk' %}
 {% endblock %}
 
 {% block beforeContent %}

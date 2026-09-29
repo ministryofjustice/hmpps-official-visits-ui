@@ -65,7 +65,7 @@ export default class MovementSlipsHandler implements PageHandler {
     }
 
     if (res.locals['validationErrors']) {
-      return res.render('pages/view/movement-slips', { visits: [], now: new Date(), hideBetaBanner: true })
+      return res.render('pages/view/movement-slips', { visits: [], now: new Date(), hideGuidanceBanner: true })
     }
 
     const results = await this.officialVisitsService.getVisits(prisonCode, findByCriteria, 0, 1000, user)
@@ -73,7 +73,7 @@ export default class MovementSlipsHandler implements PageHandler {
     return res.render('pages/view/movement-slips', {
       visits: results.content || [],
       now: new Date(),
-      hideBetaBanner: true,
+      hideGuidanceBanner: true,
     })
   }
 }
