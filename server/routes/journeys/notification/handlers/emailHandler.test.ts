@@ -33,7 +33,10 @@ beforeEach(() => {
   config.featureToggles.emailNotificationsPrisons = 'HEI'
   appSetup()
   officialVisitsService.getNotificationsByOfficialVisitId.mockResolvedValue([{}] as OfficialVisitNotifications)
-  officialVisitsService.getOfficialVisitById.mockResolvedValue({ visitTypeCode: 'VIDEO' } as OfficialVisit)
+  officialVisitsService.getOfficialVisitById.mockResolvedValue({
+    visitTypeCode: 'VIDEO',
+    visitStatus: 'SCHEDULED',
+  } as OfficialVisit)
 })
 
 afterEach(() => {
