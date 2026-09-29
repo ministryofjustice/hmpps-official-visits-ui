@@ -14,7 +14,7 @@ import PrisonerImageRoutes from './prisonerImage/prisonerImageRoutes'
 import { populateUserPermissions } from '../middleware/populateUserPermissions'
 import { requirePermissions } from '../middleware/requirePermissions'
 import { Permission } from '../interfaces/hmppsUser'
-import { visitHistoryTimelineEnabled, emailNotificationsEnabled, visitsNeedReviewEnabled } from '../utils/utils'
+import { emailNotificationsEnabled, visitsNeedReviewEnabled } from '../utils/utils'
 
 export default function routes(_services: Services): Router {
   const router = Router()
@@ -22,7 +22,6 @@ export default function routes(_services: Services): Router {
   router.use(populateUserPermissions)
   router.use((req, res, next) => {
     res.locals.emailNotificationsEnabled = emailNotificationsEnabled(res.locals.user?.activeCaseLoadId)
-    res.locals.visitHistoryTimelineEnabled = visitHistoryTimelineEnabled(res.locals.user?.activeCaseLoadId)
     res.locals.visitsNeedReviewEnabled = visitsNeedReviewEnabled(res.locals.user?.activeCaseLoadId)
     next()
   })

@@ -13,7 +13,6 @@ import {
   toDateString,
   toDuration,
   getParsedDateFromQueryString,
-  getWeekOfDatesStartingMonday,
   toHHmm,
   isDateAndInThePast,
   isVisitDateAndStartTimeInThePast,
@@ -265,42 +264,6 @@ describe('getParsedDateFromQueryString', () => {
   ].forEach(testData => {
     it(`should output ${testData.expected} when supplied with ${testData.input}`, () => {
       expect(getParsedDateFromQueryString(testData.input)).toBe(testData.expected)
-    })
-  })
-})
-
-describe('getWeekOfDatesStartingMonday', () => {
-  const weekOfDates = {
-    weekOfDates: [
-      { date: '2022-12-26', isInFuture: false },
-      { date: '2022-12-27', isInFuture: false },
-      { date: '2022-12-28', isInFuture: false },
-      { date: '2022-12-29', isInFuture: false },
-      { date: '2022-12-30', isInFuture: false },
-      { date: '2022-12-31', isInFuture: false },
-      { date: '2023-01-01', isInFuture: false },
-    ],
-    previousWeek: '2022-12-19',
-    nextWeek: '2023-01-02',
-  }
-
-  it('should return a week of dates starting on the given date when it is a Monday', () => {
-    expect(getWeekOfDatesStartingMonday('2022-12-26')).toStrictEqual(weekOfDates)
-  })
-
-  it('should return a week of dates starting on the previous closest Monday when given a Wednesday', () => {
-    expect(getWeekOfDatesStartingMonday('2022-12-28')).toStrictEqual(weekOfDates)
-  })
-
-  it('should return a week of dates starting on the previous closest Monday when given a Sunday', () => {
-    expect(getWeekOfDatesStartingMonday('2023-01-01')).toStrictEqual(weekOfDates)
-  })
-
-  it('should return an empty array if given an invalid date', () => {
-    expect(getWeekOfDatesStartingMonday('NOT A DATE')).toStrictEqual({
-      weekOfDates: [],
-      previousWeek: '',
-      nextWeek: '',
     })
   })
 })
