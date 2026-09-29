@@ -293,26 +293,31 @@ describe('GET /home - visits that need review card', () => {
   })
 })
 
-describe('Beta banner feedback survey link', () => {
-  it('should link to the survey in a new tab and no longer offer a feedback email', () => {
+describe('Guidance banner', () => {
+  it('should link to SharePoint in a new tab and no longer show the beta banner', () => {
     return request(app)
       .get('/')
       .expect(200)
       .expect(res => {
         const $ = cheerio.load(res.text)
-        const $banner = $('.govuk-phase-banner')
+        expect($('.govuk-phase-banner')).toHaveLength(0)
 
-        const $survey = $banner.find('a[href="https://www.smartsurvey.co.uk/t/4MD6GT/"]')
-        expect($survey).toHaveLength(1)
-        expect($survey.attr('target')).toEqual('_blank')
-        expect($survey.attr('rel')).toEqual('noopener noreferrer')
-        expect($survey.find('.govuk-visually-hidden').text()).toEqual(' (opens in new tab)')
+        const $banner = getByDataQa($, 'guidance-banner')
+        expect($banner).toHaveLength(1)
+
+        const $link = $banner.find(
+          'a[href="https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx"]',
+        )
+        expect($link).toHaveLength(1)
+        expect($link.attr('target')).toEqual('_blank')
+        expect($link.attr('rel')).toEqual('noopener noreferrer')
+        expect($link.find('.govuk-visually-hidden').text()).toEqual(' (opens in new tab)')
 
         expect($banner.find('a[href^="mailto:"]')).toHaveLength(0)
 
         $banner.find('.govuk-visually-hidden').remove()
-        expect($banner.text().replace(/\s+/g, ' ').trim()).toContain(
-          'This is a new service. Please complete our feedback survey to help us improve it. You can find out more on SharePoint.',
+        expect($banner.text().replace(/\s+/g, ' ').trim()).toEqual(
+          'Official Visits guidance View user guides, FAQs and training videos on SharePoint.',
         )
       })
   })
