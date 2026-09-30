@@ -1,3 +1,5 @@
+import './server/utils/azureAppInsights'
+
 import app from './server/index'
 import logger from './logger'
 
