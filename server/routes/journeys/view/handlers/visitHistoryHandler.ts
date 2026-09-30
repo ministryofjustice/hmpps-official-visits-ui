@@ -60,12 +60,27 @@ const NOTIFICATION_STATUS_DISPLAY: Record<UserNotificationStatus, { label: strin
 }
 
 type NotificationReasonTypes =
-  'OFFICIAL_VISIT_CANCELLED' | 'OFFICIAL_VISIT_CREATED' | 'OFFICIAL_VISIT_UPDATED' | 'UNKNOWN'
+  | 'IN_PERSON_VISIT_CONFIRMED'
+  | 'IN_PERSON_VISIT_AMENDED'
+  | 'IN_PERSON_VISIT_CANCELLED'
+  | 'TELEPHONE_VISIT_CONFIRMED'
+  | 'TELEPHONE_VISIT_AMENDED'
+  | 'TELEPHONE_VISIT_CANCELLED'
+  | 'VIDEO_VISIT_CONFIRMED'
+  | 'VIDEO_VISIT_AMENDED'
+  | 'VIDEO_VISIT_CANCELLED'
+  | 'UNKNOWN'
 
 const NOTIFICATION_REASON_LABELS: Record<NotificationReasonTypes, string> = {
-  OFFICIAL_VISIT_CANCELLED: 'Email notification for cancelled visit',
-  OFFICIAL_VISIT_CREATED: 'Email notification for created visit',
-  OFFICIAL_VISIT_UPDATED: 'Email notification for updated visit',
+  IN_PERSON_VISIT_CONFIRMED: 'Confirm booking of an in-person visit',
+  IN_PERSON_VISIT_AMENDED: 'Notify changes to an in-person visit',
+  IN_PERSON_VISIT_CANCELLED: 'Cancellation of an in-person visit',
+  TELEPHONE_VISIT_CONFIRMED: 'Confirm booking of a telephone visit',
+  TELEPHONE_VISIT_AMENDED: 'Notify changes to a telephone visit',
+  TELEPHONE_VISIT_CANCELLED: 'Cancellation of a telephone visit',
+  VIDEO_VISIT_CONFIRMED: 'Confirm booking of a video visit',
+  VIDEO_VISIT_AMENDED: 'Notify changes to a video visit',
+  VIDEO_VISIT_CANCELLED: 'Cancellation of a video visit',
   UNKNOWN: NOT_PROVIDED,
 }
 

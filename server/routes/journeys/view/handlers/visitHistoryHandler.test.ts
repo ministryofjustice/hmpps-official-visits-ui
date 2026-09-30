@@ -96,7 +96,7 @@ describe('OfficialVisitHistoryHandler', () => {
           officialVisitId: ovId,
           templateId: 'template-2',
           emailAddress: 'visitor@example.com',
-          reason: 'OFFICIAL_VISIT_CREATED',
+          reason: 'IN_PERSON_VISIT_CONFIRMED',
           govNotifyNotificationId: '11111111-1111-1111-1111-111111111111',
           emailStatus: 'SENT',
           createdBy: 'Admin',
@@ -108,7 +108,7 @@ describe('OfficialVisitHistoryHandler', () => {
           officialVisitId: ovId,
           templateId: 'template-3',
           emailAddress: 'visitor@example.com',
-          reason: 'OFFICIAL_VISIT_UPDATED',
+          reason: 'IN_PERSON_VISIT_AMENDED',
           govNotifyNotificationId: '22222222-2222-2222-2222-222222222222',
           emailStatus: 'TEMPORARY_FAILURE',
           createdBy: 'Admin',
@@ -148,11 +148,11 @@ describe('OfficialVisitHistoryHandler', () => {
           expect($(date).eq(2).text().trim()).toBe('25 October 2026 at 13:30')
           const description = '.moj-timeline__description'
           expect($(description).text()).toContain('Email address: visitor@example.com')
-          expect($(description).text()).toContain('Reason: Email notification for created visit')
+          expect($(description).text()).toContain('Reason: Confirm booking of an in-person visit')
           expect($(description).text()).toContain('Visit type changed from Video to Telephone')
           expect($(description).text()).toContain('Start time changed from 14:00 to 15:00')
           expect($(description).text()).toContain('End time changed from 15:00 to 16:00')
-          expect($(description).text()).toContain('Reason: Email notification for updated visit')
+          expect($(description).text()).toContain('Reason: Notify changes to an in-person visit')
           expect($(description).text()).toContain('Status: Failed')
 
           expect(officialVisitsService.getOfficialVisitById).toHaveBeenCalledWith(ovId, user)

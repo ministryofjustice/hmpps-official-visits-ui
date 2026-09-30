@@ -21,7 +21,7 @@ export default class OfficialVisitMovementSlipHandler implements PageHandler {
     return res.render('pages/view/movement-slip', {
       visit,
       now: new Date(),
-      hideBetaBanner: true,
+      hideGuidanceBanner: true,
     })
   }
 }

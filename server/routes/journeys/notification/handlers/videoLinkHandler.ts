@@ -12,9 +12,9 @@ export default class VideoLinkHandler implements PageHandler {
 
   public BODY = schemaFactory
 
-  private async isVideoVisit(ovId: string, res: Response) {
+  private async isScheduledVideoVisit(ovId: string, res: Response) {
     const visit = await this.officialVisitsService.getOfficialVisitById(Number(ovId), res.locals.user)
-    return visit?.visitTypeCode === 'VIDEO'
+    return visit?.visitTypeCode === 'VIDEO' && visit.visitStatus === 'SCHEDULED'
   }
 
   GET = async (req: Request, res: Response) => {
@@ -26,7 +26,7 @@ export default class VideoLinkHandler implements PageHandler {
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
-    if (!(await this.isVideoVisit(ovId as string, res))) {
+    if (!(await this.isScheduledVideoVisit(ovId as string, res))) {
       return res.redirect(`/notification/check-email/${ovId}/${action}`)
     }
 
@@ -50,7 +50,7 @@ export default class VideoLinkHandler implements PageHandler {
       return res.redirect(`/notification/enter-email-address/${ovId}/${action}`)
     }
 
-    if (!(await this.isVideoVisit(ovId as string, res))) {
+    if (!(await this.isScheduledVideoVisit(ovId as string, res))) {
       return res.redirect(`/notification/check-email/${ovId}/${action}`)
     }
 
