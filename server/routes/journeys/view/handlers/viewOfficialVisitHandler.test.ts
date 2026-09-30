@@ -337,6 +337,27 @@ describe('View an official visit', () => {
       expect(alert.find('a[href="/view/list"]').text()).toContain('return to search list')
     })
 
+    it('should not render send email alert alongside the cancelled success alert when hasChanged is true', async () => {
+      config.featureToggles.emailNotificationsPrisons = 'HEI'
+      officialVisitsService.getVisitChangeStatus.mockResolvedValue({ hasChanged: true })
+      officialVisitsService.getOfficialVisitById.mockResolvedValue({
+        ...mockVisitByIdVisit,
+        visitStatus: 'CANCELLED',
+        visitStatusDescription: 'Cancelled',
+      })
+      appSetup([AuthorisedRoles.MANAGE])
+      flashProvider.mockImplementation((key: string) => (key === 'updateVerb' ? ['cancelled'] : []))
+
+      const res = await request(app).get(URL)
+      const $ = cheerio.load(res.text)
+
+      expect($('.moj-alert').length).toBe(1)
+      expect($('.moj-alert').text()).toContain('Visit cancelled')
+      expect(res.text).not.toContain(
+        'Information about this visit has changed since a confirmation email was last sent',
+      )
+    })
+
     it('should not render cancelled success alert with bullet point actions when updateVerb is cancelled and feature is disabled', async () => {
       officialVisitsService.getOfficialVisitById.mockResolvedValue({
         ...mockVisitByIdVisit,
