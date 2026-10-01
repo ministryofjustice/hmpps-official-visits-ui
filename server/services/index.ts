@@ -21,14 +21,13 @@ export const services = () => {
     personalRelationshipsApiClient,
     activitiesApiClient,
     manageUsersApiClient,
-    applicationInsightsClient,
     bookAVideoLinkApiClient,
   } = dataAccess()
 
   return {
     applicationInfo,
     auditService: new AuditService(hmppsAuditClient),
-    telemetryService: new TelemetryService(applicationInsightsClient),
+    telemetryService: new TelemetryService(),
     locationsService: new LocationsService(locationsInPrisonApi),
     prisonerService: new PrisonerService(prisonerSearchApi),
     officialVisitsService: new OfficialVisitsService(officialVisitsApi),
