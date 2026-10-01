@@ -138,7 +138,7 @@ export async function checkTimeSlotCapacity(req: Request, res: Response, ovServi
 
   const availableSlots = await ovService.getAvailableSlots(
     res,
-    officialVisit.prisoner.prisonCode,
+    officialVisit.prisonCode,
     selectedSlot.visitDate,
     selectedSlot.visitDate,
     officialVisit.visitType === 'VIDEO',
@@ -193,7 +193,7 @@ export async function cyaGuard(req: Request, res: Response, ovService: OfficialV
   const hasDuplicateContactIds = checkForDuplicateContactIds(visit.officialVisitors || [], visit.socialVisitors || [])
 
   const overlapResult = await ovService.checkForOverlappingVisits(
-    visit.prisoner.prisonCode,
+    visit.prisonCode,
     visit.prisoner.prisonerNumber,
     visit.selectedTimeSlot.visitDate,
     toHHmm(visit.selectedTimeSlot.startTime),

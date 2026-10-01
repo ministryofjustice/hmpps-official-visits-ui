@@ -144,7 +144,7 @@ describe('Visit type handler', () => {
     })
 
     it('should redirect to time-slot for a video visit when the prison has video capacity', () => {
-      appSetup({ officialVisit: { prisoner: { prisonCode: 'MDI' } } })
+      appSetup({ officialVisit: { prisonCode: 'MDI', prisoner: { prisonCode: 'MDI' } } })
       officialVisitsService.getReferenceData.mockResolvedValue([{ code: 'VIDEO', description: 'Video' }])
       officialVisitsService.hasVideoVisitCapacity.mockResolvedValue(true)
 
@@ -157,7 +157,7 @@ describe('Visit type handler', () => {
     })
 
     it('should redirect to no-video-capacity for a video visit when the prison has no video capacity', () => {
-      appSetup({ officialVisit: { prisoner: { prisonCode: 'MDI' } } })
+      appSetup({ officialVisit: { prisonCode: 'MDI', prisoner: { prisonCode: 'MDI' } } })
       officialVisitsService.getReferenceData.mockResolvedValue([{ code: 'VIDEO', description: 'Video' }])
       officialVisitsService.hasVideoVisitCapacity.mockResolvedValue(false)
 
@@ -166,7 +166,7 @@ describe('Visit type handler', () => {
         .send({ visitType: 'VIDEO' })
         .expect(302)
         .expect('location', 'no-video-capacity')
-        .then(() => expectJourneySession(app, 'officialVisit', { prisoner: { prisonCode: 'MDI' } }))
+        .then(() => expectJourneySession(app, 'officialVisit', { prisonCode: 'MDI', prisoner: { prisonCode: 'MDI' } }))
     })
 
     it('should redirect to time-slot with date query param when in amend mode', () => {
