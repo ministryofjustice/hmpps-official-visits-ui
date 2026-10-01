@@ -43,6 +43,7 @@ const mockTimeslot = {
 const appSetup = (
   journeySession = {
     officialVisit: {
+      prisonCode: 'MDI',
       prisoner: mockPrisoner,
       availableSlots: [mockTimeslot],
       visitType: 'IN_PERSON',
@@ -286,6 +287,36 @@ describe('Time slot handler', () => {
             correlationId: expect.any(String),
           })
         })
+    })
+
+    it('should use the prison code of the visit when the prisoner is no longer at that prison', async () => {
+      appSetup({
+        officialVisit: {
+          officialVisitId: 1,
+          prisonCode: 'MDI',
+          prisoner: { ...mockPrisoner, prisonCode: 'OUT' },
+          availableSlots: [mockTimeslot],
+          visitType: 'IN_PERSON',
+          selectedTimeSlot: mockTimeslot,
+        } as Partial<OfficialVisitJourney>,
+      })
+
+      await request(app).get(`/manage/amend/1/${UUID}/time-slot`).expect(200)
+
+      expect(officialVisitsService.getAvailableSlots).toHaveBeenCalledWith(
+        expect.anything(),
+        'MDI',
+        '2025-12-25',
+        '2026-01-31',
+        false,
+        1,
+      )
+      expect(activitiesService.getPrisonersSchedule).toHaveBeenCalledWith(
+        'MDI',
+        '2025-12-25',
+        mockPrisoner.prisonerNumber,
+        user,
+      )
     })
   })
 

@@ -24,7 +24,8 @@ export default class TimeSlotHandler implements PageHandler {
     const selectedDate = getParsedDateFromQueryString(date.toString(), new Date())
     const { user } = res.locals
     const { officialVisit } = req.session.journey
-    const { prisonCode, prisonerNumber } = officialVisit.prisoner
+    const { prisonCode } = officialVisit
+    const { prisonerNumber } = officialVisit.prisoner
 
     const selectedMonthStart = startOfMonth(new Date(selectedDate))
     const today = startOfToday()
@@ -93,7 +94,7 @@ export default class TimeSlotHandler implements PageHandler {
     const slotKey = `${selectedSlot.visitSlotId}|${selectedSlot.visitDate}`
     if (visit.nonAssociationWarningShownFor !== slotKey) {
       const nonAssociationVisits = await this.officialVisitsService.checkForNonAssociationVisits(
-        visit.prisoner.prisonCode,
+        visit.prisonCode,
         visit.prisoner.prisonerNumber,
         selectedSlot.visitDate,
         res.locals.user,

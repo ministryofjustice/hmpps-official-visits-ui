@@ -41,14 +41,13 @@ export default class VisitTypeHandler implements PageHandler {
     if (
       visitType.code === 'VIDEO' &&
       !(await this.officialVisitsService.hasVideoVisitCapacity(
-        req.session.journey.officialVisit.prisoner.prisonCode,
+        req.session.journey.officialVisit.prisonCode,
         res.locals.user,
       ))
     ) {
       return res.redirect('no-video-capacity')
     }
 
-    // TOOD: Revisit resetting journey data when changing data on CYA
     saveVisitType(req.session.journey, visitType)
     return res.redirect(`time-slot`)
   }

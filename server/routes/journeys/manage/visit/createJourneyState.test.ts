@@ -423,6 +423,7 @@ describe('cyaGuard - visit in the past', () => {
           officialVisit: {
             officialVisitId: 1,
             visitType: 'VIDEO' as VisitType,
+            prisonCode: 'MDI',
             prisoner: { prisonCode: 'MDI', prisonerNumber: 'A1234BC' },
             officialVisitors: [{ contactId: 1 }],
             socialVisitors: [],
