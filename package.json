@@ -32,8 +32,6 @@
   },
   "dependencies": {
     "@aws-sdk/client-sqs": "3.1136.0",
-    "@aws-sdk/core": "3.978.0",
-    "@axe-core/playwright": "^4.13.0",
     "@microsoft/applicationinsights-web": "3.4.4",
     "@ministryofjustice/frontend": "11.1.0",
     "@ministryofjustice/hmpps-auth-clients": "^3.0.0",
@@ -41,7 +39,6 @@
     "@ministryofjustice/hmpps-monitoring": "^2.1.0",
     "@ministryofjustice/hmpps-rest-client": "^2.2.0",
     "applicationinsights": "^2.9.8",
-    "body-parser": "^2.3.0",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
     "compression": "^1.8.2",
@@ -56,18 +53,16 @@
     "http-errors": "^2.0.1",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.18.1",
-    "moment": "2.31.0",
     "nocache": "^4.0.0",
     "nunjucks": "^3.2.4",
     "passport": "^0.7.0",
     "passport-oauth2": "^1.8.0",
-    "qs": "6.16.0",
     "redis": "^6.2.1",
-    "superagent": "^10.3.0",
     "uuid": "14.0.2",
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@jgoz/esbuild-plugin-typecheck": "^5.0.0",
     "@ministryofjustice/eslint-config-hmpps": "^1.0.3",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.6",
@@ -76,7 +71,6 @@
     "@tsconfig/node24": "^24.0.5",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
-    "@types/cheerio": "^0.22.35",
     "@types/compression": "^1.8.1",
     "@types/connect-flash": "0.0.40",
     "@types/express-session": "^1.19.0",
@@ -90,14 +84,12 @@
     "@types/passport-oauth2": "^1.8.0",
     "@types/superagent": "^8.1.11",
     "@types/supertest": "^7.2.1",
-    "@types/uuid": "^10.0.0",
     "audit-ci": "^7.1.0",
     "aws-sdk-client-mock": "^4.1.0",
     "better-npm-audit": "^3.11.0",
     "cheerio": "1.2.0",
     "chokidar": "^5.0.0",
     "concurrently": "10.0.5",
-    "dotenv": "^18.0.3",
     "esbuild": "0.28.2",
     "esbuild-plugin-clean": "^1.0.1",
     "esbuild-plugin-copy": "^2.1.1",
@@ -114,6 +106,7 @@
     "playwright-ctrf-json-reporter": "^0.0.29",
     "prettier": "^3.9.8",
     "prettier-plugin-jinja-template": "^2.2.0",
+    "superagent": "^10.3.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.12",
     "typescript": "^6.0.3"
@@ -133,7 +126,7 @@
     },
     "openapi-typescript": {
       "typescript": "$typescript",
-      "js-yaml": "5.4.2"
+      "js-yaml": "4.3.2"
     },
     "brace-expansion": "5.0.12",
     "js-yaml": "5.4.2",
@@ -141,7 +134,6 @@
     "@opentelemetry/core": "2.11.0",
     "@opentelemetry/resources": "2.11.0",
     "@opentelemetry/sdk-trace-base": "2.11.0",
-    "@opentelemetry/sdk-trace-web": "2.11.0",
-    "moment": "$moment"
+    "@opentelemetry/sdk-trace-web": "2.11.0"
   }
 }

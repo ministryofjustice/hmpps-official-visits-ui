@@ -38,6 +38,15 @@
     {
       "matchManagers": ["github-actions"],
       "fileMatch": ["^\\.github/workflows/.*\\.yml$"]
+    },
+    {
+      "description": "openapi-typescript needs js-yaml 4.x, so the override scoped under it must not follow the top-level js-yaml override to 5.x",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["overrides"],
+      "matchPackageNames": ["js-yaml"],
+      "matchCurrentVersion": "<5.0.0",
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     }
   ],
   "vulnerabilityAlerts": {

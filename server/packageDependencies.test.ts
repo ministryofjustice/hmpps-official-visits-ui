@@ -8,3 +8,11 @@ describe('app insights compatibility', () => {
     expect(packageData.dependencies.bunyan).toMatch(/[^\.]1\..*/)
   })
 })
+
+describe('type generation compatibility', () => {
+  it('keeps js-yaml v4 for openapi-typescript', () => {
+    // @redocly/openapi-core calls js-yaml's types.merge, which v5 removed
+    const packageData = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
+    expect(packageData.overrides['openapi-typescript']['js-yaml']).toMatch(/^4\./)
+  })
+})
