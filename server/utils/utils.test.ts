@@ -5,11 +5,8 @@ import {
   initialiseName,
   formatDate,
   formatOverEighteen,
-  dateToSimpleTime,
   dateAtTime,
   parseDatePickerDate,
-  simpleDateToDate,
-  simpleTimeToDate,
   toDateString,
   toDuration,
   getParsedDateFromQueryString,
@@ -31,7 +28,6 @@ import {
   coerceInt,
   getTime,
   socialVisitorsPageEnabled,
-  timeRangesOverlap,
   buildCalendarMonths,
   emailNotificationsEnabled,
   visitsNeedReviewEnabled,
@@ -135,55 +131,6 @@ describe('parseDatePickerDate', () => {
     const date = parseDatePickerDate('02/09/223')
 
     expect(date).toEqual(parse('0223-09-02', 'yyyy-MM-dd', new Date()))
-  })
-})
-
-describe('simpleDateToDate', () => {
-  it('has all empty fields', () => {
-    expect(simpleDateToDate({ day: '', month: '', year: '' })).toEqual(null)
-  })
-
-  it('is invalid', () => {
-    expect(isValid(simpleDateToDate({ day: '31', month: '02', year: '2022' }))).toBeFalsy()
-  })
-
-  it('is valid', () => {
-    const date = simpleDateToDate({ day: '20', month: '03', year: '2022' })
-    expect(date).toEqual(parse('2022-03-20', 'yyyy-MM-dd', new Date()))
-  })
-})
-
-describe('simpleTimeToDate', () => {
-  it('has all empty fields', () => {
-    expect(simpleTimeToDate({ hour: '', minute: '' })).toEqual(null)
-  })
-
-  it('is invalid', () => {
-    expect(isValid(simpleTimeToDate({ hour: '25', minute: '00' }))).toBeFalsy()
-  })
-
-  it('is valid', () => {
-    const date = simpleTimeToDate({ hour: '13', minute: '35' })
-    expect(date).toEqual(parse('13:35', 'HH:mm', new Date(0)))
-  })
-})
-
-describe('dateToSimpleTime', () => {
-  // TODO: These tests suffer from timezone issues - Tim to address
-  it('invalid date returns undefined', () => {
-    expect(dateToSimpleTime(null)).toEqual(undefined)
-    expect(dateToSimpleTime(new Date('1970-02-32T17:50:00.000Z'))).toEqual(undefined)
-  })
-
-  it('is valid', () => {
-    expect(dateToSimpleTime(new Date('1970-01-01T17:50:00.000Z'))).toEqual({ hour: '17', minute: '50' })
-    expect(dateToSimpleTime(new Date('1970-01-01T22:22:00.000Z'))).toEqual({ hour: '22', minute: '22' })
-    expect(dateToSimpleTime(new Date('1977-10-03T23:59:00.000Z'))).toEqual({ hour: '23', minute: '59' })
-  })
-
-  it('pads hour and minute to 2-digits', () => {
-    expect(dateToSimpleTime(new Date('1970-01-01T01:03:00.000Z'))).toEqual({ hour: '01', minute: '03' })
-    expect(dateToSimpleTime(new Date('1970-01-01T11:02:00.000Z'))).toEqual({ hour: '11', minute: '02' })
   })
 })
 
@@ -554,26 +501,6 @@ describe('socialVisitorsPageEnabled', () => {
     mockConfig.featureToggles.allowSocialVisitorsPrisons = 'MDI'
     mockReq.session!.journey.officialVisit.socialVisitors = undefined
     expect(socialVisitorsPageEnabled(mockReq as Request)).toBe(true)
-  })
-})
-
-describe('timeRangesOverlap', () => {
-  it('returns true when time ranges overlap', () => {
-    expect(timeRangesOverlap('09:00', '10:00', '09:30', '10:30')).toBe(true)
-    expect(timeRangesOverlap('09:00', '10:00', '08:30', '09:30')).toBe(true)
-    expect(timeRangesOverlap('09:00', '10:00', '09:00', '10:00')).toBe(true)
-  })
-
-  it('returns false when time ranges do not overlap', () => {
-    expect(timeRangesOverlap('09:00', '10:00', '10:00', '11:00')).toBe(false)
-    expect(timeRangesOverlap('09:00', '10:00', '08:00', '09:00')).toBe(false)
-    expect(timeRangesOverlap('09:00', '10:00', '11:00', '12:00')).toBe(false)
-  })
-
-  it('returns true for invalid time inputs', () => {
-    expect(timeRangesOverlap('', '10:00', '09:00', '11:00')).toBe(true)
-    expect(timeRangesOverlap('09:00', '', '09:00', '11:00')).toBe(true)
-    expect(timeRangesOverlap('invalid', '10:00', '09:00', '11:00')).toBe(true)
   })
 })
 

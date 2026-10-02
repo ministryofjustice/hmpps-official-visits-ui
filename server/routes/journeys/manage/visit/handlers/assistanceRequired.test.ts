@@ -7,7 +7,7 @@ import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { getArrayItemPropById, getPageHeader } from '../../../../testutils/cheerio'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { mockSchedule, mockPrisoner } from '../../../../../testutils/mocks'
+import { mockPrisoner } from '../../../../../testutils/mocks'
 import { expectNoErrorMessages } from '../../../../testutils/expectErrorMessage'
 import { Journey } from '../../../../../@types/express'
 import { OfficialVisitJourney } from '../journey'
@@ -111,7 +111,6 @@ beforeEach(() => {
       availableGroups: 2,
     },
   ])
-  officialVisitsService.getSchedule.mockResolvedValue(mockSchedule)
   officialVisitsService.checkForOverlappingVisits.mockResolvedValue({
     prisonerNumber: 'G4793VF',
     overlappingPrisonerVisits: [],

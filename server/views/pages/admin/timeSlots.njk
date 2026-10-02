@@ -68,13 +68,8 @@
     {% for slot in slots %}
       {% set manageUrl = '/admin/time-slot/' + slot.timeSlot.prisonTimeSlotId +'/locations'%}
       {% set editUrl = "/admin/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/edit?day=" ~ dayCode %}
-      {% set deleteUrl = "/admin/time-slot/"~ slot.timeSlot.prisonTimeSlotId~"/delete" %}
       {% set slotContext = ' for ' + dayLabel + ' ' + slot.timeSlot.startTime + ' to ' + slot.timeSlot.endTime %}
       {% set actionLinks = '<span class="actions"><a class="govuk-link--no-visited-state" href="' + manageUrl + '">Manage locations<span class="govuk-visually-hidden">' + slotContext + '</span></a> <a class="govuk-link--no-visited-state" href="' + editUrl + '">Edit<span class="govuk-visually-hidden"> time slot' + slotContext + '</span></a>' %}
-      {# Disabled delete functionality temporarily #}
-      {# {% if slot.visitSlots and slot.visitSlots.length == 0 %}
-        {% set actionLinks = actionLinks + ' <a href="' + deleteUrl + '">Delete</a>' %}
-      {% endif %} #}
       {% set actionLinks = actionLinks + '</span>' %}
       {% set rows = (rows.push([
         { text: slot.timeSlot.startTime },
