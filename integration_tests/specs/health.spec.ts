@@ -3,7 +3,6 @@ import hmppsAuth from '../mockApis/hmppsAuth'
 import tokenVerification from '../mockApis/tokenVerification'
 
 import { resetStubs } from '../testUtils'
-import locationsInsidePrisonApi from '../mockApis/locationsInsidePrisonApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import officialVisitsApi from '../mockApis/officialVisitsApi'
 import personalRelationshipsApi from '../mockApis/personalRelationshipsApi'
@@ -22,7 +21,6 @@ test.describe('Health', () => {
       await Promise.all([
         hmppsAuth.stubPing(),
         tokenVerification.stubPing(),
-        locationsInsidePrisonApi.stubPing(),
         prisonApi.stubPing(),
         personalRelationshipsApi.stubPing(),
         officialVisitsApi.stubPing(),
@@ -57,7 +55,6 @@ test.describe('Health', () => {
       await Promise.all([
         hmppsAuth.stubPing(),
         tokenVerification.stubPing(500),
-        locationsInsidePrisonApi.stubPing(),
         prisonApi.stubPing(),
         personalRelationshipsApi.stubPing(),
         officialVisitsApi.stubPing(),

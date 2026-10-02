@@ -214,7 +214,7 @@ test.describe('View official visits', () => {
     await visitListPage.getSearchButton().click()
 
     // TODO: Flesh this test out when we have designs on what limited view entails
-    expect(visitListPage.page.getByRole('link', { name: 'Select' })).toHaveCount(0)
+    await expect(visitListPage.page.getByRole('link', { name: 'Select' })).toHaveCount(0)
   })
 
   test('should allow access as far as visit summary for VIEW role', async ({ page }) => {
@@ -251,7 +251,7 @@ test.describe('View official visits', () => {
     await visitListPage.getSearchButton().click()
 
     // TODO: Flesh this test out when we have designs on what limited view entails
-    expect(visitListPage.page.getByRole('link', { name: 'Select' })).toHaveCount(0)
+    await expect(visitListPage.page.getByRole('link', { name: 'Select' })).toHaveCount(0)
   })
 
   test('Happy path', async ({ page }) => {

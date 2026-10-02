@@ -202,7 +202,7 @@ test.describe('Complete official visits', () => {
     await page.getByRole('button', { name: 'Continue' }).click()
 
     expect(page.url()).toContain('http://localhost:3007/view/visit/1?backTo=')
-    expect(page.getByRole('alert', { name: 'success: Visit marked as' })).toBeVisible()
+    await expect(page.getByRole('alert', { name: 'success: Visit marked as' })).toBeVisible()
 
     await page.getByRole('link', { name: 'Return to search list' }).click()
 

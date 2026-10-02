@@ -125,10 +125,6 @@ export default class OfficialVisitsService {
     )
   }
 
-  public async getSchedule(res: Response, prisonId: string, date: string) {
-    return this.officialVisitsApiClient.getSchedule(prisonId, date, res.locals.user)
-  }
-
   public async getVisits(prisonId: string, criteria: FindByCriteria, page: number, size: number, user: HmppsUser) {
     logger.info(`Get visits for prison ${prisonId} with criteria ${JSON.stringify(criteria)}`)
     return this.officialVisitsApiClient.getVisits(prisonId, criteria, page, size, user)
@@ -263,16 +259,6 @@ export default class OfficialVisitsService {
   ) {
     logger.info(`Update visit slot ${visitSlotId} called by ${user.userId}`)
     return this.officialVisitsApiClient.updateVisitSlot(visitSlotId, body, user)
-  }
-
-  public async deleteVisitSlot(visitSlotId: number, user: HmppsUser) {
-    logger.info(`Delete visit slot ${visitSlotId} called by ${user.userId}`)
-    return this.officialVisitsApiClient.deleteVisitSlot(visitSlotId, user)
-  }
-
-  public async deleteTimeSlot(timeSlotId: number, user: HmppsUser) {
-    logger.info(`Delete time slot ${timeSlotId} called by ${user.userId}`)
-    return this.officialVisitsApiClient.deleteTimeSlot(timeSlotId, user)
   }
 
   public async checkForOverlappingVisits(

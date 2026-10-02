@@ -13,7 +13,6 @@ import setUpFlash from '../../middleware/setUpFlash'
 import { Breadcrumbs } from '../../middleware/breadcrumbs'
 import OfficialVisitsService from '../../services/officialVisitsService'
 import PrisonerService from '../../services/prisonerService'
-import LocationsService from '../../services/locationsService'
 import { testUtilRoutes } from './testUtilRoute'
 import { AuthorisedRoles } from '../../middleware/populateUserPermissions'
 import TelemetryService from '../../services/telemetryService'
@@ -21,7 +20,6 @@ import { ApplicationInfo } from '../../applicationInfo'
 
 jest.mock('../../services/auditService')
 jest.mock('../../services/prisonerService')
-jest.mock('../../services/locationsService')
 jest.mock('../../services/officialVisitsService')
 jest.mock('../../services/telemetryService')
 
@@ -124,7 +122,6 @@ export function appWithAllRoutes({
     auditService: new AuditService(null) as jest.Mocked<AuditService>,
     prisonerService: new PrisonerService(null) as jest.Mocked<PrisonerService>,
     officialVisitsService: new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>,
-    locationsService: new LocationsService(null) as jest.Mocked<LocationsService>,
     telemetryService: new TelemetryService(null) as jest.Mocked<TelemetryService>,
     ...services,
   } as Services

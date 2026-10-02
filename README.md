@@ -24,7 +24,7 @@ npm run build
 ## Setting up a local .env file (to provide essential configuration values)
 
 Create a file `.env` in the root of your project clone. This file is in .gitignore, so should never be committed.
-Copy `.env.example` -> `.env`
+Copy `.env-example` -> `.env`
 Environment variables set in here will be available when running `start:dev`
 For the full content of the .env file please request from the developers on the team.
 
@@ -40,7 +40,7 @@ npm run test
 
 To allow authenticated users to access your application, even locally, you will need to reference a running
 instance of `hmpps-auth`. This can be local in a docker container, but more usually you would reference
-a running instance in the Cloud Platform dev environment, by setting the environment variable `HMPPS_AUTH_API_URL`
+a running instance in the Cloud Platform dev environment, by setting the environment variable `HMPPS_AUTH_URL`
 and providing this via an environment variable in your `.env` file.
 
 ### REDIS
@@ -53,7 +53,7 @@ this is provided via a local docker container. It can be configured not to use R
 
 Pull and start a REDIS docker container.
 ```bash
-docker-compose pull && docker-compose up - d
+docker-compose pull && docker-compose up -d
 ```
 
 Start the server in dev mode (this will load your .env file values)
@@ -101,7 +101,3 @@ Or run tests with the Playwright UI:
 Alternatively, `concurrently` can be used to run the service and playwright in a single command with:
 
 `npx concurrently "npm run start-feature" "npm run int-test-ui"`
-
-## Change log
-
-A changelog for the service is available [here](./CHANGELOG.md)
