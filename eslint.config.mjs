@@ -12,4 +12,15 @@ export default [
       'no-bitwise': 0,
     },
   },
+  {
+    files: ['integration_tests/**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        project: true,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'error',
+    },
+  },
 ]

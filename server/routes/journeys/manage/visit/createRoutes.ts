@@ -21,9 +21,6 @@ import journeyStateGuard, { JourneyStateGuard } from '../../../../middleware/jou
 import { socialVisitorsPageEnabled } from '../../../../utils/utils'
 import CancellationCheckHandler from './handlers/cancellationCheckHandler'
 import { getProgressTrackerState } from './createJourneyState'
-import { Page } from '../../../../services/auditService'
-
-export const routePage: Record<string, Page> = {}
 
 export default function CreateRoutes({
   auditService,

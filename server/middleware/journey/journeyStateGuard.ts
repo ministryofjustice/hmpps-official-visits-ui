@@ -3,10 +3,6 @@ import { validate } from 'uuid'
 
 export type JourneyStateGuard = { [pageName: string]: (req: Request) => string | undefined }
 
-export function isMissingValues<T>(obj: T, keys: Array<keyof T>): boolean {
-  return keys.some(key => obj?.[key] === undefined)
-}
-
 export default function journeyStateGuard(rules: JourneyStateGuard) {
   return (req: Request, res: Response, next: NextFunction): void => {
     const uuidMatch = req.originalUrl.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/)

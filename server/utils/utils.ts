@@ -15,7 +15,6 @@ import {
   isAfter,
   isFuture,
 } from 'date-fns'
-import { enGB } from 'date-fns/locale'
 import { Request } from 'express'
 import { components } from '../@types/officialVisitsApi'
 import config from '../config'
@@ -99,23 +98,6 @@ export const parseDatePickerDate = (datePickerDate: string): Date => {
   return date
 }
 
-export const simpleDateToDate = (date: { day: string; month: string; year: string }): Date =>
-  date.day || date.month || date.year
-    ? parse(`${date.day}/${date.month}/${date.year}`, 'P', new Date(), { locale: enGB })
-    : null
-
-export const simpleTimeToDate = (time: { hour: string; minute: string }): Date =>
-  time && (time.hour || time.minute)
-    ? parse(`${time.hour}:${time.minute}`, 'HH:mm', new Date(0), { locale: enGB })
-    : null
-
-export const dateToSimpleTime = (date: Date): { hour: string; minute: string } => {
-  if (!isValid(date)) return undefined
-  const hour = format(date, 'HH')
-  const minute = format(date, 'mm')
-  return { hour, minute }
-}
-
 export const dateAtTime = (date: Date, time: Date): Date =>
   set(date, { hours: time.getHours(), minutes: time.getMinutes() })
 
@@ -151,10 +133,6 @@ export const getParsedDateFromQueryString = (dateFromQueryString: string, defaul
       : ensureNotBeforeToday(dateFromQueryString)
 
   return format(parsedDate, 'yyyy-MM-dd')
-}
-
-export const prisonerTimePretty = (dateToFormat: string): string => {
-  return dateToFormat ? format(parseISO(dateToFormat), 'h:mmaaa').replace(':00', '') : null
 }
 
 export const ensureNotBeforeToday = (dateToFormat: string): Date => {
@@ -395,31 +373,6 @@ export const translateDay = (dayCode: string) => {
     default:
       return ''
   }
-}
-
-export const timeRangesOverlap = (
-  startTime1: string,
-  endTime1: string,
-  startTime2: string,
-  endTime2: string,
-): boolean => {
-  const toMinutes = (time: string): number => {
-    if (!time) return -1
-    const [h, m] = time.split(':').map(Number)
-    if (Number.isNaN(h) || Number.isNaN(m)) return -1
-    return h * 60 + m
-  }
-
-  const start1 = toMinutes(startTime1)
-  const end1 = toMinutes(endTime1)
-  const start2 = toMinutes(startTime2)
-  const end2 = toMinutes(endTime2)
-
-  if (start1 === -1 || end1 === -1 || start2 === -1 || end2 === -1) {
-    return true
-  }
-
-  return start1 < end2 && start2 < end1
 }
 
 export type CalendarDay = {

@@ -34,22 +34,6 @@ export const visitSlotNoVisits: VisitSlot = {
   createdTime: '2026-01-01T09:00:00Z',
 }
 
-export const visitSlotWithVisits: VisitSlot = {
-  visitSlotId: 1,
-  prisonCode: 'LEI',
-  prisonTimeSlotId: 1,
-  dpsLocationId: '1',
-  locationDescription: 'Room 1',
-  locationType: 'ROOM',
-  locationMaxCapacity: 2,
-  maxAdults: 2,
-  maxGroups: 1,
-  maxVideo: 0,
-  hasVisit: true,
-  createdBy: 'TEST_USER',
-  createdTime: '2026-01-01T09:00:00Z',
-}
-
 export const timeSlotSummaryNoVisits: TimeSlotSummaryItem = {
   timeSlot: {
     prisonTimeSlotId: 1,
@@ -65,29 +49,6 @@ export const timeSlotSummaryNoVisits: TimeSlotSummaryItem = {
     updatedTime: '2026-01-02T10:00:00Z',
   },
   visitSlots: [visitSlotNoVisits],
-}
-
-export const timeSlotWithVisits: TimeSlotSummaryItem = {
-  timeSlot: {
-    prisonTimeSlotId: 1,
-    prisonCode: 'LEI',
-    dayCode: 'MON',
-    startTime: '09:00',
-    endTime: '10:00',
-    effectiveDate: '2026-01-01',
-    expiryDate: '2026-12-31',
-    createdBy: 'TEST_USER',
-    createdTime: '2026-01-01T09:00:00Z',
-    updatedBy: 'TEST_USER',
-    updatedTime: '2026-01-02T10:00:00Z',
-  },
-  visitSlots: [visitSlotWithVisits],
-}
-
-export const timeSlotSummaryWithVisits: TimeSlotSummary = {
-  prisonCode: 'LEI',
-  prisonName: 'Leeds (HMP)',
-  timeSlots: [timeSlotWithVisits],
 }
 
 export const visitLocations: VisitLocation[] = [
@@ -111,30 +72,6 @@ export const timeSlotSummaryMdi: TimeSlotSummary = {
         prisonCode: 'MDI',
         createdBy: 'test',
         createdTime: '2026-01-01T09:00:00',
-      },
-      visitSlots: [],
-    },
-  ],
-}
-
-// Variant where the time slot has no visitSlots associated (used to test deleting a time slot)
-export const timeSlotSummaryNoVisitSlots: TimeSlotSummary = {
-  prisonCode: 'LEI',
-  prisonName: 'Leeds (HMP)',
-  timeSlots: [
-    {
-      timeSlot: {
-        prisonTimeSlotId: 1,
-        prisonCode: 'LEI',
-        dayCode: 'MON',
-        startTime: '09:00',
-        endTime: '10:00',
-        effectiveDate: '2026-01-01',
-        expiryDate: '2026-12-31',
-        createdBy: 'TEST_USER',
-        createdTime: '2026-01-01T09:00:00Z',
-        updatedBy: 'TEST_USER',
-        updatedTime: '2026-01-02T10:00:00Z',
       },
       visitSlots: [],
     },

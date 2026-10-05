@@ -105,19 +105,6 @@ export const sortedMockScheduleEvents = [
   },
 ] as ScheduledEvent[]
 
-export const mockSchedule = [
-  {
-    id: 1,
-    startTime: '08:00',
-    endTime: '17:00',
-    eventName: 'ROTL - out of prison',
-    typeCode: 'ACT',
-    typeDescription: 'Activity',
-    locationCode: 'OUT',
-    locationDescription: 'Out of prison',
-  },
-]
-
 export const contactRestrictionSummary = {
   active: [
     {
