@@ -111,6 +111,13 @@ export default class AmendVisitLandingHandler implements PageHandler {
         ? createdUser
         : await this.manageUsersService.getUserByUsername(visit.updatedBy, user)
 
+    const officialVisitors = enrichedVisitors
+      .filter(o => o.relationshipTypeCode === 'OFFICIAL')
+      .map(this.mapVisitorToJourneyVisitor) as JourneyVisitor[]
+    const socialVisitors = enrichedVisitors
+      .filter(o => o.relationshipTypeCode === 'SOCIAL')
+      .map(this.mapVisitorToJourneyVisitor) as JourneyVisitor[]
+
     // Save to journey data
     req.session.journey.officialVisit = {
       dpsLocationId: visit.dpsLocationId,
@@ -138,16 +145,13 @@ export default class AmendVisitLandingHandler implements PageHandler {
       visitDate: visit.visitDate,
       visitStatusCode: visit.visitStatus,
       visitType: visit.visitTypeCode,
-      officialVisitors: enrichedVisitors
-        .filter(o => o.relationshipTypeCode === 'OFFICIAL')
-        .map(this.mapVisitorToJourneyVisitor) as JourneyVisitor[],
-      socialVisitors: enrichedVisitors
-        .filter(o => o.relationshipTypeCode === 'SOCIAL')
-        .map(this.mapVisitorToJourneyVisitor) as JourneyVisitor[],
+      officialVisitors,
+      socialVisitors,
     }
 
     req.session.journey.amendVisit = {
       backTo: b64BackTo,
+      originalVisitors: [...officialVisitors, ...socialVisitors],
     }
 
     const tryDecodeB64 = (b64: string) => {

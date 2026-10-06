@@ -14,6 +14,7 @@ import {
   cyaGuard,
 } from './createJourneyState'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
+import { JourneyVisitor } from './journey'
 
 describe('Create Journey Guard', () => {
   const mockJourney = () => {
@@ -195,6 +196,82 @@ describe('Create Journey Guard', () => {
         officialVisitorId: undefined,
       },
     ])
+  })
+
+  it('should restore a visitor from the original visit when they have been deselected during an amend journey', () => {
+    const journey = mockJourney()
+    journey.officialVisit.officialVisitors = []
+    journey.amendVisit = {
+      originalVisitors: [
+        {
+          contactId: 101,
+          relationshipToPrisonerCode: 'SOL',
+          officialVisitorId: 55,
+          assistedVisit: true,
+          assistanceNotes: 'original assistance',
+          equipment: true,
+          equipmentNotes: 'original equipment',
+          alreadyOnVisit: true,
+        } as JourneyVisitor,
+      ],
+    }
+
+    const actual = recallContacts(journey, 'O', [
+      { contactId: 101, relationshipToPrisonerCode: 'SOL' } as ApprovedContact,
+      { contactId: 102, relationshipToPrisonerCode: 'POL' } as ApprovedContact,
+    ])
+
+    expect(actual).toEqual([
+      {
+        contactId: 101,
+        relationshipToPrisonerCode: 'SOL',
+        officialVisitorId: 55,
+        assistedVisit: true,
+        assistanceNotes: 'original assistance',
+        equipment: true,
+        equipmentNotes: 'original equipment',
+        alreadyOnVisit: true,
+      },
+      {
+        contactId: 102,
+        relationshipToPrisonerCode: 'POL',
+        officialVisitorId: undefined,
+        assistedVisit: undefined,
+        assistanceNotes: undefined,
+        equipment: undefined,
+        equipmentNotes: undefined,
+        alreadyOnVisit: false,
+      },
+    ])
+  })
+
+  it('should prefer the current journey visitor over the original visit visitor', () => {
+    const journey = mockJourney()
+    journey.officialVisit.officialVisitors = [
+      {
+        contactId: 101,
+        relationshipToPrisonerCode: 'SOL',
+        officialVisitorId: 55,
+        assistanceNotes: 'edited',
+      } as JourneyVisitor,
+    ]
+    journey.amendVisit = {
+      originalVisitors: [
+        {
+          contactId: 101,
+          relationshipToPrisonerCode: 'SOL',
+          officialVisitorId: 55,
+          assistanceNotes: 'original',
+        } as JourneyVisitor,
+      ],
+    }
+
+    const actual = recallContacts(journey, 'O', [
+      { contactId: 101, relationshipToPrisonerCode: 'SOL' } as ApprovedContact,
+    ])
+
+    expect(actual[0].officialVisitorId).toEqual(55)
+    expect(actual[0].assistanceNotes).toEqual('edited')
   })
 })
 
