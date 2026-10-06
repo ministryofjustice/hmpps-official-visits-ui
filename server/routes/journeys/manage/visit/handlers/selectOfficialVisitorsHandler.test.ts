@@ -35,7 +35,7 @@ const personalRelationshipsService = new PersonalRelationshipsService(null) as j
 let app: Express
 
 const appSetup = (
-  journeySession = {
+  journeySession: Journey = {
     officialVisit: {
       prisoner: {
         ...mockPrisoner,
@@ -55,7 +55,7 @@ const appSetup = (
       },
       visitType: 'IN_PERSON',
     } as OfficialVisitJourney,
-  },
+  } as Journey,
   userRoles: AuthorisedRoles[] = user.userRoles as AuthorisedRoles[],
 ) => {
   config.featureToggles.allowSocialVisitorsPrisons = 'MDI'
@@ -782,6 +782,43 @@ describe('Select official visitors', () => {
 
       const journeySession = await getJourneySession(app, 'officialVisit')
       expect(journeySession.officialVisitors).toHaveLength(2)
+    })
+
+    it('should keep the official visitor id when a visitor is deselected then reselected (amend)', async () => {
+      const amendUrl = `/manage/amend/123/${journeyId()}/select-official-visitors`
+      const originalVisitors = [
+        { ...mockOfficialVisitors[0], officialVisitorId: 55, alreadyOnVisit: true },
+        { ...mockOfficialVisitors[1], officialVisitorId: 56, alreadyOnVisit: true },
+      ]
+
+      appSetup({
+        officialVisit: {
+          prisoner: {
+            ...mockPrisoner,
+            restrictions: mockPrisonerRestrictions,
+          },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          officialVisitId: 123,
+          officialVisitors: [originalVisitors[1]],
+          socialVisitors: [],
+        } as OfficialVisitJourney,
+        amendVisit: { originalVisitors },
+      })
+
+      await request(app)
+        .post(amendUrl)
+        .send({ selected: ['101-SOL', '102-POL'] })
+        .expect(302)
+        .expect('location', 'select-social-visitors')
+        .expect(() => expectNoErrorMessages())
+
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      const visitorIds = journeySession.officialVisitors.map((v: JourneyVisitor) => [v.contactId, v.officialVisitorId])
+      expect(visitorIds).toEqual([
+        [101, 55],
+        [102, 56],
+      ])
     })
 
     it('should handle official visitors with same contact ID but different relationship codes', async () => {

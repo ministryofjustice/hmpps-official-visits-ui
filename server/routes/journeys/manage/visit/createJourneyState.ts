@@ -83,10 +83,11 @@ export function saveVisitors(journey: Journey, relationshipType: 'O' | 'S', visi
 export function recallContacts(journey: Journey, relationshipType: 'O' | 'S', contacts: ApprovedContact[]) {
   const existing =
     relationshipType === 'O' ? journey.officialVisit.officialVisitors : journey.officialVisit.socialVisitors
+  const original = journey.amendVisit?.originalVisitors || []
   return contacts.map(contact => {
-    const existingContact = (existing || []).find(
-      v => v.contactId === contact.contactId && v.relationshipToPrisonerCode === contact.relationshipToPrisonerCode,
-    )
+    const matches = (v: JourneyVisitor) =>
+      v.contactId === contact.contactId && v.relationshipToPrisonerCode === contact.relationshipToPrisonerCode
+    const existingContact = (existing || []).find(matches) || original.find(matches)
     return {
       ...contact,
       assistanceNotes: existingContact?.assistanceNotes,
