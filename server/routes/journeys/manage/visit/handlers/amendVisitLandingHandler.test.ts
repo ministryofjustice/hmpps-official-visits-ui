@@ -4,6 +4,8 @@ import * as cheerio from 'cheerio'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import PrisonerService from '../../../../../services/prisonerService'
 import { appWithAllRoutes, journeyId, user } from '../../../../testutils/appSetup'
+import { getJourneySession } from '../../../../testutils/testUtilRoute'
+import { Journey } from '../../../../../@types/express'
 import { mockPrisoner, mockVisitByIdVisit, mockPrisonerRestrictions, mockUser } from '../../../../../testutils/mocks'
 import AuditService, { Page } from '../../../../../services/auditService'
 import {
@@ -200,6 +202,33 @@ describe('Search for an official visit', () => {
             correlationId: expect.any(String),
           })
         })
+    })
+
+    it('should store the original visitors on the amend journey so their ids survive reselection', async () => {
+      const journeySession = {} as Journey
+      app = appWithAllRoutes({
+        services: {
+          auditService,
+          prisonerService,
+          officialVisitsService,
+          personalRelationshipsService,
+          manageUsersService,
+        },
+        userSupplier: () => user,
+        journeySessionSupplier: () => journeySession,
+      })
+
+      await request(app).get(URL).expect(200)
+
+      const amendVisit = await getJourneySession(app, 'amendVisit')
+      expect(amendVisit.originalVisitors).toEqual([
+        expect.objectContaining({
+          officialVisitorId: 1,
+          contactId: 20085647,
+          relationshipToPrisonerCode: 'SOL',
+          alreadyOnVisit: true,
+        }),
+      ])
     })
 
     it('should not render send email alert or button when hasChanged is false even when email notifications are enabled', async () => {

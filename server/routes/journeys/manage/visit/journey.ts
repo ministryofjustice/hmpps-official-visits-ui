@@ -6,6 +6,8 @@ export type AmendVisitJourney = {
   backTo?: string
   /** The page that the last "change" link navigated to */
   changePage?: string
+  /** The visitors on the visit when the amend journey started */
+  originalVisitors?: JourneyVisitor[]
 }
 
 export type OfficialVisitJourney = {
