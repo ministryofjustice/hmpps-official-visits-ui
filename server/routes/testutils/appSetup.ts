@@ -37,6 +37,7 @@ const testAppInfo: ApplicationInfo = {
 export const user: HmppsUser = {
   name: 'FIRST LAST',
   userId: 'id',
+  userUuid: '11111111-1111-1111-1111-111111111111',
   token: 'token',
   username: 'user1',
   displayName: 'First Last',
@@ -50,6 +51,7 @@ export const user: HmppsUser = {
 export const adminUser: HmppsUser = {
   name: 'FIRST LAST',
   userId: 'id',
+  userUuid: '11111111-1111-1111-1111-111111111111',
   token: 'token',
   username: 'user1',
   displayName: 'First Last',
@@ -122,7 +124,7 @@ export function appWithAllRoutes({
     auditService: new AuditService(null) as jest.Mocked<AuditService>,
     prisonerService: new PrisonerService(null) as jest.Mocked<PrisonerService>,
     officialVisitsService: new OfficialVisitsService(null) as jest.Mocked<OfficialVisitsService>,
-    telemetryService: new TelemetryService(null) as jest.Mocked<TelemetryService>,
+    telemetryService: new TelemetryService() as jest.Mocked<TelemetryService>,
     ...services,
   } as Services
 
