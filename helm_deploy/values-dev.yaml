@@ -35,5 +35,4 @@ generic-service:
       - private_prisons
 
 generic-prometheus-alerts:
-  alertSeverity: move-and-improve-alerts-non-prod
   businessHoursOnly: true
