@@ -32,6 +32,7 @@ import {
   emailNotificationsEnabled,
   visitsNeedReviewEnabled,
   convertToSentenceCase,
+  findSameRelationship,
 } from './utils'
 import config from '../config'
 import { JourneyVisitor } from '../routes/journeys/manage/visit/journey'
@@ -646,5 +647,41 @@ describe('emailNotificationsEnabled', () => {
   it('should return false for undefined caseLoadId', () => {
     config.featureToggles.emailNotificationsPrisons = 'MDI'
     expect(emailNotificationsEnabled(undefined)).toBe(false)
+  })
+})
+
+describe('findSameRelationship', () => {
+  const police = { contactId: 1, prisonerContactId: 10, relationshipToPrisonerCode: 'POL' }
+  const solicitor = { contactId: 1, prisonerContactId: 11, relationshipToPrisonerCode: 'SOL' }
+  const otherPerson = { contactId: 2, prisonerContactId: 20, relationshipToPrisonerCode: 'POL' }
+
+  it('matches on prisonerContactId when the relationship has been re-coded', () => {
+    const visitor = { contactId: 1, prisonerContactId: 10, relationshipToPrisonerCode: 'OTH' }
+    expect(findSameRelationship(visitor, [solicitor, police, otherPerson])).toBe(police)
+  })
+
+  it('falls back to the relationship code when the prisonerContactId no longer exists', () => {
+    const visitor = { contactId: 1, prisonerContactId: 99, relationshipToPrisonerCode: 'SOL' }
+    expect(findSameRelationship(visitor, [police, solicitor, otherPerson])).toBe(solicitor)
+  })
+
+  it('falls back to the relationship code when the visitor has no prisonerContactId', () => {
+    const visitor = { contactId: 1, relationshipToPrisonerCode: 'POL' }
+    expect(findSameRelationship(visitor, [solicitor, police, otherPerson])).toBe(police)
+  })
+
+  it('falls back to the contact when they have only one relationship', () => {
+    const visitor = { contactId: 1, prisonerContactId: 99, relationshipToPrisonerCode: 'OTH' }
+    expect(findSameRelationship(visitor, [solicitor, otherPerson])).toBe(solicitor)
+  })
+
+  it('does not guess between several relationships for the same contact', () => {
+    const visitor = { contactId: 1, prisonerContactId: 99, relationshipToPrisonerCode: 'OTH' }
+    expect(findSameRelationship(visitor, [police, solicitor, otherPerson])).toBeUndefined()
+  })
+
+  it('does not match a different contact', () => {
+    const visitor = { contactId: 3, relationshipToPrisonerCode: 'POL' }
+    expect(findSameRelationship(visitor, [police, otherPerson])).toBeUndefined()
   })
 })

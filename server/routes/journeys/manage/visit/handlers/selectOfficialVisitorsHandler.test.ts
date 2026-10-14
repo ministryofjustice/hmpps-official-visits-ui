@@ -595,6 +595,176 @@ describe('Select official visitors', () => {
     })
   })
 
+  describe('relationship code changed since the visit was booked (amend)', () => {
+    const amendUrl = `/manage/amend/123/${journeyId()}/select-official-visitors`
+    const visitorOnVisit = {
+      ...mockOfficialVisitors[0],
+      relationshipToPrisonerCode: 'DR',
+      relationshipToPrisonerDescription: 'Doctor',
+      officialVisitorId: 55,
+      alreadyOnVisit: true,
+    }
+
+    beforeEach(() => {
+      appSetup({
+        officialVisit: {
+          prisoner: { ...mockPrisoner, restrictions: mockPrisonerRestrictions },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          selectedTimeSlot: { visitSlotId: 1, visitDate: '2037-01-26', startTime: '13:30', endTime: '16:00' },
+          officialVisitId: 123,
+          officialVisitors: [visitorOnVisit],
+          socialVisitors: [],
+        } as OfficialVisitJourney,
+        amendVisit: { originalVisitors: [visitorOnVisit] },
+      })
+    })
+
+    it('should show the visitor once under their current relationship, already selected', async () => {
+      const res = await request(app).get(amendUrl).expect(200)
+      const $ = cheerio.load(res.text)
+
+      const values = $('input[type="checkbox"]')
+        .map((_, el) => $(el).val())
+        .get()
+      expect(values.filter(v => v.startsWith('101-'))).toEqual(['101-SOL'])
+      expect($('input[type="checkbox"][value="101-SOL"]').is(':checked')).toBe(true)
+      expect(res.text).not.toContain('NO RECORDED RELATIONSHIP')
+    })
+
+    it('should keep the official visitor id when saving the visitor under their current relationship', async () => {
+      await request(app)
+        .post(amendUrl)
+        .send({ selected: ['101-SOL'] })
+        .expect(302)
+        .expect('location', 'select-social-visitors')
+
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.officialVisitors).toEqual([
+        expect.objectContaining({ contactId: 101, relationshipToPrisonerCode: 'SOL', officialVisitorId: 55 }),
+      ])
+    })
+  })
+
+  describe('relationship deleted since the visit was booked (amend)', () => {
+    const amendUrl = `/manage/amend/123/${journeyId()}/select-official-visitors`
+    const setUpVisitor = (relationshipToPrisonerCode: string) => {
+      const visitorOnVisit = {
+        ...mockOfficialVisitors[0],
+        prisonerContactId: 999,
+        relationshipToPrisonerCode,
+        officialVisitorId: 55,
+        alreadyOnVisit: true,
+      }
+      appSetup({
+        officialVisit: {
+          prisoner: { ...mockPrisoner, restrictions: mockPrisonerRestrictions },
+          prisonCode: 'MDI',
+          availableSlots: [{ timeSlotId: 1, visitSlotId: 1 }],
+          selectedTimeSlot: { visitSlotId: 1, visitDate: '2037-01-26', startTime: '13:30', endTime: '16:00' },
+          officialVisitId: 123,
+          officialVisitors: [visitorOnVisit],
+          socialVisitors: [],
+        } as OfficialVisitJourney,
+        amendVisit: { originalVisitors: [visitorOnVisit] },
+      })
+    }
+    const checkboxes = ($: cheerio.CheerioAPI) =>
+      $('input[type="checkbox"]')
+        .map((_, el) => `${$(el).val()}${$(el).is(':checked') ? ' (checked)' : ''}`)
+        .get()
+        .filter(v => v.startsWith('101-'))
+
+    it('should match a re-created relationship with the same code and keep the visitor id', async () => {
+      setUpVisitor('SOL')
+
+      const res = await request(app).get(amendUrl).expect(200)
+      expect(checkboxes(cheerio.load(res.text))).toEqual(['101-SOL (checked)'])
+      expect(res.text).not.toContain('NO RECORDED RELATIONSHIP')
+
+      setUpVisitor('SOL')
+      await request(app)
+        .post(amendUrl)
+        .send({ selected: ['101-SOL'] })
+        .expect(302)
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.officialVisitors[0].officialVisitorId).toEqual(55)
+    })
+
+    it('should match the only remaining relationship for the contact and keep the visitor id', async () => {
+      setUpVisitor('DR')
+
+      const res = await request(app).get(amendUrl).expect(200)
+      expect(checkboxes(cheerio.load(res.text))).toEqual(['101-SOL (checked)'])
+
+      setUpVisitor('DR')
+      await request(app)
+        .post(amendUrl)
+        .send({ selected: ['101-SOL'] })
+        .expect(302)
+      const journeySession = await getJourneySession(app, 'officialVisit')
+      expect(journeySession.officialVisitors[0].officialVisitorId).toEqual(55)
+    })
+
+    it('should not guess when the contact has several remaining relationships', async () => {
+      setUpVisitor('DR')
+      officialVisitsService.getAllOfficialContacts.mockResolvedValue([
+        ...mockOfficialVisitors,
+        { ...mockOfficialVisitors[0], prisonerContactId: 50, relationshipToPrisonerCode: 'JUD' },
+      ])
+
+      const res = await request(app).get(amendUrl).expect(200)
+      expect(checkboxes(cheerio.load(res.text))).toEqual(['101-SOL', '101-JUD', '101-DR (checked)'])
+      expect(res.text).toContain('NO RECORDED RELATIONSHIP')
+    })
+  })
+
+  describe('selecting a different relationship for a visitor (amend)', () => {
+    const amendUrl = `/manage/amend/123/${journeyId()}/select-official-visitors`
+
+    const saveSelecting = async (onVisit: Partial<JourneyVisitor>, selected: string) => {
+      const visitorOnVisit = { ...mockOfficialVisitors[0], ...onVisit, officialVisitorId: 55, alreadyOnVisit: true }
+      officialVisitsService.getAllOfficialContacts.mockResolvedValue([
+        ...mockOfficialVisitors,
+        { ...mockOfficialVisitors[0], prisonerContactId: 50, relationshipToPrisonerCode: 'JUD' },
+      ])
+      appSetup({
+        officialVisit: {
+          prisoner: { ...mockPrisoner, restrictions: mockPrisonerRestrictions },
+          prisonCode: 'MDI',
+          officialVisitId: 123,
+          officialVisitors: [visitorOnVisit],
+          socialVisitors: [],
+        } as OfficialVisitJourney,
+        amendVisit: { originalVisitors: [visitorOnVisit] },
+      })
+
+      await request(app)
+        .post(amendUrl)
+        .send({ selected: [selected] })
+        .expect(302)
+      return (await getJourneySession(app, 'officialVisit')).officialVisitors
+    }
+
+    it('should keep the visitor id when switching to another existing relationship', async () => {
+      expect(await saveSelecting({}, '101-JUD')).toEqual([
+        expect.objectContaining({ contactId: 101, relationshipToPrisonerCode: 'JUD', officialVisitorId: 55 }),
+      ])
+    })
+
+    it('should keep the visitor id when their original relationship was deleted and several remain', async () => {
+      expect(await saveSelecting({ prisonerContactId: 999, relationshipToPrisonerCode: 'DR' }, '101-JUD')).toEqual([
+        expect.objectContaining({ contactId: 101, relationshipToPrisonerCode: 'JUD', officialVisitorId: 55 }),
+      ])
+    })
+
+    it('should not give the visitor id to a different contact', async () => {
+      const [visitor] = await saveSelecting({}, '102-POL')
+      expect(visitor.contactId).toEqual(102)
+      expect(visitor.officialVisitorId).toBeUndefined()
+    })
+  })
+
   describe('capacity check alert messages', () => {
     const renderWithAlertErrors = (alertErrors: Record<string, boolean>) => {
       flashProvider.mockImplementation((key: string) => (key === 'alertErrors' ? [JSON.stringify(alertErrors)] : []))
