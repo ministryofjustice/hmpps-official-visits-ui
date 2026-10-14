@@ -434,3 +434,17 @@ export const buildCalendarMonths = (selectedDate: Date, availableDates: string[]
 
   return { months, previousMonthHref, nextMonthHref }
 }
+
+type RelationshipRef = { contactId?: number; prisonerContactId?: number; relationshipToPrisonerCode?: string }
+
+export const findSameRelationship = <T extends RelationshipRef>(visitor: RelationshipRef, candidates: T[]) => {
+  const byPrisonerContactId =
+    visitor.prisonerContactId && candidates.find(c => c.prisonerContactId === visitor.prisonerContactId)
+  if (byPrisonerContactId) return byPrisonerContactId
+
+  const sameContact = candidates.filter(c => c.contactId === visitor.contactId)
+  return (
+    sameContact.find(c => c.relationshipToPrisonerCode === visitor.relationshipToPrisonerCode) ||
+    (sameContact.length === 1 ? sameContact[0] : undefined)
+  )
+}

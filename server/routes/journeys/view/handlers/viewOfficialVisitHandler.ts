@@ -8,7 +8,11 @@ import PersonalRelationshipsService from '../../../../services/personalRelations
 import ManageUserService from '../../../../services/manageUsersService'
 import TelemetryService from '../../../../services/telemetryService'
 import { OfficialVisit, RestrictionSummary } from '../../../../@types/officialVisitsApi/types'
-import { isVisitDateAndStartTimeInThePast, prisonAllowsSocialVisitors } from '../../../../utils/utils'
+import {
+  findSameRelationship,
+  isVisitDateAndStartTimeInThePast,
+  prisonAllowsSocialVisitors,
+} from '../../../../utils/utils'
 import config from '../../../../config'
 
 export default class ViewOfficialVisitHandler implements PageHandler {
@@ -51,8 +55,9 @@ export default class ViewOfficialVisitHandler implements PageHandler {
 
     const enrichedVisitors = await Promise.all(
       (visit.officialVisitors || []).map(async visitor => {
-        const contact = contacts?.find(
-          c => c.contactId === visitor.contactId && c.relationshipToPrisonerCode === visitor.relationshipCode,
+        const contact = findSameRelationship(
+          { ...visitor, relationshipToPrisonerCode: visitor.relationshipCode },
+          contacts || [],
         )
 
         const validRelationship =

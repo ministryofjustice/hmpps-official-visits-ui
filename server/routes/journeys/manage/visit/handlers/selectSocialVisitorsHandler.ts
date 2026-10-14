@@ -6,10 +6,10 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import config from '../../../../../config'
 import { JourneyVisitor } from '../journey'
-import { cyaGuard, recallContacts, saveVisitors } from '../createJourneyState'
+import { buildSelectableContacts, cyaGuard, recallContacts, saveVisitors } from '../createJourneyState'
 import { getBackLink } from './utils'
 import { HmppsUser } from '../../../../../interfaces/hmppsUser'
-import { prisonAllowsSocialVisitors } from '../../../../../utils/utils'
+import { findSameRelationship, prisonAllowsSocialVisitors } from '../../../../../utils/utils'
 
 export default class SelectSocialVisitorsHandler implements PageHandler {
   public PAGE_NAME = Page.SELECT_SOCIAL_VISITORS_PAGE
@@ -26,24 +26,13 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     contactsOnVisit: JourneyVisitor[],
     mode: 'amend' | 'create' = 'create',
   ) => {
-    const allContacts = await this.officialVisitsService.getAllSocialContacts(prisonerNumber, user, undefined, true)
-    const contactKey = (c: { contactId: number; relationshipToPrisonerCode: string }) =>
-      `${c.contactId}-${c.relationshipToPrisonerCode}`
-
-    const apiContacts = new Map(allContacts.map(c => [contactKey(c), c]))
-    const extraJourneyContacts = contactsOnVisit.filter(c => !apiContacts.has(contactKey(c)))
-
-    return [...allContacts, ...extraJourneyContacts]
-      .map(c => ({
-        ...c,
-        issues: {
-          notApproved: apiContacts.has(contactKey(c)) && !c.isApprovedVisitor,
-          noRelationship: !apiContacts.has(contactKey(c)),
-          socialVisitor: !prisonAllowsSocialVisitors(req.session.journey.officialVisit?.prisonCode),
-        },
-        alreadyOnVisit: contactsOnVisit.some(jc => contactKey(jc) === contactKey(c)),
-      }))
-      .filter(c => (mode === 'amend' && c.alreadyOnVisit) || c.isApprovedVisitor)
+    const contacts = await this.officialVisitsService.getAllSocialContacts(prisonerNumber, user, undefined, true)
+    return buildSelectableContacts(
+      contacts,
+      contactsOnVisit,
+      mode,
+      !prisonAllowsSocialVisitors(req.session.journey.officialVisit?.prisonCode),
+    )
   }
 
   public GET = async (req: Request, res: Response, _next?: NextFunction) => {
@@ -61,7 +50,10 @@ export default class SelectSocialVisitorsHandler implements PageHandler {
     // Record the approved social contacts who are already selected for this visit in session data
     const selectedContacts =
       res.locals.formResponses?.selected ||
-      journeyVisitors?.map(v => `${v.contactId}-${v.relationshipToPrisonerCode}`) ||
+      journeyVisitors?.map(v => {
+        const contact = findSameRelationship(v, selectableContacts) || v
+        return `${contact.contactId}-${contact.relationshipToPrisonerCode}`
+      }) ||
       []
 
     const rawErrors = req.flash('alertErrors')[0]
