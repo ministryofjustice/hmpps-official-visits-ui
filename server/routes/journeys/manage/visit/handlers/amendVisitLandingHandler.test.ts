@@ -433,6 +433,17 @@ describe('Search for an official visit', () => {
       expect(res.text).toContain('govuk-inset-text')
     })
 
+    it('should not flag a visitor whose relationship code has changed since the visit was booked', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(baseFutureVisit)
+      officialVisitsService.getAllContacts.mockResolvedValue([
+        { ...baseMockContact, relationshipToPrisonerCode: 'DR', relationshipToPrisonerDescription: 'Doctor' },
+      ])
+
+      const res = await request(app).get(URL)
+      expect(res.text).not.toContain('NO RECORDED RELATIONSHIP')
+      expect(res.text).not.toContain('a visitor does not have a recorded relationship with the prisoner')
+    })
+
     it('should show inset text when visitor is not approved', async () => {
       officialVisitsService.getOfficialVisitById.mockResolvedValue(baseFutureVisit)
       officialVisitsService.getAllContacts.mockResolvedValue([{ ...baseMockContact, isApprovedVisitor: false }])
