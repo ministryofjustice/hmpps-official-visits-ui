@@ -191,7 +191,7 @@ export const prisonAllowsSocialVisitors = (prisonCode: string) => {
 export const prisonEnabled = (caseLoadId: string) => {
   const enabledPrisons = config.featureToggles.dpsEnabledPrisons.split(',')
 
-  return enabledPrisons.includes(caseLoadId) || enabledPrisons.includes('*ALL*')
+  return enabledPrisons.includes(caseLoadId) || enabledPrisons.includes('***')
 }
 
 export const emailNotificationsEnabled = (caseLoadId: string) => {
