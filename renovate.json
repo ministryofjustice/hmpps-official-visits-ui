@@ -41,7 +41,7 @@
     {
       "matchManagers": ["pre-commit"],
       "groupName": "all pre-commit dependencies"
-    }.
+    },
     {
       "description": "openapi-typescript needs js-yaml 4.x, so the override scoped under it must not follow the top-level js-yaml override to 5.x",
       "matchManagers": ["npm"],
