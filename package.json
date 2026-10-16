@@ -100,7 +100,7 @@
     "jest-junit": "17.0.0",
     "jsonwebtoken": "^9.0.3",
     "lint-staged": "^17.6.0",
-    "nock": "^14.0.17",
+    "nock": "^15.0.1",
     "openapi-typescript": "^7.13.0",
     "playwright-ctrf-json-reporter": "^0.1.0",
     "prettier": "^3.9.9",
