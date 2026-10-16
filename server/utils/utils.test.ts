@@ -698,13 +698,8 @@ describe('prisonEnabled', () => {
     expect(prisonEnabled('XYZ')).toBe(false)
   })
 
-  it('ABC is enabled', () => {
-    config.featureToggles.dpsEnabledPrisons = '*ALL*'
-    expect(prisonEnabled('ABC')).toBe(true)
-  })
-
-  it('ALL is enabled', () => {
-    config.featureToggles.dpsEnabledPrisons = '*ALL*'
-    expect(prisonEnabled('ALL')).toBe(true)
+  it('XYZ is enabled', () => {
+    config.featureToggles.dpsEnabledPrisons = '***'
+    expect(prisonEnabled('XYZ')).toBe(true)
   })
 })
