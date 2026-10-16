@@ -33,6 +33,7 @@ import {
   visitsNeedReviewEnabled,
   convertToSentenceCase,
   findSameRelationship,
+  prisonEnabled,
 } from './utils'
 import config from '../config'
 import { JourneyVisitor } from '../routes/journeys/manage/visit/journey'
@@ -683,5 +684,27 @@ describe('findSameRelationship', () => {
   it('does not match a different contact', () => {
     const visitor = { contactId: 3, relationshipToPrisonerCode: 'POL' }
     expect(findSameRelationship(visitor, [police, otherPerson])).toBeUndefined()
+  })
+})
+
+describe('prisonEnabled', () => {
+  it('ABC is enabled', () => {
+    config.featureToggles.dpsEnabledPrisons = 'ABC'
+    expect(prisonEnabled('ABC')).toBe(true)
+  })
+
+  it('XYZ is not enabled', () => {
+    config.featureToggles.dpsEnabledPrisons = 'ABC'
+    expect(prisonEnabled('XYZ')).toBe(false)
+  })
+
+  it('ABC is enabled', () => {
+    config.featureToggles.dpsEnabledPrisons = '*ALL*'
+    expect(prisonEnabled('ABC')).toBe(true)
+  })
+
+  it('ALL is enabled', () => {
+    config.featureToggles.dpsEnabledPrisons = '*ALL*'
+    expect(prisonEnabled('ALL')).toBe(true)
   })
 })
