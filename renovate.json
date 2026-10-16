@@ -2,6 +2,9 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>ministryofjustice/hmpps-renovate-config:node"],
   "prBodyTemplate": "{{{table}}}{{{notes}}}{{{warnings}}}{{{controls}}}",
+  "prCreation": "immediate",
+  "dependencyDashboard": true,
+  "schedule": ["* * * * 0,6"],
   "packageRules": [
     {
       "matchManagers": ["npm"],
@@ -12,16 +15,11 @@
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non major NPM dependencies",
       "groupSlug": "all-npm-minor-patch",
-      "stabilityDays": 5
+      "stabilityDays": 7
     },
     {
       "matchDepTypes": ["engines"],
       "enabled": false
-    },
-    {
-      "matchPackageNames": ["typescript", "govuk-frontend"],
-      "rangeStrategy": "bump",
-      "stabilityDays": 0
     },
     {
       "matchManagers": ["npm"],
@@ -31,22 +29,18 @@
     },
     {
       "matchDatasources": ["docker"],
-      "matchPackageNames": ["node"],
+      "matchPackageNames": ["node", "hmpps-node"],
       "matchUpdateTypes": ["major"],
       "enabled": false
     },
     {
       "matchManagers": ["github-actions"],
-      "fileMatch": ["^\\.github/workflows/.*\\.yml$"]
+      "matchFileNames": ["**/.github/workflows/**/*.ya?ml"],
+      "separateMinorPatch": true
     },
     {
-      "description": "openapi-typescript needs js-yaml 4.x, so the override scoped under it must not follow the top-level js-yaml override to 5.x",
-      "matchManagers": ["npm"],
-      "matchDepTypes": ["overrides"],
-      "matchPackageNames": ["js-yaml"],
-      "matchCurrentVersion": "<5.0.0",
-      "matchUpdateTypes": ["major"],
-      "enabled": false
+      "matchManagers": ["pre-commit"],
+      "groupName": "all pre-commit dependencies"
     }
   ],
   "vulnerabilityAlerts": {
