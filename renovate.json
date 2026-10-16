@@ -48,8 +48,7 @@
       "matchDepTypes": ["overrides"],
       "matchPackageNames": ["js-yaml"],
       "matchCurrentVersion": "<5.0.0",
-      "matchUpdateTypes": ["major"],
-      "enabled": false
+      "allowedVersions": "<5.0.0"
     }
   ],
   "vulnerabilityAlerts": {
