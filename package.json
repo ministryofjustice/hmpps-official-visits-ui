@@ -31,9 +31,9 @@
     "npm": "^12"
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "3.1152.0",
     "@microsoft/applicationinsights-web": "3.4.5",
     "@ministryofjustice/frontend": "11.1.0",
+    "@ministryofjustice/hmpps-audit-client": "2.0.0",
     "@ministryofjustice/hmpps-auth-clients": "^3.0.0",
     "@ministryofjustice/hmpps-azure-telemetry": "^1.1.0",
     "@ministryofjustice/hmpps-connect-dps-components": "^6.4.1",
@@ -84,7 +84,6 @@
     "@types/superagent": "^8.1.11",
     "@types/supertest": "^7.2.1",
     "audit-ci": "^7.1.0",
-    "aws-sdk-client-mock": "^4.1.0",
     "better-npm-audit": "^3.11.0",
     "cheerio": "1.2.0",
     "chokidar": "^5.0.0",

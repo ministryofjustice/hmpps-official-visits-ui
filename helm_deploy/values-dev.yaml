@@ -24,6 +24,17 @@ generic-service:
     BOOK_A_VIDEO_LINK_API_URL: 'https://book-a-video-link-api-dev.prison.service.justice.gov.uk'
     ENVIRONMENT_NAME: DEV
     AUDIT_ENABLED: "false"
+    NODE_USE_ENV_PROXY: "1"
+    APPLICATION_INSIGHTS_NO_STATSBEAT: "true"
+
+  namespace_secrets:
+    hmpps-envoy-https-proxy-env:
+      HTTP_PROXY: "HTTP_PROXY"
+      HTTPS_PROXY: "HTTPS_PROXY"
+      NO_PROXY: "NO_PROXY"
+      http_proxy: "HTTP_PROXY"
+      https_proxy: "HTTPS_PROXY"
+      no_proxy: "NO_PROXY"
 
   allowlist:
     kmpg: 195.68.59.74

@@ -1,8 +1,8 @@
 import { AuthenticationClient, InMemoryTokenStore, RedisTokenStore } from '@ministryofjustice/hmpps-auth-clients'
+import { AuditClient } from '@ministryofjustice/hmpps-audit-client'
 import applicationInfoSupplier from '../applicationInfo'
 import { createRedisClient } from './redisClient'
 import config from '../config'
-import HmppsAuditClient from './hmppsAuditClient'
 import logger from '../../logger'
 import PrisonerSearchApiClient from './prisonerSearchApiClient'
 import OfficialVisitsApiClient from './officialVisitsApiClient'
@@ -25,7 +25,7 @@ export const dataAccess = () => {
     applicationInfo,
     prisonerSearchApi: new PrisonerSearchApiClient(hmppsAuthClient),
     officialVisitsApi: new OfficialVisitsApiClient(hmppsAuthClient),
-    hmppsAuditClient: new HmppsAuditClient(config.sqs.audit),
+    hmppsAuditClient: new AuditClient(config.sqs.audit, logger),
     prisonApiClient: new PrisonApiClient(hmppsAuthClient),
     personalRelationshipsApiClient: new PersonalRelationshipsApiClient(hmppsAuthClient),
     activitiesApiClient: new ActivitiesApiClient(hmppsAuthClient),
@@ -37,7 +37,7 @@ export const dataAccess = () => {
 export type DataAccess = ReturnType<typeof dataAccess>
 
 export {
-  HmppsAuditClient,
+  AuditClient,
   PrisonerSearchApiClient,
   OfficialVisitsApiClient,
   PrisonApiClient,
