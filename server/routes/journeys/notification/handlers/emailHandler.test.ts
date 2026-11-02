@@ -130,7 +130,7 @@ describe('notification email handler', () => {
         .get(`/notification/enter-email-address/${OV_ID}/create`)
         .expect('Content-Type', /html/)
         .expect(res => {
-          expect(res.text).toContain('An email will be sent confirming the details of this official visit.')
+          expect(res.text).toContain('An email will be sent confirming the details of this official visit')
           expect(res.text).not.toContain('the cancellation of this official visit')
         })
     })
@@ -140,7 +140,7 @@ describe('notification email handler', () => {
         .get(`/notification/enter-email-address/${OV_ID}/edit`)
         .expect('Content-Type', /html/)
         .expect(res => {
-          expect(res.text).toContain('An email will be sent confirming the details of this official visit.')
+          expect(res.text).toContain('An email will be sent confirming the details of this official visit')
           expect(res.text).not.toContain('the cancellation of this official visit')
         })
     })
@@ -190,7 +190,7 @@ describe('notification email handler', () => {
         .expect(res => {
           const $ = cheerio.load(res.text)
 
-          expect(res.text).toContain('An email will be sent confirming the details of this official visit.')
+          expect(res.text).toContain('An email will be sent confirming the details of this official visit')
           expect(emailInput($, 0).attr('value')).toEqual('test@example.com')
           expect(emailInput($, 1).attr('value')).toEqual('other@example.com')
         })

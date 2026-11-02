@@ -79,7 +79,7 @@ test.describe('Send a notification', () => {
       // --- Email page ---
       const emailPage = await NotificationEmailPage.verifyOnPage(page)
       await expect(
-        emailPage.page.getByText('An email will be sent confirming the details of this official visit.'),
+        emailPage.page.getByText('An email will be sent confirming the details of this official visit'),
       ).toBeVisible()
 
       await emailPage.fillEmail('visitor@example.com')
@@ -94,7 +94,7 @@ test.describe('Send a notification', () => {
       const checkPage = await NotificationCheckPage.verifyOnPage(page)
       await expect(checkPage.header).toHaveText('Check and send official visit confirmation')
       await expect(
-        checkPage.page.getByText('A confirmation email will be sent confirming the details of this official visit.'),
+        checkPage.page.getByText('A confirmation email will be sent confirming the details of this official visit'),
       ).toBeVisible()
       await expect(checkPage.page.locator('.govuk-summary-list__value').first()).toContainText('visitor@example.com')
       // Visit details from mockVisitByIdVisit
@@ -109,7 +109,7 @@ test.describe('Send a notification', () => {
 
       // --- Sent page ---
       const sentPage = await NotificationSentPage.verifyOnPage(page)
-      await expect(sentPage.panel).toContainText('An email will be sent confirming details of this official visit.')
+      await expect(sentPage.panel).toContainText('An email will be sent confirming details of this official visit')
       await expect(sentPage.panel).toContainText('visitor@example.com')
       await expect(sentPage.viewVisitLink).toBeVisible()
       await expect(
@@ -351,7 +351,7 @@ test.describe('Send a notification', () => {
       // --- Email page ---
       const emailPage = await NotificationEmailPage.verifyOnPage(page)
       await expect(
-        emailPage.page.getByText('An email will be sent confirming the details of this official visit.'),
+        emailPage.page.getByText('An email will be sent confirming the details of this official visit'),
       ).toBeVisible()
 
       await emailPage.fillEmail('amend@example.com')
@@ -366,7 +366,7 @@ test.describe('Send a notification', () => {
       const checkPage = await NotificationCheckPage.verifyOnPage(page)
       await expect(checkPage.header).toHaveText('Check and send official visit confirmation')
       await expect(
-        checkPage.page.getByText('A confirmation email will be sent confirming the details of this official visit.'),
+        checkPage.page.getByText('A confirmation email will be sent confirming the details of this official visit'),
       ).toBeVisible()
       await expect(checkPage.page.locator('.govuk-summary-list__value').first()).toContainText('amend@example.com')
       await expect(checkPage.sendButton).toHaveText('Send official visit confirmation')
@@ -375,7 +375,7 @@ test.describe('Send a notification', () => {
 
       // --- Sent page ---
       const sentPage = await NotificationSentPage.verifyOnPage(page)
-      await expect(sentPage.panel).toContainText('An email will be sent confirming details of this official visit.')
+      await expect(sentPage.panel).toContainText('An email will be sent confirming details of this official visit')
       await expect(sentPage.panel).toContainText('amend@example.com')
     })
   })
@@ -409,7 +409,7 @@ test.describe('Send a notification', () => {
       ).toBeVisible()
       // Should NOT show the "details" text
       await expect(
-        emailPage.page.getByText('An email will be sent confirming the details of this official visit.'),
+        emailPage.page.getByText('An email will be sent confirming the details of this official visit'),
       ).not.toBeVisible()
 
       await emailPage.fillEmail('cancel@example.com')
@@ -430,7 +430,7 @@ test.describe('Send a notification', () => {
       // --- Sent page ---
       const sentPage = await NotificationSentPage.verifyOnPage(page)
       await expect(sentPage.panel).toContainText(
-        'An email will be sent confirming this official visit has been cancelled.',
+        'An email will be sent confirming this official visit has been cancelled',
       )
       await expect(sentPage.panel).toContainText('cancel@example.com')
       // Cancel action should NOT show the update/cancel reminder text

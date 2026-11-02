@@ -14,7 +14,7 @@
         {% endset %}
 
         {{ govukPanel({
-            titleText: "An email will be sent confirming " + ("this official visit has been cancelled." if action === "cancel" else "details of this official visit."),
+            titleText: "An email will be sent confirming " + ("this official visit has been cancelled" if action === "cancel" else "details of this official visit"),
             html: panelHtml
         }) }}
 
