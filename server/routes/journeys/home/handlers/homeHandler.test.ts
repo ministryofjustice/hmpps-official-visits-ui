@@ -317,7 +317,7 @@ describe('Guidance banner', () => {
 
         $banner.find('.govuk-visually-hidden').remove()
         expect($banner.text().replace(/\s+/g, ' ').trim()).toEqual(
-          'Official Visits guidance View user guides, FAQs and training videos on SharePoint.',
+          'Official visits guidance View user guides, FAQs and training videos on SharePoint.',
         )
       })
   })
