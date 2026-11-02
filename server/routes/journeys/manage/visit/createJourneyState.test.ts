@@ -245,6 +245,48 @@ describe('Create Journey Guard', () => {
     ])
   })
 
+  it('should restore the visitor id when the relationship code has changed but the relationship is the same', () => {
+    const journey = mockJourney()
+    journey.officialVisit.officialVisitors = [
+      {
+        contactId: 101,
+        prisonerContactId: 1,
+        relationshipToPrisonerCode: 'DR',
+        officialVisitorId: 55,
+      } as JourneyVisitor,
+    ]
+
+    const actual = recallContacts(journey, 'O', [
+      { contactId: 101, prisonerContactId: 1, relationshipToPrisonerCode: 'SOL' } as ApprovedContact,
+    ])
+
+    expect(actual[0].officialVisitorId).toEqual(55)
+    expect(actual[0].relationshipToPrisonerCode).toEqual('SOL')
+  })
+
+  it('should keep the visitor id for any relationship of a contact already on the visit', () => {
+    const journey = mockJourney()
+    const onVisit = {
+      contactId: 101,
+      prisonerContactId: 10,
+      relationshipToPrisonerCode: 'POL',
+      officialVisitorId: 55,
+      assistanceNotes: 'police notes',
+    } as JourneyVisitor
+    journey.officialVisit.officialVisitors = [onVisit]
+    journey.amendVisit = { originalVisitors: [onVisit] }
+
+    const [solicitor, police] = recallContacts(journey, 'O', [
+      { contactId: 101, prisonerContactId: 11, relationshipToPrisonerCode: 'SOL' } as ApprovedContact,
+      { contactId: 101, prisonerContactId: 10, relationshipToPrisonerCode: 'POL' } as ApprovedContact,
+    ])
+
+    expect(solicitor.officialVisitorId).toEqual(55)
+    expect(solicitor.assistanceNotes).toBeUndefined()
+    expect(police.officialVisitorId).toEqual(55)
+    expect(police.assistanceNotes).toEqual('police notes')
+  })
+
   it('should prefer the current journey visitor over the original visit visitor', () => {
     const journey = mockJourney()
     journey.officialVisit.officialVisitors = [

@@ -9,8 +9,8 @@ import OfficialVisitsService from '../../../../../services/officialVisitsService
 import PersonalRelationshipsService from '../../../../../services/personalRelationshipsService'
 import config from '../../../../../config'
 import { JourneyVisitor } from '../journey'
-import { cyaGuard, recallContacts, saveVisitors } from '../createJourneyState'
-import { socialVisitorsPageEnabled } from '../../../../../utils/utils'
+import { buildSelectableContacts, cyaGuard, recallContacts, saveVisitors } from '../createJourneyState'
+import { findSameRelationship, socialVisitorsPageEnabled } from '../../../../../utils/utils'
 import { getBackLink } from './utils'
 import { HmppsUser } from '../../../../../interfaces/hmppsUser'
 import { SchemaFactory } from '../../../../../middleware/validationMiddleware'
@@ -36,24 +36,8 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     contactsOnVisit: JourneyVisitor[],
     mode: 'amend' | 'create' = 'create',
   ) => {
-    const allContacts = await this.officialVisitsService.getAllOfficialContacts(prisonerNumber, user, undefined, true)
-    const contactKey = (c: { contactId: number; relationshipToPrisonerCode: string }) =>
-      `${c.contactId}-${c.relationshipToPrisonerCode}`
-
-    const apiContacts = new Map(allContacts.map(c => [contactKey(c), c]))
-    const extraJourneyContacts = contactsOnVisit.filter(c => !apiContacts.has(contactKey(c)))
-
-    return [...allContacts, ...extraJourneyContacts]
-      .map(c => ({
-        ...c,
-        issues: {
-          notApproved: apiContacts.has(contactKey(c)) && !c.isApprovedVisitor,
-          noRelationship: !apiContacts.has(contactKey(c)),
-          socialVisitor: false,
-        },
-        alreadyOnVisit: contactsOnVisit.some(jc => contactKey(jc) === contactKey(c)),
-      }))
-      .filter(c => (mode === 'amend' && c.alreadyOnVisit) || c.isApprovedVisitor)
+    const contacts = await this.officialVisitsService.getAllOfficialContacts(prisonerNumber, user, undefined, true)
+    return buildSelectableContacts(contacts, contactsOnVisit, mode, false)
   }
 
   public GET = async (req: Request, res: Response, _next?: NextFunction) => {
@@ -71,7 +55,10 @@ export default class SelectOfficialVisitorsHandler implements PageHandler {
     // Get the approved official contacts who are already selected for this visit from session data
     const selectedContacts =
       res.locals.formResponses?.selected ||
-      journeyVisitors?.map(v => `${v.contactId}-${v.relationshipToPrisonerCode}`) ||
+      journeyVisitors?.map(v => {
+        const contact = findSameRelationship(v, selectableContacts) || v
+        return `${contact.contactId}-${contact.relationshipToPrisonerCode}`
+      }) ||
       []
 
     const rawErrors = req.flash('alertErrors')[0]

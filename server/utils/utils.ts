@@ -189,7 +189,9 @@ export const prisonAllowsSocialVisitors = (prisonCode: string) => {
 }
 
 export const prisonEnabled = (caseLoadId: string) => {
-  return config.featureToggles.dpsEnabledPrisons.split(',').includes(caseLoadId)
+  const enabledPrisons = config.featureToggles.dpsEnabledPrisons.split(',')
+
+  return enabledPrisons.includes(caseLoadId) || enabledPrisons.includes('***')
 }
 
 export const emailNotificationsEnabled = (caseLoadId: string) => {
@@ -433,4 +435,18 @@ export const buildCalendarMonths = (selectedDate: Date, availableDates: string[]
   const nextMonthHref = `?date=${format(addMonths(selectedMonthStart, 1), 'yyyy-MM-dd')}`
 
   return { months, previousMonthHref, nextMonthHref }
+}
+
+type RelationshipRef = { contactId?: number; prisonerContactId?: number; relationshipToPrisonerCode?: string }
+
+export const findSameRelationship = <T extends RelationshipRef>(visitor: RelationshipRef, candidates: T[]) => {
+  const byPrisonerContactId =
+    visitor.prisonerContactId && candidates.find(c => c.prisonerContactId === visitor.prisonerContactId)
+  if (byPrisonerContactId) return byPrisonerContactId
+
+  const sameContact = candidates.filter(c => c.contactId === visitor.contactId)
+  return (
+    sameContact.find(c => c.relationshipToPrisonerCode === visitor.relationshipToPrisonerCode) ||
+    (sameContact.length === 1 ? sameContact[0] : undefined)
+  )
 }

@@ -1,4 +1,6 @@
-import HmppsAuditClient, { AuditEvent } from '../data/hmppsAuditClient'
+import { AuditClient, AuditEvent as LibAuditEvent } from '@ministryofjustice/hmpps-audit-client'
+
+export type AuditEvent = LibAuditEvent<string>
 
 export enum Page {
   HOME_PAGE = 'HOME_PAGE',
@@ -44,11 +46,11 @@ export interface PageViewEventDetails {
   subjectId?: string
   subjectType?: string
   correlationId?: string
-  details?: object
+  details?: Record<string, unknown>
 }
 
 export default class AuditService {
-  constructor(private readonly hmppsAuditClient: HmppsAuditClient) {}
+  constructor(private readonly hmppsAuditClient: AuditClient) {}
 
   async logAuditEvent(event: AuditEvent) {
     await this.hmppsAuditClient.sendMessage(event)

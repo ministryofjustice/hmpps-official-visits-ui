@@ -12,7 +12,7 @@ import {
 } from '../../../../@types/officialVisitsApi/types'
 import { Page } from '../../../../services/auditService'
 import OfficialVisitsService from '../../../../services/officialVisitsService'
-import { isVisitDateAndStartTimeInThePast, toHHmm } from '../../../../utils/utils'
+import { findSameRelationship, isVisitDateAndStartTimeInThePast, toHHmm } from '../../../../utils/utils'
 import { JourneyPrisoner, JourneyVisitor } from './journey'
 
 const VISIT_IN_PAST_API_MESSAGE = "The from date must be on or after today's date"
@@ -85,19 +85,42 @@ export function recallContacts(journey: Journey, relationshipType: 'O' | 'S', co
     relationshipType === 'O' ? journey.officialVisit.officialVisitors : journey.officialVisit.socialVisitors
   const original = journey.amendVisit?.originalVisitors || []
   return contacts.map(contact => {
-    const matches = (v: JourneyVisitor) =>
-      v.contactId === contact.contactId && v.relationshipToPrisonerCode === contact.relationshipToPrisonerCode
+    const matches = (v: JourneyVisitor) => findSameRelationship(v, contacts) === contact
     const existingContact = (existing || []).find(matches) || original.find(matches)
+    const sameContactOnVisit = contact.contactId && original.find(v => v.contactId === contact.contactId)
     return {
       ...contact,
       assistanceNotes: existingContact?.assistanceNotes,
       equipmentNotes: existingContact?.equipmentNotes,
       assistedVisit: existingContact?.assistedVisit,
       equipment: existingContact?.equipment,
-      officialVisitorId: existingContact?.officialVisitorId,
+      officialVisitorId: sameContactOnVisit ? sameContactOnVisit.officialVisitorId : existingContact?.officialVisitorId,
       alreadyOnVisit: existingContact?.alreadyOnVisit || false,
     } as JourneyVisitor
   })
+}
+
+export function buildSelectableContacts(
+  contacts: ApprovedContact[],
+  visitorsOnVisit: JourneyVisitor[],
+  mode: 'amend' | 'create',
+  socialVisitor: boolean,
+) {
+  const rowsOnVisit = visitorsOnVisit.map(v => findSameRelationship(v, contacts))
+  const visitorsWithoutRelationship = visitorsOnVisit.filter((_, i) => !rowsOnVisit[i])
+
+  return [
+    ...contacts.map(c => ({
+      ...c,
+      alreadyOnVisit: rowsOnVisit.includes(c),
+      issues: { notApproved: !c.isApprovedVisitor, noRelationship: false, socialVisitor },
+    })),
+    ...visitorsWithoutRelationship.map(v => ({
+      ...v,
+      alreadyOnVisit: true,
+      issues: { notApproved: false, noRelationship: true, socialVisitor },
+    })),
+  ].filter(c => (mode === 'amend' && c.alreadyOnVisit) || c.isApprovedVisitor)
 }
 
 export function checkSlotCapacity(slot: AvailableSlot, visitType: VisitType, visitorCount: number): boolean {
