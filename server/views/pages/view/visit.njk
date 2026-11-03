@@ -11,7 +11,6 @@
 {% from "partials/restriction-summary.njk" import restrictionSummary %}
 {% from "partials/unauthorisedVisitorsInset.njk" import unauthorisedVisitorsInset %}
 
-{% set pageTitle = "Official visit with " + visit.prisonerVisited | firstNameSpaceLastName %}
 {% set paramBackTo = ("?backTo=" + b64BackTo)if b64BackTo %}
 
 {% block content %}

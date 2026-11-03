@@ -6,7 +6,6 @@
 
 {% set prisonerName = (prisoner.firstName + " " + prisoner.lastName) | convertToTitleCase %}
 {% set mode = session.req.routeContext.mode %}
-{% set pageTitle = "Official visit booked for " + prisonerName%}
 {% set hideBackLink = true %}
 
 {% block content %}

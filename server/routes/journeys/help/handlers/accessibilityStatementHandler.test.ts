@@ -31,7 +31,7 @@ describe('GET /accessibility-statement', () => {
       .expect(200)
       .expect(res => {
         const $ = cheerio.load(res.text)
-        expect($('title').text()).toEqual('Accessibility statement - Official Visits - DPS')
+        expect($('title').text()).toEqual('Accessibility statement - Official visits - DPS')
         expect($('h1').text().trim()).toEqual('Accessibility statement')
         expect($('.govuk-back-link.js-back-link')).toHaveLength(1)
         expect($('h2')).toHaveLength(5)
