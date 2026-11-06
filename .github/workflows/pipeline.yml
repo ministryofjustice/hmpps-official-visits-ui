@@ -61,7 +61,6 @@ jobs:
       environment: ${{ matrix.environments }}
   build:
     name: Build docker image from hmpps-github-actions
-    if: github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
       - node_integration_tests
@@ -94,6 +93,7 @@ jobs:
       app_version: '${{ needs.build.outputs.app_version }}'
   deploy_prod:
     name: Deploy to production environment
+    if: github.ref == 'refs/heads/main'
     needs:
       - build
       - deploy_preprod
