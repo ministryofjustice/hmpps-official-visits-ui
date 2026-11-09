@@ -64,7 +64,7 @@ describe('notification sent handler', () => {
 
     const $govuk = $('.govuk-panel--confirmation')
     expect($govuk.length).toBeTruthy()
-    expect($govuk.text()).toContain('An email will be sent confirming details of this official visit.')
+    expect($govuk.text()).toContain('An email will be sent confirming details of this official visit')
     expect($govuk.text()).toContain('example@example.com')
     expect($('.govuk-body').text()).toContain(
       'You should check to confirm this email has been sent successfully. If you update or cancel this visit, you should send another email.',
@@ -99,7 +99,7 @@ describe('notification sent handler', () => {
     const $govuk = $('.govuk-panel--confirmation')
     expect($govuk.length).toBeTruthy()
     expect($govuk.text()).toContain('this official visit has been cancelled')
-    expect($govuk.text()).not.toContain('An email will be sent confirming details of this official visit.')
+    expect($govuk.text()).not.toContain('An email will be sent confirming details of this official visit')
     expect($govuk.text()).toContain('example@example.com')
     expect($('.govuk-body').text()).toContain('You should check to confirm this email has been sent successfully.')
   })

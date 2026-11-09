@@ -77,8 +77,11 @@ export default class ViewOfficialVisitListHandler implements PageHandler {
           res.locals.user,
         )
 
-    const queryParams = new URLSearchParams({ ...filterParams, page: '{page}' })
-    const backToParams = new URLSearchParams({ ...filterParams, page: filterParams.page.toString() }).toString()
+    const queryParams = new URLSearchParams({ ...filterParams, page: '{page}' } as unknown as Record<string, string>)
+    const backToParams = new URLSearchParams({
+      ...filterParams,
+      page: filterParams.page.toString(),
+    } as unknown as Record<string, string>).toString()
     const backTo = encodeURIComponent(btoa(`/view/list?${backToParams}`))
 
     return res.render('pages/view/visitList', {

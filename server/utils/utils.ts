@@ -223,7 +223,7 @@ export const addRemoveLinks = (
     const { [key]: _omit, ...rest } = filters
     return {
       ...o,
-      href: `?${new URLSearchParams({ ...rest, ...(newValue.length ? { [key]: newValue } : {}) }).toString()}`,
+      href: `?${new URLSearchParams({ ...rest, ...(newValue.length ? { [key]: newValue } : {}) } as Record<string, string>).toString()}`,
     }
   })
 

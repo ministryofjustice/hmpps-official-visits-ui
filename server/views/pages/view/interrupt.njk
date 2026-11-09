@@ -4,7 +4,6 @@
 {% from "partials/miniProfile/macro.njk" import miniProfile %}
 {%- from "moj/components/interruption-card/macro.njk" import interruptionCard -%}
 
-{% set pageTitle = "Official visit with " + prisoner | firstNameSpaceLastName %}
 {% set paramBackTo = ("?backTo=" + b64BackTo)if b64BackTo %}
 
 {% block content %}
