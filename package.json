@@ -83,7 +83,7 @@
     "@types/superagent": "^8.1.11",
     "@types/supertest": "^7.2.1",
     "audit-ci": "^7.1.0",
-    "better-npm-audit": "^3.13.1",
+    "better-npm-audit": "^4.2.1",
     "cheerio": "1.2.0",
     "chokidar": "^5.0.0",
     "concurrently": "10.0.6",
