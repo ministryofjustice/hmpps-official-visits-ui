@@ -113,7 +113,7 @@ export default class EditTimeSlotHandler implements PageHandler {
 
     res.addSuccessMessage(
       'Time for visit updated',
-      `You have updated a visiting time in your establishment's schedule.`
+      'You have updated a visiting time in your establishment's schedule.',
     )
     const returnUrlSuffix = translateDay(dayCode as string)
       .trim()
