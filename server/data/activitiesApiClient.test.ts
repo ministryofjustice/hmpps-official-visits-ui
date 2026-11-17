@@ -24,6 +24,10 @@ describe('ActivitiesApiClient', () => {
     jest.resetAllMocks()
   })
 
+  afterAll(() => {
+    nock.restore()
+  })
+
   describe('Get Scheduled Events By PrisonerNumbers', () => {
     it('should return prisoner schedule', async () => {
       const prisonCode = 'MIC'

@@ -4,7 +4,6 @@ export default {
   // node_modules entries via transformIgnorePatterns below.
   transform: {
     '^.+\\.[tj]sx?$': ['ts-jest', { tsconfig: 'tsconfig.jest.json' }],
-    '^.+\\.m?js$': ['ts-jest', { tsconfig: 'tsconfig.jest.json' }],
   },
   collectCoverageFrom: ['server/**/*.{ts,js,jsx,mjs}'],
   testMatch: ['<rootDir>/(server|job)/**/?(*.)(cy|test).{ts,js,jsx,mjs}'],
@@ -29,8 +28,4 @@ export default {
   // By default node_modules are ignored by transformers. uuid@14 ships as ESM
   // and uses `export ...` syntax which Jest (without transforming) cannot
   // parse. Allow transforming uuid (and add other packages here if needed).
-  transformIgnorePatterns: ['node_modules/(?!(uuid)/)'],
-  // Use a dedicated tsconfig for Jest (tsconfig.jest.json) that enables allowJs
-  // so .js/.mjs files (including transformed node_modules like `uuid`) are
-  // compiled. See tsconfig.jest.json in the repo.
 }

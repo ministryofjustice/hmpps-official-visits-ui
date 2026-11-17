@@ -25,6 +25,10 @@ describe('Prison api client tests', () => {
     jest.resetAllMocks()
   })
 
+  afterAll(() => {
+    nock.restore()
+  })
+
   it('Get prisoner image', async () => {
     stream.mockResolvedValue(Readable.from('image'))
     nock(config.apis.prisonApi.url)
