@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import redirectCheckAnswersMiddleware from './redirectCheckAnswers'
 
 let req: Request
 let next: NextFunction
-const uuid = v4()
+const uuid = randomUUID()
 
 beforeEach(() => {
   req = {
