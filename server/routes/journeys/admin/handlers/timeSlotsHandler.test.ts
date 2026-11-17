@@ -63,7 +63,7 @@ describe('TimeSlotsHandler', () => {
     expect(res.status).toBe(200)
     expect(res.text).toContain('No scheduled visit times')
     expect(res.text).toContain(
-      "There are no time slots for this day. Create a new time slot to add it to your prison's schedule.",
+      "There are no time slots for this day. Create a new time slot to add it to your establishment's schedule.",
     )
   })
 
