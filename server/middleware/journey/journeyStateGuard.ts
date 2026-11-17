@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express'
-import { validate } from 'uuid'
+import { validateUuid } from '../../utils/utils'
 
 export type JourneyStateGuard = { [pageName: string]: (req: Request) => string | undefined }
 
@@ -8,7 +8,7 @@ export default function journeyStateGuard(rules: JourneyStateGuard) {
     const uuidMatch = req.originalUrl.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/)
     const uuid = uuidMatch?.[0]
 
-    if (!uuid || !validate(uuid)) {
+    if (!uuid || !validateUuid(uuid)) {
       // Requested page is not part of a journey
       return next()
     }
