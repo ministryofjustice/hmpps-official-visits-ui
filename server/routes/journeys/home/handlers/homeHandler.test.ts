@@ -136,7 +136,7 @@ describe('GET /home', () => {
       .expect(res => {
         const $ = cheerio.load(res.text)
         expect(res.text).toContain(
-          'You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison. You can',
+          'You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your establishment. You can',
         )
         const bannerLink = $(
           "a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']",
@@ -156,7 +156,7 @@ describe('GET /home', () => {
       .expect(res => {
         const $ = cheerio.load(res.text)
         expect(res.text).toContain(
-          'You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison. For BVLS sites, ',
+          'You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your establishment. For BVLS sites, ',
         )
         const bannerLink = $(
           "a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']",
@@ -175,7 +175,7 @@ describe('GET /home', () => {
       .expect(res => {
         const $ = cheerio.load(res.text)
         expect(res.text).not.toContain(
-          'You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your prison',
+          'You must now use DPS to book and manage official visits. The Visits screens in NOMIS have now been switched off at your establishment',
         )
         const bannerLink = $(
           "a[href='https://justiceuk.sharepoint.com/sites/prisons-digital/SitePages/Official%20Visits.aspx']",
