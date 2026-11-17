@@ -1,4 +1,4 @@
-import { v4 as uuidV4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import { expect, Page, test } from '@playwright/test'
 import { format } from 'date-fns'
 import hmppsAuth from '../mockApis/hmppsAuth'
@@ -62,7 +62,7 @@ test.describe('RBAC: Create an official visit', async () => {
     await page.goto(`/manage/create/search`)
     await NotAuthorisedPage.verifyOnPage(page)
 
-    await page.goto(`/manage/create/${uuidV4()}/confirmation/1`)
+    await page.goto(`/manage/create/${randomUUID()}/confirmation/1`)
     await NotAuthorisedPage.verifyOnPage(page)
   })
 
@@ -76,7 +76,7 @@ test.describe('RBAC: Create an official visit', async () => {
     await page.goto(`/manage/create/search`)
     await NotAuthorisedPage.verifyOnPage(page)
 
-    await page.goto(`/manage/create/${uuidV4()}/confirmation/1`)
+    await page.goto(`/manage/create/${randomUUID()}/confirmation/1`)
     await NotAuthorisedPage.verifyOnPage(page)
   })
 
@@ -90,7 +90,7 @@ test.describe('RBAC: Create an official visit', async () => {
     await page.goto(`/manage/create/search`)
     await NotAuthorisedPage.verifyOnPage(page)
 
-    await page.goto(`/manage/create/${uuidV4()}/confirmation/1`)
+    await page.goto(`/manage/create/${randomUUID()}/confirmation/1`)
     await NotAuthorisedPage.verifyOnPage(page)
   })
 
@@ -104,13 +104,13 @@ test.describe('RBAC: Create an official visit', async () => {
     await page.goto(`/manage/create/search`)
     await NotAuthorisedPage.verifyOnPage(page)
 
-    await page.goto(`/manage/create/${uuidV4()}/confirmation/1`)
+    await page.goto(`/manage/create/${randomUUID()}/confirmation/1`)
     await NotAuthorisedPage.verifyOnPage(page)
   })
 })
 
 test.describe('Create an official visit', () => {
-  const uuid = uuidV4()
+  const uuid = randomUUID()
   test.beforeEach(async () => {
     await hmppsAuth.stubSignInPage()
     await componentsApi.stubComponents()
@@ -408,7 +408,7 @@ test.describe('Create an official visit', () => {
       } as AvailableSlot,
     ])
 
-    const selectOfficialContactPage = await navigateToSelectOfficialVisitors(page, uuidV4())
+    const selectOfficialContactPage = await navigateToSelectOfficialVisitors(page, randomUUID())
 
     await selectOfficialContactPage.checkContact(0)
     await selectOfficialContactPage.checkContact(1)
@@ -420,7 +420,7 @@ test.describe('Create an official visit', () => {
   })
 
   test('shows the prisoner overlap error when the prisoner has another visit booked', async ({ page }) => {
-    const selectOfficialContactPage = await navigateToSelectOfficialVisitors(page, uuidV4())
+    const selectOfficialContactPage = await navigateToSelectOfficialVisitors(page, randomUUID())
     await officialVisitsApi.stubCheckForOverlappingVisits({
       prisonerNumber: 'A1111AA',
       overlappingPrisonerVisits: [2],
@@ -436,7 +436,7 @@ test.describe('Create an official visit', () => {
   })
 
   test('shows the visitor overlap error when a visitor has another visit booked', async ({ page }) => {
-    const selectOfficialContactPage = await navigateToSelectOfficialVisitors(page, uuidV4())
+    const selectOfficialContactPage = await navigateToSelectOfficialVisitors(page, randomUUID())
 
     await officialVisitsApi.stubCheckForOverlappingVisits({
       prisonerNumber: 'A1111AA',
@@ -469,7 +469,7 @@ test.describe('Create an official visit', () => {
     ])
 
     await login(page)
-    await page.goto(`/manage/create/${uuidV4()}/search`)
+    await page.goto(`/manage/create/${randomUUID()}/search`)
     const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)
     await prisonerSearchPage.searchBox.fill('John')
     await prisonerSearchPage.searchButton.click()
@@ -551,7 +551,7 @@ test.describe('Video capacity not set interruption card', () => {
 
 async function goToVideoCapacityNotSet(page: Page, roles: string[]) {
   await login(page, { name: 'AUser', roles: ['ROLE_PRISON', ...roles], active: true, authSource: 'nomis' })
-  await page.goto(`/manage/create/${uuidV4()}/search`)
+  await page.goto(`/manage/create/${randomUUID()}/search`)
   const prisonerSearchPage = await PrisonerSearchPage.verifyOnPage(page)
   await prisonerSearchPage.searchBox.fill('John')
   await prisonerSearchPage.searchButton.click()
