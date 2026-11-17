@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { format } from 'date-fns'
-import { v4 as uuidV4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import hmppsAuth from '../mockApis/hmppsAuth'
 import { expandMiniProfileAlerts, login, resetStubs, summaryValue } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
@@ -111,7 +111,7 @@ const getMockVisit = () => ({
 })
 
 test.describe('Amend official visits', () => {
-  const journeyId = uuidV4()
+  const journeyId = randomUUID()
 
   test.beforeEach(async () => {
     await hmppsAuth.stubSignInPage()

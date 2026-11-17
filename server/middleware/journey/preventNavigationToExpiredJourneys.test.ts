@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import preventNavigationToExpiredJourneys from './preventNavigationToExpiredJourneys'
 
 describe('preventNavigationToExpiredJourneys', () => {
-  const uuid = v4()
+  const uuid = randomUUID()
   const req: Request = { params: { journeyId: uuid }, session: { journeyData: {} } } as unknown as jest.Mocked<Request>
   const next = jest.fn()
 

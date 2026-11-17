@@ -23,6 +23,10 @@ describe('PrisonerSearchApiClient', () => {
     jest.resetAllMocks()
   })
 
+  afterAll(() => {
+    nock.restore()
+  })
+
   describe('get prisoner by prisoner number', () => {
     it('should get a prisoner by prisoner number and return the response body', async () => {
       const prisonerNumber = 'A1111AA'
