@@ -26,6 +26,7 @@ generic-service:
     AUDIT_ENABLED: "false"
     NODE_USE_ENV_PROXY: "1"
     APPLICATION_INSIGHTS_NO_STATSBEAT: "true"
+    LOG_LEVEL: "debug"
 
   namespace_secrets:
     hmpps-envoy-https-proxy-env:
