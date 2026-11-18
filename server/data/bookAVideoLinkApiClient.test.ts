@@ -23,6 +23,10 @@ describe('BookAVideoLinkApiClient', () => {
     jest.resetAllMocks()
   })
 
+  afterAll(() => {
+    nock.restore()
+  })
+
   describe('GET', () => {
     it('should return BVLS enabled prisons', async () => {
       const expected = { data: 'data' }

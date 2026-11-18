@@ -23,6 +23,10 @@ describe('OfficialVisitsApiClient', () => {
     jest.resetAllMocks()
   })
 
+  afterAll(() => {
+    nock.restore()
+  })
+
   describe('getOfficialVisitById', () => {
     it('should get an official visit by ID and return the response body', async () => {
       const visitId = 1

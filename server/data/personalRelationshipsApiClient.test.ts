@@ -22,6 +22,10 @@ describe('Personal relationships api client tests', () => {
     jest.resetAllMocks()
   })
 
+  afterAll(() => {
+    nock.restore()
+  })
+
   it('Get prisoner contacts restrictions', async () => {
     const expected = { data: 'data' }
     nock(config.apis.personalRelationshipsApi.url)
