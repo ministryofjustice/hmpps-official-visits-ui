@@ -27,6 +27,7 @@ generic-service:
     NODE_USE_ENV_PROXY: "1"
     APPLICATION_INSIGHTS_NO_STATSBEAT: "true"
     LOG_LEVEL: "debug"
+    MAINTENANCE_MODE: "true"
 
   namespace_secrets:
     hmpps-envoy-https-proxy-env:
@@ -36,8 +37,6 @@ generic-service:
       http_proxy: "HTTP_PROXY"
       https_proxy: "HTTPS_PROXY"
       no_proxy: "NO_PROXY"
-    maintenance:
-      MAINTENANCE_MODE: "maintenance_mode"
 
   allowlist:
     kmpg: 195.68.59.74

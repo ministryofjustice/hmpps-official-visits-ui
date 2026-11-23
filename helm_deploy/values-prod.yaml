@@ -23,6 +23,7 @@ generic-service:
     AUDIT_ENABLED: "true"
     NODE_USE_ENV_PROXY: "1"
     APPLICATION_INSIGHTS_NO_STATSBEAT: "true"
+    MAINTENANCE_MODE: "true"
 
   namespace_secrets:
     hmpps-envoy-https-proxy-env:
@@ -32,5 +33,3 @@ generic-service:
       http_proxy: "HTTP_PROXY"
       https_proxy: "HTTPS_PROXY"
       no_proxy: "NO_PROXY"
-    maintenance:
-      MAINTENANCE_MODE: "maintenance_mode"
