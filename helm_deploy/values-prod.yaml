@@ -32,3 +32,5 @@ generic-service:
       http_proxy: "HTTP_PROXY"
       https_proxy: "HTTPS_PROXY"
       no_proxy: "NO_PROXY"
+    maintenance:
+      MAINTENANCE_MODE: "true"
