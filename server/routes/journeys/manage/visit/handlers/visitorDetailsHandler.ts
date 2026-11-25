@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import { ContactRelationship, OfficialVisitor, VisitorType } from '../../../../../@types/officialVisitsApi/types'
-import { getBackLink } from './utils'
+import { ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
+import { getBackLink, saveAmendedVisitors } from './utils'
 import { schema } from './visitorDetailsSchema'
 import { cyaGuard } from '../createJourneyState'
 import { JourneyVisitor, OfficialVisitJourney } from '../journey'
@@ -67,27 +67,6 @@ const isAssistanceChange = (req: Request) => {
 const shouldSave = (req: Request, res: Response) => {
   const { officialVisit } = req.session.journey
   return res.locals.mode === 'amend' && (isAssistanceChange(req) || !isInPersonVisit(officialVisit))
-}
-
-const saveAmendedVisitors = async (req: Request, res: Response, officialVisitsService: OfficialVisitsService) => {
-  const { officialVisit } = req.session.journey
-  const allVisitors = [...(officialVisit.officialVisitors || []), ...(officialVisit.socialVisitors || [])]
-  const officialVisitors: OfficialVisitor[] = allVisitors.map(visitor => ({
-    officialVisitorId: visitor.officialVisitorId || 0,
-    visitorTypeCode: 'CONTACT' as VisitorType,
-    contactId: visitor.contactId,
-    prisonerContactId: visitor.prisonerContactId,
-    relationshipCode: visitor.relationshipToPrisonerCode,
-    leadVisitor: visitor.leadVisitor,
-    assistedVisit: visitor.assistedVisit,
-    assistedNotes: visitor.assistanceNotes,
-    ...(visitor.equipmentNotes ? { visitorEquipment: { description: visitor.equipmentNotes } } : {}),
-  }))
-  const ovId = req.params.ovId as string
-  const journeyId = req.params.journeyId as string
-  await officialVisitsService.updateVisitors(officialVisit.prisonCode, ovId, { officialVisitors }, res.locals.user)
-  req.flash('updateVerb', 'updated')
-  return res.redirect(`/manage/amend/${ovId}/${journeyId}`)
 }
 
 const setNotes = (contacts: JourneyVisitor[], body: ContactRelationship[]) => {

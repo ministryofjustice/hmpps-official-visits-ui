@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express'
 import { Page } from '../../../../../services/auditService'
 import { PageHandler } from '../../../../interfaces/pageHandler'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
-import { ApprovedContact, ContactRelationship, OfficialVisitor } from '../../../../../@types/officialVisitsApi/types'
-import { getBackLink } from './utils'
+import { ApprovedContact, ContactRelationship } from '../../../../../@types/officialVisitsApi/types'
+import { getBackLink, saveAmendedVisitors } from './utils'
 import { schema } from './equipmentSchema'
 import { cyaGuard } from '../createJourneyState'
 
@@ -45,28 +45,7 @@ export default class EquipmentHandler implements PageHandler {
       if (Object.keys(errors).length > 0) {
         return res.alertValidationError(errors)
       }
-      const allVisitors = [...officialVisit.officialVisitors, ...(officialVisit.socialVisitors || [])]
-      const officialVisitors: OfficialVisitor[] = allVisitors.map(visitor => ({
-        officialVisitorId: visitor.officialVisitorId,
-        visitorTypeCode: 'CONTACT',
-        contactId: visitor.contactId,
-        prisonerContactId: visitor.prisonerContactId,
-        relationshipCode: visitor.relationshipToPrisonerCode,
-        leadVisitor: visitor.leadVisitor,
-        assistedVisit: visitor.assistedVisit,
-        assistedNotes: visitor.assistanceNotes,
-        ...(visitor.equipmentNotes ? { visitorEquipment: { description: visitor.equipmentNotes } } : {}),
-      }))
-      const ovId = req.params.ovId as string
-      const journeyId = req.params.journeyId as string
-      await this.officialVisitsService.updateVisitors(
-        officialVisit.prisonCode,
-        ovId,
-        { officialVisitors },
-        res.locals.user,
-      )
-      req.flash('updateVerb', 'updated')
-      return res.redirect(`/manage/amend/${ovId}/${journeyId}`)
+      return saveAmendedVisitors(req, res, this.officialVisitsService)
     }
     return res.redirect(`comments`)
   }

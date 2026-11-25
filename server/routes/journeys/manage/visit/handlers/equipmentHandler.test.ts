@@ -7,7 +7,7 @@ import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { getArrayItemPropById, getPageHeader } from '../../../../testutils/cheerio'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { mockTimeslots, mockPrisoner } from '../../../../../testutils/mocks'
+import { mockTimeslots, mockPrisoner, mockVisitByIdVisit } from '../../../../../testutils/mocks'
 import {
   expectErrorMessages,
   expectFlashMessage,
@@ -65,9 +65,24 @@ const appSetup = (journeySession = defaultJourneySession()) => {
   })
 }
 
+const visitWithVisitors = (visitors: [contactId: number, officialVisitorId: number][]) => ({
+  ...mockVisitByIdVisit,
+  officialVisitors: visitors.map(([contactId, officialVisitorId]) => ({
+    ...mockVisitByIdVisit.officialVisitors[0],
+    contactId,
+    officialVisitorId,
+  })),
+})
+
 beforeEach(() => {
   appSetup()
   officialVisitsService.getAvailableSlots.mockResolvedValue(mockTimeslots)
+  officialVisitsService.getOfficialVisitById.mockResolvedValue(
+    visitWithVisitors([
+      [111, 1],
+      [222, 2],
+    ]),
+  )
 })
 
 afterEach(() => {
@@ -266,6 +281,43 @@ describe('Equipment handler', () => {
         },
         user,
       )
+    })
+
+    it('should reuse the saved visitor ID when a newly added visitor is resubmitted', async () => {
+      const journey = defaultJourneySession()
+      delete journey.officialVisit.socialVisitors[0].officialVisitorId
+      appSetup(journey)
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(
+        visitWithVisitors([
+          [111, 1],
+          [222, 99],
+        ]),
+      )
+
+      await request(app)
+        .post(`/manage/amend/1/${journeyId()}/equipment`)
+        .send({ equipment: [] })
+        .expect(302)
+        .expect('location', `/manage/amend/1/${journeyId()}`)
+
+      expect(officialVisitsService.getOfficialVisitById).toHaveBeenCalledWith(1, user)
+      const { officialVisitors } = officialVisitsService.updateVisitors.mock.calls[0][2]
+      expect(officialVisitors.map(v => [v.contactId, v.officialVisitorId])).toEqual([
+        [111, 1],
+        [222, 99],
+      ])
+    })
+
+    it('should send a visitor as new when their saved ID is no longer on the visit', async () => {
+      officialVisitsService.getOfficialVisitById.mockResolvedValue(visitWithVisitors([[111, 1]]))
+
+      await request(app).post(`/manage/amend/1/${journeyId()}/equipment`).send({ equipment: [] }).expect(302)
+
+      const { officialVisitors } = officialVisitsService.updateVisitors.mock.calls[0][2]
+      expect(officialVisitors.map(v => [v.contactId, v.officialVisitorId])).toEqual([
+        [111, 1],
+        [222, 0],
+      ])
     })
   })
 })
