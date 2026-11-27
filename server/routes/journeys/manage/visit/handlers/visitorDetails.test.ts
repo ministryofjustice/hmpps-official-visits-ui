@@ -7,7 +7,7 @@ import PrisonerService from '../../../../../services/prisonerService'
 import OfficialVisitsService from '../../../../../services/officialVisitsService'
 import { getArrayItemPropById, getPageHeader } from '../../../../testutils/cheerio'
 import { getJourneySession } from '../../../../testutils/testUtilRoute'
-import { mockTimeslots, mockPrisoner } from '../../../../../testutils/mocks'
+import { mockTimeslots, mockPrisoner, mockVisitByIdVisit } from '../../../../../testutils/mocks'
 import {
   expectErrorMessages,
   expectFlashMessage,
@@ -76,9 +76,25 @@ const appSetup = (journeySession = defaultJourneySession()) => {
   })
 }
 
+const visitWithVisitors = (visitors: [contactId: number, officialVisitorId: number][]) => ({
+  ...mockVisitByIdVisit,
+  officialVisitors: visitors.map(([contactId, officialVisitorId]) => ({
+    ...mockVisitByIdVisit.officialVisitors[0],
+    contactId,
+    officialVisitorId,
+  })),
+})
+
 beforeEach(() => {
   appSetup()
   officialVisitsService.getAvailableSlots.mockResolvedValue(mockTimeslots)
+  officialVisitsService.getOfficialVisitById.mockResolvedValue(
+    visitWithVisitors([
+      [111, 1],
+      [112, 2],
+      [222, 3],
+    ]),
+  )
 })
 
 afterEach(() => {
